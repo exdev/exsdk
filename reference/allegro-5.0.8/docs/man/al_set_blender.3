@@ -1,0 +1,154 @@
+.TH al_set_blender 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_set_blender - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro.h>
+
+void\ al_set_blender(int\ op,\ int\ src,\ int\ dst)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Sets the function to use for blending for the current thread.
+.PP
+Blending means, the source and destination colors are combined in
+drawing operations.
+.PP
+Assume the source color (e.g.
+color of a rectangle to draw, or pixel of a bitmap to draw) is given as
+its red/green/blue/alpha components (if the bitmap has no alpha it
+always is assumed to be fully opaque, so 255 for 8-bit or 1.0 for
+floating point): \f[I]sr, sg, sb, sa\f[].
+And this color is drawn to a destination, which already has a color:
+\f[I]dr, dg, db, da\f[].
+.PP
+The conceptional formula used by Allegro to draw any pixel then depends
+on the \f[C]op\f[] parameter:
+.IP \[bu] 2
+ALLEGRO_ADD
+.RS 2
+.IP
+.nf
+\f[C]
+\ r\ =\ dr\ *\ dst\ +\ sr\ *\ src
+\ g\ =\ dg\ *\ dst\ +\ sg\ *\ src
+\ b\ =\ db\ *\ dst\ +\ sb\ *\ src
+\ a\ =\ da\ *\ dst\ +\ sa\ *\ src
+\f[]
+.fi
+.RE
+.IP \[bu] 2
+ALLEGRO_DEST_MINUS_SRC
+.RS 2
+.IP
+.nf
+\f[C]
+\ r\ =\ dr\ *\ dst\ -\ sr\ *\ src
+\ g\ =\ dg\ *\ dst\ -\ sg\ *\ src
+\ b\ =\ db\ *\ dst\ -\ sb\ *\ src
+\ a\ =\ da\ *\ dst\ -\ sa\ *\ src
+\f[]
+.fi
+.RE
+.IP \[bu] 2
+ALLEGRO_SRC_MINUS_DEST
+.RS 2
+.IP
+.nf
+\f[C]
+\ r\ =\ sr\ *\ src\ -\ dr\ *\ dst
+\ g\ =\ sg\ *\ src\ -\ dg\ *\ dst
+\ b\ =\ sb\ *\ src\ -\ db\ *\ dst
+\ a\ =\ sa\ *\ src\ -\ da\ *\ dst
+\f[]
+.fi
+.RE
+.PP
+Valid values for \f[C]src\f[] and \f[C]dst\f[] passed to this function
+are
+.IP \[bu] 2
+ALLEGRO_ZERO
+.RS 2
+.IP
+.nf
+\f[C]
+\ src\ =\ 0
+\ dst\ =\ 0
+\f[]
+.fi
+.RE
+.IP \[bu] 2
+ALLEGRO_ONE
+.RS 2
+.IP
+.nf
+\f[C]
+\ src\ =\ 1
+\ dst\ =\ 1
+\f[]
+.fi
+.RE
+.IP \[bu] 2
+ALLEGRO_ALPHA
+.RS 2
+.IP
+.nf
+\f[C]
+\ src\ =\ sa
+\ dst\ =\ sa
+\f[]
+.fi
+.RE
+.IP \[bu] 2
+ALLEGRO_INVERSE_ALPHA
+.RS 2
+.IP
+.nf
+\f[C]
+\ src\ =\ 1\ -\ sa
+\ dst\ =\ 1\ -\ sa
+\f[]
+.fi
+.RE
+.PP
+Blending examples:
+.PP
+So for example, to restore the default of using premultiplied alpha
+blending, you would use (pseudo code)
+.IP
+.nf
+\f[C]
+al_set_blender(ALLEGRO_ADD,\ ALLEGRO_ONE,\ ALLEGRO_INVERSE_ALPHA)
+\f[]
+.fi
+.PP
+If you are using non-pre-multiplied alpha, you could use
+.IP
+.nf
+\f[C]
+al_set_blender(ALLEGRO_ADD,\ ALLEGRO_ALPHA,\ ALLEGRO_INVERSE_ALPHA)
+\f[]
+.fi
+.PP
+Additive blending would be achieved with
+.IP
+.nf
+\f[C]
+al_set_blender(ALLEGRO_ADD,\ ALLEGRO_ONE,\ ALLEGRO_ONE)
+\f[]
+.fi
+.PP
+Copying the source to the destination (including alpha) unmodified
+.IP
+.nf
+\f[C]
+al_set_blender(ALLEGRO_ADD,\ ALLEGRO_ONE,\ ALLEGRO_ZERO)
+\f[]
+.fi
+.SH SEE ALSO
+.PP
+al_set_separate_blender(3), al_get_blender(3)

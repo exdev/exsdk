@@ -1,0 +1,26 @@
+.TH ALLEGRO_SAMPLE 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+ALLEGRO_SAMPLE - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_audio.h>
+
+typedef\ struct\ ALLEGRO_SAMPLE\ ALLEGRO_SAMPLE;
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+An ALLEGRO_SAMPLE object stores the data necessary for playing
+pre-defined digital audio.
+It holds information pertaining to data length, frequency, channel
+configuration, etc.
+You can have an ALLEGRO_SAMPLE object playing multiple times
+simultaneously.
+The object holds a user-specified PCM data buffer, of the format the
+object is created with.
+.SH SEE ALSO
+.PP
+ALLEGRO_SAMPLE_INSTANCE(3)

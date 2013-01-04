@@ -1,0 +1,25 @@
+.TH al_attach_mixer_to_mixer 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_attach_mixer_to_mixer - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_audio.h>
+
+bool\ al_attach_mixer_to_mixer(ALLEGRO_MIXER\ *stream,\ ALLEGRO_MIXER\ *mixer)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Attaches a mixer onto another mixer.
+The same rules as with al_attach_sample_instance_to_mixer(3) apply, with
+the added caveat that both mixers must be the same frequency.
+Returns true on success, false on error.
+.PP
+Currently both mixers must have the same audio depth, otherwise the
+function fails.
+.SH SEE ALSO
+.PP
+al_detach_mixer(3).

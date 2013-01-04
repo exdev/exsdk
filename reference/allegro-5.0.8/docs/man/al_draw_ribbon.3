@@ -1,0 +1,30 @@
+.TH al_draw_ribbon 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_draw_ribbon - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_primitives.h>
+
+void\ al_draw_ribbon(const\ float\ *points,\ int\ points_stride,\ ALLEGRO_COLOR\ color,
+\ \ \ float\ thickness,\ int\ num_segments)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Draws a series of straight lines given an array of points.
+The ribbon will go through all of the passed points.
+.PP
+\f[I]Parameters:\f[]
+.IP \[bu] 2
+points - An array of coordinate pairs (x and y) for each point
+.IP \[bu] 2
+color - Color of the spline
+.IP \[bu] 2
+thickness - Thickness of the spline, pass \f[C]<=\ 0\f[] to draw
+hairline spline
+.SH SEE ALSO
+.PP
+al_calculate_ribbon(3)

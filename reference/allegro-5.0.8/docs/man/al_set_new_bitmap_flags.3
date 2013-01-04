@@ -1,0 +1,210 @@
+.TH al_set_new_bitmap_flags 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_set_new_bitmap_flags - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro.h>
+
+void\ al_set_new_bitmap_flags(int\ flags)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Sets the flags to use for newly created bitmaps.
+Valid flags are:
+.TP
+.B ALLEGRO_VIDEO_BITMAP
+Creates a bitmap that resides in the video card memory.
+These types of bitmaps receive the greatest benefit from hardware
+acceleration.
+al_set_new_bitmap_flags(3) will implicitly set this flag unless
+ALLEGRO_MEMORY_BITMAP is present.
+.RS
+.RE
+.TP
+.B ALLEGRO_MEMORY_BITMAP
+Create a bitmap residing in system memory.
+Operations on, and with, memory bitmaps will not be hardware
+accelerated.
+However, direct pixel access can be relatively quick compared to video
+bitmaps, which depend on the display driver in use.
+.RS
+.PP
+\f[I]Note: Allegro\[aq]s software rendering routines are currently very
+unoptimised.\f[]
+.RE
+.TP
+.B ALLEGRO_KEEP_BITMAP_FORMAT
+Only used when loading bitmaps from disk files, forces the resulting
+ALLEGRO_BITMAP(3) to use the same format as the file.
+.RS
+.PP
+\f[I]This is not yet honoured.\f[]
+.RE
+.TP
+.B ALLEGRO_FORCE_LOCKING
+When drawing to a bitmap with this flag set, always use pixel locking
+and draw to it using Allegro\[aq]s software drawing primitives.
+This should never be used if you plan to draw to the bitmap using
+Allegro\[aq]s graphics primitives as it would cause severe performance
+penalties.
+However if you know that the bitmap will only ever be accessed by
+locking it, no unneeded FBOs will be created for it in the OpenGL
+drivers.
+.RS
+.RE
+.TP
+.B ALLEGRO_NO_PRESERVE_TEXTURE
+Normally, every effort is taken to preserve the contents of bitmaps,
+since Direct3D may forget them.
+This can take extra processing time.
+If you know it doesn\[aq]t matter if a bitmap keeps its pixel data, for
+example its a temporary buffer, use this flag to tell Allegro not to
+attempt to preserve its contents.
+This can increase performance of your game or application, but there is
+a catch.
+See ALLEGRO_EVENT_DISPLAY_LOST for further information.
+.RS
+.RE
+.TP
+.B ALLEGRO_ALPHA_TEST
+This is a driver hint only.
+It tells the graphics driver to do alpha testing instead of alpha
+blending on bitmaps created with this flag.
+Alpha testing is usually faster and preferred if your bitmaps have only
+one level of alpha (0).
+This flag is currently not widely implemented (i.e., only for memory
+bitmaps).
+.RS
+.RE
+.TP
+.B ALLEGRO_MIN_LINEAR
+When drawing a scaled down version of the bitmap, use linear filtering.
+This usually looks better.
+You can also combine it with the MIPMAP flag for even better quality.
+.RS
+.RE
+.TP
+.B ALLEGRO_MAG_LINEAR
+When drawing a magnified version of a bitmap, use linear filtering.
+This will cause the picture to get blurry instead of creating a big
+rectangle for each pixel.
+It depends on how you want things to look like whether you want to use
+this or not.
+.RS
+.RE
+.TP
+.B ALLEGRO_MIPMAP
+This can only be used for bitmaps whose width and height is a power of
+two.
+In that case, it will generate mipmaps and use them when drawing scaled
+down versions.
+For example if the bitmap is 64x64, then extra bitmaps of sizes 32x32,
+16x16, 8x8, 4x4, 2x2 and 1x1 will be created always containing a scaled
+down version of the original.
+.RS
+.RE
+.TP
+.B ALLEGRO_NO_PREMULTIPLIED_ALPHA
+By default, Allegro pre-multiplies the alpha channel of an image with
+the images color data when it loads it.
+Typically that would look something like this:
+.RS
+.IP
+.nf
+\f[C]
+r\ =\ get_float_byte();
+g\ =\ get_float_byte();
+b\ =\ get_float_byte();
+a\ =\ get_float_byte();
+
+r\ =\ r\ *\ a;
+g\ =\ g\ *\ a;
+b\ =\ b\ *\ a;
+
+set_image_pixel(x,\ y,\ r,\ g,\ b,\ a);
+\f[]
+.fi
+.PP
+The reason for this can be seen in the Allegro example ex_premulalpha,
+ie, using pre-multiplied alpha gives more accurate color results in some
+cases.
+To use alpha blending with images loaded with pre-multiplied alpha, you
+would use the default blending mode, which is set with
+al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA).
+.PP
+The ALLEGRO_NO_PREMULTIPLIED_ALPHA flag being set will ensure that
+images are not loaded with alpha pre-multiplied, but are loaded with
+color values direct from the image.
+That looks like this:
+.IP
+.nf
+\f[C]
+r\ =\ get_float_byte();
+g\ =\ get_float_byte();
+b\ =\ get_float_byte();
+a\ =\ get_float_byte();
+
+set_image_pixel(x,\ y,\ r,\ g,\ b,\ a);
+\f[]
+.fi
+.PP
+To draw such an image using regular alpha blending, you would use
+al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA) to set
+the correct blender.
+This has some caveats.
+First, as mentioned above, drawing such an image can result in less
+accurate color blending (when drawing an image with linear filtering on,
+the edges will be darker than they should be).
+Second, the behaviour is somewhat confusing, which is explained in the
+example below.
+.IP
+.nf
+\f[C]
+//\ Load\ and\ create\ bitmaps\ with\ an\ alpha\ channel
+al_set_new_bitmap_format(ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA);
+//\ Load\ some\ bitmap\ with\ alpha\ in\ it
+bmp\ =\ al_load_bitmap("some_alpha_bitmap.png");
+//\ We\ will\ draw\ to\ this\ buffer\ and\ then\ draw\ this\ buffer\ to\ the\ screen
+tmp_buffer\ =\ al_create_bitmap(SCREEN_W,\ SCREEN_H);
+//\ Set\ the\ buffer\ as\ the\ target\ and\ clear\ it
+al_set_target_bitmap(tmp_buffer);
+al_clear_to_color(al_map_rgba_f(0,\ 0,\ 0,\ 1));
+//\ Draw\ the\ bitmap\ to\ the\ temporary\ buffer
+al_draw_bitmap(bmp,\ 0,\ 0,\ 0);
+//\ Finally,\ draw\ the\ buffer\ to\ the\ screen
+//\ The\ output\ will\ look\ incorrect\ (may\ take\ close\ inspection
+//\ depending\ on\ the\ bitmap\ --\ it\ may\ also\ be\ very\ obvious)
+al_set_target_bitmap(al_get_backbuffer(display));
+al_draw_bitmap(tmp_buffer,\ 0,\ 0,\ 0);
+\f[]
+.fi
+.RE
+.PP
+To explain further, if you have a pixel with 0.5 alpha, and you\[aq]re
+using (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA) for blending,
+the formula is:
+.IP
+.nf
+\f[C]
+\ \ \ \ a\ =\ da\ *\ dst\ +\ sa\ *\ src
+\f[]
+.fi
+.PP
+Expands to:
+.IP
+.nf
+\f[C]
+\ \ \ \ result_a\ =\ dst_a\ *\ (1-0.5)\ +\ 0.5\ *\ 0.5;
+\f[]
+.fi
+.PP
+So if you draw the image to the temporary buffer, it is blended once
+resulting in 0.75 alpha, then drawn again to the screen, blended in the
+same way, resulting in a pixel has 0.1875 as an alpha value.
+.SH SEE ALSO
+.PP
+al_get_new_bitmap_flags(3), al_get_bitmap_flags(3)

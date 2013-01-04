@@ -1,0 +1,24 @@
+.TH al_set_display_icon 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_set_display_icon - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro.h>
+
+void\ al_set_display_icon(ALLEGRO_DISPLAY\ *display,\ ALLEGRO_BITMAP\ *icon)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Changes the icon associated with the display (window).
+.RS
+.PP
+\f[I]Note:\f[] If the underlying OS can not use an icon with the size of
+the provided bitmap, it will be scaled.
+.RE
+.SH SEE ALSO
+.PP
+al_set_window_title(3)

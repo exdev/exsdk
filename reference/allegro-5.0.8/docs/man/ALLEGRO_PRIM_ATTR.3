@@ -1,0 +1,35 @@
+.TH ALLEGRO_PRIM_ATTR 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+ALLEGRO_PRIM_ATTR - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_primitives.h>
+
+typedef\ enum\ ALLEGRO_PRIM_ATTR
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Enumerates the types of vertex attributes that a custom vertex may have.
+.IP \[bu] 2
+ALLEGRO_PRIM_POSITION - Position information, can be stored in any
+supported fashion
+.IP \[bu] 2
+ALLEGRO_PRIM_COLOR_ATTR - Color information, stored in an
+ALLEGRO_COLOR(3).
+The storage field of ALLEGRO_VERTEX_ELEMENT is ignored
+.IP \[bu] 2
+ALLEGRO_PRIM_TEX_COORD - Texture coordinate information, can be stored
+only in ALLEGRO_PRIM_FLOAT_2 and ALLEGRO_PRIM_SHORT_2.
+These coordinates are normalized by the width and height of the texture,
+meaning that the bottom-right corner has texture coordinates of (1, 1).
+.IP \[bu] 2
+ALLEGRO_PRIM_TEX_COORD_PIXEL - Texture coordinate information, can be
+stored only in ALLEGRO_PRIM_FLOAT_2 and ALLEGRO_PRIM_SHORT_2.
+These coordinates are measured in pixels.
+.SH SEE ALSO
+.PP
+ALLEGRO_VERTEX_DECL(3), ALLEGRO_PRIM_STORAGE(3)

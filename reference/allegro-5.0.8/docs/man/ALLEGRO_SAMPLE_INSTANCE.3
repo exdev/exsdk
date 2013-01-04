@@ -1,0 +1,31 @@
+.TH ALLEGRO_SAMPLE_INSTANCE 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+ALLEGRO_SAMPLE_INSTANCE - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_audio.h>
+
+typedef\ struct\ ALLEGRO_SAMPLE_INSTANCE\ ALLEGRO_SAMPLE_INSTANCE;
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+An ALLEGRO_SAMPLE_INSTANCE object represents a playable instance of a
+predefined sound effect.
+It holds information pertaining to the looping mode, loop start/end
+points, playing position, etc.
+An instance uses the data from an ALLEGRO_SAMPLE(3) object.
+Multiple instances may be created from the same ALLEGRO_SAMPLE.
+An ALLEGRO_SAMPLE must not be destroyed while there are instances which
+reference it.
+.PP
+To be played, an ALLEGRO_SAMPLE_INSTANCE object must be attached to an
+ALLEGRO_VOICE(3) object, or to an ALLEGRO_MIXER(3) object which is
+itself attached to an ALLEGRO_VOICE object (or to another ALLEGRO_MIXER
+object which is attached to an ALLEGRO_VOICE object, etc).
+.SH SEE ALSO
+.PP
+ALLEGRO_SAMPLE(3)

@@ -1,0 +1,37 @@
+.TH al_create_sub_bitmap 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_create_sub_bitmap - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro.h>
+
+ALLEGRO_BITMAP\ *al_create_sub_bitmap(ALLEGRO_BITMAP\ *parent,
+\ \ \ int\ x,\ int\ y,\ int\ w,\ int\ h)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Creates a sub-bitmap of the parent, at the specified coordinates and of
+the specified size.
+A sub-bitmap is a bitmap that shares drawing memory with a pre-existing
+(parent) bitmap, but possibly with a different size and clipping
+settings.
+.PP
+The sub-bitmap may originate off or extend past the parent bitmap.
+.PP
+See the discussion in al_get_backbuffer(3) about using sub-bitmaps of
+the backbuffer.
+.PP
+The parent bitmap\[aq]s clipping rectangles are ignored.
+.PP
+If a sub-bitmap was not or cannot be created then NULL is returned.
+.PP
+Note that destroying parents of sub-bitmaps will not destroy the
+sub-bitmaps; instead the sub-bitmaps become invalid and should no longer
+be used.
+.SH SEE ALSO
+.PP
+al_create_bitmap(3)

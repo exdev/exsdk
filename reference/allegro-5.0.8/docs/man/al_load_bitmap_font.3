@@ -1,0 +1,21 @@
+.TH al_load_bitmap_font 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_load_bitmap_font - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_font.h>
+
+ALLEGRO_FONT\ *al_load_bitmap_font(const\ char\ *fname)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Load a bitmap font from.
+It does this by first calling al_load_bitmap(3) and then
+al_grab_font_from_bitmap(3).
+If you want to for example load an old A4 font, you could load the
+bitmap yourself, then call al_convert_mask_to_alpha(3) on it and only
+then pass it to al_grab_font_from_bitmap(3).

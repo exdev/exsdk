@@ -1,0 +1,21 @@
+.TH al_restore_default_mixer 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_restore_default_mixer - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_audio.h>
+
+bool\ al_restore_default_mixer(void)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Restores Allegro\[aq]s default mixer.
+All samples started with al_play_sample(3) will be stopped.
+Returns true on success, false on error.
+.SH SEE ALSO
+.PP
+al_get_default_mixer(3), al_set_default_mixer(3), al_reserve_samples(3).

@@ -1,0 +1,36 @@
+.TH al_set_sample_instance_pan 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_set_sample_instance_pan - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_audio.h>
+
+bool\ al_set_sample_instance_pan(ALLEGRO_SAMPLE_INSTANCE\ *spl,\ float\ val)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Set the pan value on a sample instance.
+A value of -1.0 means to play the sample only through the left speaker;
++1.0 means only through the right speaker; 0.0 means the sample is
+centre balanced.
+.PP
+A constant sound power level is maintained as the sample is panned from
+left to right.
+As a consequence, a pan value of 0.0 will play the sample 3 dB softer
+than the original level.
+To disable panning and play a sample at its original level, set the pan
+value to ALLEGRO_AUDIO_PAN_NONE(3).
+.PP
+Returns true on success, false on failure.
+Will fail if the sample instance is attached directly to a voice.
+.PP
+(A sound guy should explain that better; I only implemented it.
+Also this might be more properly called a balance control than pan.
+Also we don\[aq]t attempt anything with more than two channels yet.)
+.SH SEE ALSO
+.PP
+al_get_sample_instance_pan(3).

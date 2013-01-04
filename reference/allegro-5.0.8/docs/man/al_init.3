@@ -1,0 +1,20 @@
+.TH al_init 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_init - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro.h>
+
+#define\ al_init()\ \ \ \ (al_install_system(ALLEGRO_VERSION_INT,\ atexit))
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Like al_install_system(3), but automatically passes in the version and
+uses the atexit function visible in the current compilation unit.
+.SH SEE ALSO
+.PP
+al_install_system(3)

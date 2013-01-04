@@ -1,0 +1,18 @@
+.TH al_get_system_config 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_get_system_config - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro.h>
+
+ALLEGRO_CONFIG\ *al_get_system_config(void)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Returns the current system configuration structure, or NULL if there is
+no active system driver.
+This is mainly used for configuring Allegro and its addons.

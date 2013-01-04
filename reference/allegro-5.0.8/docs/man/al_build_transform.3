@@ -1,0 +1,34 @@
+.TH al_build_transform 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_build_transform - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro.h>
+
+void\ al_build_transform(ALLEGRO_TRANSFORM\ *trans,\ float\ x,\ float\ y,
+\ \ \ float\ sx,\ float\ sy,\ float\ theta)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Builds a transformation given some parameters.
+This call is equivalent to calling the transformations in this order:
+make identity, scale, rotate, translate.
+This method is faster, however, than actually calling those functions.
+.PP
+\f[I]Parameters:\f[]
+.IP \[bu] 2
+trans - Transformation to alter
+.IP \[bu] 2
+x, y - Translation
+.IP \[bu] 2
+sx, sy - Scale
+.IP \[bu] 2
+theta - Rotation angle in radians
+.SH SEE ALSO
+.PP
+al_translate_transform(3), al_rotate_transform(3),
+al_scale_transform(3), al_compose_transform(3)

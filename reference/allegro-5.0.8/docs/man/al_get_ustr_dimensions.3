@@ -1,0 +1,23 @@
+.TH al_get_ustr_dimensions 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_get_ustr_dimensions - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_font.h>
+
+void\ al_get_ustr_dimensions(const\ ALLEGRO_FONT\ *f,
+\ \ \ ALLEGRO_USTR\ const\ *ustr,
+\ \ \ int\ *bbx,\ int\ *bby,\ int\ *bbw,\ int\ *bbh)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Sometimes, the al_get_ustr_width(3) and al_get_font_line_height(3)
+functions are not enough for exact text placement, so this function
+returns some additional information.
+.SH SEE ALSO
+.PP
+al_get_text_dimensions(3)

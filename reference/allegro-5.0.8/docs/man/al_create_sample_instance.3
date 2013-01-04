@@ -1,0 +1,22 @@
+.TH al_create_sample_instance 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_create_sample_instance - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_audio.h>
+
+ALLEGRO_SAMPLE_INSTANCE\ *al_create_sample_instance(ALLEGRO_SAMPLE\ *sample_data)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Creates a sample stream, using the supplied data.
+This must be attached to a voice or mixer before it can be played.
+The argument may be NULL.
+You can then set the data later with al_set_sample(3).
+.SH SEE ALSO
+.PP
+al_destroy_sample_instance(3)

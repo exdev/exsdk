@@ -1,0 +1,34 @@
+.TH al_iphone_override_screen_scale 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_iphone_override_screen_scale - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_iphone.h>
+
+void\ al_iphone_override_screen_scale(float\ scale)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Original iPhones and iPod Touches had a screen resolution of 320x480 (in
+Portrait mode).
+When the iPhone 4 and iPod Touch 4th generation devices came out, they
+were backwards compatible with all old iPhone apps.
+This means that they assume a 320x480 screen resolution by default,
+while they actually have a 640x960 pixel screen (exactly 2x on each
+dimension).
+An API was added to allow access to the full (or in fact any fraction of
+the) resolution of the new devices.
+This function is normally not needed, as in the case when you want a
+scale of 2.0 for "retina display" resolution (640x960).
+In that case you would just call al_create_display with the larger width
+and height parameters.
+It is not limited to 2.0 scaling factors however.
+You can use 1.5 or 0.5 or other values in between, however if it\[aq]s
+not an exact multiple of the original iPhone resolution, linear
+filtering will be applied to the final image.
+.PP
+This function should be called BEFORE calling al_create_display.

@@ -1,0 +1,25 @@
+.TH al_update_display_region 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_update_display_region - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro.h>
+
+void\ al_update_display_region(int\ x,\ int\ y,\ int\ width,\ int\ height)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Does the same as al_flip_display(3), but tries to update only the
+specified region.
+With many drivers this is not possible, but for some it can improve
+performance.
+.PP
+The ALLEGRO_UPDATE_DISPLAY_REGION option (see al_get_display_option(3))
+will specify the behavior of this function in the display.
+.SH SEE ALSO
+.PP
+al_flip_display(3), al_get_display_option(3)

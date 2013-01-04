@@ -1,0 +1,22 @@
+.TH al_color_html_to_rgb 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_color_html_to_rgb - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_color.h>
+
+void\ al_color_html_to_rgb(char\ const\ *string,
+\ \ \ float\ *red,\ float\ *green,\ float\ *blue)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Interprets an HTML styled hex number (e.g.
+#00faff) as a color.
+Components that are malformed are set to 0.
+.SH SEE ALSO
+.PP
+al_color_html(3), al_color_rgb_to_html(3)

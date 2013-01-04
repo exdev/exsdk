@@ -1,0 +1,20 @@
+.TH al_destroy_sample_instance 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_destroy_sample_instance - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro_audio.h>
+
+void\ al_destroy_sample_instance(ALLEGRO_SAMPLE_INSTANCE\ *spl)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Detaches the sample stream from anything it may be attached to and frees
+it (the sample data is \f[I]not\f[] freed!).
+.SH SEE ALSO
+.PP
+al_create_sample_instance(3)

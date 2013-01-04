@@ -1,0 +1,30 @@
+.TH al_install_system 3 "" "Allegro reference manual"
+.SH NAME
+.PP
+al_install_system - Allegro 5 API
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+#include\ <allegro5/allegro.h>
+
+bool\ al_install_system(int\ version,\ int\ (*atexit_ptr)(void\ (*)(void)))
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+Initialize the Allegro system.
+No other Allegro functions can be called before this (with one or two
+exceptions).
+.PP
+The version field should always be set to ALLEGRO_VERSION_INT.
+.PP
+If atexit_ptr is non-NULL, and if hasn\[aq]t been done already,
+al_uninstall_system(3) will be registered as an atexit function.
+.PP
+Returns true if Allegro was successfully initialized by this function
+call (or already was initialized previously), false if Allegro cannot be
+used.
+.SH SEE ALSO
+.PP
+al_init(3)
