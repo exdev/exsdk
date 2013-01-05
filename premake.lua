@@ -47,9 +47,11 @@ solution "exSDK"
         } 
 
         files { 
-            -- "ext/allegro-5.0.8/addons/**.c",
             "ext/allegro-5.0.8/src/**.c",
             "ext/allegro-5.0.8/src/**.m",
+            "ext/allegro-5.0.8/addons/primitives/**.c",
+            "ext/allegro-5.0.8/addons/main/**.c",
+            "ext/allegro-5.0.8/addons/main/**.m",
         }
 
         excludes {
@@ -88,6 +90,7 @@ solution "exSDK"
         includedirs {
             "ext/dlmalloc-2.8.6/",
             "ext/allegro-5.0.8/include/",
+            "ext/allegro-5.0.8/addons/primitives/",
             -- "ext/physfs-2.0.3/include/",
             "ext/lua-5.2.1/",
             -- "ext/luagl/",
