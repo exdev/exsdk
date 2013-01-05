@@ -255,6 +255,7 @@ extern "C" {
 
 typedef size_t strid_t;
 typedef unsigned long thread_id_t;
+typedef int64 timespan_t; // we use usecs record timespan
 
 // ######################### 
 #ifdef __cplusplus
