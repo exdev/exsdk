@@ -21,10 +21,6 @@ solution "exSDK"
         "MAC_OS_X_VERSION_MIN_REQUIRED=1060",
         "ALLEGRO_LIB_BUILD",
         "ALLEGRO_SRC",
-
-        -- exsdk defines
-        "EX_USE_DL_MALLOC",
-        "EX_USE_MEMORY_MANAGER",
     }
 
     -- ======================================================== 
@@ -87,13 +83,22 @@ solution "exSDK"
         language "C"
         targetname "exsdk"
 
+        defines {
+            -- lua
+            "LUA_COMPAT_ALL",
+
+            -- exsdk defines
+            "EX_USE_DL_MALLOC",
+            "EX_USE_MEMORY_MANAGER",
+        }
+
         includedirs {
             "ext/dlmalloc-2.8.6/",
             "ext/allegro-5.0.8/include/",
             "ext/allegro-5.0.8/addons/primitives/",
             -- "ext/physfs-2.0.3/include/",
             "ext/lua-5.2.1/",
-            -- "ext/luagl/",
+            "ext/luagl/",
             "src/"
         } 
 
@@ -101,7 +106,7 @@ solution "exSDK"
             "ext/dlmalloc-2.8.6/**.c",
             -- "ext/physfs-2.0.3/**.c",
             "ext/lua-5.2.1/**.c",
-            -- "ext/luagl-1.8/**.c",
+            "ext/luagl-1.8/**.c",
             "src/**.c",
         }
 

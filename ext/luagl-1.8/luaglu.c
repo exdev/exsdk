@@ -610,6 +610,9 @@ typedef GLvoid* _GLUfuncptr;
 #ifdef SunOS
 typedef GLvoid* _GLUfuncptr;
 #endif
+#if defined (__APPLE__) || defined (OSX)
+typedef GLvoid* _GLUfuncptr;
+#endif
 #endif
  
 /* void GLAPIENTRY gluQuadricCallback (GLUquadric* quad, GLenum which, _GLUfuncptr CallBackFunc); */
