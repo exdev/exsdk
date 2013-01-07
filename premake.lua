@@ -174,6 +174,7 @@ solution "exSDK"
         if __PLATFORM == "macosx" then
         elseif __PLATFORM == "win32" then
             libdirs {
+                -- "C:/Program Files/Microsoft DirectX SDK (June 2010)/Lib/x86/",
                 "ext/glut/lib/win32/",
             }
         end
@@ -193,10 +194,10 @@ solution "exSDK"
             }
         elseif __PLATFORM == "win32" then
             links {
-                -- "C:/Program Files/Microsoft DirectX SDK (June 2010)/Lib/x86/d3d9",
-                -- "C:/Program Files/Microsoft DirectX SDK (June 2010)/Lib/x86/d3dx9",
-                -- "C:/Program Files/Microsoft DirectX SDK (June 2010)/Lib/x86/dinput8",
-                -- "C:/Program Files/Microsoft DirectX SDK (June 2010)/Lib/x86/dsound",
+                -- "d3d9",
+                -- "d3dx9",
+                -- "dinput8",
+                -- "dsound",
                 "psapi",
                 "shlwapi",
                 "opengl32",
