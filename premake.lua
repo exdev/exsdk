@@ -120,7 +120,7 @@ solution "exSDK"
             flags { "Optimize" }    
  
     -- ======================================================== 
-    -- Project: exSDK (exec)
+    -- Project: exSDK
     -- ======================================================== 
 
     project "exSDK"
@@ -218,3 +218,31 @@ solution "exSDK"
 
             defines { "NDEBUG" }
             flags { "Optimize" }    
+
+    -- -- ======================================================== 
+    -- -- Project: exTerminal
+    -- -- ======================================================== 
+
+    -- project "exTerminal"
+    --     kind "ConsoleApp"
+    --     language "C"
+    --     targetname "exterminal"
+
+    --     -- link
+    --     links {
+    --         "exSDK",
+    --     }
+
+    --     configuration "Debug"
+    --         objdir ( __DEST_DIR .. "exSDK/debug/objs/" )
+    --         targetdir ( __DEST_DIR .. "exSDK/debug/bin/" )
+
+    --         defines { "DEBUG" }
+    --         flags { "Symbols" }
+
+    --     configuration "Release"
+    --         objdir ( __DEST_DIR .. "exSDK/release/objs/" )
+    --         targetdir ( __DEST_DIR .. "exSDK/release/bin/" )
+
+    --         defines { "NDEBUG" }
+    --         flags { "Optimize" }    
