@@ -44,8 +44,8 @@ typedef struct Point
 } Point;
 
 
-int main(void)
-{
+int main( void ) {
+
    ALLEGRO_DISPLAY *display;
    ALLEGRO_KEYBOARD_STATE key_state;
    Point stars[3][NUM_STARS/3];

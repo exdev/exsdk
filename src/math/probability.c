@@ -88,7 +88,7 @@ void ex_weights_to_cdf ( float *_cdf,
                          int _num_weights ) 
 {
     int i;
-    float sum;
+    float sum = 0.0f;
 
     for ( i = 0; i < _num_weights; ++i )
         sum += _weights[i];
