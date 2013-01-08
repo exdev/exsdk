@@ -32,10 +32,6 @@
     // // to use the sse intrins in gcc, please add -msse compile flag in makefile of this project
     // #include <xmmintrin.h>  // for type __m128
 
-	#include <gl/gl.h>
-	#include <gl/glu.h>
-	#include "GL/glut.h"
-
 #elif (EX_PLATFORM == EX_LINUX)
 
     #include <malloc.h> 
@@ -54,9 +50,6 @@
     #include <errno.h>
     #include <sys/time.h>
 
-	#include <OpenGL/gl.h>
-	#include <OpenGL/glu.h>
-	#include <GLUT/glut.h>
     #include <libkern/OSAtomic.h>
 
 #elif (EX_PLATFORM == EX_IOS)
@@ -67,9 +60,6 @@
     #include <semaphore.h>
     #include <errno.h>
     #include <sys/time.h>
-
-    #include <OpenGLES/ES1/gl.h>
-    #include <OpenGLES/ES1/glext.h>
 
 #endif
 
@@ -84,13 +74,6 @@
 #include <setjmp.h>
 #include <wchar.h>
 #include <math.h>
-
-///////////////////////////////////////////////////////////////////////////////
-// 3rd-library
-///////////////////////////////////////////////////////////////////////////////
-
-#include "allegro5/allegro.h"
-#include "allegro5/allegro_primitives.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // compiler include

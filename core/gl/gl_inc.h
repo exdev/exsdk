@@ -1,25 +1,46 @@
 // ======================================================================================
-// File         : memory_inc.h
+// File         : gl_inc.h
 // Author       : Wu Jie 
-// Last Change  : 06/26/2010 | 19:06:38 PM | Saturday,June
+// Last Change  : 01/08/2013 | 13:36:13 PM | Tuesday,January
 // Description  : 
 // ======================================================================================
 
 // #################################################################################
-#ifndef MEMORY_INC_H_1277550399
-#define MEMORY_INC_H_1277550399
+#ifndef GL_INC_H_1357623374
+#define GL_INC_H_1357623374
 // #################################################################################
 
 ///////////////////////////////////////////////////////////////////////////////
-// include
+// platform include
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "dlmalloc-2.8.6.h"
-#include "memory.h"
+#if (EX_PLATFORM == EX_WIN32)
+
+	#include <gl/gl.h>
+	#include <gl/glu.h>
+	#include "GL/glut.h"
+
+#elif (EX_PLATFORM == EX_LINUX)
+
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+	#include <GLUT/glut.h>
+
+#elif (EX_PLATFORM == EX_MACOSX)
+
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+	#include <GLUT/glut.h>
+
+#elif (EX_PLATFORM == EX_IOS)
+
+    #include <OpenGLES/ES1/gl.h>
+    #include <OpenGLES/ES1/glext.h>
+
+#endif
 
 // #################################################################################
-#endif // END MEMORY_INC_H_1277550399
+#endif // END GL_INC_H_1357623374
 // #################################################################################
-
 
 

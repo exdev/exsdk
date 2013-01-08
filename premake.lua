@@ -18,9 +18,17 @@ solution "exSDK"
     location (__DEST_DIR)
 
     defines {
+        -- allegro
         "ALLEGRO_STATICLINK",
         "ALLEGRO_LIB_BUILD",
         "ALLEGRO_SRC",
+
+        -- lua
+        "LUA_COMPAT_ALL",
+
+        -- exsdk defines
+        "EX_USE_DL_MALLOC",
+        "EX_USE_MEMORY_MANAGER",
     }
     if __PLATFORM == "macosx" then
         defines {
@@ -103,6 +111,7 @@ solution "exSDK"
             }
         end
 
+        -- configurations
         configuration "Debug"
             objdir ( __DEST_DIR .. "Allegro/debug/objs/" )
             targetdir ( __DEST_DIR .. "Allegro/debug/bin/" )
@@ -122,23 +131,12 @@ solution "exSDK"
     -- ======================================================== 
 
     project "exSDK"
-        kind "ConsoleApp"
+        kind "StaticLib"
         language "C"
         targetname "exsdk"
 
-        -- define
-        defines {
-            -- lua
-            "LUA_COMPAT_ALL",
-
-            -- exsdk defines
-            "EX_USE_DL_MALLOC",
-            "EX_USE_MEMORY_MANAGER",
-        }
-
         -- include
         includedirs {
-            "ext/dlmalloc-2.8.6/",
             "ext/allegro-5.0.8/include/",
             "ext/allegro-5.0.8/addons/primitives/",
             -- "ext/physfs-2.0.3/include/",
@@ -155,7 +153,6 @@ solution "exSDK"
 
         -- source
         files { 
-            "ext/dlmalloc-2.8.6/**.c",
             -- "ext/physfs-2.0.3/**.c",
             "ext/lua-5.2.1/**.c",
             "ext/luagl-1.8/**.c",
@@ -166,6 +163,40 @@ solution "exSDK"
         excludes {
             "ext/lua-5.2.1/lua.c",
             "ext/lua-5.2.1/luac.c",
+        }
+
+        -- configurations
+        configuration "Debug"
+            objdir ( __DEST_DIR .. "exSDK/debug/objs/" )
+            targetdir ( __DEST_DIR .. "exSDK/debug/bin/" )
+
+            defines { "DEBUG" }
+            flags { "Symbols" }
+
+        configuration "Release"
+            objdir ( __DEST_DIR .. "exSDK/release/objs/" )
+            targetdir ( __DEST_DIR .. "exSDK/release/bin/" )
+
+            defines { "NDEBUG" }
+            flags { "Optimize" }    
+
+    -- ======================================================== 
+    -- Project: exPlayer
+    -- ======================================================== 
+
+    project "exPlayer"
+        kind "ConsoleApp"
+        language "C"
+        targetname "ex_player"
+
+        -- include
+        includedirs {
+            "core/"
+        } 
+
+        -- source
+        files { 
+            "player/**.c",
         }
 
         -- library path ( for link to search ) 
@@ -180,6 +211,7 @@ solution "exSDK"
         -- link
         links {
             "Allegro",
+            "exSDK",
         }
         if __PLATFORM == "macosx" then
             links {
@@ -196,6 +228,7 @@ solution "exSDK"
                 -- "d3dx9",
                 -- "dinput8",
                 -- "dsound",
+                "winmm",
                 "psapi",
                 "shlwapi",
                 "opengl32",
@@ -204,44 +237,102 @@ solution "exSDK"
             }
         end
 
+        -- configurations
         configuration "Debug"
-            objdir ( __DEST_DIR .. "exSDK/debug/objs/" )
-            targetdir ( __DEST_DIR .. "exSDK/debug/bin/" )
+            objdir ( __DEST_DIR .. "ex/debug/objs/" )
+            targetdir ( __DEST_DIR .. "ex/debug/bin/" )
 
             defines { "DEBUG" }
             flags { "Symbols" }
 
         configuration "Release"
-            objdir ( __DEST_DIR .. "exSDK/release/objs/" )
-            targetdir ( __DEST_DIR .. "exSDK/release/bin/" )
+            objdir ( __DEST_DIR .. "ex/release/objs/" )
+            targetdir ( __DEST_DIR .. "ex/release/bin/" )
 
             defines { "NDEBUG" }
-            flags { "Optimize" }    
+            flags { "Optimize" }
 
-    -- -- ======================================================== 
-    -- -- Project: exTerminal
-    -- -- ======================================================== 
+    -- ======================================================== 
+    -- TEST
+    -- ======================================================== 
 
-    -- project "exTerminal"
-    --     kind "ConsoleApp"
-    --     language "C"
-    --     targetname "exterminal"
+    matches = os.matchfiles("tests/*.c")
+    for i=1,#matches do
+        -- print ( path.getbasename(matches[i]) )
+        local projectName = path.getbasename(matches[i]) 
+        local destDir = __DEST_DIR .. projectName .. "/"
 
-    --     -- link
-    --     links {
-    --         "exSDK",
-    --     }
+        project ( projectName )
+            kind "ConsoleApp"
+            language "C"
+            targetname ( projectName )
 
-    --     configuration "Debug"
-    --         objdir ( __DEST_DIR .. "exSDK/debug/objs/" )
-    --         targetdir ( __DEST_DIR .. "exSDK/debug/bin/" )
+            -- include
+            includedirs {
+                "ext/allegro-5.0.8/include/",
+                "ext/allegro-5.0.8/addons/primitives/",
+                "ext/lua-5.2.1/",
+                "ext/luagl/",
+                "core/"
+            } 
+            if __PLATFORM == "macosx" then
+            elseif __PLATFORM == "win32" then
+                includedirs {
+                    "ext/glut/include/",
+                }
+            end
 
-    --         defines { "DEBUG" }
-    --         flags { "Symbols" }
+            -- source
+            files { 
+                matches[i],
+            }
 
-    --     configuration "Release"
-    --         objdir ( __DEST_DIR .. "exSDK/release/objs/" )
-    --         targetdir ( __DEST_DIR .. "exSDK/release/bin/" )
+            -- library path ( for link to search ) 
+            if __PLATFORM == "macosx" then
+            elseif __PLATFORM == "win32" then
+                libdirs {
+                    "ext/glut/lib/win32/",
+                }
+            end
 
-    --         defines { "NDEBUG" }
-    --         flags { "Optimize" }    
+            -- link
+            links {
+                "Allegro",
+                "exSDK",
+            }
+            if __PLATFORM == "macosx" then
+                links {
+                    "AppKit.framework/",
+                    "AudioToolbox.framework/",
+                    "IOKit.framework/",
+                    "OpenAL.framework/",
+                    "OpenGL.framework/",
+                    "AGL.framework/",
+                }
+            elseif __PLATFORM == "win32" then
+                links {
+                    "winmm",
+                    "psapi",
+                    "shlwapi",
+                    "opengl32",
+                    "glu32",
+                    "glut32",
+                }
+            end
+
+            -- configurations
+            configuration "Debug"
+                objdir ( destDir .. "debug/objs/" )
+                targetdir ( destDir .. "debug/bin/" )
+
+                defines { "DEBUG" }
+                flags { "Symbols" }
+
+            configuration "Release"
+                objdir ( destDir .. "release/objs/" )
+                targetdir ( destDir .. "release/bin/" )
+
+                defines { "NDEBUG" }
+                flags { "Optimize" }
+    end
+    -- project "exPlayer"
