@@ -18,7 +18,6 @@ solution "exSDK"
     location (__DEST_DIR)
 
     defines {
-        -- allegro defins
         "ALLEGRO_STATICLINK",
         "ALLEGRO_LIB_BUILD",
         "ALLEGRO_SRC",
@@ -44,7 +43,7 @@ solution "exSDK"
         language "C"
         targetname "allegro"
 
-        -- Build Options
+        -- build options
         if __PLATFORM == "macosx" then
         elseif __PLATFORM == "win32" then
             buildoptions { "/wd4996" }
@@ -52,7 +51,6 @@ solution "exSDK"
 
         -- include
         includedirs {
-            -- "/System/Library/Frameworks/AppKit.framework/Headers/", NOTE: in Mac, if we have include problem, uncomment this
             "ext/allegro-5.0.8/include/",
         } 
         if __PLATFORM == "macosx" then
@@ -146,7 +144,7 @@ solution "exSDK"
             -- "ext/physfs-2.0.3/include/",
             "ext/lua-5.2.1/",
             "ext/luagl/",
-            "src/"
+            "core/"
         } 
         if __PLATFORM == "macosx" then
         elseif __PLATFORM == "win32" then
@@ -161,7 +159,7 @@ solution "exSDK"
             -- "ext/physfs-2.0.3/**.c",
             "ext/lua-5.2.1/**.c",
             "ext/luagl-1.8/**.c",
-            "src/**.c",
+            "core/**.c",
         }
 
         -- source exclude

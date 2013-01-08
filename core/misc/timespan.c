@@ -72,7 +72,7 @@ timespan_t ex_timespan_from_secs_f32 ( float _s ) {
 
 timespan_t ex_timespan_from_secs_f64 ( double _s ) {
     int64 int_sec = (int64)ex_trunc(_s);
-    float f_ms = (_s - int_sec) * 1000.0;
+    double f_ms = (_s - int_sec) * 1000.0;
     int64 int_ms = (int64)ex_trunc(f_ms);
     int64 int_us = (int64)ex_round((f_ms - int_ms) * 1000.0);
 
