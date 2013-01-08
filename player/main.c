@@ -17,6 +17,13 @@
 
 int main (void) {
     printf ( "Hello World!\n" );
+
+    ex_mem_init ();
+
+    // ex_malloc ( sizeof (char) * 1024 );
+
+    ex_mem_deinit ();
+
     return 0;
 }
 

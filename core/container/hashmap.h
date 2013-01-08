@@ -178,49 +178,36 @@ typedef struct ex_hashmap_t {
 // ex_hashmap_notype
 // ------------------------------------------------------------------ 
 
-extern ex_hashmap_t *ex_hashmap_alloc ( size_t _key_bytes, size_t _value_bytes, 
-                                        size_t _count, 
-                                        hashkey_t _hashkey, keycmp_t _keycmp );
-
 // ex_hashset
 #define ex_hashset(_type,_count) \
-    ex_hashmap_alloc(sizeof(_type), sizeof(_type), \
-                     _count, \
-                     ex_hashkey_##_type, ex_keycmp_##_type \
-                    )
+    ex_hashmap_new(sizeof(_type), sizeof(_type), \
+                   _count, \
+                   ex_hashkey_##_type, ex_keycmp_##_type \
+                  )
 
 // ex_hashmap
 #define ex_hashmap(_key_type,_val_type,_count) \
-    ex_hashmap_alloc(sizeof(_key_type), sizeof(_val_type), \
-                     _count, \
-                     ex_hashkey_##_key_type, ex_keycmp_##_key_type \
-                    )
+    ex_hashmap_new(sizeof(_key_type), sizeof(_val_type), \
+                   _count, \
+                   ex_hashkey_##_key_type, ex_keycmp_##_key_type \
+                  )
+
+extern ex_hashmap_t *ex_hashmap_new ( size_t _key_bytes, size_t _value_bytes, 
+                                      size_t _count, 
+                                      hashkey_t _hashkey, keycmp_t _keycmp );
+extern ex_hashmap_t *ex_hashmap_new_with_allocator ( size_t _key_bytes, size_t _value_bytes, 
+                                                     size_t _count, 
+                                                     hashkey_t _hashkey, keycmp_t _keycmp,
+                                                     void *(*_alloc) ( size_t ),
+                                                     void *(*_realloc) ( void *, size_t ),
+                                                     void  (*_dealloc) ( void * )
+                                                     );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_hashmap_free ( ex_hashmap_t *_hashmap );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_hashmap_init ( ex_hashmap_t *_hashmap, 
-                              size_t _key_bytes, size_t _value_bytes, 
-                              size_t _count, 
-                              hashkey_t _hashkey, keycmp_t _keycmp, 
-                              void *(*_alloc) ( size_t ),
-                              void *(*_realloc) ( void *, size_t ),
-                              void  (*_dealloc) ( void * )
-                            );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_hashmap_deinit ( ex_hashmap_t *_hashmap ); 
-
+extern void ex_hashmap_delete ( ex_hashmap_t *_hashmap );
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -228,7 +215,7 @@ extern void ex_hashmap_deinit ( ex_hashmap_t *_hashmap );
 //  exists then go for it.
 // ------------------------------------------------------------------ 
 
-extern void ex_hashmap_insert_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t _hash_idx, size_t *_index );
+extern void ex_hashmap_add_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t _hash_idx, size_t *_index );
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -243,8 +230,8 @@ extern void *ex_hashmap_get_by_idx ( const ex_hashmap_t *_hashmap, size_t _index
 //  @return: false: already exists
 // ------------------------------------------------------------------ 
 
-extern bool ex_hashmap_insert ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t *_index );
-// set will still set the already exists value, insert new one
+extern bool ex_hashmap_add ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t *_index );
+// set will still set the already exists value, add new one
 extern bool ex_hashmap_set ( ex_hashmap_t *_hashmap, const void *_key, const void *_val );
 
 // ------------------------------------------------------------------ 

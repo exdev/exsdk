@@ -17,40 +17,14 @@
 
 // ------------------------------------------------------------------ 
 // Desc: 
-static inline void *__ex_array_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_array_t" ); }
-static inline void *__ex_array_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_array_t" ); }
-static inline void  __ex_array_dealloc( void *_ptr ) { ex_free ( _ptr ); }
 // ------------------------------------------------------------------ 
 
-ex_array_t *ex_array_alloc ( size_t _element_bytes, size_t _count ) {
-    ex_array_t *arr = ex_malloc ( sizeof(ex_array_t) );
-    ex_array_init ( arr, _element_bytes, _count,
-                    __ex_array_alloc,
-                    __ex_array_realloc,
-                    __ex_array_dealloc
-                  );
-    return arr;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_array_free ( ex_array_t *_array ) {
-    ex_array_deinit(_array);
-    ex_free(_array);
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_array_init ( ex_array_t *_array, 
-                     size_t _element_bytes, 
-                     size_t _count,
-                     void *(*_alloc) ( size_t ),
-                     void *(*_realloc) ( void *, size_t ),
-                     void  (*_dealloc) ( void * ) )
+static inline void __array_init ( ex_array_t *_array, 
+                                  size_t _element_bytes, 
+                                  size_t _count,
+                                  void *(*_alloc) ( size_t ),
+                                  void *(*_realloc) ( void *, size_t ),
+                                  void  (*_dealloc) ( void * ) )
 {
     size_t bytes = _element_bytes * _count; 
 
@@ -70,9 +44,46 @@ void ex_array_init ( ex_array_t *_array,
 
 // ------------------------------------------------------------------ 
 // Desc: 
+static inline void *__array_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_array_t" ); }
+static inline void *__array_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_array_t" ); }
+static inline void  __array_dealloc( void *_ptr ) { ex_free ( _ptr ); }
 // ------------------------------------------------------------------ 
 
-void ex_array_deinit ( ex_array_t *_array ) {
+ex_array_t *ex_array_alloc ( size_t _element_bytes, size_t _count ) {
+    ex_array_t *arr = ex_malloc ( sizeof(ex_array_t) );
+    __array_init ( arr, _element_bytes, _count,
+                   __array_alloc,
+                   __array_realloc,
+                   __array_dealloc
+                 );
+    return arr;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+ex_array_t *ex_array_new_with_allocator ( size_t _element_bytes, size_t _count,
+                                          void *(*_alloc) ( size_t ),
+                                          void *(*_realloc) ( void *, size_t ),
+                                          void  (*_dealloc) ( void * ) )
+{
+    ex_array_t *arr = _alloc ( sizeof(ex_array_t) );
+    __array_init ( arr, _element_bytes, _count,
+                   _alloc,
+                   _realloc,
+                   _dealloc
+                 );
+    return arr;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_array_delete ( ex_array_t *_array ) {
+    void  (*dealloc) ( void * ) = _array->dealloc;
+
     ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
 
     _array->dealloc(_array->data);
@@ -85,6 +96,8 @@ void ex_array_deinit ( ex_array_t *_array ) {
     _array->alloc = NULL;
     _array->realloc = NULL;
     _array->dealloc = NULL;
+
+    dealloc(_array);
 }
 
 // ------------------------------------------------------------------ 
@@ -103,7 +116,7 @@ void *ex_array_get ( const ex_array_t *_array, size_t _idx ) {
 // ------------------------------------------------------------------ 
 
 // managed
-void *ex_array_append ( ex_array_t *_array, const void *_value ) {
+void *ex_array_add ( ex_array_t *_array, const void *_value ) {
     void *val_addr;
     ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
 
@@ -200,4 +213,14 @@ void ex_array_remove_range ( ex_array_t *_array, size_t _idx, size_t _count ) {
 void ex_array_remove_all ( ex_array_t *_array ) {
     ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
     _array->count = 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_array_sort( ex_array_t *_array, int (*_cmp)(const void *, const void *) ) {
+    ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
+
+    qsort ( _array->data, _array->count, _array->element_bytes, _cmp );
 }

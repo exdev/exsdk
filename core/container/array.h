@@ -141,44 +141,19 @@ typedef struct ex_array_t {
 // ex_array
 // ------------------------------------------------------------------ 
 
-extern ex_array_t *ex_array_alloc ( size_t _element_bytes, size_t _count );
-#define ex_array(_type,_count) ex_array_alloc( sizeof(_type), _count )
+#define ex_array(_type,_count) ex_array_new( sizeof(_type), _count )
+
+extern ex_array_t *ex_array_new ( size_t _element_bytes, size_t _count );
+extern ex_array_t *ex_array_new_with_allocator ( size_t _element_bytes, size_t _count,
+                                                 void *(*_alloc) ( size_t ),
+                                                 void *(*_realloc) ( void *, size_t ),
+                                                 void  (*_dealloc) ( void * ) );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_array_free ( ex_array_t *_array );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// NOTE: if you want to create a no-manager array, do it like this:
-// ex_array_t *arr = ex_malloc_nomng ( sizeof(ex_array_t) );
-// ex_array_init ( arr, _element_typeid, _element_bytes, _count,
-//                 __ex_alloc_nomng,
-//                 __ex_realloc_nomng,
-//                 __ex_dealloc_nomng
-//               );
-// ex_array_deinit(arr);
-// ex_free_nomng(arr)
-// ------------------------------------------------------------------ 
-
-extern void ex_array_init ( ex_array_t *_array, 
-                            size_t _element_bytes, 
-                            size_t _count,
-                            void *(*_alloc) ( size_t ),
-                            void *(*_realloc) ( void *, size_t ),
-                            void  (*_dealloc) ( void * ) );
-
-// ------------------------------------------------------------------ 
-/*! 
- @fn void ex_array_deinit ( ex_array_t *_array )
- @param _array the in array.
- @details destroy the data in the array, release the memory ( not including the array )
- @note you need to free the array by your self
-*/// ------------------------------------------------------------------ 
-
-extern void ex_array_deinit ( ex_array_t *_array );
+extern void ex_array_delete ( ex_array_t *_array );
 
 // ------------------------------------------------------------------ 
 /*! 
@@ -193,10 +168,10 @@ extern void ex_array_deinit ( ex_array_t *_array );
  float *result = NULL;
  // create an array to store float, the default size is 10.
  ex_array_t *my_array = ex_array_notype ( sizeof(float), 10 );
- ex_array_append_float ( my_array, 10.0f ); // push at index 0
- ex_array_append_float ( my_array, 20.0f ); // push at index 1
- ex_array_append_float ( my_array, 30.0f ); // push at index 2
- ex_array_append_float ( my_array, 40.0f ); // push at index 3
+ ex_array_add_float ( my_array, 10.0f ); // push at index 0
+ ex_array_add_float ( my_array, 20.0f ); // push at index 1
+ ex_array_add_float ( my_array, 30.0f ); // push at index 2
+ ex_array_add_float ( my_array, 40.0f ); // push at index 3
  result = (float *)ex_array_get ( my_array, 1 ); // get from index 1
  printf( "the result is %f", *result ); // the result is 20.0f
  @endcode
@@ -217,11 +192,11 @@ static inline size_t ex_array_count ( const ex_array_t *_array ) { return _array
 
 // ------------------------------------------------------------------ 
 /*! 
- @fn void *ex_array_append ( ex_array_t *_array, void *_value )
+ @fn void *ex_array_add ( ex_array_t *_array, void *_value )
  @param _array the in array.
  @param _value the value add to the array
- @return the pointer address of the appended element in the array
- @details append the value to the array, the array will copy the value through
+ @return the pointer address of the added element in the array
+ @details add the value to the array, the array will copy the value through
  the parameter _value by allocating it in the passing array use exsdk's
  memory manage method. 
 
@@ -233,69 +208,69 @@ static inline size_t ex_array_count ( const ex_array_t *_array ) { return _array
  ex_array_t *my_array = ex_array_notype ( sizeof(float), 10 );
  {
      float val = 10.0f;
-     result = (float *)ex_array_append ( my_array, &val );
+     result = (float *)ex_array_add ( my_array, &val );
  }
  printf( "the result is %f", *result ); // the result is 10.0f
  @endcode
 */// ------------------------------------------------------------------ 
 
-extern void *ex_array_append ( ex_array_t *_array, const void *_value );
+extern void *ex_array_add ( ex_array_t *_array, const void *_value );
 
 // ------------------------------------------------------------------ 
 /*! 
- @fn static inline int8 *ex_array_append_int8 ( ex_array_t *_array, int8 _value )
- @details append int8 to the array
+ @fn static inline int8 *ex_array_add_int8 ( ex_array_t *_array, int8 _value )
+ @details add int8 to the array
 
- @fn static inline int16 *ex_array_append_int16 ( ex_array_t *_array, int16 _value )
- @details append int16 to the array
+ @fn static inline int16 *ex_array_add_int16 ( ex_array_t *_array, int16 _value )
+ @details add int16 to the array
 
- @fn static inline int32 *ex_array_append_int32 ( ex_array_t *_array, int32 _value )
- @details append int32 to the array
+ @fn static inline int32 *ex_array_add_int32 ( ex_array_t *_array, int32 _value )
+ @details add int32 to the array
 
- @fn static inline int64 *ex_array_append_int64 ( ex_array_t *_array, int64 _value )
- @details append int64 to the array
+ @fn static inline int64 *ex_array_add_int64 ( ex_array_t *_array, int64 _value )
+ @details add int64 to the array
 
- @fn static inline uint8 *ex_array_append_uint8 ( ex_array_t *_array, uint8 _value )
- @details append uint8 to the array
+ @fn static inline uint8 *ex_array_add_uint8 ( ex_array_t *_array, uint8 _value )
+ @details add uint8 to the array
 
- @fn static inline uint16 *ex_array_append_uint16 ( ex_array_t *_array, uint16 _value )
- @details append uint16 to the array
+ @fn static inline uint16 *ex_array_add_uint16 ( ex_array_t *_array, uint16 _value )
+ @details add uint16 to the array
 
- @fn static inline uint32 *ex_array_append_uint32 ( ex_array_t *_array, uint32 _value )
- @details append uint32 to the array
+ @fn static inline uint32 *ex_array_add_uint32 ( ex_array_t *_array, uint32 _value )
+ @details add uint32 to the array
 
- @fn static inline uint64 *ex_array_append_uint64 ( ex_array_t *_array, uint64 _value )
- @details append uint64 to the array
+ @fn static inline uint64 *ex_array_add_uint64 ( ex_array_t *_array, uint64 _value )
+ @details add uint64 to the array
 
- @fn static inline float *ex_array_append_float ( ex_array_t *_array, float _value )
- @details append float to the array
+ @fn static inline float *ex_array_add_float ( ex_array_t *_array, float _value )
+ @details add float to the array
 
- @fn static inline double *ex_array_append_double ( ex_array_t *_array, double _value )
- @details append double to the array
+ @fn static inline double *ex_array_add_double ( ex_array_t *_array, double _value )
+ @details add double to the array
 
- @fn static inline char **ex_array_append_string ( ex_array_t *_array, char *_value )
- @details append c-string to the array
+ @fn static inline char **ex_array_add_string ( ex_array_t *_array, char *_value )
+ @details add c-string to the array
 
- @fn static inline wchar_t **ex_array_append_wstring ( ex_array_t *_array, wchar_t *_value )
- @details append w-string to the array
+ @fn static inline wchar_t **ex_array_add_wstring ( ex_array_t *_array, wchar_t *_value )
+ @details add w-string to the array
 
 */// ------------------------------------------------------------------ 
 
-static inline int8 *ex_array_append_int8 ( ex_array_t *_array, int8 _value ) { return (int8 *)ex_array_append ( _array, &_value ); }
-static inline int16 *ex_array_append_int16 ( ex_array_t *_array, int16 _value ) { return (int16 *)ex_array_append ( _array, &_value ); }
-static inline int32 *ex_array_append_int32 ( ex_array_t * _array, int32 _value ) { return (int32 *)ex_array_append ( _array, &_value ); }
-static inline int64 *ex_array_append_int64 ( ex_array_t *_array, int64 _value ) { return (int64 *)ex_array_append ( _array, &_value ); }
+static inline int8 *ex_array_add_int8 ( ex_array_t *_array, int8 _value ) { return (int8 *)ex_array_add ( _array, &_value ); }
+static inline int16 *ex_array_add_int16 ( ex_array_t *_array, int16 _value ) { return (int16 *)ex_array_add ( _array, &_value ); }
+static inline int32 *ex_array_add_int32 ( ex_array_t * _array, int32 _value ) { return (int32 *)ex_array_add ( _array, &_value ); }
+static inline int64 *ex_array_add_int64 ( ex_array_t *_array, int64 _value ) { return (int64 *)ex_array_add ( _array, &_value ); }
 
-static inline uint8 *ex_array_append_uint8 ( ex_array_t *_array, uint8 _value ) { return (uint8 *)ex_array_append ( _array, &_value ); }
-static inline uint16 *ex_array_append_uint16 ( ex_array_t *_array, uint16 _value ) { return (uint16 *)ex_array_append ( _array, &_value ); }
-static inline uint32 *ex_array_append_uint32 ( ex_array_t *_array, uint32 _value ) { return (uint32 *)ex_array_append ( _array, &_value ); }
-static inline uint64 *ex_array_append_uint64 ( ex_array_t *_array, uint64 _value ) { return (uint64 *)ex_array_append ( _array, &_value ); }
+static inline uint8 *ex_array_add_uint8 ( ex_array_t *_array, uint8 _value ) { return (uint8 *)ex_array_add ( _array, &_value ); }
+static inline uint16 *ex_array_add_uint16 ( ex_array_t *_array, uint16 _value ) { return (uint16 *)ex_array_add ( _array, &_value ); }
+static inline uint32 *ex_array_add_uint32 ( ex_array_t *_array, uint32 _value ) { return (uint32 *)ex_array_add ( _array, &_value ); }
+static inline uint64 *ex_array_add_uint64 ( ex_array_t *_array, uint64 _value ) { return (uint64 *)ex_array_add ( _array, &_value ); }
 
-static inline float *ex_array_append_float ( ex_array_t *_array, float _value ) { return (float *)ex_array_append ( _array, &_value ); }
-static inline double *ex_array_append_double ( ex_array_t *_array, double _value ) { return (double *)ex_array_append ( _array, &_value ); }
+static inline float *ex_array_add_float ( ex_array_t *_array, float _value ) { return (float *)ex_array_add ( _array, &_value ); }
+static inline double *ex_array_add_double ( ex_array_t *_array, double _value ) { return (double *)ex_array_add ( _array, &_value ); }
 
-static inline char **ex_array_append_string ( ex_array_t *_array, char *_value ) { return (char **)ex_array_append ( _array, &_value ); }
-static inline wchar_t **ex_array_append_wstring ( ex_array_t *_array, wchar_t *_value ) { return (wchar_t **)ex_array_append ( _array, &_value ); }
+static inline char **ex_array_add_string ( ex_array_t *_array, char *_value ) { return (char **)ex_array_add ( _array, &_value ); }
+static inline wchar_t **ex_array_add_wstring ( ex_array_t *_array, wchar_t *_value ) { return (wchar_t **)ex_array_add ( _array, &_value ); }
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -355,13 +330,18 @@ extern void ex_array_remove_range ( ex_array_t *_array, size_t _idx, size_t _cou
 
 extern void ex_array_remove_all ( ex_array_t *_array );
 
-// TODO { 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
+// TODO:
 extern void ex_array_shrink ( ex_array_t *_array );
-// } TODO end 
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void ex_array_sort( ex_array_t *_array, int (*_cmp)(const void *, const void *) );
 
 //! @}
 

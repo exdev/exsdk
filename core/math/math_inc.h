@@ -22,7 +22,6 @@
 #include "probability.h"
 #include "interpolation.h"
 #include "ease_curve.h"
-#include "angle.h"
 
 // algebelar
 #include "vec2f.h"

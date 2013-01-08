@@ -41,30 +41,18 @@ typedef struct ex_bitarray_t {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern ex_bitarray_t *ex_bitarray_alloc ( size_t _bitcount );
-#define ex_bitarray(_bitcount) ex_bitarray_alloc(_bitcount);
+#define ex_bitarray(_bitcount) ex_bitarray_new(_bitcount);
+extern ex_bitarray_t *ex_bitarray_new ( size_t _bitcount );
+extern ex_bitarray_t *ex_bitarray_new_with_allocator ( size_t _bitcount,
+                                                       void *(*_alloc) ( size_t ),
+                                                       void *(*_realloc) ( void *, size_t ),
+                                                       void  (*_dealloc) ( void * ) );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_bitarray_free ( ex_bitarray_t *_bitarray );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_bitarray_init ( ex_bitarray_t *_bitarray, 
-                               size_t _bitcount,
-                               void *(*_alloc) ( size_t ),
-                               void *(*_realloc) ( void *, size_t ),
-                               void  (*_dealloc) ( void * ) );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_bitarray_deinit ( ex_bitarray_t *_bitarray );
+extern void ex_bitarray_delete ( ex_bitarray_t *_bitarray );
 
 // ------------------------------------------------------------------ 
 // Desc: 

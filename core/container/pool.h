@@ -162,32 +162,19 @@ typedef struct ex_pool_t {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern ex_pool_t *ex_pool_alloc ( size_t _element_bytes, size_t _count );
-#define ex_pool(_type,_count) ex_pool_alloc( sizeof(_type), _count )
+#define ex_pool(_type,_count) ex_pool_new( sizeof(_type), _count )
+extern ex_pool_t *ex_pool_new ( size_t _element_bytes, size_t _count );
+extern ex_pool_t *ex_pool_new_with_allocator ( size_t _element_bytes, size_t _count,
+                                               void *(*_alloc) ( size_t ),
+                                               void *(*_realloc) ( void *, size_t ),
+                                               void  (*_dealloc) ( void * )
+                                             );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_pool_free ( ex_pool_t *_pool );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_pool_init ( ex_pool_t *_pool, 
-                           size_t _element_bytes, 
-                           size_t _count,
-                           void *(*_alloc) ( size_t ),
-                           void *(*_realloc) ( void *, size_t ),
-                           void  (*_dealloc) ( void * )
-                         );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_pool_deinit ( ex_pool_t *_pool ); 
+extern void ex_pool_delete ( ex_pool_t *_pool );
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -204,26 +191,27 @@ static inline size_t ex_pool_capacity ( const ex_pool_t *_pool ) { return _pool-
 
 // ------------------------------------------------------------------ 
 // Desc: 
-// @param _value: if NULL, means insert an empty node.
+// @param _value: if NULL, means add an empty node.
 // ------------------------------------------------------------------ 
 
-extern int ex_pool_insert ( ex_pool_t *_pool, const void *_value );
+extern int ex_pool_add_new ( ex_pool_t *_pool, void **_node );
+extern int ex_pool_add ( ex_pool_t *_pool, const void *_value );
 
-static inline int ex_pool_insert_int8 ( ex_pool_t *_pool, int8 _value ) { return ex_pool_insert ( _pool, &_value ); }
-static inline int ex_pool_insert_int16 ( ex_pool_t *_pool, int16 _value ) { return ex_pool_insert ( _pool, &_value ); }
-static inline int ex_pool_insert_int32 ( ex_pool_t *_pool, int32 _value ) { return ex_pool_insert ( _pool, &_value ); }
-static inline int ex_pool_insert_int64 ( ex_pool_t *_pool, int64 _value ) { return ex_pool_insert ( _pool, &_value ); }
+static inline int ex_pool_add_int8 ( ex_pool_t *_pool, int8 _value ) { return ex_pool_add ( _pool, &_value ); }
+static inline int ex_pool_add_int16 ( ex_pool_t *_pool, int16 _value ) { return ex_pool_add ( _pool, &_value ); }
+static inline int ex_pool_add_int32 ( ex_pool_t *_pool, int32 _value ) { return ex_pool_add ( _pool, &_value ); }
+static inline int ex_pool_add_int64 ( ex_pool_t *_pool, int64 _value ) { return ex_pool_add ( _pool, &_value ); }
 
-static inline int ex_pool_insert_uint8 ( ex_pool_t *_pool, uint8 _value ) { return ex_pool_insert ( _pool, &_value ); }
-static inline int ex_pool_insert_uint16 ( ex_pool_t *_pool, uint16 _value ) { return ex_pool_insert ( _pool, &_value ); }
-static inline int ex_pool_insert_uint32 ( ex_pool_t *_pool, uint32 _value ) { return ex_pool_insert ( _pool, &_value ); }
-static inline int ex_pool_insert_uint64 ( ex_pool_t *_pool, uint64 _value ) { return ex_pool_insert ( _pool, &_value ); }
+static inline int ex_pool_add_uint8 ( ex_pool_t *_pool, uint8 _value ) { return ex_pool_add ( _pool, &_value ); }
+static inline int ex_pool_add_uint16 ( ex_pool_t *_pool, uint16 _value ) { return ex_pool_add ( _pool, &_value ); }
+static inline int ex_pool_add_uint32 ( ex_pool_t *_pool, uint32 _value ) { return ex_pool_add ( _pool, &_value ); }
+static inline int ex_pool_add_uint64 ( ex_pool_t *_pool, uint64 _value ) { return ex_pool_add ( _pool, &_value ); }
 
-static inline int ex_pool_insert_float ( ex_pool_t *_pool, float _value ) { return ex_pool_insert ( _pool, &_value ); }
-static inline int ex_pool_insert_double ( ex_pool_t *_pool, double _value ) { return ex_pool_insert ( _pool, &_value ); }
+static inline int ex_pool_add_float ( ex_pool_t *_pool, float _value ) { return ex_pool_add ( _pool, &_value ); }
+static inline int ex_pool_add_double ( ex_pool_t *_pool, double _value ) { return ex_pool_add ( _pool, &_value ); }
 
-static inline int ex_pool_insert_string ( ex_pool_t *_pool, char *_value ) { return ex_pool_insert ( _pool, &_value ); }
-static inline int ex_pool_insert_wstring ( ex_pool_t *_pool, wchar_t *_value ) { return ex_pool_insert ( _pool, &_value ); }
+static inline int ex_pool_add_string ( ex_pool_t *_pool, char *_value ) { return ex_pool_add ( _pool, &_value ); }
+static inline int ex_pool_add_wstring ( ex_pool_t *_pool, wchar_t *_value ) { return ex_pool_add ( _pool, &_value ); }
 
 // ------------------------------------------------------------------ 
 // Desc: 

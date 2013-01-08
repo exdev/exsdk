@@ -26,7 +26,7 @@ typedef struct __error_info_t {
 
 // static ex_text_file_t *__log_file = NULL;
 static bool __initialized = false;
-static ex_list_t __error_stack;
+static ex_list_t *__error_stack = NULL;
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -64,9 +64,9 @@ static void __push_error ( const char *_msg,
     errorInfo.line_nr = _line_nr;
     errorInfo.function_name = _function_name;
 
-    if ( ex_list_count( &__error_stack ) > 10 )
-        ex_list_pop_front ( &__error_stack );
-    ex_list_append ( &__error_stack, &errorInfo );
+    if ( ex_list_count( __error_stack ) > 10 )
+        ex_list_pop_front ( __error_stack );
+    ex_list_append ( __error_stack, &errorInfo );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -78,11 +78,10 @@ static void __push_error ( const char *_msg,
 // ------------------------------------------------------------------ 
 
 void __init_error_stack () {
-    ex_list_init( &__error_stack,
-                  sizeof(__error_info_t),
-                  __ex_alloc_nomng, 
-                  __ex_realloc_nomng,
-                  __ex_dealloc_nomng );
+    __error_stack = ex_list_new_with_allocator( sizeof(__error_info_t),
+                                                __ex_alloc_nomng, 
+                                                __ex_realloc_nomng,
+                                                __ex_dealloc_nomng );
 } 
 
 // ------------------------------------------------------------------ 
@@ -90,7 +89,7 @@ void __init_error_stack () {
 // ------------------------------------------------------------------ 
 
 void __deinit_error_stack () {
-    ex_list_deinit ( &__error_stack ); 
+    ex_list_delete ( __error_stack ); 
 }
 
 // ------------------------------------------------------------------ 
@@ -181,7 +180,7 @@ void ex_log ( const char *_fmt, ... ) {
 // ------------------------------------------------------------------ 
 
 void ex_show_last_error () {
-    ex_list_node_t *node = ex_list_tail ( &__error_stack );
+    ex_list_node_t *node = ex_list_tail ( __error_stack );
     __error_info_t *info = (__error_info_t *)node->value;
     ex_log ( "Last Error\n"
              "|- message: %s\n"

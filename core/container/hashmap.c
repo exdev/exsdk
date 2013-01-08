@@ -31,35 +31,6 @@ static inline void *__getvalue ( const ex_hashmap_t *_hashmap, size_t _idx ) {
     return (char *)_hashmap->values + _idx * _hashmap->value_bytes;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// public
-///////////////////////////////////////////////////////////////////////////////
-
-// ------------------------------------------------------------------ 
-// Desc: 
-static inline void *__ex_hashmap_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_hashmap_t" ); }
-static inline void *__ex_hashmap_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_hashmap_t" ); }
-static inline void  __ex_hashmap_dealloc( void *_ptr ) { ex_free ( _ptr ); }
-// ------------------------------------------------------------------ 
-
-// managed
-ex_hashmap_t *ex_hashmap_alloc ( size_t _key_bytes, size_t _value_bytes, 
-                                 size_t _count, 
-                                 hashkey_t _hashkey, keycmp_t _keycmp )
-{
-    ex_hashmap_t *hashmap = ex_malloc( sizeof(ex_hashmap_t) );
-    ex_hashmap_init ( hashmap, 
-                      _key_bytes, 
-                      _value_bytes, 
-                      _count,
-                      _hashkey, _keycmp,
-                      __ex_hashmap_alloc,
-                      __ex_hashmap_realloc,
-                      __ex_hashmap_dealloc
-                      );
-    return hashmap;
-}
-
 // ------------------------------------------------------------------ 
 // Desc: 
 static inline uint32 __ceilpow2u ( uint32 _value ) {
@@ -71,16 +42,16 @@ static inline uint32 __ceilpow2u ( uint32 _value ) {
 }
 // ------------------------------------------------------------------ 
 
-void ex_hashmap_init ( ex_hashmap_t *_hashmap, 
-                       size_t _key_bytes, 
-                       size_t _value_bytes, 
-                       size_t _count, 
-                       hashkey_t _hashkey, 
-                       keycmp_t _keycmp, 
-                       void *(*_alloc) ( size_t ),
-                       void *(*_realloc) ( void *, size_t ),
-                       void  (*_dealloc) ( void * )
-                     ) 
+void __hashmap_init ( ex_hashmap_t *_hashmap, 
+                      size_t _key_bytes, 
+                      size_t _value_bytes, 
+                      size_t _count, 
+                      hashkey_t _hashkey, 
+                      keycmp_t _keycmp, 
+                      void *(*_alloc) ( size_t ),
+                      void *(*_realloc) ( void *, size_t ),
+                      void  (*_dealloc) ( void * )
+                    ) 
 {
     // check if the count is pow of 2, if not, calc the nearest pow of 2 of the count.
     ex_assert_exec( ex_is_pow_of_2(_count), 
@@ -113,19 +84,76 @@ void ex_hashmap_init ( ex_hashmap_t *_hashmap,
 
     // init hash nodes
     _hashmap->nodes = _hashmap->alloc ( sizeof(ex_pool_t) );
-    ex_pool_init ( _hashmap->nodes, 
-                   sizeof(ex_hashmap_node_t), 
-                   _count, 
-                   _alloc,
-                   _realloc,
-                   _dealloc );
+    _hashmap->nodes = ex_pool_new_with_allocator ( sizeof(ex_hashmap_node_t), 
+                                                   _count, 
+                                                   _alloc,
+                                                   _realloc,
+                                                   _dealloc );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// public
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+static inline void *__hashmap_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_hashmap_t" ); }
+static inline void *__hashmap_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_hashmap_t" ); }
+static inline void  __hashmap_dealloc( void *_ptr ) { ex_free ( _ptr ); }
+// ------------------------------------------------------------------ 
+
+ex_hashmap_t *ex_hashmap_new ( size_t _key_bytes, size_t _value_bytes, 
+                               size_t _count, 
+                               hashkey_t _hashkey, keycmp_t _keycmp )
+{
+    ex_hashmap_t *hashmap = ex_malloc( sizeof(ex_hashmap_t) );
+    __hashmap_init ( hashmap, 
+                     _key_bytes, 
+                     _value_bytes, 
+                     _count,
+                     _hashkey, _keycmp,
+                     __hashmap_alloc,
+                     __hashmap_realloc,
+                     __hashmap_dealloc
+                   );
+    return hashmap;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_hashmap_deinit ( ex_hashmap_t *_hashmap ) {
+ex_hashmap_t *ex_hashmap_new_with_allocator ( size_t _key_bytes, size_t _value_bytes, 
+                                              size_t _count, 
+                                              hashkey_t _hashkey, keycmp_t _keycmp,
+                                              void *(*_alloc) ( size_t ),
+                                              void *(*_realloc) ( void *, size_t ),
+                                              void  (*_dealloc) ( void * )
+                                              )
+{
+    ex_hashmap_t *hashmap = _alloc( sizeof(ex_hashmap_t) );
+    __hashmap_init ( hashmap, 
+                     _key_bytes, 
+                     _value_bytes, 
+                     _count,
+                     _hashkey, _keycmp,
+                     _alloc,
+                     _realloc,
+                     _dealloc
+                   );
+    return hashmap;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+// managed
+void ex_hashmap_delete ( ex_hashmap_t *_hashmap ) {
+    void  (*dealloc) ( void * ) = _hashmap->dealloc;
+
+    ex_assert_return( _hashmap != NULL, /*void*/, "NULL input" );
+
     _hashmap->dealloc (_hashmap->values);
     _hashmap->values = NULL;
     _hashmap->dealloc (_hashmap->keys);
@@ -133,8 +161,8 @@ void ex_hashmap_deinit ( ex_hashmap_t *_hashmap ) {
     _hashmap->dealloc (_hashmap->indices);
     _hashmap->indices = NULL;
 
-    ex_pool_deinit(_hashmap->nodes);
-    _hashmap->dealloc(_hashmap->nodes);
+    ex_pool_delete(_hashmap->nodes);
+    _hashmap->nodes = NULL;
 
     _hashmap->key_bytes = 0;
     _hashmap->value_bytes = 0;
@@ -146,30 +174,20 @@ void ex_hashmap_deinit ( ex_hashmap_t *_hashmap ) {
     _hashmap->alloc = NULL;
     _hashmap->realloc = NULL;
     _hashmap->dealloc = NULL;
+
+    dealloc(_hashmap);
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-// managed
-void ex_hashmap_free ( ex_hashmap_t *_hashmap )
-{
-    ex_assert_return( _hashmap != NULL, /*void*/, "NULL input" );
-    ex_hashmap_deinit (_hashmap);
-    ex_free(_hashmap);
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_hashmap_insert_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t _hash_idx, size_t *_index )
+void ex_hashmap_add_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t _hash_idx, size_t *_index )
 {
     size_t cur_idx, next_idx;
     ex_hashmap_node_t *node;
 
-    cur_idx = ex_pool_insert ( _hashmap->nodes, NULL );
+    cur_idx = ex_pool_add_new ( _hashmap->nodes, (void **)&node );
     if ( cur_idx > _hashmap->capacity-1 ) {
         _hashmap->capacity *= 2;
         _hashmap->values = _hashmap->realloc ( _hashmap->values, _hashmap->capacity * _hashmap->value_bytes  );
@@ -178,7 +196,6 @@ void ex_hashmap_insert_new ( ex_hashmap_t *_hashmap, const void *_key, const voi
 
     next_idx = _hashmap->indices[_hash_idx];
 
-    node = (ex_hashmap_node_t *)ex_pool_get( _hashmap->nodes, cur_idx );
     node->next = next_idx;
     node->prev = -1;
     _hashmap->indices[_hash_idx] = cur_idx;
@@ -254,7 +271,7 @@ void *ex_hashmap_get_by_idx ( const ex_hashmap_t *_hashmap, size_t _index ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-bool ex_hashmap_insert ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t *_index )
+bool ex_hashmap_add ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t *_index )
 {
     size_t hash_next;
     uint32 hash_idx = __hash_index ( _hashmap, _key ); 
@@ -269,7 +286,7 @@ bool ex_hashmap_insert ( ex_hashmap_t *_hashmap, const void *_key, const void *_
         }
     }
 
-    ex_hashmap_insert_new( _hashmap, _key, _val, hash_idx, _index );
+    ex_hashmap_add_new( _hashmap, _key, _val, hash_idx, _index );
     return true;
 }
 
@@ -294,7 +311,7 @@ bool ex_hashmap_set ( ex_hashmap_t *_hashmap, const void *_key, const void *_val
         }
     }
 
-    ex_hashmap_insert_new( _hashmap, _key, _val, hash_idx, NULL );
+    ex_hashmap_add_new( _hashmap, _key, _val, hash_idx, NULL );
     return true;
 }
 

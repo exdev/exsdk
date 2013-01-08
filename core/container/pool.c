@@ -125,53 +125,17 @@ static void *__remove_at ( ex_pool_t *_pool, int _idx ) {
     return (char *)(_pool->data) + _idx * _pool->element_bytes;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// defines
-///////////////////////////////////////////////////////////////////////////////
-
-// ------------------------------------------------------------------ 
-// Desc: 
-static inline void *__ex_pool_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_pool_t" ); }
-static inline void *__ex_pool_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_pool_t" ); }
-static inline void  __ex_pool_dealloc( void *_ptr ) { ex_free ( _ptr ); }
-// ------------------------------------------------------------------ 
-
-// managed
-ex_pool_t *ex_pool_alloc ( size_t _element_bytes, size_t _count )
-{
-    ex_pool_t *pool = ex_malloc ( sizeof(ex_pool_t) );
-    ex_pool_init( pool, 
-                  _element_bytes, 
-                  _count,
-                  __ex_pool_alloc,
-                  __ex_pool_realloc,
-                  __ex_pool_dealloc
-                );
-    return pool;
-}
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_pool_free ( ex_pool_t *_pool )
-{
-    ex_assert_return( _pool != NULL, /*void*/, "NULL input" );
-    ex_pool_deinit(_pool);
-    ex_free(_pool);
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_pool_init ( ex_pool_t *_pool, 
-                    size_t _element_bytes, 
-                    size_t _count,
-                    void *(*_alloc) ( size_t ),
-                    void *(*_realloc) ( void *, size_t ),
-                    void  (*_dealloc) ( void * )
-                  )
+static void __pool_init ( ex_pool_t *_pool, 
+                          size_t _element_bytes, 
+                          size_t _count,
+                          void *(*_alloc) ( size_t ),
+                          void *(*_realloc) ( void *, size_t ),
+                          void  (*_dealloc) ( void * )
+                        )
 {
     int size = _element_bytes * _count;
     size_t i = 1;
@@ -194,8 +158,7 @@ void ex_pool_init ( ex_pool_t *_pool,
     _pool->used_nodes_begin = NULL;
     _pool->used_nodes_end = NULL;
     _pool->free_nodes = _pool->nodes + (_count-1);
-    _pool->used_bits = _pool->alloc( sizeof(ex_bitarray_t) );
-    ex_bitarray_init( _pool->used_bits, _count, _alloc, _realloc, _dealloc );
+    _pool->used_bits = ex_bitarray_new_with_allocator( _count, _alloc, _realloc, _dealloc );
 
     // init head node
     _pool->free_nodes->prev = NULL;
@@ -217,11 +180,57 @@ void ex_pool_init ( ex_pool_t *_pool,
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// defines
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+static inline void *__pool_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_pool_t" ); }
+static inline void *__pool_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_pool_t" ); }
+static inline void  __pool_dealloc( void *_ptr ) { ex_free ( _ptr ); }
+// ------------------------------------------------------------------ 
+
+ex_pool_t *ex_pool_new ( size_t _element_bytes, size_t _count )
+{
+    ex_pool_t *pool = ex_malloc ( sizeof(ex_pool_t) );
+    __pool_init( pool, 
+                 _element_bytes, 
+                 _count,
+                 __pool_alloc,
+                 __pool_realloc,
+                 __pool_dealloc
+               );
+    return pool;
+}
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_pool_deinit ( ex_pool_t *_pool ) {
+ex_pool_t *ex_pool_new_with_allocator ( size_t _element_bytes, size_t _count,
+                                        void *(*_alloc) ( size_t ),
+                                        void *(*_realloc) ( void *, size_t ),
+                                        void  (*_dealloc) ( void * ) )
+{
+    ex_pool_t *pool = _alloc ( sizeof(ex_pool_t) );
+    __pool_init( pool, 
+                 _element_bytes, 
+                 _count,
+                 _alloc,
+                 _realloc,
+                 _dealloc
+               );
+    return pool;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_pool_delete ( ex_pool_t *_pool ) {
+    void  (*dealloc) ( void * ) = _pool->dealloc;
+
     ex_assert_return( _pool != NULL, /*void*/, "NULL input" );
 
     _pool->dealloc(_pool->data);
@@ -230,8 +239,7 @@ void ex_pool_deinit ( ex_pool_t *_pool ) {
     _pool->dealloc(_pool->nodes);
     _pool->nodes = NULL;
 
-    ex_bitarray_deinit( _pool->used_bits );
-    _pool->dealloc(_pool->used_bits);
+    ex_bitarray_delete( _pool->used_bits );
     _pool->used_bits = NULL;
 
     _pool->element_bytes = 0;
@@ -241,13 +249,14 @@ void ex_pool_deinit ( ex_pool_t *_pool ) {
     _pool->alloc = NULL;
     _pool->realloc = NULL;
     _pool->dealloc = NULL;
+
+    dealloc(_pool);
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-// managed
 void ex_pool_reserve ( ex_pool_t *_pool, size_t _count ) 
 {
     size_t size = _count * _pool->element_bytes;
@@ -283,9 +292,7 @@ void ex_pool_reserve ( ex_pool_t *_pool, size_t _count )
 // Desc: 
 // ------------------------------------------------------------------ 
 
-// managed
-int ex_pool_insert ( ex_pool_t *_pool, const void *_value )
-{
+int ex_pool_add_new ( ex_pool_t *_pool, void **_node ) {
     ex_pool_node_t *node = NULL;
     int idx = -1;
 
@@ -295,7 +302,27 @@ int ex_pool_insert ( ex_pool_t *_pool, const void *_value )
     __push_to_used( _pool, node );
     idx = node - _pool->nodes;
 
-    // if _value is NULL, that means insert an empty node.
+    ++_pool->count;
+    
+    *_node = (char *)(_pool->data) + idx * _pool->element_bytes;
+    return idx;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_pool_add ( ex_pool_t *_pool, const void *_value ) {
+    ex_pool_node_t *node = NULL;
+    int idx = -1;
+
+    node = __request_free_node(_pool);
+    ex_assert ( node != NULL, "error: can't get freed nodes." );
+
+    __push_to_used( _pool, node );
+    idx = node - _pool->nodes;
+
+    // if _value is NULL, that means add an empty node.
     if ( _value )
         memcpy ( (char *)(_pool->data) + idx * _pool->element_bytes, _value, _pool->element_bytes );
 

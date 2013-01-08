@@ -147,31 +147,20 @@ typedef struct ex_list_t {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern ex_list_t *ex_list_alloc ( size_t _element_bytes );
 #define ex_list(_type) ex_list_alloc( sizeof(_type) )
 
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_list_free ( ex_list_t *_list );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_list_init ( ex_list_t *_list, 
-                           size_t _element_bytes, 
-                           void *(*_alloc) ( size_t ),
-                           void *(*_realloc) ( void *, size_t ),
-                           void  (*_dealloc) ( void * )
-                         );
+extern ex_list_t *ex_list_new ( size_t _element_bytes );
+extern ex_list_t *ex_list_new_with_allocator ( size_t _element_bytes, 
+                                               void *(*_alloc) ( size_t ),
+                                               void *(*_realloc) ( void *, size_t ),
+                                               void  (*_dealloc) ( void * )
+                                             );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_list_deinit ( ex_list_t *_list ); 
+extern void ex_list_delete ( ex_list_t *_list );
 
 // ------------------------------------------------------------------ 
 // Desc: 
