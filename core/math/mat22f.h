@@ -54,6 +54,18 @@ static inline void ex_mat22f_set ( ex_mat22f_t *_m,
 }
 
 // ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static inline void ex_mat22f_set_by_radians ( ex_mat22f_t *_m, float _rad ) {
+    float cos_theta = cosf( _rad );
+    float sin_theta = sinf( _rad );
+
+    _m->m00 =  cos_theta, _m->m01 = sin_theta; 
+    _m->m10 = -sin_theta, _m->m11 = cos_theta; 
+} 
+
+// ------------------------------------------------------------------ 
 /*! 
  @fn static inline static inline float ex_mat22f_m_get ( ex_mat22f_t *_m, uint _row, uint _col ) 
  @param _m the matrix

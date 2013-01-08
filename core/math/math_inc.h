@@ -22,21 +22,16 @@
 #include "probability.h"
 #include "interpolation.h"
 #include "ease_curve.h"
+#include "angle.h"
 
 // algebelar
 #include "vec2f.h"
 #include "vec3f.h"
 #include "vec4f.h"
 #include "mat22f.h"
-#include "angf.h" // dep mat22f
 #include "mat33f.h"
 #include "mat44f.h"
 #include "quatf.h"
-
-// geometry
-#include "line2f.h"
-#include "rectf.h"
-#include "circlef.h"
 
 // misc
 #include "color.h"

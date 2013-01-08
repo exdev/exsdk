@@ -351,6 +351,19 @@ static inline int ex_signi( int _x ) {
     return 0;
 }
 
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static inline float ex_rad_2pi_f ( float _radians ) { 
+    if ( _radians > (float)EX_TWO_PI )
+        return fmodf(_radians,(float)EX_TWO_PI); 
+    else if ( _radians < 0.0f )
+        return (float)EX_TWO_PI + fmodf(_radians,(float)EX_TWO_PI); 
+
+    return _radians;
+}
+
 // ------------------------------------------------------------------
 /*!
  @fn static inline float ex_deg2rad_f ( float _degrees )
@@ -375,6 +388,9 @@ static inline float ex_deg2rad_f ( float _degrees ) {
 static inline double ex_deg2rad ( double _degrees ) {
     return _DEG_TO_RAD * _degrees; 
 }
+static inline float ex_deg2rad_2pi_f ( float _degrees ) {
+    return ex_rad_2pi_f ( ex_deg2rad_f(_degrees) );
+} 
 #undef _DEG_TO_RAD
 
 // ------------------------------------------------------------------
@@ -400,6 +416,10 @@ static inline float ex_rad2deg_f ( float _radians ) {
 }
 static inline double ex_rad2deg ( double _radians ) {
     return _RAD_TO_DEG * _radians; 
+}
+static inline float ex_rad2deg_180_f ( float _radians ) {
+    float degrees = (float)_RAD_TO_DEG * _radians;
+    return _radians >= (float)EX_PI ? degrees - 360.0f : degrees;
 }
 #undef _RAD_TO_DEG
 

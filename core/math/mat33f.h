@@ -144,7 +144,7 @@ static inline float ex_mat33f_get_rotation ( const ex_mat33f_t *_m ) {
     if ( ex_signf(_m->m00) < 0.0f ) {
         rad += (float)EX_PI;
     }
-    return ex_radians (rad);
+    return rad;
 }
 
 // ------------------------------------------------------------------ 
