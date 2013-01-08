@@ -142,7 +142,7 @@ solution "exSDK"
             -- "ext/physfs-2.0.3/include/",
             "ext/lua-5.2.1/",
             "ext/luagl/",
-            "ext/freetype-2.4.11/include/",
+            "ext/freetype-2.4.2-1/include/",
             "core/"
         } 
         if __PLATFORM == "macosx" then

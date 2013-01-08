@@ -276,6 +276,12 @@ static inline wchar_t **ex_array_add_wstring ( ex_array_t *_array, wchar_t *_val
 // Desc: 
 // ------------------------------------------------------------------ 
 
+extern void *ex_array_insert ( ex_array_t *_array, size_t _idx, const void *_value );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 extern void ex_array_ncpy ( ex_array_t *_to, const void *_buf, size_t _count );
 static inline void ex_array_cpy ( ex_array_t *_to, const ex_array_t *_from ) {
     ex_assert_return ( _to->element_bytes == _from->element_bytes,

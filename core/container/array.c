@@ -49,7 +49,7 @@ static inline void *__array_realloc( void *_ptr, size_t _size ) { return ex_real
 static inline void  __array_dealloc( void *_ptr ) { ex_free ( _ptr ); }
 // ------------------------------------------------------------------ 
 
-ex_array_t *ex_array_alloc ( size_t _element_bytes, size_t _count ) {
+ex_array_t *ex_array_new ( size_t _element_bytes, size_t _count ) {
     ex_array_t *arr = ex_malloc ( sizeof(ex_array_t) );
     __array_init ( arr, _element_bytes, _count,
                    __array_alloc,
@@ -115,7 +115,6 @@ void *ex_array_get ( const ex_array_t *_array, size_t _idx ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-// managed
 void *ex_array_add ( ex_array_t *_array, const void *_value ) {
     void *val_addr;
     ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
@@ -132,6 +131,35 @@ void *ex_array_add ( ex_array_t *_array, const void *_value ) {
     if ( _value )
         memcpy ( val_addr, _value, _array->element_bytes );
 
+    ++_array->count;
+    return val_addr;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void *ex_array_insert ( ex_array_t *_array, size_t _idx, const void *_value ) {
+    void *val_addr;
+
+    ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
+    ex_assert_return( _idx <= _array->count, NULL, "error: _idx out of range" );
+
+    if ( _array->count >= _array->capacity ) {
+        _array->capacity *= 2;
+        _array->data = _array->realloc ( _array->data, _array->capacity * _array->element_bytes );
+    }
+    if ( _idx < _array->count ) {
+        memmove( (char *)(_array->data) + (_idx + 1) * _array->element_bytes,
+                 (char *)(_array->data) + (_idx + 0) * _array->element_bytes,
+                 (_array->count - _idx)  * _array->element_bytes);
+    }
+
+    val_addr = (char *)(_array->data) + _idx * _array->element_bytes;
+
+    // if _value is NULL, that means insert an empty node.
+    if ( _value )
+        memcpy ( val_addr, _value, _array->element_bytes );
     ++_array->count;
     return val_addr;
 }
