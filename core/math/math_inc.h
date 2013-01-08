@@ -15,6 +15,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "mathdef.h"
+#include "mathtypes.h"
+
 #include "mathop.h"
 #include "random.h"
 #include "probability.h"
@@ -38,7 +40,6 @@
 
 // misc
 #include "color.h"
-#include "mathdef2.h"
 
 // #################################################################################
 #endif // END MATH_INC_H_1277686586

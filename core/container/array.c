@@ -17,6 +17,9 @@
 
 // ------------------------------------------------------------------ 
 // Desc: 
+static inline void *__ex_array_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_array_t" ); }
+static inline void *__ex_array_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_array_t" ); }
+static inline void  __ex_array_dealloc( void *_ptr ) { ex_free ( _ptr ); }
 // ------------------------------------------------------------------ 
 
 ex_array_t *ex_array_alloc ( size_t _element_bytes, size_t _count ) {

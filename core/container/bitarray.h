@@ -37,15 +37,6 @@ typedef struct ex_bitarray_t {
     void  (*dealloc)    ( void * );
 } ex_bitarray_t; // end struct _bitarray
 
-// NOTE: in this way, we can still trace the memory leak.
-static inline void *__ex_bitarray_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_bitarray_t" ); }
-static inline void *__ex_bitarray_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_bitarray_t" ); }
-static inline void  __ex_bitarray_dealloc( void *_ptr ) { ex_free ( _ptr ); }
-
-static inline void *__ex_bitarray_alloc_nomng( size_t _size ) { return ex_malloc_nomng ( _size ); }
-static inline void *__ex_bitarray_realloc_nomng( void *_ptr, size_t _size ) { return ex_realloc_nomng ( _ptr, _size ); }
-static inline void  __ex_bitarray_dealloc_nomng( void *_ptr ) { ex_free_nomng ( _ptr ); }
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 

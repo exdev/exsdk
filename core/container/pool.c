@@ -131,6 +131,9 @@ static void *__remove_at ( ex_pool_t *_pool, int _idx ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+static inline void *__ex_pool_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_pool_t" ); }
+static inline void *__ex_pool_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_pool_t" ); }
+static inline void  __ex_pool_dealloc( void *_ptr ) { ex_free ( _ptr ); }
 // ------------------------------------------------------------------ 
 
 // managed

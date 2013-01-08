@@ -37,6 +37,9 @@ static inline void *__getvalue ( const ex_hashmap_t *_hashmap, size_t _idx ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+static inline void *__ex_hashmap_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_hashmap_t" ); }
+static inline void *__ex_hashmap_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_hashmap_t" ); }
+static inline void  __ex_hashmap_dealloc( void *_ptr ) { ex_free ( _ptr ); }
 // ------------------------------------------------------------------ 
 
 // managed

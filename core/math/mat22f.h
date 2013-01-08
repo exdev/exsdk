@@ -28,40 +28,6 @@ extern "C" {
 
 // ------------------------------------------------------------------ 
 /*! 
- @struct ex_mat22f_t
- @details
- 
- The data of matrix 2x2 is construct by an union structure with float elements.\n
- The matrix can be expressed in formular as:
- 
- \f$
-   \left[\begin{array}{ c c }
-   m_{00} & m_{01} \\
-   m_{10} & m_{11}
-   \end{array} \right]
- \f$
- 
- and in array as:
-
- \f$
-   \left[\begin{array}{ c c }
-   m_{00}, m_{01}, m_{10}, m_{11}
-   \end{array} \right]
- \f$
-*/// ------------------------------------------------------------------ 
-
-typedef struct ex_mat22f_t {
-    union {
-        struct { 
-            float m00, m01;
-            float m10, m11;
-        }; // end struct
-        float m[4];
-    };
-} ex_mat22f_t;
-
-// ------------------------------------------------------------------ 
-/*! 
  @fn static inline void ex_mat22f_set ( ex_mat22f_t *_m, 
                       float _m00, float _m01,
                       float _m10, float _m11 )

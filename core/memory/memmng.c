@@ -336,15 +336,15 @@ int ex_mem_init () {
                      sizeof(void *), sizeof(alloc_unit_t *), 
                      256,
                      ex_hashkey_ptr, ex_keycmp_ptr,
-                     __ex_hashmap_alloc_nomng,
-                     __ex_hashmap_realloc_nomng,
-                     __ex_hashmap_dealloc_nomng
+                     __ex_alloc_nomng,
+                     __ex_realloc_nomng,
+                     __ex_dealloc_nomng
                    );
     ex_list_init ( &__au_bucket,
                    sizeof(alloc_unit_t *),
-                   __ex_list_alloc_nomng,
-                   __ex_list_realloc_nomng,
-                   __ex_list_dealloc_nomng
+                   __ex_alloc_nomng,
+                   __ex_realloc_nomng,
+                   __ex_dealloc_nomng
                  );
 
     // DISABLE: we use ex_log instead { 

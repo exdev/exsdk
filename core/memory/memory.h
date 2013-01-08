@@ -169,6 +169,14 @@ static inline void *ex_memzero ( void *_ptr, size_t _size ) {
 // }
 // } TODO end 
 
+// ------------------------------------------------------------------ 
+// Desc: NOTE: this is for container nomng memory api uses ( such as array, list, ....) 
+// ------------------------------------------------------------------ 
+
+static inline void *__ex_alloc_nomng( size_t _size ) { return ex_malloc_nomng ( _size ); }
+static inline void *__ex_realloc_nomng( void *_ptr, size_t _size ) { return ex_realloc_nomng ( _ptr, _size ); }
+static inline void  __ex_dealloc_nomng( void *_ptr ) { ex_free_nomng ( _ptr ); }
+
 ///////////////////////////////////////////////////////////////////////////////
 // debugs
 ///////////////////////////////////////////////////////////////////////////////

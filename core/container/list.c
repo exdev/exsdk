@@ -32,6 +32,9 @@ static inline ex_list_node_t *__alloc_node ( ex_list_t *_list, const void *_valu
 
 // ------------------------------------------------------------------ 
 // Desc: 
+static inline void *__ex_list_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_list_t" ); }
+static inline void *__ex_list_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_list_t" ); }
+static inline void  __ex_list_dealloc( void *_ptr ) { ex_free ( _ptr ); }
 // ------------------------------------------------------------------ 
 
 ex_list_t *ex_list_alloc ( size_t _element_bytes )

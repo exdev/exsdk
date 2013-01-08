@@ -26,44 +26,6 @@ extern "C" {
 
 // ------------------------------------------------------------------ 
 /*! 
- @struct ex_vec2f_t
- @details
- 
- The data of vector2 is construct by an union structure with float elements.\n
- The vector2 can be expressed in formular as:
- 
- \f$
-   \left[\begin{array}{ c c }
-   x & y
-   \end{array} \right]
- \f$
- 
- and in array as:
-
- \f$
-   \left[\begin{array}{ c c }
-   v_{0}, v_{1}
-   \end{array} \right]
- \f$
-
- @note you can use: 
-
- @code
- ex_vec2f_t v = { 1.0f, 1.0f }; 
- @endcode
-
- to initialize a vector.  
-*/// ------------------------------------------------------------------ 
-
-typedef struct ex_vec2f_t {
-    union {
-        struct { float x, y; }; // end struct
-        float v[2];
-    };
-} ex_vec2f_t;
-
-// ------------------------------------------------------------------ 
-/*! 
  @fn static inline void ex_vec2f_set ( ex_vec2f_t *_r, float _x, float _y )
  @retval _r the result vector2
  @param x

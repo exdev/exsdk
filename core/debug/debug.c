@@ -80,9 +80,9 @@ static void __push_error ( const char *_msg,
 void __init_error_stack () {
     ex_list_init( &__error_stack,
                   sizeof(__error_info_t),
-                  __ex_list_alloc_nomng, 
-                  __ex_list_realloc_nomng,
-                  __ex_list_dealloc_nomng );
+                  __ex_alloc_nomng, 
+                  __ex_realloc_nomng,
+                  __ex_dealloc_nomng );
 } 
 
 // ------------------------------------------------------------------ 

@@ -23,7 +23,7 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-bool ex_quatf_inverse( ex_quatf_t *_r ) {
+bool ex_quatf_inverse( ex_vec4f_t *_r ) {
     float len_sqr;
 
     len_sqr = ex_quatf_lenSQR(_r);
@@ -41,7 +41,7 @@ bool ex_quatf_inverse( ex_quatf_t *_r ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-bool ex_quatf_get_inverse ( ex_quatf_t *_r, const ex_quatf_t *_q ) {
+bool ex_quatf_get_inverse ( ex_vec4f_t *_r, const ex_vec4f_t *_q ) {
     float len_sqr;
 
     ex_assert ( _r != _q, "can't use self as return value." );
@@ -61,7 +61,7 @@ bool ex_quatf_get_inverse ( ex_quatf_t *_r, const ex_quatf_t *_q ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_quatf_to_mat33( const ex_quatf_t *_q, ex_mat33f_t *_m ) {
+void ex_quatf_to_mat33( const ex_vec4f_t *_q, ex_mat33f_t *_m ) {
     float Tx, Ty, Tz; 
     float Twx, Twy, Twz; 
     float Txx, Txy, Txz;
@@ -90,7 +90,7 @@ void ex_quatf_to_mat33( const ex_quatf_t *_q, ex_mat33f_t *_m ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_quatf_to_mat44( const ex_quatf_t *_q, ex_mat44f_t *_m ) {
+void ex_quatf_to_mat44( const ex_vec4f_t *_q, ex_mat44f_t *_m ) {
     float Tx, Ty, Tz; 
     float Twx, Twy, Twz; 
     float Txx, Txy, Txz;
@@ -120,7 +120,7 @@ void ex_quatf_to_mat44( const ex_quatf_t *_q, ex_mat44f_t *_m ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_quatf_get_axis_x( ex_vec3f_t *_r, const ex_quatf_t *_q  ) {
+void ex_quatf_get_axis_x( ex_vec3f_t *_r, const ex_vec4f_t *_q  ) {
     float Tx, Ty, Tz; 
     float Twx, Twy, Twz; 
     float Txx, Txy, Txz;
@@ -147,7 +147,7 @@ void ex_quatf_get_axis_x( ex_vec3f_t *_r, const ex_quatf_t *_q  ) {
 // Desc: 
 // ------------------------------------------------------------------
 
-void ex_quatf_get_axis_y( ex_vec3f_t *_r, const ex_quatf_t *_q  ) {
+void ex_quatf_get_axis_y( ex_vec3f_t *_r, const ex_vec4f_t *_q  ) {
     float Tx, Ty, Tz; 
     float Twx, Twy, Twz; 
     float Txx, Txy, Txz;
@@ -174,7 +174,7 @@ void ex_quatf_get_axis_y( ex_vec3f_t *_r, const ex_quatf_t *_q  ) {
 // Desc: 
 // ------------------------------------------------------------------
 
-void ex_quatf_get_axis_z( ex_vec3f_t *_r, const ex_quatf_t *_q  ) {
+void ex_quatf_get_axis_z( ex_vec3f_t *_r, const ex_vec4f_t *_q  ) {
     float Tx, Ty, Tz; 
     float Twx, Twy, Twz; 
     float Txx, Txy, Txz;
@@ -201,7 +201,7 @@ void ex_quatf_get_axis_z( ex_vec3f_t *_r, const ex_quatf_t *_q  ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_quatf_to_axis_xyz( const ex_quatf_t *_q, ex_vec3f_t *_x, ex_vec3f_t *_y, ex_vec3f_t *_z ) {
+void ex_quatf_to_axis_xyz( const ex_vec4f_t *_q, ex_vec3f_t *_x, ex_vec3f_t *_y, ex_vec3f_t *_z ) {
     float Tx, Ty, Tz; 
     float Twx, Twy, Twz; 
     float Txx, Txy, Txz;

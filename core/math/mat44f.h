@@ -28,45 +28,6 @@ extern "C" {
 
 // ------------------------------------------------------------------ 
 /*! 
- @struct ex_mat44f_t
- @details
- 
- The data of matrix 4x4 is construct by an union structure with float elements.\n
- The matrix can be expressed in formular as:
- 
- \f$
-   \left[\begin{array}{ c c c c }
-   m_{00} & m_{01} & m_{02} & m_{03} \\
-   m_{10} & m_{11} & m_{12} & m_{13} \\
-   m_{20} & m_{21} & m_{22} & m_{23} \\
-   m_{30} & m_{31} & m_{32} & m_{33}
-   \end{array} \right]
- \f$
- 
- and in array as:
-
- \f$
-   \left[\begin{array}{ c c c c c c c c c c c c c c c c}
-   m_{00}, m_{01}, m_{02}, m_{03}, m_{10}, m_{11}, m_{12}, m_{13}, 
-   m_{20}, m_{21}, m_{22}, m_{23}, m_{30}, m_{31}, m_{32}, m_{33}
-   \end{array} \right]
- \f$
-*/// ------------------------------------------------------------------ 
-
-typedef struct ex_mat44f_t {
-    union {
-        struct { 
-            float m00, m01, m02, m03;
-            float m10, m11, m12, m13;
-            float m20, m21, m22, m23;
-            float m30, m31, m32, m33;
-        }; // end struct
-        float m[16];
-    };
-} ex_mat44f_t;
-
-// ------------------------------------------------------------------ 
-/*! 
  @fn static inline void ex_mat44f_set ( ex_mat44f_t *_m, 
                          float _m00, float _m01, float _m02, float _m03,
                          float _m10, float _m11, float _m12, float _m13,

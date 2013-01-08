@@ -306,7 +306,99 @@
 
 #define EX_IS_NAN(_v) ((_v)!=(_v))
 
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+#define EX_VEC2F_ZERO {{ 0.0f, 0.0f }}
+#define EX_VEC2F_ONE {{ 1.0f, 1.0f }}
+
+#define EX_VEC3F_ZERO {{ 0.0f, 0.0f, 0.0f }}
+#define EX_VEC3F_ONE {{ 1.0f, 1.0f, 1.0f }}
+
+#define EX_VEC4F_ZERO {{ 0.0f, 0.0f, 0.0f, 0.0f }}
+#define EX_VEC4F_ONE {{ 1.0f, 1.0f, 1.0f, 1.0f }}
+
+#define EX_MAT22F_ZERO {{ \
+    0.0f, 0.0f, \
+    0.0f, 0.0f \
+}}
+
+#define EX_MAT22F_IDENTITY {{ \
+    1.0f, 0.0f, \
+    0.0f, 1.0f \
+}}
+
+#define EX_MAT33F_ZERO {{ \
+    0.0f, 0.0f, 0.0f, \
+    0.0f, 0.0f, 0.0f, \
+    0.0f, 0.0f, 0.0f \
+}}
+#define EX_MAT33F_IDENTITY {{ \
+    1.0f, 0.0f, 0.0f, \
+    0.0f, 1.0f, 0.0f, \
+    0.0f, 0.0f, 1.0f \
+}}
+
+#define EX_MAT44F_ZERO {{ \
+    0.0f, 0.0f, 0.0f, 0.0f, \
+    0.0f, 0.0f, 0.0f, 0.0f, \
+    0.0f, 0.0f, 0.0f, 0.0f, \
+    0.0f, 0.0f, 0.0f, 0.0f \
+}}
+#define EX_MAT44F_IDENTITY {{ \
+    1.0f, 0.0f, 0.0f, 0.0f, \
+    0.0f, 1.0f, 0.0f, 0.0f, \
+    0.0f, 0.0f, 1.0f, 0.0f, \
+    0.0f, 0.0f, 0.0f, 1.0f \
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+#define EX_VEC3U_RED     {{ 255,    0,      0   }}
+#define EX_VEC3U_GREEN   {{ 0,      255,    0   }}
+#define EX_VEC3U_BLUE    {{ 0,      0,      255 }}
+#define EX_VEC3U_BLACK   {{ 0,      0,      0   }}
+#define EX_VEC3U_WHITE   {{ 255,    255,    255 }}
+#define EX_VEC3U_YELLOW  {{ 255,    255,    0   }}
+#define EX_VEC3U_CYAN    {{ 0,      255,    255 }}
+#define EX_VEC3U_MAGENTA {{ 255,    0,      255 }}
+#define EX_VEC3U_GRAY    {{ 128,    128,    128 }}
+
+#define EX_VEC4U_RED     {{ 255,    0,      0,      255 }} 
+#define EX_VEC4U_GREEN   {{ 0,      255,    0,      255 }} 
+#define EX_VEC4U_BLUE    {{ 0,      0,      255,    255 }} 
+#define EX_VEC4U_BLACK   {{ 0,      0,      0,      255 }} 
+#define EX_VEC4U_WHITE   {{ 255,    255,    255,    255 }} 
+#define EX_VEC4U_YELLOW  {{ 255,    255,    0,      255 }} 
+#define EX_VEC4U_CYAN    {{ 0,      255,    255,    255 }} 
+#define EX_VEC4U_MAGENTA {{ 255,    0,      255,    255 }} 
+#define EX_VEC4U_GRAY    {{ 128,    128,    128,    255 }} 
+
+#define EX_VEC3F_RED     {{ 1.0f,   0.0f,   0.0f }} 
+#define EX_VEC3F_GREEN   {{ 0.0f,   1.0f,   0.0f }} 
+#define EX_VEC3F_BLUE    {{ 0.0f,   0.0f,   1.0f }} 
+#define EX_VEC3F_BLACK   {{ 0.0f,   0.0f,   0.0f }} 
+#define EX_VEC3F_WHITE   {{ 1.0f,   1.0f,   1.0f }} 
+#define EX_VEC3F_YELLOW  {{ 1.0f,   1.0f,   0.0f }} 
+#define EX_VEC3F_CYAN    {{ 0.0f,   1.0f,   1.0f }} 
+#define EX_VEC3F_MAGENTA {{ 1.0f,   0.0f,   1.0f }} 
+#define EX_VEC3F_GRAY    {{ 0.5f,   0.5f,   0.5f }} 
+
+#define EX_VEC4F_RED     {{ 1.0f,   0.0f,   0.0f,   1.0f }} 
+#define EX_VEC4F_GREEN   {{ 0.0f,   1.0f,   0.0f,   1.0f }} 
+#define EX_VEC4F_BLUE    {{ 0.0f,   0.0f,   1.0f,   1.0f }} 
+#define EX_VEC4F_BLACK   {{ 0.0f,   0.0f,   0.0f,   1.0f }} 
+#define EX_VEC4F_WHITE   {{ 1.0f,   1.0f,   1.0f,   1.0f }} 
+#define EX_VEC4F_YELLOW  {{ 1.0f,   1.0f,   0.0f,   1.0f }} 
+#define EX_VEC4F_CYAN    {{ 0.0f,   1.0f,   1.0f,   1.0f }} 
+#define EX_VEC4F_MAGENTA {{ 1.0f,   0.0f,   1.0f,   1.0f }} 
+#define EX_VEC4F_GRAY    {{ 0.5f,   0.5f,   0.5f,   1.0f }} 
+
 //! @}
+
 
 // #################################################################################
 #endif // END MATHDEF_H_1290674983

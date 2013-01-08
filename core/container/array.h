@@ -136,24 +136,13 @@ typedef struct ex_array_t {
     void  (*dealloc)    ( void * );
 } ex_array_t;
 
-// NOTE: in this way, we can still trace the memory leak.
-static inline void *__ex_array_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_array_t" ); }
-static inline void *__ex_array_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_array_t" ); }
-static inline void  __ex_array_dealloc( void *_ptr ) { ex_free ( _ptr ); }
-
-static inline void *__ex_array_alloc_nomng( size_t _size ) { return ex_malloc_nomng ( _size ); }
-static inline void *__ex_array_realloc_nomng( void *_ptr, size_t _size ) { return ex_realloc_nomng ( _ptr, _size ); }
-static inline void  __ex_array_dealloc_nomng( void *_ptr ) { ex_free_nomng ( _ptr ); }
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ex_array
-// ex_array_notype
 // ------------------------------------------------------------------ 
 
 extern ex_array_t *ex_array_alloc ( size_t _element_bytes, size_t _count );
-#define ex_array(_type,_count) ex_array_alloc( EX_TYPEID(_type), EX_RTTI(_type)->size, _count )
-#define ex_array_notype(_element_bytes,_count) ex_array_alloc( EX_STRID_NULL, _element_bytes, _count )
+#define ex_array(_type,_count) ex_array_alloc( sizeof(_type), _count )
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -166,9 +155,9 @@ extern void ex_array_free ( ex_array_t *_array );
 // NOTE: if you want to create a no-manager array, do it like this:
 // ex_array_t *arr = ex_malloc_nomng ( sizeof(ex_array_t) );
 // ex_array_init ( arr, _element_typeid, _element_bytes, _count,
-//                 __ex_array_alloc_nomng,
-//                 __ex_array_realloc_nomng,
-//                 __ex_array_dealloc_nomng
+//                 __ex_alloc_nomng,
+//                 __ex_realloc_nomng,
+//                 __ex_dealloc_nomng
 //               );
 // ex_array_deinit(arr);
 // ex_free_nomng(arr)

@@ -28,42 +28,6 @@ extern "C" {
 
 // ------------------------------------------------------------------ 
 /*! 
- @struct ex_mat33f_t
- @details
- 
- The data of matrix 3x3 is construct by an union structure with float elements.\n
- The matrix can be expressed in formular as:
- 
- \f$
-   \left[\begin{array}{ c c c }
-   m_{00} & m_{01} & m_{02} \\
-   m_{10} & m_{11} & m_{12} \\
-   m_{20} & m_{21} & m_{22}
-   \end{array} \right]
- \f$
- 
- and in array as:
-
- \f$
-   \left[\begin{array}{ c c c c c c c c c }
-   m_{00}, m_{01}, m_{02}, m_{10}, m_{11}, m_{12}, m_{20}, m_{21}, m_{22}
-   \end{array} \right]
- \f$
-*/// ------------------------------------------------------------------ 
-
-typedef struct ex_mat33f_t {
-    union {
-        struct { 
-            float m00, m01, m02;
-            float m10, m11, m12;
-            float m20, m21, m22;
-        }; // end struct
-        float m[9];
-    };
-} ex_mat33f_t;
-
-// ------------------------------------------------------------------ 
-/*! 
  @fn static inline void ex_mat33f_set ( ex_mat33f_t *_m, 
                          float _m00, float _m01, float _m02,
                          float _m10, float _m11, float _m12,
@@ -104,10 +68,10 @@ static inline void ex_mat33f_set ( ex_mat33f_t *_m,
 
 static inline void ex_mat33f_from_TRS ( ex_mat33f_t *_m, 
                                         const ex_vec2f_t *_t,
-                                        const ex_angf_t *_r, 
+                                        float _radians,
                                         const ex_vec2f_t *_s ) { 
-    float cos_a = cosf( _r->rad );
-    float sin_a = sinf( _r->rad );
+    float cos_a = cosf( _radians );
+    float sin_a = sinf( _radians );
 
     // sx,  0.0   cosa, sina
     // 0.0, sy   -sina, cosa
@@ -175,21 +139,21 @@ static inline void ex_mat33f_get_scale ( ex_vec2f_t *_r, const ex_mat33f_t *_m )
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static inline void ex_mat33f_get_rotation ( ex_angf_t *_r, const ex_mat33f_t *_m ) { 
+static inline float ex_mat33f_get_rotation ( const ex_mat33f_t *_m ) { 
     float rad = atanf( _m->m01 / _m->m00 );
     if ( ex_signf(_m->m00) < 0.0f ) {
         rad += (float)EX_PI;
     }
-    ex_angf_set_by_radians ( _r, rad );
+    return ex_radians (rad);
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static inline void ex_mat33f_set_rotation ( ex_mat33f_t *_m, const ex_angf_t *_a ) { 
-    float cos_theta = cosf( _a->rad );
-    float sin_theta = sinf( _a->rad );
+static inline void ex_mat33f_set_rotation ( ex_mat33f_t *_m, float _radians ) { 
+    float cos_theta = cosf( _radians );
+    float sin_theta = sinf( _radians );
 
     _m->m00 =  cos_theta, _m->m01 = sin_theta; 
     _m->m10 = -sin_theta, _m->m11 = cos_theta; 

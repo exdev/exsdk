@@ -26,44 +26,6 @@ extern "C" {
 
 // ------------------------------------------------------------------ 
 /*! 
- @struct ex_vec4f_t
- @details
- 
- The data of vector4 is construct by an union structure with float elements.\n
- The vector4 can be expressed in formular as:
- 
- \f$
-   \left[\begin{array}{ c c c c }
-   x & y & z & w
-   \end{array} \right]
- \f$
- 
- and in array as:
-
- \f$
-   \left[\begin{array}{ c c c }
-   v_{0}, v_{1}, v_{2}, v_{3}
-   \end{array} \right]
- \f$
-
- @note you can use: 
-
- @code
- ex_vec4f_t v = { 1.0f, 1.0f, 1.0f, 1.0f }; 
- @endcode
-
- to initialize a vector.  
-*/// ------------------------------------------------------------------ 
-
-typedef struct ex_vec4f_t {
-    union {
-        struct { float x, y, z, w; }; // end struct
-        float v[4];
-    };
-} ex_vec4f_t;
-
-// ------------------------------------------------------------------ 
-/*! 
  @fn static inline void ex_vec4f_set ( ex_vec4f_t *_r, float _x, float _y, float _z, float _w )
  @retval _r the result vector4
  @param x

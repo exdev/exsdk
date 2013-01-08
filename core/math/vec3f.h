@@ -26,44 +26,6 @@ extern "C" {
 
 // ------------------------------------------------------------------ 
 /*! 
- @struct ex_vec3f_t
- @details
- 
- The data of vector3 is construct by an union structure with float elements.\n
- The vector3 can be expressed in formular as:
- 
- \f$
-   \left[\begin{array}{ c c c }
-   x & y & z
-   \end{array} \right]
- \f$
- 
- and in array as:
-
- \f$
-   \left[\begin{array}{ c c c }
-   v_{0}, v_{1}, v_{2}
-   \end{array} \right]
- \f$
-
- @note you can use: 
-
- @code
- ex_vec3f_t v = { 1.0f, 1.0f, 1.0f }; 
- @endcode
-
- to initialize a vector.  
-*/// ------------------------------------------------------------------ 
-
-typedef struct ex_vec3f_t {
-    union {
-        struct { float x, y, z; }; // end struct
-        float v[3];
-    };
-} ex_vec3f_t;
-
-// ------------------------------------------------------------------ 
-/*! 
  @fn static inline void ex_vec3f_set ( ex_vec3f_t *_r, float _x, float _y, float _z )
  @retval _r the result vector3
  @param x

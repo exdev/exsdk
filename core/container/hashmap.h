@@ -172,15 +172,6 @@ typedef struct ex_hashmap_t {
     void  (*dealloc)    ( void * );
 } ex_hashmap_t;
 
-// NOTE: in this way, we can still trace the memory leak.
-static inline void *__ex_hashmap_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_hashmap_t" ); }
-static inline void *__ex_hashmap_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_hashmap_t" ); }
-static inline void  __ex_hashmap_dealloc( void *_ptr ) { ex_free ( _ptr ); }
-
-static inline void *__ex_hashmap_alloc_nomng( size_t _size ) { return ex_malloc_nomng ( _size ); }
-static inline void *__ex_hashmap_realloc_nomng( void *_ptr, size_t _size ) { return ex_realloc_nomng ( _ptr, _size ); }
-static inline void  __ex_hashmap_dealloc_nomng( void *_ptr ) { ex_free_nomng ( _ptr ); }
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ex_hashmap
@@ -193,34 +184,16 @@ extern ex_hashmap_t *ex_hashmap_alloc ( size_t _key_bytes, size_t _value_bytes,
 
 // ex_hashset
 #define ex_hashset(_type,_count) \
-    ex_hashmap_alloc(EX_TYPEID(_type), EX_RTTI(_type)->size, \
-                     EX_TYPEID(_type), EX_RTTI(_type)->size, \
+    ex_hashmap_alloc(sizeof(_type), sizeof(_type), \
                      _count, \
                      ex_hashkey_##_type, ex_keycmp_##_type \
                     )
 
 // ex_hashmap
 #define ex_hashmap(_key_type,_val_type,_count) \
-    ex_hashmap_alloc(EX_TYPEID(_key_type), EX_RTTI(_key_type)->size, \
-                     EX_TYPEID(_val_type), EX_RTTI(_val_type)->size, \
+    ex_hashmap_alloc(sizeof(_key_type), sizeof(_val_type), \
                      _count, \
                      ex_hashkey_##_key_type, ex_keycmp_##_key_type \
-                    )
-
-// ex_hashset_notype
-#define ex_hashset_notype(_element_bytes,_count,_hashkey,_keycmp) \
-    ex_hashmap_alloc(_element_bytes, \
-                     _element_bytes, \
-                     _count, \
-                     _hashkey, _keycmp \
-                    )
-
-// ex_hashmap_notype
-#define ex_hashmap_notype(_key_bytes,_val_bytes,_count,_hashkey,_keycmp) \
-    ex_hashmap_alloc(_key_bytes, \
-                     _val_bytes, \
-                     _count, \
-                     _hashkey, _keycmp \
                     )
 
 // ------------------------------------------------------------------ 
@@ -303,8 +276,6 @@ static inline size_t ex_hashmap_capacity ( const ex_hashmap_t *_hashmap ) { retu
 // ------------------------------------------------------------------ 
 
 static inline uint32 ex_hashkey_cstr ( const void *_val ) { return ex_hashstr( *((const char **)_val) ); }
-// DISABLE can use ex_hashkey_string instead: static inline uint32 hashkey_wstring ( void *_val ) { return ex_hashstr_w( *((wchar_t **)_val) ); }
-// static inline uint32 ex_hashkey_strid ( const void *_val ) { return *((const strid_t *)_val); }
 static inline uint32 ex_hashkey_int ( const void *_val ) { return (uint32)(*((const int *)_val)); }
 static inline uint32 ex_hashkey_uint32 ( const void *_val ) { return *((const uint32 *)_val); }
 static inline uint32 ex_hashkey_uint64 ( const void *_val ) { return (uint32)(*((const uint64 *)_val)); }
@@ -316,8 +287,6 @@ static inline uint32 ex_hashkey_ptr ( const void *_val ) { return (uint32)((size
 // ------------------------------------------------------------------ 
 
 static inline int ex_keycmp_cstr ( const void *_lhs, const void *_rhs ) { return strcmp ( *((const char **)_lhs), *((const char **)_rhs) ); }
-// DISABLE can use ex_keycmp_string instead: static inline int keycmp_wstring ( void *_lhs, void *_rhs ) { return wcscmp ( *((wchar_t **)_lhs), *((wchar_t **)_rhs) ); }
-// static inline int ex_keycmp_strid ( const void *_lhs, const void *_rhs ) { return *((const strid_t *)_lhs) - *((const strid_t *)_rhs); }
 static inline int ex_keycmp_int ( const void *_lhs, const void *_rhs ) { return *((const int *)_lhs) - *((const int *)_rhs); }
 static inline int ex_keycmp_uint32 ( const void *_lhs, const void *_rhs ) { return *((const uint32 *)_lhs) - *((const uint32 *)_rhs); }
 static inline int ex_keycmp_uint64 ( const void *_lhs, const void *_rhs ) { uint64 re = *((const uint64 *)_lhs) - *((const uint64 *)_rhs); return re > 0 ? 1 : (re == 0 ? 0 : -1); }
