@@ -142,6 +142,7 @@ solution "exSDK"
             -- "ext/physfs-2.0.3/include/",
             "ext/lua-5.2.1/",
             "ext/luagl/",
+            "ext/freetype-2.4.11/include/",
             "core/"
         } 
         if __PLATFORM == "macosx" then
@@ -205,6 +206,7 @@ solution "exSDK"
             libdirs {
                 -- "C:/Program Files/Microsoft DirectX SDK (June 2010)/Lib/x86/",
                 "ext/glut/lib/win32/",
+                "ext/freetype-2.4.2-1/lib/win32",
             }
         end
 
@@ -234,6 +236,7 @@ solution "exSDK"
                 "opengl32",
                 "glu32",
                 "glut32",
+                "freetype",
             }
         end
 
