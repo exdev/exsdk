@@ -177,8 +177,8 @@ typedef struct
  */
   ex_vec4i_t
   texture_atlas_get_region( texture_atlas_t * self,
-                            const size_t width,
-                            const size_t height );
+                            int width,
+                            int height );
 
 
 /**

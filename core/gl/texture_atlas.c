@@ -47,9 +47,13 @@ texture_atlas_new( const size_t width,
                    const size_t height,
                    const size_t depth )
 {
+    texture_atlas_t *self = (texture_atlas_t *) malloc( sizeof(texture_atlas_t) );
+    // We want a one pixel border around the whole atlas to avoid any artefact when
+    // sampling texture
+    ex_vec3i_t node = {{1,1,width-2}};
+
     assert( (depth == 1) || (depth == 3) || (depth == 4) );
 
-    texture_atlas_t *self = (texture_atlas_t *) malloc( sizeof(texture_atlas_t) );
     if( self == NULL)
     {
         fprintf( stderr,
@@ -63,9 +67,7 @@ texture_atlas_new( const size_t width,
     self->depth = depth;
     self->id = 0;
 
-    // We want a one pixel border around the whole atlas to avoid any artefact when
-    // sampling texture
-    ex_vec3i_t node = {{1,1,width-2}};
+    //
 
     ex_array_add ( self->nodes, &node );
     self->data = (unsigned char *)
@@ -87,6 +89,7 @@ void
 texture_atlas_delete( texture_atlas_t *self )
 {
     assert( self );
+
     ex_array_delete( self->nodes );
     if( self->data )
     {
@@ -110,6 +113,10 @@ texture_atlas_set_region( texture_atlas_t * self,
                           const unsigned char * data,
                           const size_t stride )
 {
+    size_t i;
+    size_t depth = self->depth;
+    size_t charsize = sizeof(char);
+
     assert( self );
     assert( x > 0);
     assert( y > 0);
@@ -118,9 +125,6 @@ texture_atlas_set_region( texture_atlas_t * self,
     assert( y < (self->height-1));
     assert( (y + height) <= (self->height-1));
 
-    size_t i;
-    size_t depth = self->depth;
-    size_t charsize = sizeof(char);
     for( i=0; i<height; ++i )
     {
         memcpy( self->data+((y+i)*self->width + x ) * charsize * depth, 
@@ -136,8 +140,6 @@ texture_atlas_fit( texture_atlas_t * self,
                    const size_t width,
                    const size_t height )
 {
-    assert( self );
-
     ex_vec3i_t *node = (ex_vec3i_t *) (ex_array_get( self->nodes, index ));
     int x = node->x, y, width_left = width;
 	size_t i = index;
@@ -169,10 +171,10 @@ texture_atlas_fit( texture_atlas_t * self,
 void
 texture_atlas_merge( texture_atlas_t * self )
 {
-    assert( self );
-
     ex_vec3i_t *node, *next;
     size_t i;
+
+    assert( self );
 
 	for( i=0; i< self->nodes->count-1; ++i )
     {
@@ -191,15 +193,15 @@ texture_atlas_merge( texture_atlas_t * self )
 // ----------------------------------------------- texture_atlas_get_region ---
 ex_vec4i_t
 texture_atlas_get_region( texture_atlas_t * self,
-                          const size_t width,
-                          const size_t height )
+                          int width,
+                          int height )
 {
-    assert( self );
-
 	int y, best_height, best_width, best_index;
     ex_vec3i_t *node, *prev;
     ex_vec4i_t region = {{0,0,width,height}};
     size_t i;
+
+    assert( self );
 
     best_height = INT_MAX;
     best_index  = -1;
@@ -279,14 +281,16 @@ texture_atlas_get_region( texture_atlas_t * self,
 void
 texture_atlas_clear( texture_atlas_t * self )
 {
+    // We want a one pixel border around the whole atlas to avoid any artefact when
+    // sampling texture
+    ex_vec3i_t node = {{1,1,self->width-2}};
+
     assert( self );
     assert( self->data );
 
     ex_array_remove_all( self->nodes );
     self->used = 0;
-    // We want a one pixel border around the whole atlas to avoid any artefact when
-    // sampling texture
-    ex_vec3i_t node = {{1,1,self->width-2}};
+
     ex_array_add( self->nodes, &node );
     memset( self->data, 0, self->width*self->height*self->depth );
 }

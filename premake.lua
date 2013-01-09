@@ -148,6 +148,7 @@ solution "exSDK"
         if __PLATFORM == "macosx" then
         elseif __PLATFORM == "win32" then
             includedirs {
+                "ext/glew-1.9.0/include/",
                 "ext/glut/include/",
             }
         end
@@ -205,6 +206,7 @@ solution "exSDK"
         elseif __PLATFORM == "win32" then
             libdirs {
                 -- "C:/Program Files/Microsoft DirectX SDK (June 2010)/Lib/x86/",
+                "ext/glew-1.9.0/lib/",
                 "ext/glut/lib/win32/",
                 "ext/freetype-2.4.2-1/lib/win32",
             }
@@ -234,6 +236,7 @@ solution "exSDK"
                 "psapi",
                 "shlwapi",
                 "opengl32",
+                "glew32",
                 "glu32",
                 "glut32",
                 "freetype",
@@ -281,6 +284,7 @@ solution "exSDK"
             if __PLATFORM == "macosx" then
             elseif __PLATFORM == "win32" then
                 includedirs {
+                    "ext/glew-1.9.0/include/",
                     "ext/glut/include/",
                 }
             end
@@ -294,6 +298,7 @@ solution "exSDK"
             if __PLATFORM == "macosx" then
             elseif __PLATFORM == "win32" then
                 libdirs {
+                    "ext/glew-1.9.0/lib/",
                     "ext/glut/lib/win32/",
                 }
             end
@@ -318,6 +323,7 @@ solution "exSDK"
                     "psapi",
                     "shlwapi",
                     "opengl32",
+                    "glew32",
                     "glu32",
                     "glut32",
                 }

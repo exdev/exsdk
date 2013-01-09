@@ -16,8 +16,12 @@
 
 #if (EX_PLATFORM == EX_WIN32)
 
-	#include <gl/gl.h>
-	#include <gl/glu.h>
+    // NOTE: in Windows, we use glew instead
+    // #include <GL/gl.h>
+    // #include <GL/glu.h>
+    #include <GL/glew.h>
+    #include <GL/wglew.h>
+
 	#include "GL/glut.h"
 
 #elif (EX_PLATFORM == EX_LINUX)

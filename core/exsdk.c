@@ -200,3 +200,5 @@
     #endif
 #endif
 
+const char *ex_sdk_ver () { return "1.0.0"; }
+
