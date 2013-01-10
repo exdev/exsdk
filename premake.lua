@@ -202,20 +202,15 @@ solution "exSDK"
         }
 
         -- library path ( for link to search ) 
-        if __PLATFORM == "macosx" then
-        elseif __PLATFORM == "win32" then
-            libdirs {
-                -- "C:/Program Files/Microsoft DirectX SDK (June 2010)/Lib/x86/",
-                "ext/glew-1.9.0/lib/",
-                "ext/glut/lib/win32/",
-                "ext/freetype-2.4.2-1/lib/win32",
-            }
-        end
+        libdirs {
+            "ext/libs/" .. __PLATFORM .. "/",
+        }
 
         -- link
         links {
             "Allegro",
             "exSDK",
+            "freetype",
         }
         if __PLATFORM == "macosx" then
             links {
@@ -239,7 +234,6 @@ solution "exSDK"
                 "glew32",
                 "glu32",
                 "glut32",
-                "freetype",
             }
         end
 
@@ -295,18 +289,15 @@ solution "exSDK"
             }
 
             -- library path ( for link to search ) 
-            if __PLATFORM == "macosx" then
-            elseif __PLATFORM == "win32" then
-                libdirs {
-                    "ext/glew-1.9.0/lib/",
-                    "ext/glut/lib/win32/",
-                }
-            end
+            libdirs {
+                "ext/libs/" .. __PLATFORM .. "/",
+            }
 
             -- link
             links {
                 "Allegro",
                 "exSDK",
+                "freetype",
             }
             if __PLATFORM == "macosx" then
                 links {
@@ -315,7 +306,10 @@ solution "exSDK"
                     "IOKit.framework/",
                     "OpenAL.framework/",
                     "OpenGL.framework/",
+                    "GLUT.framework/",
                     "AGL.framework/",
+                    "bz2",
+                    "z",
                 }
             elseif __PLATFORM == "win32" then
                 links {

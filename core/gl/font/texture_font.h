@@ -38,6 +38,8 @@
 extern "C" {
 #endif
 
+#include "texture_atlas.h"
+
 /**
  * @file   texture-font.h
  * @author Nicolas Rougier (Nicolas.Rougier@inria.fr)

@@ -42,6 +42,14 @@ static inline void __array_init ( ex_array_t *_array,
     ex_memzero ( _array->data, bytes );
 }
 
+static inline uint32 __ceilpow2u ( uint32 _value ) {
+    uint32 result = 1;
+    while ( result < _value ) {
+        result <<= 1; 
+    }
+    return result;
+}
+
 // ------------------------------------------------------------------ 
 // Desc: 
 static inline void *__array_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_array_t" ); }
@@ -104,6 +112,20 @@ void ex_array_delete ( ex_array_t *_array ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+void ex_array_set ( ex_array_t *_array, size_t _idx, const void *_value ) {
+    void *val_addr;
+
+    ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
+    ex_assert_return( _idx < _array->count, /*dummy*/, "error: _idx out of range" );
+
+    val_addr = (char *)(_array->data) + _idx * _array->element_bytes;
+    memcpy ( val_addr, _value, _array->element_bytes );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void *ex_array_get ( const ex_array_t *_array, size_t _idx ) {
     ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
     ex_assert_return( _idx < _array->count, NULL, "error: _idx out of range" );
@@ -117,6 +139,7 @@ void *ex_array_get ( const ex_array_t *_array, size_t _idx ) {
 
 void *ex_array_add ( ex_array_t *_array, const void *_value ) {
     void *val_addr;
+
     ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
 
     if ( _array->count >= _array->capacity ) {
@@ -139,6 +162,30 @@ void *ex_array_add ( ex_array_t *_array, const void *_value ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+void *ex_array_add_range ( ex_array_t *_array, const void *_data, size_t _count ) {
+    void *val_addr;
+    ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
+
+    if ( _array->count + _count >= _array->capacity ) {
+        _array->capacity = __ceilpow2u(_array->count + _count);
+        _array->data = _array->realloc ( _array->data, _array->capacity * _array->element_bytes );
+    }
+
+    //
+    val_addr = (char *)(_array->data) + _array->count * _array->element_bytes;
+
+    //
+    if ( _data )
+        memcpy ( val_addr, _data, _array->element_bytes * _count );
+
+    _array->count += _count;
+    return val_addr;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void *ex_array_insert ( ex_array_t *_array, size_t _idx, const void *_value ) {
     void *val_addr;
 
@@ -151,7 +198,7 @@ void *ex_array_insert ( ex_array_t *_array, size_t _idx, const void *_value ) {
     }
     if ( _idx < _array->count ) {
         memmove( (char *)(_array->data) + (_idx + 1) * _array->element_bytes,
-                 (char *)(_array->data) + (_idx + 0) * _array->element_bytes,
+                 (char *)(_array->data) +  _idx * _array->element_bytes,
                  (_array->count - _idx)  * _array->element_bytes);
     }
 
@@ -161,6 +208,33 @@ void *ex_array_insert ( ex_array_t *_array, size_t _idx, const void *_value ) {
     if ( _value )
         memcpy ( val_addr, _value, _array->element_bytes );
     ++_array->count;
+    return val_addr;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void *ex_array_insert_range ( ex_array_t *_array, size_t _idx, const void *_data, size_t _count ) {
+    void *val_addr;
+
+    ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
+    ex_assert_return( _idx <= _array->count, NULL, "error: _idx out of range" );
+
+    if ( _array->count >= _array->capacity ) {
+        _array->capacity = __ceilpow2u(_array->count + _count);
+        _array->data = _array->realloc ( _array->data, _array->capacity * _array->element_bytes );
+    }
+    if ( _idx < _array->count ) {
+        memmove( (char *)(_array->data) + (_idx + _count) * _array->element_bytes,
+                 (char *)(_array->data) +  _idx * _array->element_bytes,
+                 _count * _array->element_bytes);
+
+        val_addr = (char *)(_array->data) + _idx * _array->element_bytes;
+        memcpy ( val_addr, _data, _array->element_bytes * _count );
+    }
+
+    _array->count += _count;
     return val_addr;
 }
 

@@ -37,7 +37,7 @@
 #include <assert.h>
 #include <limits.h>
 
-#include "gl_inc.h"
+#include "gl/gl_inc.h"
 #include "texture_atlas.h"
 
 

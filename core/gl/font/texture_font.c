@@ -42,7 +42,7 @@
 // #include FT_ADVANCES_H
 #include FT_LCD_FILTER_H
 
-#include "gl_inc.h"
+#include "gl/gl_inc.h"
 #include "texture_atlas.h"
 #include "texture_font.h"
 

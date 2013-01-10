@@ -156,6 +156,12 @@ extern ex_array_t *ex_array_new_with_allocator ( size_t _element_bytes, size_t _
 extern void ex_array_delete ( ex_array_t *_array );
 
 // ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void ex_array_set ( ex_array_t *_array, size_t _idx, const void *_value );
+
+// ------------------------------------------------------------------ 
 /*! 
  @fn void *ex_array_get ( const ex_array_t *_array, size_t _idx )
  @param _array the in array.
@@ -276,7 +282,19 @@ static inline wchar_t **ex_array_add_wstring ( ex_array_t *_array, wchar_t *_val
 // Desc: 
 // ------------------------------------------------------------------ 
 
+extern void *ex_array_add_range ( ex_array_t *_array, const void *_data, size_t _count );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 extern void *ex_array_insert ( ex_array_t *_array, size_t _idx, const void *_value );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void *ex_array_insert_range ( ex_array_t *_array, size_t _idx, const void *_data, size_t _count );
 
 // ------------------------------------------------------------------ 
 // Desc: 

@@ -31,8 +31,6 @@ static inline void *__getvalue ( const ex_hashmap_t *_hashmap, size_t _idx ) {
     return (char *)_hashmap->values + _idx * _hashmap->value_bytes;
 }
 
-// ------------------------------------------------------------------ 
-// Desc: 
 static inline uint32 __ceilpow2u ( uint32 _value ) {
     uint32 result = 1;
     while ( result < _value ) {
@@ -40,6 +38,9 @@ static inline uint32 __ceilpow2u ( uint32 _value ) {
     }
     return result;
 }
+
+// ------------------------------------------------------------------ 
+// Desc: 
 // ------------------------------------------------------------------ 
 
 void __hashmap_init ( ex_hashmap_t *_hashmap, 
