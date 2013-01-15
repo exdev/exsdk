@@ -37,7 +37,7 @@ static inline ex_list_node_t *__alloc_node ( ex_list_t *_list, const void *_valu
 ex_list_t *ex_list_alloc ( size_t _element_bytes ) {
     ex_list_t *list = ex_malloc( sizeof(ex_list_t) ); 
     ex_list_init ( list, 
-                   _element_bytes, _element_bytes,
+                   _element_bytes,
                    ex_func_alloc,
                    ex_func_realloc,
                    ex_func_dealloc );
@@ -82,7 +82,7 @@ void ex_list_init ( ex_list_t *_list,
 
 void ex_list_deinit ( ex_list_t *_list ) {
     ex_list_node_t *tmp,*node;
-    ex_assert( _list != NULL, /*void*/, "NULL input" );
+    ex_assert( _list != NULL );
 
     node = _list->head;
     while ( node != NULL ) {
