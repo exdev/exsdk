@@ -297,8 +297,8 @@ uint32 ex_calc_CRC ( int _crcSize, const uint8 *_data, uint _len )
 #endif
 #endif
 
-    ex_assert( _data, "invalid _data value" );
-    ex_assert( ex_is_pow_of_2(_crcSize), "_crcSize should be power of 2" );
+    ex_assert( _data );
+    ex_assert( ex_is_pow_of_2(_crcSize) );
 
 #if EX_USE_CRC_TABLE
 
@@ -399,7 +399,7 @@ uint32 ex_calc_CRC ( int _crcSize, const uint8 *_data, uint _len )
 // ======================================================== 
 
 #else
-    ex_warning ( "CRC Hash is disabled. Please Enable EX_USE_CRC_TABLE in config.h" );
+    ex_assert ( false ); // CRC Hash is disabled. Please Enable EX_USE_CRC_TABLE in config.h
 #endif // END !EX_USE_CRC_TABLE
 
     return result;
@@ -417,8 +417,8 @@ uint32 calcCRC_str ( int _crcSize, const char *_data )
     uint32 m = 0x7efefeff, n = ~m, i = 0;
 #endif
 
-    ex_assert( _data, "invalid _data value" );
-    ex_assert( ex_is_pow_of_2(_crcSize), "_crcSize should be power of 2" );
+    ex_assert( _data );
+    ex_assert( ex_is_pow_of_2(_crcSize) );
 
 #if EX_USE_CRC_TABLE
 
@@ -484,7 +484,7 @@ uint32 calcCRC_str ( int _crcSize, const char *_data )
     } // for
 
 #else
-    ex_warning ( "CRC Hash is disabled. Please Enable EX_USE_CRC_TABLE in config.h" );
+    ex_assert ( false ); // CRC Hash is disabled. Please Enable EX_USE_CRC_TABLE in config.h
 #endif // END !EX_USE_CRC_TABLE
 
     return result;

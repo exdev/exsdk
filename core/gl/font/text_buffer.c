@@ -99,13 +99,13 @@ text_buffer_printf( text_buffer_t * self, ex_vec2f_t *pen, ... )
 {
     markup_t *markup;
     wchar_t *text;
+    va_list args;
 
     if( vertex_buffer_size( self->buffer ) == 0 )
     {
         self->origin = *pen;
     }
 
-    va_list args;
     va_start ( args, pen ); 
     do {
         markup = va_arg( args, markup_t * );
@@ -127,6 +127,7 @@ text_buffer_add_text( text_buffer_t * self,
 {
     vertex_buffer_t * buffer = self->buffer;
     font_manager_t * manager = self->manager;
+    size_t i;
 
     if( markup == NULL )
     {
@@ -177,7 +178,6 @@ text_buffer_add_text( text_buffer_t * self,
 
     text_buffer_add_wchar( self, pen, markup, text[0], 0 );
 
-    size_t i;
     for( i=1; i<length; ++i )
     {
         text_buffer_add_wchar( self, pen, markup, text[i], text[i-1] );
@@ -196,6 +196,9 @@ text_buffer_add_wchar( text_buffer_t * self,
     size_t i = 0;
     texture_font_t * font = markup->font;
     float gamma = markup->gamma;
+    texture_glyph_t *glyph;
+    texture_glyph_t *black;
+    float kerning = 0;
 
     // Maximum number of vertices is 20 (= 5x2 triangles) per glyph:
     //  - 2 triangles for background
@@ -216,15 +219,14 @@ text_buffer_add_wchar( text_buffer_t * self,
         return;
     }
         
-    texture_glyph_t *glyph = texture_font_get_glyph( font, current );
-    texture_glyph_t *black = texture_font_get_glyph( font, -1 );
+    glyph = texture_font_get_glyph( font, current );
+    black = texture_font_get_glyph( font, -1 );
         
     if( glyph == NULL )
     {
         return;
     }
     
-    float kerning = 0;
     if( i > 0)
     {
         kerning = texture_glyph_get_kerning( glyph, previous );
@@ -406,37 +408,39 @@ text_buffer_add_wchar( text_buffer_t * self,
     }
 
     // Actual glyph
-    float r = markup->foreground_color.r;
-    float g = markup->foreground_color.g;
-    float b = markup->foreground_color.b;
-    float a = markup->foreground_color.a;
-    float x0 = ( pen->x + glyph->offset_x );
-    float y0 = (int)( pen->y + glyph->offset_y );
-    float x1 = ( x0 + glyph->width );
-    float y1 = (int)( y0 - glyph->height );
-    float s0 = glyph->s0;
-    float t0 = glyph->t0;
-    float s1 = glyph->s1;
-    float t1 = glyph->t1;
+    {
+        float r = markup->foreground_color.r;
+        float g = markup->foreground_color.g;
+        float b = markup->foreground_color.b;
+        float a = markup->foreground_color.a;
+        float x0 = ( pen->x + glyph->offset_x );
+        float y0 = (int)( pen->y + glyph->offset_y );
+        float x1 = ( x0 + glyph->width );
+        float y1 = (int)( y0 - glyph->height );
+        float s0 = glyph->s0;
+        float t0 = glyph->t0;
+        float s1 = glyph->s1;
+        float t1 = glyph->t1;
 
-    SET_GLYPH_VERTEX(vertices[vcount+0],
-                     (int)x0,y0,0,  s0,t0,  r,g,b,a,  x0-((int)x0), gamma );
-    SET_GLYPH_VERTEX(vertices[vcount+1],
-                     (int)x0,y1,0,  s0,t1,  r,g,b,a,  x0-((int)x0), gamma );
-    SET_GLYPH_VERTEX(vertices[vcount+2],
-                     (int)x1,y1,0,  s1,t1,  r,g,b,a,  x1-((int)x1), gamma );
-    SET_GLYPH_VERTEX(vertices[vcount+3],
-                     (int)x1,y0,0,  s1,t0,  r,g,b,a,  x1-((int)x1), gamma );
-/*
-    vertices[vcount+0] =
-        (glyph_vertex_t) { (int)x0,y0,0,  s0,t0,  r,g,b,a,  x0-((int)x0), gamma };
-    vertices[vcount+1] =
-        (glyph_vertex_t) { (int)x0,y1,0,  s0,t1,  r,g,b,a,  x0-((int)x0), gamma };
-    vertices[vcount+2] =
-        (glyph_vertex_t) { (int)x1,y1,0,  s1,t1,  r,g,b,a,  x1-((int)x1), gamma };
-    vertices[vcount+3] =
-        (glyph_vertex_t) { (int)x1,y0,0,  s1,t0,  r,g,b,a,  x1-((int)x1), gamma };
-*/
+        SET_GLYPH_VERTEX(vertices[vcount+0],
+                         (int)x0,y0,0,  s0,t0,  r,g,b,a,  x0-((int)x0), gamma );
+        SET_GLYPH_VERTEX(vertices[vcount+1],
+                         (int)x0,y1,0,  s0,t1,  r,g,b,a,  x0-((int)x0), gamma );
+        SET_GLYPH_VERTEX(vertices[vcount+2],
+                         (int)x1,y1,0,  s1,t1,  r,g,b,a,  x1-((int)x1), gamma );
+        SET_GLYPH_VERTEX(vertices[vcount+3],
+                         (int)x1,y0,0,  s1,t0,  r,g,b,a,  x1-((int)x1), gamma );
+        /*
+           vertices[vcount+0] =
+           (glyph_vertex_t) { (int)x0,y0,0,  s0,t0,  r,g,b,a,  x0-((int)x0), gamma };
+           vertices[vcount+1] =
+           (glyph_vertex_t) { (int)x0,y1,0,  s0,t1,  r,g,b,a,  x0-((int)x0), gamma };
+           vertices[vcount+2] =
+           (glyph_vertex_t) { (int)x1,y1,0,  s1,t1,  r,g,b,a,  x1-((int)x1), gamma };
+           vertices[vcount+3] =
+           (glyph_vertex_t) { (int)x1,y0,0,  s1,t0,  r,g,b,a,  x1-((int)x1), gamma };
+           */
+    }
     indices[icount + 0] = vcount+0;
     indices[icount + 1] = vcount+1;
     indices[icount + 2] = vcount+2;

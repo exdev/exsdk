@@ -37,7 +37,7 @@ static inline bool ex_is_pow_of_2 ( uint _value ) {
 // ------------------------------------------------------------------
 
 static inline bool ex_is_aligned ( uint _value, uint _align ) {
-    ex_assert( ex_is_pow_of_2(_align), "_align must be pow of 2" );
+    ex_assert( ex_is_pow_of_2(_align) );
     return ( (_value & (_align-1)) == 0 );
 }
 

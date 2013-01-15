@@ -17,6 +17,7 @@
 #include "macro.h"
 #include "external.h"
 #include "types.h"
+#include "debug.h"
 
 // #################################################################################
 #endif // END DEFS_INC_H_1357286900

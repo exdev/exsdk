@@ -44,7 +44,7 @@ bool ex_quatf_inverse( ex_vec4f_t *_r ) {
 bool ex_quatf_get_inverse ( ex_vec4f_t *_r, const ex_vec4f_t *_q ) {
     float len_sqr;
 
-    ex_assert ( _r != _q, "can't use self as return value." );
+    ex_assert ( _r != _q );
 
     len_sqr = ex_quatf_lenSQR(_q);
     if ( len_sqr > 0.0f ) {

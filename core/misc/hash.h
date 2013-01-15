@@ -212,7 +212,7 @@ static inline uint32 _hashuse( int _method, const void *_str, uint32 _bytes ) {
         return ex_hashcrc ( 32, (uint8 *)_str, _bytes );
 
     default:
-        ex_assert( false, "hash method not found!" ); // NOTE: can't use ex_warning at header define before Debug/Log.h
+        ex_assert( false ); // NOTE: can't use ex_warning at header define before Debug/Log.h
         return 0;
     }
 }

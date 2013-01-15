@@ -73,6 +73,19 @@ static vertex_buffer_t *lines_buffer;
 console_t *
 console_new( void )
 {
+    texture_atlas_t * atlas;
+    ex_vec4f_t white = {{1,1,1,1}};
+    ex_vec4f_t black = {{0,0,0,1}};
+    ex_vec4f_t none = {{0,0,1,0}};
+    markup_t normal;
+    markup_t bold;
+    markup_t italic;
+    markup_t bold_italic;
+    markup_t faint;
+    markup_t error;
+    markup_t warning;
+    markup_t output;
+
     console_t *self = (console_t *) malloc( sizeof(console_t) );
     if( !self )
     {
@@ -90,13 +103,8 @@ console_new( void )
     self->handlers[__SIGNAL_HISTORY_PREV__] = 0;
     self->pen.x = self->pen.y = 0;
 
-    texture_atlas_t * atlas = texture_atlas_new( 512, 512, 1 );
- 
-    ex_vec4f_t white = {{1,1,1,1}};
-    ex_vec4f_t black = {{0,0,0,1}};
-    ex_vec4f_t none = {{0,0,1,0}};
+    atlas = texture_atlas_new( 512, 512, 1 );
 
-    markup_t normal;
     normal.family  = "fonts/VeraMono.ttf";
     normal.size    = 13.0;
     normal.bold    = 0;
@@ -134,35 +142,35 @@ console_new( void )
 */
     normal.font = texture_font_new( atlas, "fonts/VeraMono.ttf", 13 );
 
-    markup_t bold = normal;
+    bold = normal;
     bold.bold = 1;
     bold.font = texture_font_new( atlas, "fonts/VeraMoBd.ttf", 13 );
 
-    markup_t italic = normal;
+    italic = normal;
     italic.italic = 1;
     bold.font = texture_font_new( atlas, "fonts/VeraMoIt.ttf", 13 );
 
-    markup_t bold_italic = normal;
+    bold_italic = normal;
     bold.bold = 1;
     italic.italic = 1;
     italic.font = texture_font_new( atlas, "fonts/VeraMoBI.ttf", 13 );
 
-    markup_t faint = normal;
+    faint = normal;
     faint.foreground_color.r = 0.35;
     faint.foreground_color.g = 0.35;
     faint.foreground_color.b = 0.35;
 
-    markup_t error = normal;
+    error = normal;
     error.foreground_color.r = 1.00;
     error.foreground_color.g = 0.00;
     error.foreground_color.b = 0.00;
 
-    markup_t warning = normal;
+    warning= normal;
     warning.foreground_color.r = 1.00;
     warning.foreground_color.g = 0.50;
     warning.foreground_color.b = 0.50;
 
-    markup_t output = normal;
+    output = normal;
     output.foreground_color.r = 0.00;
     output.foreground_color.g = 0.00;
     output.foreground_color.b = 1.00;
@@ -195,30 +203,45 @@ console_add_glyph( console_t *self,
                    wchar_t previous,
                    markup_t *markup )
 {
+    float r;
+    float g;
+    float b;
+    float a;
+    int x0;
+    int y0;
+    int x1;
+    int y1;
+    float s0;
+    float t0;
+    float s1;
+    float t1;
+    GLuint indices[] = {0,1,2, 0,2,3};
+    
     texture_glyph_t *glyph  = texture_font_get_glyph( markup->font, current );
     if( previous != L'\0' )
     {
         self->pen.x += texture_glyph_get_kerning( glyph, previous );
     }
-    float r = markup->foreground_color.r;
-    float g = markup->foreground_color.g;
-    float b = markup->foreground_color.b;
-    float a = markup->foreground_color.a;
-    int x0  = self->pen.x + glyph->offset_x;
-    int y0  = self->pen.y + glyph->offset_y;
-    int x1  = x0 + glyph->width;
-    int y1  = y0 - glyph->height;
-    float s0 = glyph->s0;
-    float t0 = glyph->t0;
-    float s1 = glyph->s1;
-    float t1 = glyph->t1;
+    r = markup->foreground_color.r;
+    g = markup->foreground_color.g;
+    b = markup->foreground_color.b;
+    a = markup->foreground_color.a;
+    x0  = self->pen.x + glyph->offset_x;
+    y0  = self->pen.y + glyph->offset_y;
+    x1  = x0 + glyph->width;
+    y1  = y0 - glyph->height;
+    s0 = glyph->s0;
+    t0 = glyph->t0;
+    s1 = glyph->s1;
+    t1 = glyph->t1;
 
-    GLuint indices[] = {0,1,2, 0,2,3};
-    vertex_t vertices[] = { { x0,y0,0,  s0,t0,  r,g,b,a },
-                            { x0,y1,0,  s0,t1,  r,g,b,a },
-                            { x1,y1,0,  s1,t1,  r,g,b,a },
-                            { x1,y0,0,  s1,t0,  r,g,b,a } };
-    vertex_buffer_push_back( self->buffer, vertices, 4, indices, 6 );
+    {
+        vertex_t vertices[] = { { x0,y0,0,  s0,t0,  r,g,b,a },
+            { x0,y1,0,  s0,t1,  r,g,b,a },
+            { x1,y1,0,  s1,t1,  r,g,b,a },
+            { x1,y0,0,  s1,t0,  r,g,b,a } };
+        vertex_buffer_push_back( self->buffer, vertices, 4, indices, 6 );
+    }
     
     self->pen.x += glyph->advance_x;
     self->pen.y += glyph->advance_y;
@@ -231,17 +254,24 @@ void
 console_render( console_t *self )
 {
     int viewport[4];
+    size_t i, index;
+    int cursor_x;
+    int cursor_y;
+    markup_t markup;
+    float x;
+    float y1;
+    float y2;
+    point_t vertices[2];
+    GLuint indices[] = {0,1};
+
     glGetIntegerv( GL_VIEWPORT, viewport );
 
-    size_t i, index;
     self->pen.x = 0;
     self->pen.y = viewport[3];
     vertex_buffer_clear( console->buffer );
 
-    int cursor_x = self->pen.x;
-    int cursor_y = self->pen.y;
-
-    markup_t markup;
+    cursor_x = self->pen.x;
+    cursor_y = self->pen.y;
 
     // console_t buffer
     markup = self->markup[MARKUP_FAINT];
@@ -297,12 +327,12 @@ console_render( console_t *self )
 
     // Cursor
     vertex_buffer_clear( lines_buffer );
-    float x  = cursor_x+1;
-    float y1 = cursor_y+markup.font->descender;
-    float y2 = y1 + markup.font->height - markup.font->linegap;
-    point_t vertices[2] ={ {x, y1, markup.foreground_color},
-                           {x, y2, markup.foreground_color} };
-    GLuint indices[] = {0,1};
+    x  = cursor_x+1;
+    y1 = cursor_y+markup.font->descender;
+    y2 = y1 + markup.font->height - markup.font->linegap;
+
+    vertices[0].x = x; vertices[0].y = y1; vertices[0].color = markup.foreground_color;
+    vertices[1].x = x; vertices[1].y = y2; vertices[1].color = markup.foreground_color;
     vertex_buffer_push_back( lines_buffer, vertices, 2, indices, 2 );
 
     glColor4f(1,1,1,1);
@@ -344,6 +374,11 @@ console_connect( console_t *self,
 void
 console_print( console_t *self, wchar_t *text )
 {
+    wchar_t *last_line;
+    wchar_t *start;
+    wchar_t *end;
+    size_t len;
+
     // Make sure there is at least one line
     if( self->lines->count == 0 )
     {
@@ -352,7 +387,7 @@ console_print( console_t *self, wchar_t *text )
     }
 
     // Make sure last line does not end with '\n'
-    wchar_t *last_line = *(wchar_t **) ex_array_get( self->lines, self->lines->count-1 ) ;
+    last_line = *(wchar_t **) ex_array_get( self->lines, self->lines->count-1 ) ;
     if( wcslen( last_line ) != 0 )
     {
         if( last_line[wcslen( last_line ) - 1] == L'\n' )
@@ -363,9 +398,9 @@ console_print( console_t *self, wchar_t *text )
     }
     last_line = *(wchar_t **) ex_array_get( self->lines, self->lines->count-1 ) ;
 
-    wchar_t *start = text;
-    wchar_t *end   = wcschr(start, L'\n');
-    size_t len = wcslen( last_line );
+    start = text;
+    end   = wcschr(start, L'\n');
+    len = wcslen( last_line );
     if( end != NULL)
     {
         wchar_t *line = (wchar_t *) malloc( (len + end - start + 2)*sizeof( wchar_t ) );

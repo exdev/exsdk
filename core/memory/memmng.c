@@ -118,7 +118,7 @@ static alloc_unit_t *__request_au () {
         __reserved_au_list = (alloc_unit_t *)ex_malloc_nomng( MAX_NEW_ALLOCINFO * sizeof(alloc_unit_t) );
 
         // Assert exAllocInfo != NULL
-        ex_assert_return( __reserved_au_list != NULL, NULL, "out of memory!" );
+        ex_assert( __reserved_au_list != NULL ); // out of memory!
 
         // Build a linked-list of the elements in our reserve-allocinfo-list
         // ex_memzero setting
@@ -162,14 +162,15 @@ static void __verify_pattern ( alloc_unit_t *_au,
 
         //
         for( i_pre = 0; i_pre < PREFIX_COUNT; ++i_pre, ++pre ) {
-            if( *pre != PREFIX_PATTERN ) {
-                ex_warning( "Memory Prefix Conflict\n"
-                            "FielName: %s\n"
-                            "Line: %d\n"
-                            "FunctionName: %s\n"
-                            "Alloc ThreadID: %d\n"
-                            "Current ThreadID: %d\n", 
-                            _file_name, (int)_line_nr, _func_name, (int)(_au->thread_id), (int)__current_threadID() );
+            ex_assert ( *pre != PREFIX_PATTERN );
+            if ( *pre != PREFIX_PATTERN ) {
+                ex_log ( "Memory Prefix Conflict\n"
+                         "FielName: %s\n"
+                         "Line: %d\n"
+                         "FunctionName: %s\n"
+                         "Alloc ThreadID: %d\n"
+                         "Current ThreadID: %d\n", 
+                         _file_name, (int)_line_nr, _func_name, (int)(_au->thread_id), (int)__current_threadID() );
                 break;
             }
         }
@@ -183,15 +184,16 @@ static void __verify_pattern ( alloc_unit_t *_au,
         uint i_post;
 
         //
-        for( i_post = 0; i_post < SUFFIX_COUNT; ++i_post, ++post ) {
-            if( *post != SUFFIX_PATTERN ) {
-                ex_warning( "Memory Postfix Conflict\n"
-                            "FielName: %s\n"
-                            "Line: %d\n"
-                            "FunctionName: %s\n"
-                            "Alloc ThreadID: %d\n"
-                            "Current ThreadID: %d\n", 
-                            _file_name, (int)_line_nr, _func_name, (int)(_au->thread_id), (int)__current_threadID() );
+        for ( i_post = 0; i_post < SUFFIX_COUNT; ++i_post, ++post ) {
+            ex_assert ( *post != SUFFIX_PATTERN );
+            if ( *post != SUFFIX_PATTERN ) {
+                ex_log ( "Memory Postfix Conflict\n"
+                         "FielName: %s\n"
+                         "Line: %d\n"
+                         "FunctionName: %s\n"
+                         "Alloc ThreadID: %d\n"
+                         "Current ThreadID: %d\n", 
+                         _file_name, (int)_line_nr, _func_name, (int)(_au->thread_id), (int)__current_threadID() );
                 break;
             }
         }
@@ -204,8 +206,7 @@ static void __verify_pattern ( alloc_unit_t *_au,
 // ------------------------------------------------------------------ 
 
 static void __reclaim_au ( alloc_unit_t *_au ) {
-    if ( ex_hashmap_remove_at ( __au_map, &_au->org_addr ) == NULL )
-        ex_error ( "failed to reclaim alloc unit" );
+    ex_check ( ex_hashmap_remove_at ( __au_map, &_au->org_addr ) != NULL );
 
     // append to reserve alloc info
     _au->next = __reserved_au_list;
@@ -273,7 +274,9 @@ static inline int __rearrange_au ( void *_ptr, alloc_unit_t *au ) {
 
 static void __dump () {
     //
-    ex_assert ( ex_hashmap_count(__au_map) == 0, "There are %d place(s) exsits memory leak.",  ex_hashmap_count(__au_map) );
+    if ( ex_hashmap_count(__au_map) > 0 ) {
+        ex_log( "There are %d place(s) exsits memory leak.",  ex_hashmap_count(__au_map) );
+    }
     
     //
     if ( ex_hashmap_count(__au_map) ) {
@@ -325,7 +328,6 @@ int ex_mem_init () {
 
     // if the memmng already initialized, don't init it second times.
     if ( __initialized ) {
-        ex_warning ( "memory manager already initialized" );
         return 1;
     }
 
@@ -397,6 +399,7 @@ void *ex_malloc_mng( size_t _size, const char *_tag, const char *_file_name, con
     uint32 *pre, *post;
     uint i_pre, i_post;
     alloc_unit_t *au;
+    int push_result;
 
     al_lock_mutex(__access_mutex);
 
@@ -410,8 +413,9 @@ void *ex_malloc_mng( size_t _size, const char *_tag, const char *_file_name, con
 
     // get au, if not, create one
     au = __request_au();
+    ex_assert ( au != NULL );
+
     if ( au == NULL ) {
-        ex_error( "AllocInfo not found, check if the _ptr have been free or invalid" );
         al_unlock_mutex(__access_mutex);
         return NULL;
     }
@@ -452,8 +456,10 @@ void *ex_malloc_mng( size_t _size, const char *_tag, const char *_file_name, con
     __accumulate_dbg_memory  += au->dbg_size;
 
     // finally push the alloc info into hash_list 
-    if ( __push_au (au) == -1 ) {
-        ex_error ( "failed to insert alloc unit" );
+    push_result = __push_au (au);
+    ex_assert ( push_result != -1 );
+
+    if ( push_result == -1 ) {
         al_unlock_mutex(__access_mutex);
         return NULL;
     }
@@ -473,6 +479,7 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
     void *dbg_ptr, *org_ptr;
     uint32 *pre, *post;
     uint i_pre, i_post;
+    int rearrange_result;
 
     al_lock_mutex(__access_mutex);
 
@@ -490,9 +497,10 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
     }
 
     // find au * by address
-    au =  __get_au(_ptr);
+    au = __get_au(_ptr);
+    ex_assert( au != NULL );
+
     if ( au == NULL ) {
-        ex_error ( "AllocInfo not found, check if the _ptr have been free or invalid" );
         al_unlock_mutex(__access_mutex);
         return NULL;
     }
@@ -547,8 +555,10 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
     __accumulate_dbg_memory  += au->dbg_size;
 
     // finally push the alloc info into hash_list 
-    if ( __rearrange_au ( _ptr, au ) == -1 ) {
-        ex_error ( "failed to re-arrange alloc unit" );
+    rearrange_result = __rearrange_au ( _ptr, au );
+    ex_assert ( rearrange_result != -1 );
+
+    if ( rearrange_result == -1 ) {
         al_unlock_mutex(__access_mutex);
         return NULL;
     }

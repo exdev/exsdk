@@ -63,14 +63,14 @@ static inline double ex_saturate ( double _x ) {
 */// ------------------------------------------------------------------ 
 
 static inline float ex_clampf ( float _x, float _min, float _max ) {
-    ex_assert ( _min < _max, "the _min must less than _max" );
+    ex_assert ( _min < _max );
     if (_x < _min) return _min;
     if (_x > _max) return _max;
     return _x;
 }
 
 static inline double ex_clamp ( double _x, double _min, double _max ) {
-    ex_assert ( _min < _max, "the _min must less than _max" );
+    ex_assert ( _min < _max );
     if (_x < _min) return _min;
     if (_x > _max) return _max;
     return _x;
@@ -119,15 +119,15 @@ static inline double ex_lerp ( double _from, double _to, double _ratio ) {
 */// ------------------------------------------------------------------ 
 
 static inline float ex_unit_remapf ( float _value, float _min, float _max ) {
-    ex_assert ( _min < _max, "the _min value must less than _max" );
-    ex_assert ( _value <= _max && _value >= _min, "_value must between [_min,_max]" );
+    ex_assert ( _min < _max );
+    ex_assert ( _value <= _max && _value >= _min );
 
     return (_value - _min) / (_max - _min);
 }
 
 static inline double ex_unit_remap ( double _value, double _min, double _max ) {
-    ex_assert ( _min < _max, "the _min value must less than _max" );
-    ex_assert ( _value <= _max && _value >= _min, "_value must between [_min,_max]" );
+    ex_assert ( _min < _max );
+    ex_assert ( _value <= _max && _value >= _min );
 
     return (_value - _min) / (_max - _min);
 }
@@ -158,9 +158,9 @@ static inline float ex_remapf ( float _value,
                          float _to_min, float _to_max ) {
     float ratio;
 
-    ex_assert ( _from_min < _from_max, "the _from_min value must less than _from_max" );
-    ex_assert ( _to_min < _to_max, "the _to_min value must less than _to_max" );
-    ex_assert ( _value <= _from_max && _value >= _from_min, "_value must between [_from_min,_from_max]" );
+    ex_assert ( _from_min < _from_max );
+    ex_assert ( _to_min < _to_max );
+    ex_assert ( _value <= _from_max && _value >= _from_min );
 
     ratio = (_value - _from_min) / (_from_max - _from_min);
     return ex_lerpf( _to_min, _to_max, ratio );
@@ -171,9 +171,9 @@ static inline double ex_remap ( double _value,
                          double _to_min, double _to_max ) {
     double ratio;
 
-    ex_assert ( _from_min < _from_max, "the _from_min value must less than _from_max" );
-    ex_assert ( _to_min < _to_max, "the _to_min value must less than _to_max" );
-    ex_assert ( _value <= _from_max && _value >= _from_min, "_value must between [_from_min,_from_max]" );
+    ex_assert ( _from_min < _from_max );
+    ex_assert ( _to_min < _to_max );
+    ex_assert ( _value <= _from_max && _value >= _from_min );
 
     ratio = (_value - _from_min) / (_from_max - _from_min);
     return ex_lerp( _to_min, _to_max, ratio );

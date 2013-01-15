@@ -72,7 +72,7 @@ static inline void ex_quatf_set ( ex_vec4f_t *_r, float _x, float _y, float _z, 
 
 static inline void ex_quatf_set_from_axis_radians ( ex_vec4f_t *_r, const ex_vec3f_t *_axis, float _radians ) { 
     float half_radian;
-    ex_assert( ex_vec3f_is_normalized(_axis), "axis have not been normalized." );
+    ex_assert( ex_vec3f_is_normalized(_axis) );
 
     half_radian = _radians * 0.5f;
 
@@ -129,7 +129,7 @@ static inline void ex_quatf_neg ( ex_vec4f_t *_r ) { _r->x = -_r->x; _r->y = -_r
 */// ------------------------------------------------------------------ 
 
 static inline void ex_quatf_get_neg ( ex_vec4f_t *_r, const ex_vec4f_t *_q ) { 
-    ex_assert ( _r != _q, "can't use self as return value." );
+    ex_assert ( _r != _q );
     _r->x = -_q->x; 
     _r->y = -_q->y; 
     _r->z = -_q->z; 

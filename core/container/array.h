@@ -302,9 +302,7 @@ extern void *ex_array_insert_range ( ex_array_t *_array, size_t _idx, const void
 
 extern void ex_array_ncpy ( ex_array_t *_to, const void *_buf, size_t _count );
 static inline void ex_array_cpy ( ex_array_t *_to, const ex_array_t *_from ) {
-    ex_assert_return ( _to->element_bytes == _from->element_bytes,
-                       /*dummy*/,
-                       "failed to copy array, the element type and bytes are not the same." );
+    ex_assert ( _to->element_bytes == _from->element_bytes );
     ex_array_ncpy ( _to, _from->data, _from->count );
 }
 

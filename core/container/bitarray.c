@@ -77,7 +77,7 @@ ex_bitarray_t *ex_bitarray_new_with_allocator ( size_t _bitcount,
 void ex_bitarray_delete ( ex_bitarray_t *_bitarray ) {
     void  (*dealloc) ( void * ) = _bitarray->dealloc;
 
-    ex_assert_return( _bitarray != NULL, /*void*/, "NULL input" );
+    ex_assert( _bitarray != NULL );
 
     _bitarray->dealloc(_bitarray->data);
     _bitarray->data = NULL;
@@ -99,7 +99,7 @@ int ex_bitarray_get ( const ex_bitarray_t *_bitarray, size_t _idx )
 {
     char *ptr;
 
-    ex_assert_return ( _idx >= 0 && _idx < _bitarray->count, -1, "_idx is out of range" );
+    ex_assert ( _idx >= 0 && _idx < _bitarray->count );
     ptr = _bitarray->data + _idx / 8;
     return ( *ptr & (1 << (_idx % 8) ) ) != 0; /* 0 or 1 */
 }
@@ -112,8 +112,8 @@ void ex_bitarray_set ( ex_bitarray_t *_bitarray, size_t _idx, int _value )
 {
     char *ptr;
 
-    ex_assert_return ( _idx >= 0 && _idx < _bitarray->count, /*void*/, "_idx is out of range." );
-    ex_assert_return ( _value == 0 || _value == 1, /*void*/, "invalid input value, should be 0 or 1." );
+    ex_assert ( _idx >= 0 && _idx < _bitarray->count );
+    ex_assert ( _value == 0 || _value == 1 );
 
     ptr = _bitarray->data + _idx / 8;
     if ( _value )

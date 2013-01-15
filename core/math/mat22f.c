@@ -81,7 +81,7 @@ bool ex_mat22f_inverse ( ex_mat22f_t *_m ) {
 bool ex_mat22f_get_inverse ( const ex_mat22f_t *_m, ex_mat22f_t *_r ) {
     float det, inv;
 
-    ex_assert ( _r != _m, "can't use self as return value." );
+    ex_assert ( _r != _m );
     
     det = _m->m00 * _m->m11 - _m->m10 * _m->m01;
     if ( ex_is_zerof( det, EX_FLOAT_EPS ) )

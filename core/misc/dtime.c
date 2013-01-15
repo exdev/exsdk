@@ -66,7 +66,7 @@ bool ex_is_valid_dtime2 ( uint _ms ) {
 
 dtime_t ex_dtime_from ( uint _hour, uint _min, uint _secs, uint _ms ) {
     if ( !ex_is_valid_dtime( _hour, _min, _secs, _ms ) ) {
-        ex_warning ( "can't set time (%dh,%dm,%ds,%dms). the value is invalid!", _hour, _min, _secs, _ms );
+        ex_log ( "can't set time (%dh,%dm,%ds,%dms). the value is invalid!", _hour, _min, _secs, _ms );
         return EX_DTIME_INVALID;
     }
     return _hour*__MSECS_PER_HOUR 

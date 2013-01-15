@@ -100,8 +100,10 @@ vertex_buffer_new( const char *format )
     start = format;
     do
     {
-        end = (char *) (strchr(start+1, ':'));
         char *desc = 0;
+        vertex_attribute_t *attribute;
+
+        end = (char *) (strchr(start+1, ':'));
         if (end == NULL)
         {
             desc = strdup( start );
@@ -110,7 +112,7 @@ vertex_buffer_new( const char *format )
         {
             desc = strndup( start, end-start );
         }
-        vertex_attribute_t *attribute = vertex_attribute_parse( desc );
+        attribute = vertex_attribute_parse( desc );
         start = end+1;
         free(desc);
         attribute->pointer = pointer;
@@ -145,10 +147,9 @@ vertex_buffer_new( const char *format )
 void
 vertex_buffer_delete( vertex_buffer_t *self )
 {
-    assert( self );
-
     size_t i;
 
+    assert( self );
 
     for( i=0; i<MAX_VERTEX_ATTRIBUTE; ++i )
     {
@@ -211,9 +212,9 @@ vertex_buffer_size( const vertex_buffer_t *self )
 void
 vertex_buffer_print( vertex_buffer_t * self )
 {
-    assert(self);
-
     int i = 0;
+
+    assert(self);
 
     fprintf( stderr, "%ld vertices, %ld indices\n",
              ex_array_count( self->vertices ), ex_array_count( self->indices ) );
@@ -269,6 +270,9 @@ vertex_buffer_print( vertex_buffer_t * self )
 void
 vertex_buffer_upload ( vertex_buffer_t *self )
 {
+    size_t vsize;
+    size_t isize;
+
     if( self->state == FROZEN )
     {
         return;
@@ -283,8 +287,8 @@ vertex_buffer_upload ( vertex_buffer_t *self )
         glGenBuffers( 1, &self->indices_id );
     }
 
-    size_t vsize = self->vertices->count*self->vertices->element_bytes;
-    size_t isize = self->indices->count*self->indices->element_bytes;
+    vsize = self->vertices->count*self->vertices->element_bytes;
+    isize = self->indices->count*self->indices->element_bytes;
 
 
     // Always upload vertices first such that indices do not point to non
@@ -342,6 +346,8 @@ void
 vertex_buffer_render_setup ( vertex_buffer_t *self,
                              GLenum mode, const char *what )
 {
+    size_t i;
+
     if( self->state != CLEAN )
     {
         vertex_buffer_upload( self );
@@ -351,7 +357,6 @@ vertex_buffer_render_setup ( vertex_buffer_t *self,
     glPushClientAttrib( GL_CLIENT_VERTEX_ARRAY_BIT );
     glBindBuffer( GL_ARRAY_BUFFER, self->vertices_id );
 
-    size_t i;
     for( i=0; i<MAX_VERTEX_ATTRIBUTE; ++i )
     {
         vertex_attribute_t *attribute = self->attributes[i];
@@ -393,10 +398,12 @@ void
 vertex_buffer_render_item ( vertex_buffer_t *self,
                             size_t index )
 { 
+    ex_vec4i_t *item;
+
     assert( self );
     assert( index < ex_array_count( self->items ) );
 
-    ex_vec4i_t * item = (ex_vec4i_t *) ex_array_get( self->items, index );
+    item = (ex_vec4i_t *) ex_array_get( self->items, index );
 
     if( self->indices->count )
     {
@@ -488,13 +495,14 @@ vertex_buffer_insert_vertices( vertex_buffer_t *self,
                                void *vertices,
                                size_t vcount )
 {
+    size_t i;
+
     assert( self );
     assert( self->vertices );
     assert( index < self->vertices->count+1 );
 
     self->state |= DIRTY;
 
-    size_t i;
     for( i=0; i<self->indices->count; ++i )
     {
         if( *(GLuint *)(ex_array_get ( self->indices, i )) > index )
@@ -531,6 +539,8 @@ vertex_buffer_erase_vertices( vertex_buffer_t *self,
                               size_t first,
                               size_t last )
 {
+    size_t i;
+
     assert( self );
     assert( self->vertices );
     assert( first < self->vertices->count );
@@ -538,7 +548,6 @@ vertex_buffer_erase_vertices( vertex_buffer_t *self,
     assert( last > first );
 
     self->state |= DIRTY;
-    size_t i;
     for( i=0; i<self->indices->count; ++i )
     {
         if( *(GLuint *)(ex_array_get( self->indices, i )) > first )
@@ -567,6 +576,11 @@ vertex_buffer_insert( vertex_buffer_t * self, size_t index,
                       void * vertices, size_t vcount,  
                       GLuint * indices, size_t icount )
 {
+    size_t vstart;
+    size_t istart;
+    size_t i;
+    ex_vec4i_t item;
+
     assert( self );
     assert( vertices );
     assert( indices );
@@ -574,22 +588,24 @@ vertex_buffer_insert( vertex_buffer_t * self, size_t index,
     self->state = FROZEN;
 
     // Push back vertices
-    size_t vstart = ex_array_count( self->vertices );
+    vstart = ex_array_count( self->vertices );
     vertex_buffer_push_back_vertices( self, vertices, vcount );
 
     // Push back indices
-    size_t istart = ex_array_count( self->indices );
+    istart = ex_array_count( self->indices );
     vertex_buffer_push_back_indices( self, indices, icount );
 
     // Update indices within the vertex buffer
-    size_t i;
     for( i=0; i<icount; ++i )
     {
         *(GLuint *)(ex_array_get ( self->indices, istart+i )) += vstart;
     }
     
     // Insert item
-    ex_vec4i_t item = {{ vstart, vcount, istart, icount }};
+    item.x = vstart;
+    item.y = vcount;
+    item.z = istart;
+    item.w = icount;
     ex_array_insert ( self->items, index, &item );
 
     self->state = DIRTY;
@@ -601,21 +617,27 @@ void
 vertex_buffer_erase( vertex_buffer_t * self,
                      size_t index )
 {
+    ex_vec4i_t * item;
+    size_t vstart;
+    size_t vcount;
+    size_t istart;
+    size_t icount;
+    size_t i;
+
     assert( self );
     assert( index < ex_array_count ( self->items ) );
 
-    ex_vec4i_t * item = (ex_vec4i_t *) ex_array_get ( self->items, index );
-    size_t vstart = item->x;
-    size_t vcount = item->y;
-    size_t istart = item->z;
-    size_t icount = item->w;
+    item = (ex_vec4i_t *) ex_array_get ( self->items, index );
+    vstart = item->x;
+    vcount = item->y;
+    istart = item->z;
+    icount = item->w;
 
     // Update items
-    size_t i;
     for( i=0; i<ex_array_count(self->items); ++i )
     {
         ex_vec4i_t * item = (ex_vec4i_t *) ex_array_get( self->items, i );
-        if( item->x > vstart)
+        if ( item->x > vstart)
         {
             item->x -= vcount;
             item->z -= icount;

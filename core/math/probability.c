@@ -113,6 +113,7 @@ int ex_cdf_gen_index ( float *_cdf, int _num_cdf ) {
         if ( y < _cdf[i] )
             return i;
     }
-    ex_assert( false, "can't find valid result from incoming cdf." );
+
+    ex_assert( false ); // "can't find valid result from incoming cdf."
     return -1;
 }

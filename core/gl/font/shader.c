@@ -67,11 +67,12 @@ GLuint
 shader_compile( const char* source,
                 const GLenum type )
 {
+    GLint compile_status;
+
     GLuint handle = glCreateShader( type );
     glShaderSource( handle, 1, &source, 0 );
     glCompileShader( handle );
 
-    GLint compile_status;
     glGetShaderiv( handle, GL_COMPILE_STATUS, &compile_status );
     if( compile_status == GL_FALSE )
     {
@@ -89,6 +90,8 @@ GLuint
 shader_load( const char * vert_filename,
               const char * frag_filename )
 {
+    GLint link_status;
+
     GLuint handle = glCreateProgram( );
 
     if( vert_filename && strlen( vert_filename ) )
@@ -107,7 +110,6 @@ shader_load( const char * vert_filename,
     }
 
     glLinkProgram( handle );
-    GLint link_status;
     glGetProgramiv( handle, GL_LINK_STATUS, &link_status );
     if (link_status == GL_FALSE)
     {

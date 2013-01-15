@@ -231,7 +231,7 @@ ex_pool_t *ex_pool_new_with_allocator ( size_t _element_bytes, size_t _count,
 void ex_pool_delete ( ex_pool_t *_pool ) {
     void  (*dealloc) ( void * ) = _pool->dealloc;
 
-    ex_assert_return( _pool != NULL, /*void*/, "NULL input" );
+    ex_assert( _pool != NULL );
 
     _pool->dealloc(_pool->data);
     _pool->data = NULL;
@@ -297,7 +297,7 @@ int ex_pool_add_new ( ex_pool_t *_pool, void **_node ) {
     int idx = -1;
 
     node = __request_free_node(_pool);
-    ex_assert ( node != NULL, "error: can't get freed nodes." );
+    ex_assert ( node != NULL );
 
     __push_to_used( _pool, node );
     idx = node - _pool->nodes;
@@ -317,7 +317,7 @@ int ex_pool_add ( ex_pool_t *_pool, const void *_value ) {
     int idx = -1;
 
     node = __request_free_node(_pool);
-    ex_assert ( node != NULL, "error: can't get freed nodes." );
+    ex_assert ( node != NULL );
 
     __push_to_used( _pool, node );
     idx = node - _pool->nodes;
@@ -337,9 +337,7 @@ int ex_pool_add ( ex_pool_t *_pool, const void *_value ) {
 
 void ex_pool_cpy ( ex_pool_t *_to, const ex_pool_t *_from ) {
     int i;
-    ex_assert_return ( _to->element_bytes == _from->element_bytes,
-                       /*dummy*/,
-                       "failed to copy pool, the element type and bytes are not the same." );
+    ex_assert ( _to->element_bytes == _from->element_bytes );
 
     if ( _to->capacity < _from->capacity ) {
         _to->capacity = _from->capacity;
@@ -384,8 +382,8 @@ bool ex_pool_isvalid ( const ex_pool_t *_pool, int _idx ) {
 // ------------------------------------------------------------------ 
 
 void *ex_pool_remove_at ( ex_pool_t *_pool, int _idx ) {
-    ex_assert_return( _idx >= 0 && _idx < (int)_pool->capacity, NULL, "error: _idx out of range" );
-    ex_assert_return( ex_bitarray_get(_pool->used_bits, _idx) == 1, NULL, "error: the node is not in used." );
+    ex_assert( _idx >= 0 && _idx < (int)_pool->capacity );
+    ex_assert( ex_bitarray_get(_pool->used_bits, _idx) == 1 );
 
     return __remove_at ( _pool, _idx );
 }
@@ -409,8 +407,8 @@ void *ex_pool_remove_at_safe ( ex_pool_t *_pool, int _idx ) {
 
 void *ex_pool_get ( const ex_pool_t *_pool, int _idx )
 {
-    ex_assert_return( _idx >= 0 && (size_t)_idx < _pool->capacity, NULL, "error: _idx out of range" );
-    // ex_assert_return( ex_bitarray_get(_pool->used_bits, _idx) == 1, NULL, "error: the node is not in used." );
+    ex_assert( _idx >= 0 && (size_t)_idx < _pool->capacity );
+    // ex_assert( ex_bitarray_get(_pool->used_bits, _idx) == 1, NULL, "error: the node is not in used." );
     if ( ex_bitarray_get(_pool->used_bits, _idx) != 1 )
         return NULL;
 

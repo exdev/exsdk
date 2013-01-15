@@ -97,7 +97,7 @@ void ex_list_delete ( ex_list_t *_list ) {
     ex_list_node_t *tmp,*node;
     void  (*dealloc) ( void * ) = _list->dealloc;
 
-    ex_assert_return( _list != NULL, /*void*/, "NULL input" );
+    ex_assert( _list != NULL );
 
     node = _list->head;
     while ( node != NULL ) {
@@ -178,7 +178,7 @@ void ex_list_insert_back ( ex_list_t *_list, ex_list_node_t *_at, const void *_v
 {
     ex_list_node_t *node = NULL;
 
-    ex_assert_return ( _at != NULL, /*void*/, "the insert position can't be NULL!" );
+    ex_assert ( _at != NULL );
 
     // allocate the node
     node = __alloc_node ( _list, _value );
@@ -205,7 +205,7 @@ void ex_list_insert_front ( ex_list_t *_list, ex_list_node_t *_at, const void *_
 {
     ex_list_node_t *node = NULL;
 
-    ex_assert_return ( _at != NULL, /*void*/, "the insert position can't be NULL!" );
+    ex_assert ( _at != NULL );
 
     // allocate the node
     node = __alloc_node ( _list, _value );
@@ -232,13 +232,13 @@ ex_list_node_t *ex_list_remove_at ( ex_list_t *_list, ex_list_node_t *_at )
 {
     ex_list_node_t *next_node;
 
-    ex_assert_return ( _at != NULL, NULL, "the insert position can't be NULL!" );
+    ex_assert ( _at != NULL );
 
     next_node = _at->next;
 
     // if only one node in the list
     if ( _list->head == _list->tail ) {
-        ex_assert_return ( _at == _list->head, NULL, "invalid input node." );
+        ex_assert ( _at == _list->head );
         _list->head = _list->tail = NULL;
     }
     else if ( _at == _list->head ) {

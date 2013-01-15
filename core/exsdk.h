@@ -13,7 +13,6 @@
 // low-level system
 #include "defs/defs_inc.h"
 #include "memory/memory_inc.h"
-#include "debug/debug_inc.h"
 #include "misc/misc_inc.h"
 
 // data structure and algorithm

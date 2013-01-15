@@ -55,9 +55,9 @@ void __hashmap_init ( ex_hashmap_t *_hashmap,
                     ) 
 {
     // check if the count is pow of 2, if not, calc the nearest pow of 2 of the count.
-    ex_assert_exec( ex_is_pow_of_2(_count), 
-                    _count = __ceilpow2u(_count), 
-                    "hash count must be power of 2, for bit operation & instead of %" );
+    if ( ex_is_pow_of_2(_count) == false ) {
+        _count = __ceilpow2u(_count);
+    }
 
     _hashmap->alloc = _alloc;
     _hashmap->realloc = _realloc;
@@ -153,7 +153,7 @@ ex_hashmap_t *ex_hashmap_new_with_allocator ( size_t _key_bytes, size_t _value_b
 void ex_hashmap_delete ( ex_hashmap_t *_hashmap ) {
     void  (*dealloc) ( void * ) = _hashmap->dealloc;
 
-    ex_assert_return( _hashmap != NULL, /*void*/, "NULL input" );
+    ex_assert( _hashmap != NULL );
 
     _hashmap->dealloc (_hashmap->values);
     _hashmap->values = NULL;
@@ -322,16 +322,9 @@ bool ex_hashmap_set ( ex_hashmap_t *_hashmap, const void *_key, const void *_val
 // ------------------------------------------------------------------ 
 
 void ex_hashmap_cpy ( ex_hashmap_t *_to, const ex_hashmap_t *_from ) {
-    ex_assert_return ( _to->key_bytes == _from->key_bytes,
-                       /*dummy*/,
-                       "failed to copy hashmap, the key type and bytes are not the same." );
-    ex_assert_return ( _to->value_bytes == _from->value_bytes,
-                       /*dummy*/,
-                       "failed to copy hashmap, the value type and bytes are not the same." );
-    ex_assert_return ( _to->hashkey == _from->hashkey &&
-                       _to->keycmp == _from->keycmp,
-                       /*dummy*/,
-                       "failed to copy hashmap, the hashkey, keycmp function are not the same." );
+    ex_assert ( _to->key_bytes == _from->key_bytes );
+    ex_assert ( _to->value_bytes == _from->value_bytes );
+    ex_assert ( _to->hashkey == _from->hashkey && _to->keycmp == _from->keycmp );
 
     //
     if ( _to->capacity < _from->capacity ) {
@@ -363,8 +356,8 @@ void *ex_hashmap_remove_at ( ex_hashmap_t *_hashmap, const void *_key ) {
         }
     }
 
+    // the key is not found!
     if ( hash_next == -1 ) {
-        ex_warning ( "the key is not found!" );
         return NULL;
     }
 

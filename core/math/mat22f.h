@@ -76,8 +76,8 @@ static inline void ex_mat22f_set_by_radians ( ex_mat22f_t *_m, float _rad ) {
 */// ------------------------------------------------------------------ 
 
 static inline float ex_mat22f_m_get ( const ex_mat22f_t *_m, uint _row, uint _col ) { 
-    ex_assert( _row >= 0 && _row < 2, "out of range" );
-    ex_assert( _col >= 0 && _col < 2, "out of range" );
+    ex_assert( _row >= 0 && _row < 2 );
+    ex_assert( _col >= 0 && _col < 2 );
     return _m->m[2*_row+_col];
 }
 
@@ -93,8 +93,8 @@ static inline float ex_mat22f_m_get ( const ex_mat22f_t *_m, uint _row, uint _co
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat22f_m_set ( ex_mat22f_t *_m, uint _row, uint _col, float _v ) { 
-    ex_assert( _row >= 0 && _row < 2, "out of range" );
-    ex_assert( _col >= 0 && _col < 2, "out of range" );
+    ex_assert( _row >= 0 && _row < 2 );
+    ex_assert( _col >= 0 && _col < 2 );
     _m->m[2*_row+_col] = _v;
 }
 
@@ -114,7 +114,7 @@ static inline void ex_mat22f_m_set ( ex_mat22f_t *_m, uint _row, uint _col, floa
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat22f_row ( ex_vec2f_t *_r, const ex_mat22f_t *_m, uint _row ) {
-    ex_assert( _row >= 0 && _row < 2, "out of range" );
+    ex_assert( _row >= 0 && _row < 2 );
     _r->x = _m->m[2*_row+0]; 
     _r->y = _m->m[2*_row+1]; 
 }
@@ -135,7 +135,7 @@ static inline void ex_mat22f_row ( ex_vec2f_t *_r, const ex_mat22f_t *_m, uint _
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat22f_col ( ex_vec2f_t *_r, const ex_mat22f_t *_m, uint _col ) {
-    ex_assert( _col >= 0 && _col < 2, "out of range" );
+    ex_assert( _col >= 0 && _col < 2 );
     _r->x = _m->m[2*0+_col]; 
     _r->y = _m->m[2*1+_col]; 
 }
@@ -178,7 +178,7 @@ static inline void ex_mat22f_neg ( ex_mat22f_t *_m ) {
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat22f_get_neg ( const ex_mat22f_t *_m, ex_mat22f_t *_r ) {
-    ex_assert ( _r != _m, "can't use self as return value." );
+    ex_assert ( _r != _m );
     _r->m00 = -_m->m00, _r->m01 = -_m->m01; 
     _r->m10 = -_m->m10, _r->m11 = -_m->m11; 
 }
@@ -221,7 +221,7 @@ static inline void ex_mat22f_abs ( ex_mat22f_t *_m ) {
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat22f_get_abs ( const ex_mat22f_t *_m, ex_mat22f_t *_r ) {
-    ex_assert ( _r != _m, "can't use self as return value." );
+    ex_assert ( _r != _m );
     _r->m00 = fabsf(_m->m00), _r->m01 = fabsf(_m->m01); 
     _r->m10 = fabsf(_m->m10), _r->m11 = fabsf(_m->m11); 
 }
@@ -499,7 +499,7 @@ static inline void ex_mat22f_transpose ( ex_mat22f_t *_m ) {
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat22f_get_transpose ( const ex_mat22f_t *_m, ex_mat22f_t *_r ) {
-    ex_assert ( _r != _m, "can't use self as return value." );
+    ex_assert ( _r != _m );
     _r->m00 = _m->m00, _r->m01 = _m->m10;
     _r->m10 = _m->m01, _r->m11 = _m->m11;
 }

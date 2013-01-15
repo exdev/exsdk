@@ -71,7 +71,7 @@ ex_uid_t ex_generate_uid () {
 
     // if the offset over 1024, we will have same uid fatal error!!
     if ( __offset >= 1024 ) {
-        ex_error ("uid generate error, generate over 1024 uid in 1-ms.");
+        ex_assert ( false ); // uid generate error, generate over 1024 uid in 1-ms.
         return EX_UID_INVALID;
     }
     __last_date = cur_date;

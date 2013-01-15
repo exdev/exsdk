@@ -204,27 +204,6 @@ extern "C" {
  */
 
 ///////////////////////////////////////////////////////////////////////////////
-// config
-///////////////////////////////////////////////////////////////////////////////
-
-// ------------------------------------------------------------------
-// Desc: Enable Assert or not
-// Params: SERIOUS
-//         NORMAL
-//         DISABLE
-// ------------------------------------------------------------------
-
-#define SERIOUS 0
-#define NORMAL  1
-#define DISABLE 2
-
-#ifdef EX_DEBUG
-    #define EX_DEBUG_LEVEL SERIOUS // could be NORMAL
-#elif defined (EX_RELEASE)
-    #define EX_DEBUG_LEVEL DISABLE
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 // function decl
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -237,33 +216,20 @@ extern void ex_log_deinit ();
 extern bool ex_log_initialized ();
 extern void ex_log ( const char *_fmt, ... );
 
+#ifdef EX_DEBUG
+    #define ex_log_func() ex_log ("%s", EX_FUNC_INFO);
+#else
+    #define ex_log_func()
+#endif
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_show_last_error ();
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern bool __assert_failed ( bool *_do_hw_break, 
-                              const char *_file_name, 
+extern void __assert_failed ( const char *_file_name, 
                               const char *_function_name, 
                               size_t _line_nr, 
-                              const char *_expr,
-                              const char *_msg,
-                              ... );
-extern void __log_error ( const char *_file_name, 
-                          const char *_function_name, 
-                          size_t _line_nr, 
-                          const char *_expr, 
-                          ... );
-extern void __log_warning ( const char *_file_name, 
-                            const char *_function_name, 
-                            size_t _line_nr, 
-                            const char *_expr, 
-                            ... );
+                              const char *_expr );
 
 ///////////////////////////////////////////////////////////////////////////////
 // help macors 
@@ -301,132 +267,26 @@ extern void __log_warning ( const char *_file_name,
 #define EX_HW_BREAK_IF(_expr) { if(!!(_expr)) EX_HW_BREAK(); }
 
 // ------------------------------------------------------------------ 
-// Desc: ex_log, ex_warning, ex_error
+// Desc: 
 // ------------------------------------------------------------------ 
 
-// ======================================================== 
-// internal warning/error break macro  
-// ======================================================== 
-
-// __EX_ERROR_BREAK
-#define __EX_ERROR_BREAK(_msg,...) \
+#define __EX_ASSERT_BREAK(_expr) \
 	do { \
-		static bool __do_hw_break = true; \
-        __log_error( __FILE__, __FUNCTION__, __LINE__, _msg, ##__VA_ARGS__ ); \
-		if ( __do_hw_break ) { \
+        if ( !(_expr) ) \
+        { \
+            __assert_failed(__FILE__, __FUNCTION__, __LINE__, #_expr); \
             EX_HW_BREAK(); \
-            __do_hw_break = false; \
-		} \
+        } \
 	} while( false )
-
-// __EX_WARNING_BREAK
-#define __EX_WARNING_BREAK(_msg,...) \
-	do { \
-		static bool __do_hw_break = true; \
-        __log_warning( __FILE__, __FUNCTION__, __LINE__, _msg, ##__VA_ARGS__ ); \
-		if ( __do_hw_break ) { \
-            EX_HW_BREAK(); \
-            __do_hw_break = false; \
-		} \
-	} while( false )
-
-// ======================================================== 
-// macro defines 
-// ======================================================== 
-
-#if ( EX_DEBUG_LEVEL == SERIOUS )
-    #define ex_error(_msg,...)      __EX_ERROR_BREAK(_msg, ##__VA_ARGS__) 
-    #define ex_warning(_msg,...)    __EX_WARNING_BREAK(_msg, ##__VA_ARGS__)
-#else
-    #define ex_error(_msg,...)      __log_error( __FILE__, __FUNCTION__, __LINE__, _msg, ##__VA_ARGS__ )
-    #define ex_warning(_msg,...)    __log_warning( __FILE__, __FUNCTION__, __LINE__, _msg, ##__VA_ARGS__ )
-#endif
-
-// ------------------------------------------------------------------ 
-// Desc: ex_log_func
-// ------------------------------------------------------------------ 
-
-#if ( EX_DEBUG_LEVEL == SERIOUS )
-    #define ex_log_func() ex_log ("%s", EX_FUNC_INFO);
-#else
-    #define ex_log_func()
-#endif
 
 // ------------------------------------------------------------------
 // Desc: Assert
 // ------------------------------------------------------------------
 
-// ========================================================
-// internal assert define with break
-// ========================================================
-
-// __EX_ASSERT_BREAK
-#define __EX_ASSERT_BREAK(_expr,_msg,...) \
-	do { \
-        static bool __do_hw_break = true; \
-        bool eval = !(_expr); \
-        if ( eval && __assert_failed( &__do_hw_break, __FILE__, __FUNCTION__, __LINE__, #_expr, _msg, ##__VA_ARGS__ ) ) \
-        { \
-            if ( __do_hw_break ) \
-                EX_HW_BREAK(); \
-        } \
-	} while( false )
-
-// __EX_ASSERT_RETURN_BREAK
-#define __EX_ASSERT_RETURN_BREAK(_expr,_ret,_msg,...) \
-	do { \
-        static bool __do_hw_break = true; \
-        bool eval = !(_expr); \
-        if ( eval && __assert_failed( &__do_hw_break, __FILE__, __FUNCTION__, __LINE__, #_expr, _msg, ##__VA_ARGS__ ) ) \
-        { \
-            if ( __do_hw_break ) \
-                EX_HW_BREAK(); \
-        } \
-        if ( eval ) \
-            return _ret; \
-	} while( false )
-
-// __EX_ASSERT_EXEC_BREAK
-#define __EX_ASSERT_EXEC_BREAK(_expr,_func,_msg,...) \
-	do { \
-        static bool __do_hw_break = true; \
-        bool eval = !(_expr); \
-        if ( eval ) \
-        _func; \
-        if( eval && __assert_failed( &__do_hw_break, __FILE__, __FUNCTION__, __LINE__, #_expr, _msg, ##__VA_ARGS__ ) ) \
-        { \
-            if ( __do_hw_break ) \
-                EX_HW_BREAK(); \
-        } \
-	} while( false )
-
-// ========================================================
-// internal assert define without break
-// ========================================================
-
-// #define __EX_ASSERT(_expr,_msg,...)                           { if(!(_expr)) { ::ex::AssertFailed( __FILE__, __LINE__, __FUNCTION__, #_expr" : "_msg, ##__VA_ARGS__ ); } }
-// #define __EX_ASSERT_RETURN(_expr,_ret,_msg,...)               { if(!(_expr)) { ::ex::AssertFailed( __FILE__, __LINE__, __FUNCTION__, #_expr" : "_msg, ##__VA_ARGS__ ); return _ret; } }
-// #define __EX_ASSERT_EXEC(_expr,_func,_msg,...)                { if(!(_expr)) { ::ex::AssertFailed( __FILE__, __LINE__, __FUNCTION__, #_expr" : "_msg, ##__VA_ARGS__ ); _func; } }
-
-// ========================================================
-// define assert with debug level
-// ========================================================
-
-#if ( EX_DEBUG_LEVEL == SERIOUS )
-    #define ex_assert(_expr,_msg,...)                     __EX_ASSERT_BREAK(_expr, _msg, ##__VA_ARGS__)             
-    #define ex_assert_slow(_expr,_msg,...)                __EX_ASSERT_BREAK(_expr, _msg, ##__VA_ARGS__)
-    #define ex_assert_return(_expr,_ret,_msg,...)         __EX_ASSERT_RETURN_BREAK(_expr, _ret, _msg, ##__VA_ARGS__)
-    #define ex_assert_exec(_expr,_func,_msg,...)          __EX_ASSERT_EXEC_BREAK(_expr, _func, _msg, ##__VA_ARGS__)
-#elif ( EX_DEBUG_LEVEL == NORMAL )
-    #define ex_assert(_expr,_msg,...)                     __EX_ASSERT_BREAK(_expr, _msg, ##__VA_ARGS__)             
-    #define ex_assert_slow(_expr,_msg,...)                EX_NOOP
-    #define ex_assert_return(_expr,_ret,_msg,...)         __EX_ASSERT_RETURN_BREAK(_expr, _ret, _msg, ##__VA_ARGS__)
-    #define ex_assert_exec(_expr,_func,_msg,...)          __EX_ASSERT_EXEC_BREAK(_expr, _func, _msg, ##__VA_ARGS__)
-#elif ( EX_DEBUG_LEVEL == DISABLE )
-    #define ex_assert(_expr,_msg,...)                     EX_NOOP
-    #define ex_assert_slow(_expr,_msg,...)                EX_NOOP
-    #define ex_assert_return(_expr,_ret,_msg,...)         EX_NOOP
-    #define ex_assert_exec(_expr,_func,_msg,...)          EX_NOOP
+#ifdef EX_DEBUG
+    #define ex_assert(_expr) __EX_ASSERT_BREAK(_expr)
+#else
+    #define ex_assert(_expr) EX_NOOP
 #endif
 
 // ------------------------------------------------------------------ 
@@ -434,25 +294,11 @@ extern void __log_warning ( const char *_file_name,
 // NOTE: unlike assert, check will run the _expr even in release version.
 // ------------------------------------------------------------------ 
 
-#if ( EX_DEBUG_LEVEL == SERIOUS )
-    #define ex_check(_expr,_msg,...)              __EX_ASSERT_BREAK(_expr, _msg, ##__VA_ARGS__)
-    #define ex_check_return(_expr,_ret,_msg,...)  __EX_ASSERT_RETURN_BREAK(_expr, _ret, _msg, ##__VA_ARGS__)
-    #define ex_check_exec(_expr,_func,_msg,...)   __EX_ASSERT_EXEC_BREAK(_expr, _func, _msg, ##__VA_ARGS__)
-#elif ( EX_DEBUG_LEVEL == NORMAL )
-    #define ex_check(_expr,_msg,...)              __EX_ASSERT_BREAK(_expr, _msg, ##__VA_ARGS__)
-    #define ex_check_return(_expr,_ret,_msg,...)  __EX_ASSERT_RETURN_BREAK(_expr, _ret, _msg, ##__VA_ARGS__)
-    #define ex_check_exec(_expr,_func,_msg,...)   __EX_ASSERT_EXEC_BREAK(_expr, _func, _msg, ##__VA_ARGS__)
-#elif ( EX_DEBUG_LEVEL == DISABLE )
-    #define ex_check(_expr,_msg,...)              (_expr)
-    #define ex_check_return(_expr,_ret,_msg,...)  { if(!(_expr)) { return _ret; } }
-    #define ex_check_exec(_expr,_func,_msg,...)   { if(!(_expr)) { _func; } }
+#ifdef EX_DEBUG
+    #define ex_check(_expr) __EX_ASSERT_BREAK(_expr)
+#else
+    #define ex_check(_expr) (_expr)
 #endif
-
-// ------------------------------------------------------------------ 
-// Desc: for unit test
-// ------------------------------------------------------------------ 
-
-#define EX_TEST( _expr ) __EX_ASSERT_BREAK(_expr,"check failed!")
 
 // ######################### 
 #ifdef __cplusplus

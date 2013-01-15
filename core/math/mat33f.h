@@ -95,8 +95,8 @@ static inline void ex_mat33f_from_TRS ( ex_mat33f_t *_m,
 */// ------------------------------------------------------------------ 
 
 static inline float ex_mat33f_m_get ( const ex_mat33f_t *_m, uint _row, uint _col ) { 
-    ex_assert( _row >= 0 && _row < 3, "out of range" );
-    ex_assert( _col >= 0 && _col < 3, "out of range" );
+    ex_assert( _row >= 0 && _row < 3 );
+    ex_assert( _col >= 0 && _col < 3 );
     return _m->m[3*_row+_col];
 }
 
@@ -112,8 +112,8 @@ static inline float ex_mat33f_m_get ( const ex_mat33f_t *_m, uint _row, uint _co
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat33f_m_set ( ex_mat33f_t *_m, uint _row, uint _col, float _v ) { 
-    ex_assert( _row >= 0 && _row < 3, "out of range" );
-    ex_assert( _col >= 0 && _col < 3, "out of range" );
+    ex_assert( _row >= 0 && _row < 3 );
+    ex_assert( _col >= 0 && _col < 3 );
     _m->m[3*_row+_col] = _v;
 }
 
@@ -183,7 +183,7 @@ static inline void ex_mat33f_set_translate ( ex_mat33f_t *_m, const ex_vec2f_t *
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat33f_row ( ex_vec3f_t *_r, const ex_mat33f_t *_m, uint _row ) {
-    ex_assert( _row >= 0 && _row < 3, "out of range" );
+    ex_assert( _row >= 0 && _row < 3 );
     _r->x = _m->m[3*_row+0]; 
     _r->y = _m->m[3*_row+1]; 
     _r->z = _m->m[3*_row+2]; 
@@ -205,7 +205,7 @@ static inline void ex_mat33f_row ( ex_vec3f_t *_r, const ex_mat33f_t *_m, uint _
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat33f_col ( ex_vec3f_t *_r, const ex_mat33f_t *_m, uint _col ) {
-    ex_assert( _col >= 0 && _col < 3, "out of range" );
+    ex_assert( _col >= 0 && _col < 3 );
     _r->x = _m->m[3*0+_col]; 
     _r->y = _m->m[3*1+_col]; 
     _r->z = _m->m[3*2+_col]; 
@@ -251,7 +251,7 @@ static inline void ex_mat33f_neg ( ex_mat33f_t *_m ) {
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat33f_get_neg ( const ex_mat33f_t *_m, ex_mat33f_t *_r ) {
-    ex_assert ( _r != _m, "can't use self as return value." );
+    ex_assert ( _r != _m );
     _r->m00 = -_m->m00, _r->m01 = -_m->m01, _r->m02 = -_m->m02; 
     _r->m10 = -_m->m10, _r->m11 = -_m->m11, _r->m12 = -_m->m12; 
     _r->m20 = -_m->m20, _r->m21 = -_m->m21, _r->m22 = -_m->m22; 
@@ -297,7 +297,7 @@ static inline void ex_mat33f_abs ( ex_mat33f_t *_m ) {
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat33f_get_abs ( ex_mat33f_t *_r, const ex_mat33f_t *_m ) {
-    ex_assert ( _r != _m, "can't use self as return value." );
+    ex_assert ( _r != _m );
     _r->m00 = fabsf(_m->m00), _r->m01 = fabsf(_m->m01), _r->m02 = fabsf(_m->m02); 
     _r->m10 = fabsf(_m->m10), _r->m11 = fabsf(_m->m11), _r->m12 = fabsf(_m->m12); 
     _r->m20 = fabsf(_m->m20), _r->m21 = fabsf(_m->m21), _r->m22 = fabsf(_m->m22); 
@@ -662,7 +662,7 @@ static inline void ex_mat33f_transpose ( ex_mat33f_t *_m ) {
 */// ------------------------------------------------------------------ 
 
 static inline void ex_mat33f_get_transpose ( const ex_mat33f_t *_m, ex_mat33f_t *_r ) {
-    ex_assert ( _r != _m, "can't use self as return value." );
+    ex_assert ( _r != _m );
     ex_mat33f_set( _r,
                 _m->m00, _m->m10, _m->m20,
                 _m->m01, _m->m11, _m->m21,

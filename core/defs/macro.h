@@ -54,7 +54,7 @@
         va_start( args, _fmt );                                                                     \
         vsnprintf ( _buffer, _count, _fmt, args );                                                  \
         va_end(args);                                                                               \
-        ex_assert_slow( strlen(_buffer) <= _count, "extended string have over flow the buffer" );   \
+        ex_assert( strlen(_buffer) <= _count );                                                     \
     }
 
 // ------------------------------------------------------------------

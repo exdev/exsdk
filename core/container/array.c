@@ -92,7 +92,7 @@ ex_array_t *ex_array_new_with_allocator ( size_t _element_bytes, size_t _count,
 void ex_array_delete ( ex_array_t *_array ) {
     void  (*dealloc) ( void * ) = _array->dealloc;
 
-    ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
+    ex_assert( _array != NULL );
 
     _array->dealloc(_array->data);
     _array->data = NULL;
@@ -115,8 +115,8 @@ void ex_array_delete ( ex_array_t *_array ) {
 void ex_array_set ( ex_array_t *_array, size_t _idx, const void *_value ) {
     void *val_addr;
 
-    ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
-    ex_assert_return( _idx < _array->count, /*dummy*/, "error: _idx out of range" );
+    ex_assert( _array != NULL );
+    ex_assert( _idx < _array->count, /*dummy*/, "error: _idx out of range" );
 
     val_addr = (char *)(_array->data) + _idx * _array->element_bytes;
     memcpy ( val_addr, _value, _array->element_bytes );
@@ -127,8 +127,8 @@ void ex_array_set ( ex_array_t *_array, size_t _idx, const void *_value ) {
 // ------------------------------------------------------------------ 
 
 void *ex_array_get ( const ex_array_t *_array, size_t _idx ) {
-    ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
-    ex_assert_return( _idx < _array->count, NULL, "error: _idx out of range" );
+    ex_assert( _array != NULL );
+    ex_assert( _idx < _array->count );
 
     return (char *)(_array->data) + _idx * _array->element_bytes;
 }
@@ -140,7 +140,7 @@ void *ex_array_get ( const ex_array_t *_array, size_t _idx ) {
 void *ex_array_add ( ex_array_t *_array, const void *_value ) {
     void *val_addr;
 
-    ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
+    ex_assert( _array != NULL );
 
     if ( _array->count >= _array->capacity ) {
         _array->capacity *= 2;
@@ -164,7 +164,7 @@ void *ex_array_add ( ex_array_t *_array, const void *_value ) {
 
 void *ex_array_add_range ( ex_array_t *_array, const void *_data, size_t _count ) {
     void *val_addr;
-    ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
+    ex_assert( _array != NULL );
 
     if ( _array->count + _count >= _array->capacity ) {
         _array->capacity = __ceilpow2u(_array->count + _count);
@@ -189,8 +189,8 @@ void *ex_array_add_range ( ex_array_t *_array, const void *_data, size_t _count 
 void *ex_array_insert ( ex_array_t *_array, size_t _idx, const void *_value ) {
     void *val_addr;
 
-    ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
-    ex_assert_return( _idx <= _array->count, NULL, "error: _idx out of range" );
+    ex_assert( _array != NULL );
+    ex_assert( _idx <= _array->count );
 
     if ( _array->count >= _array->capacity ) {
         _array->capacity *= 2;
@@ -218,8 +218,8 @@ void *ex_array_insert ( ex_array_t *_array, size_t _idx, const void *_value ) {
 void *ex_array_insert_range ( ex_array_t *_array, size_t _idx, const void *_data, size_t _count ) {
     void *val_addr;
 
-    ex_assert_return( _array != NULL, NULL, "error: invalid _array, can not be NULL" );
-    ex_assert_return( _idx <= _array->count, NULL, "error: _idx out of range" );
+    ex_assert( _array != NULL );
+    ex_assert( _idx <= _array->count );
 
     if ( _array->count >= _array->capacity ) {
         _array->capacity = __ceilpow2u(_array->count + _count);
@@ -256,8 +256,8 @@ void ex_array_ncpy ( ex_array_t *_to, const void *_buf, size_t _count ) {
 // ------------------------------------------------------------------ 
 
 void ex_array_remove_at ( ex_array_t *_array, size_t _idx ) {
-    ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
-    ex_assert_return( _idx < _array->count, /*dummy*/, "error: _idx out of range" );
+    ex_assert( _array != NULL );
+    ex_assert( _idx < _array->count );
 
     // don't do any thing if we only have one element in the array.
     if ( _idx != _array->count-1 ) {
@@ -275,8 +275,8 @@ void ex_array_remove_at ( ex_array_t *_array, size_t _idx ) {
 // ------------------------------------------------------------------ 
 
 void ex_array_remove_at_fast ( ex_array_t *_array, size_t _idx ) {
-    ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
-    ex_assert_return( _idx < _array->count, /*dummy*/, "error: _idx out of range" );
+    ex_assert( _array != NULL );
+    ex_assert( _idx < _array->count );
 
     // don't do any thing if we only have one element in the array.
     if ( _idx != _array->count-1 ) {
@@ -295,9 +295,9 @@ void ex_array_remove_at_fast ( ex_array_t *_array, size_t _idx ) {
 // ------------------------------------------------------------------ 
 
 void ex_array_remove_range ( ex_array_t *_array, size_t _idx, size_t _count ) {
-    ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
-    ex_assert_return( _idx < _array->count, /*dummy*/, "error: _idx out of range" );
-    ex_assert_return( _idx + _count <= _array->count, /*dummy*/, "error: the remove count is exceed from index" );
+    ex_assert( _array != NULL );
+    ex_assert( _idx < _array->count );
+    ex_assert( _idx + _count <= _array->count );
 
     if ( _idx + _count != _array->count ) {
         memmove ( ex_array_get ( _array, _idx ), 
@@ -313,7 +313,7 @@ void ex_array_remove_range ( ex_array_t *_array, size_t _idx, size_t _count ) {
 // ------------------------------------------------------------------ 
 
 void ex_array_remove_all ( ex_array_t *_array ) {
-    ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
+    ex_assert( _array != NULL );
     _array->count = 0;
 }
 
@@ -322,7 +322,7 @@ void ex_array_remove_all ( ex_array_t *_array ) {
 // ------------------------------------------------------------------ 
 
 void ex_array_sort( ex_array_t *_array, int (*_cmp)(const void *, const void *) ) {
-    ex_assert_return( _array != NULL, /*dummy*/, "error: invalid _array, can not be NULL" );
+    ex_assert( _array != NULL );
 
     qsort ( _array->data, _array->count, _array->element_bytes, _cmp );
 }

@@ -49,7 +49,7 @@ static const uint8 __month_days[12] = {
 // ------------------------------------------------------------------ 
 
 const char *ex_week_day_name ( uint _wday ) {
-    ex_assert_return ( _wday >= 1 && _wday <= 7, "invalid", "invalid weekday input" );
+    ex_assert ( _wday >= 1 && _wday <= 7 );
     return __week_name[_wday-1];
 }
 
@@ -58,7 +58,7 @@ const char *ex_week_day_name ( uint _wday ) {
 // ------------------------------------------------------------------ 
 
 const char *ex_month_name ( uint _month ) {
-    ex_assert_return ( _month >= 1 && _month <= 12, "invalid", "invalid month input" );
+    ex_assert ( _month >= 1 && _month <= 12 );
     return __month_name[_month];
 }
 
@@ -87,7 +87,7 @@ bool ex_is_leap_year ( uint _year ) {
 
 static void __greg2jul ( uint *_out_jul, int _year, int _month, int _day ) {
     if( !ex_is_valid_date ( _year, _month, _day ) ) {
-        ex_warning ( "can't set date (%dy,%dm,%dd). the value is invalid!", _year, _month, _day );
+        ex_log ( "can't set date (%dy,%dm,%dd). the value is invalid!", _year, _month, _day );
         *_out_jul = 0;
         return;
     }

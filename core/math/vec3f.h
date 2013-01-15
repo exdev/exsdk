@@ -91,7 +91,7 @@ static inline void ex_vec3f_neg ( ex_vec3f_t *_v ) {
 */// ------------------------------------------------------------------ 
 
 static inline void ex_vec3f_get_neg ( const ex_vec3f_t *_v, ex_vec3f_t *_r ) { 
-    ex_assert ( _r != _v, "can't use self as return value." );
+    ex_assert ( _r != _v );
     _r->x = -_v->x; 
     _r->y = -_v->y; 
     _r->z = -_v->z; 
@@ -528,7 +528,7 @@ static inline bool ex_vec3f_normalize ( ex_vec3f_t *_v ) {
 static inline bool ex_vec3f_get_normalize ( const ex_vec3f_t *_v, ex_vec3f_t *_r ) {
     float length_sqr, inv_length;
 
-    ex_assert ( _r != _v, "can't use self as return value." );
+    ex_assert ( _r != _v );
     length_sqr = ex_vec3f_lenSQR(_v);
     inv_length = 0.0f; 
 
@@ -592,7 +592,7 @@ static inline void ex_vec3f_truncate ( ex_vec3f_t *_r, float _maxLength ) {
 
 static inline void ex_vec3f_project_to ( ex_vec3f_t *_r, const ex_vec3f_t *_from, const ex_vec3f_t *_to ) {
     float projection;
-    ex_assert ( ex_vec3f_is_normalized(_to), "vector _to must be normalized." );
+    ex_assert ( ex_vec3f_is_normalized(_to) );
     projection = ex_vec3f_dot( _from, _to );
     ex_vec3f_mul_scalar( _r, _to, projection );
 }
@@ -610,7 +610,7 @@ static inline void ex_vec3f_project_to ( ex_vec3f_t *_r, const ex_vec3f_t *_from
 
 static inline void ex_vec3f_perpendicular_to ( ex_vec3f_t *_r, const ex_vec3f_t *_from, const ex_vec3f_t *_to ) {
     ex_vec3f_t v;
-    ex_assert ( ex_vec3f_is_normalized(_to), "vector _to must be normalized." );
+    ex_assert ( ex_vec3f_is_normalized(_to) );
     ex_vec3f_project_to ( &v, _from, _to );
     ex_vec3f_sub ( _r, _from, &v );
 }
