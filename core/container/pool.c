@@ -125,17 +125,46 @@ static void *__remove_at ( ex_pool_t *_pool, int _idx ) {
     return (char *)(_pool->data) + _idx * _pool->element_bytes;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// defines
+///////////////////////////////////////////////////////////////////////////////
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static void __pool_init ( ex_pool_t *_pool, 
-                          size_t _element_bytes, 
-                          size_t _count,
-                          void *(*_alloc) ( size_t ),
-                          void *(*_realloc) ( void *, size_t ),
-                          void  (*_dealloc) ( void * )
-                        )
+ex_pool_t *ex_pool_alloc ( size_t _element_bytes, size_t _count ) {
+    ex_pool_t *pool = ex_malloc ( sizeof(ex_pool_t) );
+    ex_pool_init( pool, _element_bytes, _count,
+                  ex_func_alloc,
+                  ex_func_realloc,
+                  ex_func_dealloc
+                );
+    return pool;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_pool_free ( ex_pool_t *_pool ) {
+    ex_assert( _pool != NULL );
+
+    ex_pool_deinit(_pool);
+    ex_free(_pool);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_pool_init ( ex_pool_t *_pool, 
+                    size_t _element_bytes, 
+                    size_t _count,
+                    void *(*_alloc) ( size_t ),
+                    void *(*_realloc) ( void *, size_t ),
+                    void  (*_dealloc) ( void * )
+                  )
 {
     int size = _element_bytes * _count;
     size_t i = 1;
@@ -158,7 +187,8 @@ static void __pool_init ( ex_pool_t *_pool,
     _pool->used_nodes_begin = NULL;
     _pool->used_nodes_end = NULL;
     _pool->free_nodes = _pool->nodes + (_count-1);
-    _pool->used_bits = ex_bitarray_new_with_allocator( _count, _alloc, _realloc, _dealloc );
+    _pool->used_bits = _pool->alloc( sizeof(ex_bitarray_t) );
+    ex_bitarray_init( _pool->used_bits, _count, _alloc, _realloc, _dealloc );
 
     // init head node
     _pool->free_nodes->prev = NULL;
@@ -180,57 +210,11 @@ static void __pool_init ( ex_pool_t *_pool,
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// defines
-///////////////////////////////////////////////////////////////////////////////
-
-// ------------------------------------------------------------------ 
-// Desc: 
-static inline void *__pool_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_pool_t" ); }
-static inline void *__pool_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_pool_t" ); }
-static inline void  __pool_dealloc( void *_ptr ) { ex_free ( _ptr ); }
-// ------------------------------------------------------------------ 
-
-ex_pool_t *ex_pool_new ( size_t _element_bytes, size_t _count )
-{
-    ex_pool_t *pool = ex_malloc ( sizeof(ex_pool_t) );
-    __pool_init( pool, 
-                 _element_bytes, 
-                 _count,
-                 __pool_alloc,
-                 __pool_realloc,
-                 __pool_dealloc
-               );
-    return pool;
-}
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-ex_pool_t *ex_pool_new_with_allocator ( size_t _element_bytes, size_t _count,
-                                        void *(*_alloc) ( size_t ),
-                                        void *(*_realloc) ( void *, size_t ),
-                                        void  (*_dealloc) ( void * ) )
-{
-    ex_pool_t *pool = _alloc ( sizeof(ex_pool_t) );
-    __pool_init( pool, 
-                 _element_bytes, 
-                 _count,
-                 _alloc,
-                 _realloc,
-                 _dealloc
-               );
-    return pool;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_pool_delete ( ex_pool_t *_pool ) {
-    void  (*dealloc) ( void * ) = _pool->dealloc;
-
+void ex_pool_deinit ( ex_pool_t *_pool ) {
     ex_assert( _pool != NULL );
 
     _pool->dealloc(_pool->data);
@@ -239,7 +223,8 @@ void ex_pool_delete ( ex_pool_t *_pool ) {
     _pool->dealloc(_pool->nodes);
     _pool->nodes = NULL;
 
-    ex_bitarray_delete( _pool->used_bits );
+    ex_bitarray_deinit( _pool->used_bits );
+    _pool->dealloc(_pool->used_bits);
     _pool->used_bits = NULL;
 
     _pool->element_bytes = 0;
@@ -249,8 +234,6 @@ void ex_pool_delete ( ex_pool_t *_pool ) {
     _pool->alloc = NULL;
     _pool->realloc = NULL;
     _pool->dealloc = NULL;
-
-    dealloc(_pool);
 }
 
 // ------------------------------------------------------------------ 

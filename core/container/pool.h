@@ -162,19 +162,31 @@ typedef struct ex_pool_t {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-#define ex_pool(_type,_count) ex_pool_new( sizeof(_type), _count )
-extern ex_pool_t *ex_pool_new ( size_t _element_bytes, size_t _count );
-extern ex_pool_t *ex_pool_new_with_allocator ( size_t _element_bytes, size_t _count,
-                                               void *(*_alloc) ( size_t ),
-                                               void *(*_realloc) ( void *, size_t ),
-                                               void  (*_dealloc) ( void * )
-                                             );
+extern ex_pool_t *ex_pool_alloc ( size_t _element_bytes, size_t _count );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_pool_delete ( ex_pool_t *_pool );
+extern void ex_pool_free ( ex_pool_t *_pool );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void ex_pool_init ( ex_pool_t *_pool, 
+                           size_t _element_bytes, 
+                           size_t _count,
+                           void *(*_alloc) ( size_t ),
+                           void *(*_realloc) ( void *, size_t ),
+                           void  (*_dealloc) ( void * )
+                         );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void ex_pool_deinit ( ex_pool_t *_pool ); 
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -197,43 +209,11 @@ static inline size_t ex_pool_capacity ( const ex_pool_t *_pool ) { return _pool-
 extern int ex_pool_add_new ( ex_pool_t *_pool, void **_node );
 extern int ex_pool_add ( ex_pool_t *_pool, const void *_value );
 
-static inline int ex_pool_add_int8 ( ex_pool_t *_pool, int8 _value ) { return ex_pool_add ( _pool, &_value ); }
-static inline int ex_pool_add_int16 ( ex_pool_t *_pool, int16 _value ) { return ex_pool_add ( _pool, &_value ); }
-static inline int ex_pool_add_int32 ( ex_pool_t *_pool, int32 _value ) { return ex_pool_add ( _pool, &_value ); }
-static inline int ex_pool_add_int64 ( ex_pool_t *_pool, int64 _value ) { return ex_pool_add ( _pool, &_value ); }
-
-static inline int ex_pool_add_uint8 ( ex_pool_t *_pool, uint8 _value ) { return ex_pool_add ( _pool, &_value ); }
-static inline int ex_pool_add_uint16 ( ex_pool_t *_pool, uint16 _value ) { return ex_pool_add ( _pool, &_value ); }
-static inline int ex_pool_add_uint32 ( ex_pool_t *_pool, uint32 _value ) { return ex_pool_add ( _pool, &_value ); }
-static inline int ex_pool_add_uint64 ( ex_pool_t *_pool, uint64 _value ) { return ex_pool_add ( _pool, &_value ); }
-
-static inline int ex_pool_add_float ( ex_pool_t *_pool, float _value ) { return ex_pool_add ( _pool, &_value ); }
-static inline int ex_pool_add_double ( ex_pool_t *_pool, double _value ) { return ex_pool_add ( _pool, &_value ); }
-
-static inline int ex_pool_add_string ( ex_pool_t *_pool, char *_value ) { return ex_pool_add ( _pool, &_value ); }
-static inline int ex_pool_add_wstring ( ex_pool_t *_pool, wchar_t *_value ) { return ex_pool_add ( _pool, &_value ); }
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
 extern void *ex_pool_get ( const ex_pool_t *_pool, int _idx );
-
-static inline int8 ex_pool_get_int8 ( const ex_pool_t *_pool, int _idx ) { return *((int8 *)ex_pool_get ( _pool, _idx )); }
-static inline int16 ex_pool_get_int16 ( const ex_pool_t *_pool, int _idx ) { return *((int16 *)ex_pool_get ( _pool, _idx )); }
-static inline int32 ex_pool_get_int32 ( const ex_pool_t *_pool, int _idx ) { return *((int32 *)ex_pool_get ( _pool, _idx )); }
-static inline int64 ex_pool_get_int64 ( const ex_pool_t *_pool, int _idx ) { return *((int64 *)ex_pool_get ( _pool, _idx )); }
-
-static inline uint8 ex_pool_get_uint8 ( const ex_pool_t *_pool, int _idx ) { return *((uint8 *)(ex_pool_get ( _pool, _idx ))); }
-static inline uint16 ex_pool_get_uint16 ( const ex_pool_t *_pool, int _idx ) { return *((uint16 *)ex_pool_get ( _pool, _idx )); }
-static inline uint32 ex_pool_get_uint32 ( const ex_pool_t *_pool, int _idx ) { return *((uint32 *)ex_pool_get ( _pool, _idx )); }
-static inline uint64 ex_pool_get_uint64 ( const ex_pool_t *_pool, int _idx ) { return *((uint64 *)ex_pool_get ( _pool, _idx )); }
-
-static inline float ex_pool_get_float ( const ex_pool_t *_pool, int _idx ) { return *((float *)ex_pool_get ( _pool, _idx )); }
-static inline double ex_pool_get_double ( const ex_pool_t *_pool, int _idx ) { return *((double *)ex_pool_get ( _pool, _idx )); }
-
-static inline char *ex_pool_get_string ( const ex_pool_t *_pool, int _idx ) { return *((char **)ex_pool_get ( _pool, _idx )); }
-static inline wchar_t *ex_pool_get_wstring ( const ex_pool_t *_pool, int _idx ) { return *((wchar_t **)ex_pool_get ( _pool, _idx )); }
 
 // ------------------------------------------------------------------ 
 // Desc: 

@@ -149,7 +149,7 @@ texture_glyph_new( void )
     self->t0        = 0.0;
     self->s1        = 0.0;
     self->t1        = 0.0;
-    self->kerning   = ex_array_new( sizeof(kerning_t), 8 );
+    self->kerning   = ex_array_alloc( sizeof(kerning_t), 8 );
     return self;
 }
 
@@ -160,7 +160,7 @@ texture_glyph_delete( texture_glyph_t *self )
 {
     assert( self );
 
-    ex_array_delete( self->kerning );
+    ex_array_free( self->kerning );
     free( self );
 }
 
@@ -254,7 +254,7 @@ texture_font_new( texture_atlas_t * atlas,
                  "line %d: No more memory for allocating data\n", __LINE__ );
         exit( EXIT_FAILURE );
     }
-    self->glyphs = ex_array_new( sizeof(texture_glyph_t *), 8 );
+    self->glyphs = ex_array_alloc( sizeof(texture_glyph_t *), 8 );
     self->atlas = atlas;
     self->height = 0;
     self->ascender = 0;
@@ -330,7 +330,7 @@ texture_font_delete( texture_font_t *self )
         texture_glyph_delete( glyph);
     }
 
-    ex_array_delete( self->glyphs );
+    ex_array_free( self->glyphs );
     free( self );
 }
 

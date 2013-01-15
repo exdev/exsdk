@@ -60,7 +60,7 @@ texture_atlas_new( const size_t width,
                  "line %d: No more memory for allocating data\n", __LINE__ );
         exit( EXIT_FAILURE );
     }
-    self->nodes = ex_array_new( sizeof(ex_vec3i_t), 8 );
+    self->nodes = ex_array_alloc( sizeof(ex_vec3i_t), 8 );
     self->used = 0;
     self->width = width;
     self->height = height;
@@ -90,7 +90,7 @@ texture_atlas_delete( texture_atlas_t *self )
 {
     assert( self );
 
-    ex_array_delete( self->nodes );
+    ex_array_free( self->nodes );
     if( self->data )
     {
         free( self->data );

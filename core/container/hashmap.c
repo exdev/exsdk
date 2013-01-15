@@ -39,24 +39,51 @@ static inline uint32 __ceilpow2u ( uint32 _value ) {
     return result;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// public
+///////////////////////////////////////////////////////////////////////////////
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void __hashmap_init ( ex_hashmap_t *_hashmap, 
-                      size_t _key_bytes, 
-                      size_t _value_bytes, 
-                      size_t _count, 
-                      hashkey_t _hashkey, 
-                      keycmp_t _keycmp, 
-                      void *(*_alloc) ( size_t ),
-                      void *(*_realloc) ( void *, size_t ),
-                      void  (*_dealloc) ( void * )
-                    ) 
+// managed
+ex_hashmap_t *ex_hashmap_alloc ( size_t _key_bytes, 
+                                 size_t _value_bytes, 
+                                 size_t _count, 
+                                 hashkey_t _hashkey, 
+                                 keycmp_t _keycmp )
+{
+    ex_hashmap_t *hashmap = ex_malloc( sizeof(ex_hashmap_t) );
+    ex_hashmap_init ( hashmap, 
+                      _key_bytes, _value_bytes, 
+                      _count,
+                      _hashkey, _keycmp,
+                      ex_func_alloc,
+                      ex_func_realloc,
+                      ex_func_dealloc
+                      );
+    return hashmap;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_hashmap_init ( ex_hashmap_t *_hashmap, 
+                       size_t _key_bytes, 
+                       size_t _value_bytes, 
+                       size_t _count, 
+                       hashkey_t _hashkey, 
+                       keycmp_t _keycmp, 
+                       void *(*_alloc) ( size_t ),
+                       void *(*_realloc) ( void *, size_t ),
+                       void  (*_dealloc) ( void * )
+                     ) 
 {
     // check if the count is pow of 2, if not, calc the nearest pow of 2 of the count.
     if ( ex_is_pow_of_2(_count) == false ) {
-        _count = __ceilpow2u(_count);
+        _count = ex_ceilpow2u(_count);
     }
 
     _hashmap->alloc = _alloc;
@@ -85,76 +112,17 @@ void __hashmap_init ( ex_hashmap_t *_hashmap,
 
     // init hash nodes
     _hashmap->nodes = _hashmap->alloc ( sizeof(ex_pool_t) );
-    _hashmap->nodes = ex_pool_new_with_allocator ( sizeof(ex_hashmap_node_t), 
-                                                   _count, 
-                                                   _alloc,
-                                                   _realloc,
-                                                   _dealloc );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// public
-///////////////////////////////////////////////////////////////////////////////
-
-// ------------------------------------------------------------------ 
-// Desc: 
-static inline void *__hashmap_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_hashmap_t" ); }
-static inline void *__hashmap_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_hashmap_t" ); }
-static inline void  __hashmap_dealloc( void *_ptr ) { ex_free ( _ptr ); }
-// ------------------------------------------------------------------ 
-
-ex_hashmap_t *ex_hashmap_new ( size_t _key_bytes, size_t _value_bytes, 
-                               size_t _count, 
-                               hashkey_t _hashkey, keycmp_t _keycmp )
-{
-    ex_hashmap_t *hashmap = ex_malloc( sizeof(ex_hashmap_t) );
-    __hashmap_init ( hashmap, 
-                     _key_bytes, 
-                     _value_bytes, 
-                     _count,
-                     _hashkey, _keycmp,
-                     __hashmap_alloc,
-                     __hashmap_realloc,
-                     __hashmap_dealloc
-                   );
-    return hashmap;
+    ex_pool_init ( _hashmap->nodes, sizeof(ex_hashmap_node_t), _count, 
+                   _alloc,
+                   _realloc,
+                   _dealloc );
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-ex_hashmap_t *ex_hashmap_new_with_allocator ( size_t _key_bytes, size_t _value_bytes, 
-                                              size_t _count, 
-                                              hashkey_t _hashkey, keycmp_t _keycmp,
-                                              void *(*_alloc) ( size_t ),
-                                              void *(*_realloc) ( void *, size_t ),
-                                              void  (*_dealloc) ( void * )
-                                              )
-{
-    ex_hashmap_t *hashmap = _alloc( sizeof(ex_hashmap_t) );
-    __hashmap_init ( hashmap, 
-                     _key_bytes, 
-                     _value_bytes, 
-                     _count,
-                     _hashkey, _keycmp,
-                     _alloc,
-                     _realloc,
-                     _dealloc
-                   );
-    return hashmap;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-// managed
-void ex_hashmap_delete ( ex_hashmap_t *_hashmap ) {
-    void  (*dealloc) ( void * ) = _hashmap->dealloc;
-
-    ex_assert( _hashmap != NULL );
-
+void ex_hashmap_deinit ( ex_hashmap_t *_hashmap ) {
     _hashmap->dealloc (_hashmap->values);
     _hashmap->values = NULL;
     _hashmap->dealloc (_hashmap->keys);
@@ -162,8 +130,8 @@ void ex_hashmap_delete ( ex_hashmap_t *_hashmap ) {
     _hashmap->dealloc (_hashmap->indices);
     _hashmap->indices = NULL;
 
-    ex_pool_delete(_hashmap->nodes);
-    _hashmap->nodes = NULL;
+    ex_pool_deinit(_hashmap->nodes);
+    _hashmap->dealloc(_hashmap->nodes);
 
     _hashmap->key_bytes = 0;
     _hashmap->value_bytes = 0;
@@ -175,8 +143,17 @@ void ex_hashmap_delete ( ex_hashmap_t *_hashmap ) {
     _hashmap->alloc = NULL;
     _hashmap->realloc = NULL;
     _hashmap->dealloc = NULL;
+}
 
-    dealloc(_hashmap);
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_hashmap_free ( ex_hashmap_t *_hashmap ) {
+    ex_assert( _hashmap != NULL );
+
+    ex_hashmap_deinit (_hashmap);
+    ex_free(_hashmap);
 }
 
 // ------------------------------------------------------------------ 

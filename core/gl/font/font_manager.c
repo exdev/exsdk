@@ -84,7 +84,7 @@ font_manager_new( size_t width, size_t height, size_t depth )
         exit( EXIT_FAILURE );
     }
     self->atlas = atlas;
-    self->fonts = ex_array_new( sizeof(texture_font_t *), 8 );
+    self->fonts = ex_array_alloc( sizeof(texture_font_t *), 8 );
     self->cache = wcsdup( L" " );
     return self;
 }
@@ -104,7 +104,7 @@ font_manager_delete( font_manager_t * self )
         font = *(texture_font_t **) ex_array_get( self->fonts, i );
         texture_font_delete( font );
     }
-    ex_array_delete( self->fonts );
+    ex_array_free( self->fonts );
     texture_atlas_delete( self->atlas );
     if( self->cache )
     {

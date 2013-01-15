@@ -10,6 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "exsdk.h"
+#include <assert.h>
 
 #if ( EX_PLATFORM == EX_MACOSX )
     #define main _al_mangled_main

@@ -127,15 +127,15 @@ vertex_buffer_new( const char *format )
         self->attributes[i]->stride = stride;
     }
 
-    self->vertices = ex_array_new( stride, 8 );
+    self->vertices = ex_array_alloc( stride, 8 );
     self->vertices_id  = 0;
     self->GPU_vsize = 0;
 
-    self->indices = ex_array_new( sizeof(GLuint), 8 );
+    self->indices = ex_array_alloc( sizeof(GLuint), 8 );
     self->indices_id  = 0;
     self->GPU_isize = 0;
 
-    self->items = ex_array_new( sizeof(ex_vec4i_t), 9 );
+    self->items = ex_array_alloc( sizeof(ex_vec4i_t), 9 );
     self->state = DIRTY;
     self->mode = GL_TRIANGLES;
     return self;
@@ -160,7 +160,7 @@ vertex_buffer_delete( vertex_buffer_t *self )
     }
 
 
-    ex_array_delete( self->vertices );
+    ex_array_free( self->vertices );
     self->vertices = 0;
     if( self->vertices_id )
     {
@@ -168,7 +168,7 @@ vertex_buffer_delete( vertex_buffer_t *self )
     }
     self->vertices_id = 0;
 
-    ex_array_delete( self->indices );
+    ex_array_free( self->indices );
     self->indices = 0;
     if( self->indices_id )
     {
@@ -176,7 +176,7 @@ vertex_buffer_delete( vertex_buffer_t *self )
     }
     self->indices_id = 0;
 
-    ex_array_delete( self->items );
+    ex_array_free( self->items );
 
     if( self->format )
     {

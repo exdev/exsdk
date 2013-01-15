@@ -91,7 +91,7 @@ console_new( void )
     {
         return self;
     }
-    self->lines = ex_array_new ( sizeof(wchar_t *), 8 );
+    self->lines = ex_array_alloc ( sizeof(wchar_t *), 8 );
     self->prompt = (wchar_t *) wcsdup( L">>> " );
     self->cursor = 0;
     self->buffer = vertex_buffer_new( "v3f:t2f:c4f" );

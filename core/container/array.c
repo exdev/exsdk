@@ -19,12 +19,47 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static inline void __array_init ( ex_array_t *_array, 
-                                  size_t _element_bytes, 
-                                  size_t _count,
-                                  void *(*_alloc) ( size_t ),
-                                  void *(*_realloc) ( void *, size_t ),
-                                  void  (*_dealloc) ( void * ) )
+static inline uint32 __ceilpow2u ( uint32 _value ) {
+    uint32 result = 1;
+    while ( result < _value ) {
+        result <<= 1; 
+    }
+    return result;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+ex_array_t *ex_array_alloc ( size_t _element_bytes, size_t _count ) {
+    ex_array_t *arr = ex_malloc ( sizeof(ex_array_t) );
+    ex_array_init ( arr, _element_bytes, _count,
+                    ex_func_alloc,
+                    ex_func_realloc,
+                    ex_func_dealloc
+                 );
+    return arr;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_array_free ( ex_array_t *_array ) {
+    ex_array_deinit(_array);
+    ex_free(_array);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_array_init ( ex_array_t *_array, 
+                     size_t _element_bytes, 
+                     size_t _count,
+                     void *(*_alloc) ( size_t ),
+                     void *(*_realloc) ( void *, size_t ),
+                     void  (*_dealloc) ( void * ) )
 {
     size_t bytes = _element_bytes * _count; 
 
@@ -42,56 +77,11 @@ static inline void __array_init ( ex_array_t *_array,
     ex_memzero ( _array->data, bytes );
 }
 
-static inline uint32 __ceilpow2u ( uint32 _value ) {
-    uint32 result = 1;
-    while ( result < _value ) {
-        result <<= 1; 
-    }
-    return result;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-static inline void *__array_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_array_t" ); }
-static inline void *__array_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_array_t" ); }
-static inline void  __array_dealloc( void *_ptr ) { ex_free ( _ptr ); }
-// ------------------------------------------------------------------ 
-
-ex_array_t *ex_array_new ( size_t _element_bytes, size_t _count ) {
-    ex_array_t *arr = ex_malloc ( sizeof(ex_array_t) );
-    __array_init ( arr, _element_bytes, _count,
-                   __array_alloc,
-                   __array_realloc,
-                   __array_dealloc
-                 );
-    return arr;
-}
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-ex_array_t *ex_array_new_with_allocator ( size_t _element_bytes, size_t _count,
-                                          void *(*_alloc) ( size_t ),
-                                          void *(*_realloc) ( void *, size_t ),
-                                          void  (*_dealloc) ( void * ) )
-{
-    ex_array_t *arr = _alloc ( sizeof(ex_array_t) );
-    __array_init ( arr, _element_bytes, _count,
-                   _alloc,
-                   _realloc,
-                   _dealloc
-                 );
-    return arr;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_array_delete ( ex_array_t *_array ) {
-    void  (*dealloc) ( void * ) = _array->dealloc;
-
+void ex_array_deinit ( ex_array_t *_array ) {
     ex_assert( _array != NULL );
 
     _array->dealloc(_array->data);
@@ -104,8 +94,6 @@ void ex_array_delete ( ex_array_t *_array ) {
     _array->alloc = NULL;
     _array->realloc = NULL;
     _array->dealloc = NULL;
-
-    dealloc(_array);
 }
 
 // ------------------------------------------------------------------ 
@@ -116,7 +104,7 @@ void ex_array_set ( ex_array_t *_array, size_t _idx, const void *_value ) {
     void *val_addr;
 
     ex_assert( _array != NULL );
-    ex_assert( _idx < _array->count, /*dummy*/, "error: _idx out of range" );
+    ex_assert( _idx < _array->count );
 
     val_addr = (char *)(_array->data) + _idx * _array->element_bytes;
     memcpy ( val_addr, _value, _array->element_bytes );

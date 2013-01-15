@@ -26,16 +26,44 @@ static inline ex_list_node_t *__alloc_node ( ex_list_t *_list, const void *_valu
     return node;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// public
+///////////////////////////////////////////////////////////////////////////////
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void __list_init ( ex_list_t *_list, 
-                   size_t _element_bytes, 
-                   void *(*_alloc) ( size_t ),
-                   void *(*_realloc) ( void *, size_t ),
-                   void  (*_dealloc) ( void * )
-                 ) 
+ex_list_t *ex_list_alloc ( size_t _element_bytes ) {
+    ex_list_t *list = ex_malloc( sizeof(ex_list_t) ); 
+    ex_list_init ( list, 
+                   _element_bytes, _element_bytes,
+                   ex_func_alloc,
+                   ex_func_realloc,
+                   ex_func_dealloc );
+    return list;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_list_free ( ex_list_t *_list )
+{
+    ex_list_deinit(_list);
+    ex_free(_list);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_list_init ( ex_list_t *_list, 
+                    size_t _element_bytes, 
+                    void *(*_alloc) ( size_t ),
+                    void *(*_realloc) ( void *, size_t ),
+                    void  (*_dealloc) ( void * )
+                  ) 
 {
     _list->alloc = _alloc;
     _list->realloc = _realloc;
@@ -48,56 +76,13 @@ void __list_init ( ex_list_t *_list,
     _list->tail = NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// public
-///////////////////////////////////////////////////////////////////////////////
-
-// ------------------------------------------------------------------ 
-// Desc: 
-static inline void *__list_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_list_t" ); }
-static inline void *__list_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_list_t" ); }
-static inline void  __list_dealloc( void *_ptr ) { ex_free ( _ptr ); }
-// ------------------------------------------------------------------ 
-
-ex_list_t *ex_list_new ( size_t _element_bytes )
-{
-    ex_list_t *list = ex_malloc( sizeof(ex_list_t) ); 
-    __list_init ( list, 
-                  _element_bytes,
-                  __list_alloc,
-                  __list_realloc,
-                  __list_dealloc );
-    return list;
-}
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-ex_list_t *ex_list_new_with_allocator ( size_t _element_bytes, 
-                                        void *(*_alloc) ( size_t ),
-                                        void *(*_realloc) ( void *, size_t ),
-                                        void  (*_dealloc) ( void * )
-                                      )
-{
-    ex_list_t *list = _alloc( sizeof(ex_list_t) ); 
-    __list_init ( list, 
-                  _element_bytes,
-                  _alloc,
-                  _realloc,
-                  _dealloc );
-    return list;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_list_delete ( ex_list_t *_list ) {
+void ex_list_deinit ( ex_list_t *_list ) {
     ex_list_node_t *tmp,*node;
-    void  (*dealloc) ( void * ) = _list->dealloc;
-
-    ex_assert( _list != NULL );
+    ex_assert( _list != NULL, /*void*/, "NULL input" );
 
     node = _list->head;
     while ( node != NULL ) {
@@ -114,8 +99,6 @@ void ex_list_delete ( ex_list_t *_list ) {
     _list->alloc = NULL;
     _list->realloc = NULL;
     _list->dealloc = NULL;
-
-    dealloc(_list);
 }
 
 // ------------------------------------------------------------------ 

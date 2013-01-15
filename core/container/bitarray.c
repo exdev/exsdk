@@ -19,11 +19,38 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static inline void __bitarray_init ( ex_bitarray_t *_bitarray, 
-                                     size_t _bitcount,
-                                     void *(*_alloc) ( size_t ),
-                                     void *(*_realloc) ( void *, size_t ),
-                                     void  (*_dealloc) ( void * ) ) 
+ex_bitarray_t *ex_bitarray_alloc ( size_t _bitcount )
+{
+    ex_bitarray_t *bitArray = ex_malloc ( sizeof(ex_bitarray_t) );
+    ex_bitarray_init ( bitArray, _bitcount, 
+                       ex_func_alloc,
+                       ex_func_realloc,
+                       ex_func_dealloc );
+    return bitArray;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_bitarray_free ( ex_bitarray_t *_bitarray )
+{
+    ex_assert( _bitarray != NULL );
+
+    ex_bitarray_deinit(_bitarray);
+    _bitarray->count = 0;
+    ex_free(_bitarray);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_bitarray_init ( ex_bitarray_t *_bitarray, 
+                        size_t _bitcount,
+                        void *(*_alloc) ( size_t ),
+                        void *(*_realloc) ( void *, size_t ),
+                        void  (*_dealloc) ( void * ) ) 
 {
     size_t bytes = (_bitcount + 7)/8;
 
@@ -38,45 +65,9 @@ static inline void __bitarray_init ( ex_bitarray_t *_bitarray,
 
 // ------------------------------------------------------------------ 
 // Desc: 
-static inline void *__bitarray_alloc( size_t _size ) { return ex_malloc_tag ( _size, "ex_bitarray_t" ); }
-static inline void *__bitarray_realloc( void *_ptr, size_t _size ) { return ex_realloc_tag ( _ptr, _size, "ex_bitarray_t" ); }
-static inline void  __bitarray_dealloc( void *_ptr ) { ex_free ( _ptr ); }
 // ------------------------------------------------------------------ 
 
-ex_bitarray_t *ex_bitarray_new ( size_t _bitcount )
-{
-    ex_bitarray_t *bitArray = ex_malloc ( sizeof(ex_bitarray_t) );
-    __bitarray_init ( bitArray, _bitcount, 
-                      __bitarray_alloc,
-                      __bitarray_realloc,
-                      __bitarray_dealloc );
-    return bitArray;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-ex_bitarray_t *ex_bitarray_new_with_allocator ( size_t _bitcount,
-                                                void *(*_alloc) ( size_t ),
-                                                void *(*_realloc) ( void *, size_t ),
-                                                void  (*_dealloc) ( void * ) )
-{
-    ex_bitarray_t *bitArray = _alloc ( sizeof(ex_bitarray_t) );
-    __bitarray_init ( bitArray, _bitcount, 
-                      _alloc,
-                      _realloc,
-                      _dealloc );
-    return bitArray;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_bitarray_delete ( ex_bitarray_t *_bitarray ) {
-    void  (*dealloc) ( void * ) = _bitarray->dealloc;
-
+void ex_bitarray_deinit ( ex_bitarray_t *_bitarray ) {
     ex_assert( _bitarray != NULL );
 
     _bitarray->dealloc(_bitarray->data);
@@ -85,10 +76,6 @@ void ex_bitarray_delete ( ex_bitarray_t *_bitarray ) {
     _bitarray->alloc = NULL;
     _bitarray->realloc = NULL;
     _bitarray->dealloc = NULL;
-
-    _bitarray->count = 0;
-
-    dealloc(_bitarray);
 }
 
 // ------------------------------------------------------------------ 
