@@ -17,11 +17,32 @@
 #endif
 
 int main (void) {
-    printf ( "Hello World!\n" );
+    // ======================================================== 
+    // inits
+    // ======================================================== 
 
-    ex_mem_init ();
+    ex_log ( "Initializing Allegro..." );
+    if ( !al_init () ) {
+        ex_log ( "Could not init Allegro!" );
+        return 1;
+    }
 
+    ex_log ( "Initializing memory..." );
+    if ( !ex_mem_init () ) {
+        ex_log ( "Could not init memory!" );
+        return 1;
+    }
+
+    // ======================================================== 
+    // main-loop 
+    // ======================================================== 
+
+    // TODO:
     // ex_malloc ( sizeof (char) * 1024 );
+
+    // ======================================================== 
+    // deinits 
+    // ======================================================== 
 
     ex_mem_deinit ();
 

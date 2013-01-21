@@ -127,10 +127,10 @@ solution "exSDK"
             flags { "Optimize" }    
  
     -- ======================================================== 
-    -- Project: exSDK
+    -- Project: exCore
     -- ======================================================== 
 
-    project "exSDK"
+    project "exCore"
         kind "StaticLib"
         language "C"
         targetname "exsdk"
@@ -169,15 +169,15 @@ solution "exSDK"
 
         -- configurations
         configuration "Debug"
-            objdir ( __DEST_DIR .. "exSDK/debug/objs/" )
-            targetdir ( __DEST_DIR .. "exSDK/debug/bin/" )
+            objdir ( __DEST_DIR .. "exCore/debug/objs/" )
+            targetdir ( __DEST_DIR .. "exCore/debug/bin/" )
 
             defines { "DEBUG" }
             flags { "Symbols" }
 
         configuration "Release"
-            objdir ( __DEST_DIR .. "exSDK/release/objs/" )
-            targetdir ( __DEST_DIR .. "exSDK/release/bin/" )
+            objdir ( __DEST_DIR .. "exCore/release/objs/" )
+            targetdir ( __DEST_DIR .. "exCore/release/bin/" )
 
             defines { "NDEBUG" }
             flags { "Optimize" }    
@@ -209,7 +209,7 @@ solution "exSDK"
         -- link
         links {
             "Allegro",
-            "exSDK",
+            "exCore",
             "freetype",
         }
         if __PLATFORM == "macosx" then
@@ -296,7 +296,7 @@ solution "exSDK"
             -- link
             links {
                 "Allegro",
-                "exSDK",
+                "exCore",
                 "freetype",
             }
             if __PLATFORM == "macosx" then
@@ -338,4 +338,3 @@ solution "exSDK"
                 defines { "NDEBUG" }
                 flags { "Optimize" }
     end
-    -- project "exPlayer"
