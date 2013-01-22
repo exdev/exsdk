@@ -148,6 +148,15 @@ extern size_t ex_fsys_fwrite ( ex_file_t *_file, const void *_buf, uint64 _size 
 extern int ex_fsys_fflush ( ex_file_t *_file ); 
 extern int ex_fsys_feof ( ex_file_t *_file ); 
 
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern bool ex_os_exists ( const char *_path );
+extern bool ex_os_isdir ( const char *_path );
+extern bool ex_os_issymlink ( const char *_path );
+extern bool ex_os_isfile ( const char *_path );
+
 // #################################################################################
 #endif // END FSYS_H_1358753184
 // #################################################################################

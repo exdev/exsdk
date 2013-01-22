@@ -123,6 +123,30 @@ int ex_fsys_init ( const char *_media_path ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+void ex_fsys_deinit () {
+    PHYSFS_deinit();
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+bool ex_fsys_initialized () {
+    return PHYSFS_isInit();
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_fsys_free_list( void *_list ) {
+    PHYSFS_freeList(_list);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void ex_fsys_set_main_bundle_path ( const char *_path ) {
     strncpy( __main_bundle_path, _path, MAX_PATH );
 }
@@ -132,3 +156,50 @@ void ex_fsys_set_main_bundle_path ( const char *_path ) {
 // ------------------------------------------------------------------ 
 
 const char *ex_fsys_main_bundle_path () { return __main_bundle_path; }
+
+///////////////////////////////////////////////////////////////////////////////
+// os
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// defines
+extern int __PHYSFS_platformExists( const char * );
+extern int __PHYSFS_platformIsSymLink( const char * );
+extern int __PHYSFS_platformIsDirectory( const char * );
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+bool ex_os_exists ( const char *_path ) {
+    return __PHYSFS_platformExists(_path);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+bool ex_os_isdir ( const char *_path ) {
+    return __PHYSFS_platformIsDirectory(_path);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+bool ex_os_issymlink ( const char *_path ) {
+    return __PHYSFS_platformIsSymLink(_path);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+bool ex_os_isfile ( const char *_path ) {
+    if ( __PHYSFS_platformExists(_path) == false ) {
+        return false;
+    }
+    return (__PHYSFS_platformIsSymLink(_path) || __PHYSFS_platformIsDirectory(_path)) ? false : true;
+}
+

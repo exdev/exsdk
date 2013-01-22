@@ -142,7 +142,7 @@ int ex_lua_init () {
     ex_assert( __L == NULL );
 
     //
-    __L = lua_open();
+    __L = luaL_newstate();
     luaL_openlibs(__L); // open default libs
 
     // OPTME { 

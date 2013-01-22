@@ -19,6 +19,12 @@
 #include "container/container_inc.h"
 #include "math/math_inc.h"
 
+// fsys
+#include "fsys/fsys_inc.h"
+
+// lua
+#include "lua/lua_inc.h"
+
 extern const char *ex_sdk_ver ();
 
 // #################################################################################

@@ -139,7 +139,7 @@ solution "exSDK"
         includedirs {
             "ext/allegro-5.0.8/include/",
             "ext/allegro-5.0.8/addons/primitives/",
-            -- "ext/physfs-2.0.3/include/",
+            "ext/physfs-2.0.3/",
             "ext/lua-5.2.1/",
             "ext/luagl/",
             "ext/freetype-2.4.2-1/include/",
@@ -155,7 +155,7 @@ solution "exSDK"
 
         -- source
         files { 
-            -- "ext/physfs-2.0.3/**.c",
+            "ext/physfs-2.0.3/**.c",
             "ext/lua-5.2.1/**.c",
             "ext/luagl-1.8/**.c",
             "core/**.c",
