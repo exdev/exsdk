@@ -223,27 +223,28 @@ const char *ex_sdk_ver () { return "1.0.0"; }
 
 int ex_sdk_init () {
     ex_assert ( __initialized == false );
+
     ex_log ( "Initializing..." );
+    if ( __initialized )
+        return -1;
 
-    // ======================================================== 
-    // inits
-    // ======================================================== 
-
+    // init Allegro
     ex_log ( "Initializing Allegro..." );
-    if ( !al_init () ) {
+    if ( al_init () == false ) {
         ex_log ( "Could not init Allegro!" );
-        return 1;
+        return -1;
     }
 
+    // init memory
     ex_log ( "Initializing memory..." );
-    if ( !ex_mem_init () ) {
+    if ( ex_mem_init () != 0 ) {
         ex_log ( "Could not init memory!" );
-        return 1;
+        return -1;
     }
 
     ex_log ( "exSDK initialized!" );
     __initialized = true;
-    return 1;
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -251,9 +252,11 @@ int ex_sdk_init () {
 // ------------------------------------------------------------------ 
 
 void ex_sdk_deinit () {
-    ex_log ( "Closing..." );
-
     ex_assert ( __initialized );
+
+    ex_log ( "Closing..." );
+    if ( __initialized == false )
+        return;
 
     ex_log ( "Closing memory..." );
     ex_mem_deinit ();

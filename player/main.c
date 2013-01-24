@@ -18,7 +18,7 @@
 int main (void) {
 
     // init 
-    if ( !ex_sdk_init() ) {
+    if ( ex_sdk_init() != 0 ) {
         ex_log ( "Could not init exsdk!" );
         return 1;
     }

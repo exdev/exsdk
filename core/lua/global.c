@@ -138,6 +138,9 @@ int ex_lua_init () {
     ex_assert ( __initialized == false );
     ex_assert( __L == NULL );
 
+    if ( __initialized )
+        return -1;
+
     //
     __L = luaL_newstate();
     luaL_openlibs(__L); // open default libs
@@ -173,7 +176,7 @@ int ex_lua_init () {
     // TODO:
 
     __initialized = true;
-    return 1;
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -182,6 +185,9 @@ int ex_lua_init () {
 
 void ex_lua_deinit () {
     ex_assert ( __initialized );
+
+    if ( __initialized == false )
+        return;
 
     // before close modules, force a complete garbage collection in case of memory leak
     lua_gc(__L, LUA_GCCOLLECT, 0);

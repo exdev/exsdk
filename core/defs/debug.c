@@ -49,11 +49,14 @@ static void __short_funcname ( char _short_name[], const char *_function_name, i
 int ex_log_init () {
     ex_assert ( __initialized == false );
 
+    if ( __initialized )
+        return -1;
+
     // __log_file = ex_text_fopen( "log.txt", false );
 
     //
     __initialized = true;
-    return 1;
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -62,6 +65,9 @@ int ex_log_init () {
 
 void ex_log_deinit () {
     ex_assert ( __initialized );
+
+    if ( __initialized == false )
+        return;
 
     // if ( __log_file ) {
     //     ex_text_fclose(__log_file);

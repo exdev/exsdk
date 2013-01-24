@@ -328,6 +328,9 @@ static void __dump () {
 int ex_mem_init () {
     ex_assert ( __initialized == false );
 
+    if ( __initialized )
+        return -1;
+
     //
     __access_mutex = al_create_mutex();
 
@@ -352,7 +355,7 @@ int ex_mem_init () {
     // } DISABLE end 
 
     __initialized = true;
-    return 1;
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -361,6 +364,9 @@ int ex_mem_init () {
 
 void ex_mem_deinit () {
     ex_assert ( __initialized );
+
+    if ( __initialized == false )
+        return;
 
     if ( __access_mutex )
         al_destroy_mutex(__access_mutex);
