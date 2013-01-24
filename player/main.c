@@ -10,41 +10,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "exsdk.h"
-#include <assert.h>
 
 #if ( EX_PLATFORM == EX_MACOSX )
     #define main _al_mangled_main
 #endif
 
 int main (void) {
-    // ======================================================== 
-    // inits
-    // ======================================================== 
 
-    ex_log ( "Initializing Allegro..." );
-    if ( !al_init () ) {
-        ex_log ( "Could not init Allegro!" );
+    // init 
+    if ( !ex_sdk_init() ) {
+        ex_log ( "Could not init exsdk!" );
         return 1;
     }
 
-    ex_log ( "Initializing memory..." );
-    if ( !ex_mem_init () ) {
-        ex_log ( "Could not init memory!" );
-        return 1;
-    }
-
-    // ======================================================== 
     // main-loop 
-    // ======================================================== 
-
-    // TODO:
     // ex_malloc ( sizeof (char) * 1024 );
 
-    // ======================================================== 
     // deinits 
-    // ======================================================== 
-
-    ex_mem_deinit ();
+    ex_sdk_deinit ();
 
     return 0;
 }

@@ -326,11 +326,7 @@ static void __dump () {
 // ------------------------------------------------------------------ 
 
 int ex_mem_init () {
-
-    // if the memmng already initialized, don't init it second times.
-    if ( __initialized ) {
-        return 1;
-    }
+    ex_assert ( __initialized == false );
 
     //
     __access_mutex = al_create_mutex();
@@ -356,7 +352,7 @@ int ex_mem_init () {
     // } DISABLE end 
 
     __initialized = true;
-    return 0;
+    return 1;
 }
 
 // ------------------------------------------------------------------ 
@@ -364,21 +360,20 @@ int ex_mem_init () {
 // ------------------------------------------------------------------ 
 
 void ex_mem_deinit () {
+    ex_assert ( __initialized );
 
-    if ( __initialized ) {
-        if ( __access_mutex )
-            al_destroy_mutex(__access_mutex);
+    if ( __access_mutex )
+        al_destroy_mutex(__access_mutex);
 
-        __dump ();
+    __dump ();
 
-        //
-        ex_hashmap_deinit ( &__au_map );
+    //
+    ex_hashmap_deinit ( &__au_map );
 
-        // free the reserve alloc info buffer
-        ex_list_deinit ( &__au_bucket );
+    // free the reserve alloc info buffer
+    ex_list_deinit ( &__au_bucket );
 
-        __initialized = false;
-    }
+    __initialized = false;
 }
 
 // ------------------------------------------------------------------ 

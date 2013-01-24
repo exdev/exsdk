@@ -134,11 +134,8 @@ extern int luaopen_luaglu ( lua_State * );
 int ex_lua_init () {
 
     // the lua-interpreter already initialized.
-    if ( __initialized ) {
-        return 1;
-    }
-
     // the lua status already opened.
+    ex_assert ( __initialized == false );
     ex_assert( __L == NULL );
 
     //
@@ -174,6 +171,9 @@ int ex_lua_init () {
 #endif
 
     // TODO:
+
+    __initialized = true;
+    return 1;
 }
 
 // ------------------------------------------------------------------ 
@@ -181,16 +181,16 @@ int ex_lua_init () {
 // ------------------------------------------------------------------ 
 
 void ex_lua_deinit () {
-    if ( __initialized ) {
-        // before close modules, force a complete garbage collection in case of memory leak
-        lua_gc(__L, LUA_GCCOLLECT, 0);
+    ex_assert ( __initialized );
 
-        // TODO:
+    // before close modules, force a complete garbage collection in case of memory leak
+    lua_gc(__L, LUA_GCCOLLECT, 0);
 
-        lua_close(__L);
-        __L = NULL;
-        __initialized = false;
-    }
+    // TODO:
+
+    lua_close(__L);
+    __L = NULL;
+    __initialized = false;
 }
 
 // ------------------------------------------------------------------ 

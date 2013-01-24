@@ -47,17 +47,13 @@ static void __short_funcname ( char _short_name[], const char *_function_name, i
 // ------------------------------------------------------------------ 
 
 int ex_log_init () {
-
-    // if the log system already initialized, don't init it second times.
-    if ( __initialized ) {
-        return 1;
-    }
+    ex_assert ( __initialized == false );
 
     // __log_file = ex_text_fopen( "log.txt", false );
 
     //
     __initialized = true;
-    return 0;
+    return 1;
 }
 
 // ------------------------------------------------------------------ 
@@ -65,13 +61,13 @@ int ex_log_init () {
 // ------------------------------------------------------------------ 
 
 void ex_log_deinit () {
-    if ( __initialized ) {
-        // if ( __log_file ) {
-        //     ex_text_fclose(__log_file);
-        //     __log_file = NULL;
-        // }
-        __initialized = false;
-    }
+    ex_assert ( __initialized );
+
+    // if ( __log_file ) {
+    //     ex_text_fclose(__log_file);
+    //     __log_file = NULL;
+    // }
+    __initialized = false;
 }
 
 // ------------------------------------------------------------------ 
