@@ -36,7 +36,7 @@ typedef void ex_file_t;
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern int ex_fsys_init ( const char *_media_path );
+extern int ex_fsys_init ();
 extern void ex_fsys_deinit ();
 extern bool ex_fsys_initialized ();
 
@@ -60,14 +60,8 @@ extern const char *ex_fsys_main_bundle_path (); // main bundle path in iOS devic
 extern const char *ex_fsys_app_dir (); // current application's directory
 extern const char *ex_fsys_user_dir (); // current user's home directory
 
-// DISABLE { 
-// // ------------------------------------------------------------------ 
-// // Desc: 
-// // ------------------------------------------------------------------ 
-
-// extern int ex_fsys_set_write_dir ( const char *_new_dir );
-// extern const char *ex_fsys_write_dir ();
-// } DISABLE end 
+extern const char *ex_fsys_write_dir ();
+extern int ex_fsys_set_write_dir ( const char *_new_dir );
 
 // ------------------------------------------------------------------ 
 // Desc: 

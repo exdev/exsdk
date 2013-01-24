@@ -244,8 +244,8 @@ int ex_sdk_init () {
     }
 
     // init fsys
-    ex_log ( "Initializing fsys..." );
-    if ( ex_fsys_init (NULL) != 0 ) {
+    ex_log ( "[exSDK] Initializing fsys..." );
+    if ( ex_fsys_init () != 0 ) {
         ex_log ( "[exSDK] Error: Could not init fsys!" );
         return -1;
     }
@@ -283,5 +283,43 @@ void ex_sdk_deinit () {
 
 bool ex_sdk_initialized () {
     return __initialized;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_sdk_open_project ( const char *_path ) {
+    char path[MAX_PATH];
+
+    ex_assert ( _path != NULL );
+
+    // if the media_path exists, use it. if not, try to search it in the app/ directory
+    if ( ex_os_exists (_path) ) {
+        ex_log ( "[exSDK] Open project: %s", _path  );
+
+        strncpy ( path, _path, MAX_PATH );
+
+        // set write dir
+        if ( ex_fsys_set_write_dir(path) != 0 )
+            return -1;
+
+        // mount the write dir. NOTE: set write dir doesn't means you mount it.
+        if ( ex_fsys_mount( path, NULL, true ) != 0 )
+            return -1;
+    }
+    else {
+        ex_log ( "[exSDK] Error: Can't load project at %s", _path );
+        return -1;
+    }
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_sdk_close_project () {
+    // TODO: set_write_dir to default.
+    // TODO: unmount project dir
 }
 

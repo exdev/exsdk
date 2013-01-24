@@ -145,13 +145,20 @@ int ex_lua_init () {
     __L = luaL_newstate();
     luaL_openlibs(__L); // open default libs
 
+    // init graphics wraps
+#if ( EX_PLATFORM != EX_IOS )
+    lua_settop ( __L, 0 ); // clear the stack
+    luaopen_luagl (__L);
+    luaopen_luaglu (__L);
+#endif
+
     // OPTME { 
     // clear the package.path and package.cpath
     ex_lua_dostring ( __L, "package.path = \"\"" );
     ex_lua_dostring ( __L, "package.cpath = \"\"" );
 
     // NOTE: we don't need any search path. 
-    // in exsdk, require("module") is deprecated all script load as module.
+    // in exsdk, require("module") is deprecated because all script load as module.
     // clear the package.path and package.cpath
     ex_lua_dostring ( __L, "package.path = \"./?.lua\"" );
     ex_lua_dostring ( __L, "package.cpath = \"./?.so;./?.dll\"" );
@@ -165,13 +172,6 @@ int ex_lua_init () {
         ex_fsys_free_list(mounts);
     }
     // } OPTME end 
-
-    // init graphics wraps
-#if ( EX_PLATFORM != EX_IOS )
-    lua_settop ( __L, 0 ); // clear the stack
-    luaopen_luagl (__L);
-    luaopen_luaglu (__L);
-#endif
 
     // TODO:
 
