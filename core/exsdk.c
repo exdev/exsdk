@@ -1,5 +1,5 @@
 // ======================================================================================
-// File         : exsdk.c
+// File         : exSDK.c
 // Author       : Wu Jie 
 // Last Change  : 06/26/2010 | 21:03:19 PM | Saturday,June
 // Description  : 
@@ -10,14 +10,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "allegro5/allegro.h"
-#include "exsdk.h"
+#include "exSDK.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // compile message 
 ///////////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------
-//! @mainpage exsdk manual
+//! @mainpage exSDK manual
 //! 
 //! Index
 //! - Modules
@@ -38,7 +38,7 @@
     // log title
     #pragma message(" ")
     #pragma message("==========================================")
-    #pragma message("exsdk predefine log")
+    #pragma message("exSDK predefine log")
     #pragma message("==========================================")
     #pragma message(" ")
     #pragma message("<<<<<<")
@@ -224,26 +224,34 @@ const char *ex_sdk_ver () { return "1.0.0"; }
 int ex_sdk_init () {
     ex_assert ( __initialized == false );
 
-    ex_log ( "Initializing..." );
     if ( __initialized )
         return -1;
 
+    ex_log ( "[exSDK] Initializing..." );
+
     // init Allegro
-    ex_log ( "Initializing Allegro..." );
+    ex_log ( "[exSDK] Initializing Allegro..." );
     if ( al_init () == false ) {
-        ex_log ( "Could not init Allegro!" );
+        ex_log ( "[exSDK] Error: Could not init Allegro!" );
         return -1;
     }
 
     // init memory
-    ex_log ( "Initializing memory..." );
+    ex_log ( "[exSDK] Initializing memory..." );
     if ( ex_mem_init () != 0 ) {
-        ex_log ( "Could not init memory!" );
+        ex_log ( "[exSDK] Error: Could not init memory!" );
         return -1;
     }
 
-    ex_log ( "exSDK initialized!" );
+    // init fsys
+    ex_log ( "Initializing fsys..." );
+    if ( ex_fsys_init (NULL) != 0 ) {
+        ex_log ( "[exSDK] Error: Could not init fsys!" );
+        return -1;
+    }
+
     __initialized = true;
+    ex_log ( "[exSDK] initialized!" );
     return 0;
 }
 
@@ -254,15 +262,19 @@ int ex_sdk_init () {
 void ex_sdk_deinit () {
     ex_assert ( __initialized );
 
-    ex_log ( "Closing..." );
     if ( __initialized == false )
         return;
 
-    ex_log ( "Closing memory..." );
-    ex_mem_deinit ();
-    __initialized = false;
+    ex_log ( "[exSDK] Closing..." );
 
-    ex_log ( "exSDK closed" );
+    ex_log ( "[exSDK] Closing fsys..." );
+    ex_fsys_deinit ();
+
+    ex_log ( "[exSDK] Closing memory..." );
+    ex_mem_deinit ();
+
+    __initialized = false;
+    ex_log ( "[exSDK] closed" );
 }
 
 // ------------------------------------------------------------------ 

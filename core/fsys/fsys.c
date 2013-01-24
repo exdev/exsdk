@@ -47,8 +47,8 @@ int ex_fsys_init ( const char *_media_path ) {
     app_path = ex_fsys_app_dir();
 #endif
 
-    ex_log ( "user dir: %s", ex_fsys_user_dir() );
-    ex_log ( "app dir: %s", app_path );
+    ex_log ( "[fsys] User Dir: %s", ex_fsys_user_dir() );
+    ex_log ( "[fsys] Application Dir: %s", app_path );
 
     // NOTE: this must be done before ex_log_init, so that log.txt can be open in the corrent path.
 
@@ -69,16 +69,16 @@ int ex_fsys_init ( const char *_media_path ) {
             // set write dir
             if ( ex_fsys_set_write_dir(path) != 0 )
                 return -1;
-            ex_log("set write dir: %s", path );
+            ex_log ( "[fsys] Set write dir: %s", path  );
 
             // mount the write dir 
             // NOTE: set write dir doesn't means you mount it.
             if ( ex_fsys_mount( path, NULL, true ) != 0 )
                 return -1;
-            ex_log("mount dir: %s", path );
+            ex_log ( "[fsys] Mount dir: %s", path  );
         }
         else {
-            ex_error ( "can't find the media path %s", _media_path );
+            ex_log ( "[fsys] Error: Can't find the media path %s", _media_path );
             return -1;
         }
     }
@@ -90,10 +90,10 @@ int ex_fsys_init ( const char *_media_path ) {
         // we mount the app/ directory below
         if ( ex_fsys_set_write_dir(path) != 0 )
             return -1;
-        ex_log("set default write dir: %s", path );
+        ex_log( "[fsys] Set default write dir: %s", path  );
     }
     else {
-        ex_error ( "can't set a write directory" );
+        ex_log ( "[fsys] Error: Can't set a write directory" );
         return -1;
     }
 
@@ -104,7 +104,7 @@ int ex_fsys_init ( const char *_media_path ) {
         if ( ex_os_exists(path) && ex_os_isdir(path) ) {
             if ( ex_fsys_mount( path, NULL, true ) != 0 )
                 return -1;
-            ex_log("mount dir: %s", path );
+            ex_log("[fsys] Mount dir: %s", path );
         }
     }
 
@@ -113,7 +113,7 @@ int ex_fsys_init ( const char *_media_path ) {
         strncpy ( path, app_path, MAX_PATH );
         if ( ex_fsys_mount( path, NULL, true ) != 0 )
             return -1;
-        ex_log("mount dir: %s", path );
+        ex_log( "[fsys] Mount dir: %s", path  );
     }
 
     return 0;
