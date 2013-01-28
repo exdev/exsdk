@@ -116,15 +116,6 @@ int __lua_index ( lua_State *_l, int _idx ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
-// TODO { 
-// extern int luaopen_ex ( lua_State * );
-// extern int luaopen_angf ( lua_State * );
-// extern int luaopen_vec2f ( lua_State * );
-// extern int luaopen_mat33f ( lua_State * );
-// extern int luaopen_color3f ( lua_State * );
-// extern int luaopen_color4f ( lua_State * );
-// } TODO end 
-
 #if ( EX_PLATFORM != EX_IOS )
 extern int luaopen_luagl ( lua_State * );
 extern int luaopen_luaglu ( lua_State * );
@@ -145,13 +136,17 @@ int ex_lua_init () {
     __L = luaL_newstate();
 
     // open default lua libs
+    ex_log ( "[lua] Loading default library..." );
     luaL_openlibs(__L);
 
     // open ex_c libs
+    ex_log ( "[lua] Loading ex_c library..." );
+    lua_settop ( __L, 0 ); // clear the stack
     ex_lua_openlibs (__L);
 
     // init graphics wraps
 #if ( EX_PLATFORM != EX_IOS )
+    ex_log ( "[lua] Loading gl library..." );
     lua_settop ( __L, 0 ); // clear the stack
     luaopen_luagl (__L);
     luaopen_luaglu (__L);
@@ -162,7 +157,8 @@ int ex_lua_init () {
     ex_lua_dostring ( __L, "package.path = \"\"" );
     ex_lua_dostring ( __L, "package.cpath = \"\"" );
 
-    // TODO: we need to find out the modules, and add them { 
+    // TODO: Consider use package.preload, in luaL_openlibs function, there have some example. 
+    // TODO: we need to find out the modules, and add them. { 
     // // NOTE: we don't need any search path. 
     // // in exsdk, require("module") is deprecated because all script load as module.
     // // clear the package.path and package.cpath
@@ -220,10 +216,22 @@ lua_State *ex_lua_main_state () { return __L; }
 
 // ------------------------------------------------------------------ 
 // Desc: 
+extern int luaopen_vec2f ( lua_State * );
+
+static const luaL_Reg loadedlibs[] = {
+    { "ex_c", luaopen_vec2f },
+    { NULL, NULL }
+};
 // ------------------------------------------------------------------ 
 
-int ex_lua_openlibs ( struct lua_State *_l ) {
-    // TODO:
+void ex_lua_openlibs ( lua_State *_l ) {
+    const luaL_Reg *lib;
+
+    // call open functions from 'loadedlibs' and set results to global table
+    for ( lib = loadedlibs; lib->func; ++lib ) {
+        luaL_requiref ( _l, lib->name, lib->func, 1 );
+        lua_pop ( _l, 1 );  // remove lib
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

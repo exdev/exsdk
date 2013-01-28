@@ -26,7 +26,7 @@ extern bool ex_lua_initialized ();
 
 extern struct lua_State *ex_lua_main_state ();
 
-extern int ex_lua_openlibs ( struct lua_State *_l );
+extern void ex_lua_openlibs ( struct lua_State *_l );
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua interpreter op

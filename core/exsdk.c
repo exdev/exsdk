@@ -250,6 +250,13 @@ int ex_sdk_init () {
         return -1;
     }
 
+    // init lua
+    ex_log ( "[exSDK] Initializing lua..." );
+    if ( ex_lua_init () != 0 ) {
+        ex_log ( "[exSDK] Error: Could not init lua!" );
+        return -1;
+    }
+
     __initialized = true;
     ex_log ( "[exSDK] initialized!" );
     return 0;
@@ -266,6 +273,9 @@ void ex_sdk_deinit () {
         return;
 
     ex_log ( "[exSDK] Closing..." );
+
+    ex_log ( "[exSDK] Closing lua..." );
+    ex_lua_deinit ();
 
     ex_log ( "[exSDK] Closing fsys..." );
     ex_fsys_deinit ();
