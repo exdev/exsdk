@@ -31,12 +31,15 @@ int main (void) {
     ex_sdk_open_project ( path );
 
     // main-loop 
-    ex_fsys_mkdir ( "foo/bar/" );
-    file = ex_fsys_fopen_w( "foo/bar/test.txt" );
-    ex_assert ( file != NULL );
-    ex_fsys_fwrite ( file, "Hello World!", strlen("Hello World!") );
-    ex_fsys_fclose(file);
+    // DELME { 
+    // ex_fsys_mkdir ( "foo/bar/" );
+    // file = ex_fsys_fopen_w( "foo/bar/test.txt" );
+    // ex_assert ( file != NULL );
+    // ex_fsys_fwrite ( file, "Hello World!", strlen("Hello World!") );
+    // ex_fsys_fclose(file);
     // ex_malloc ( sizeof (char) * 1024 );
+    // } DELME end 
+    ex_lua_run_interpretor ( ex_lua_main_state() );
 
     // deinits 
     ex_sdk_deinit ();

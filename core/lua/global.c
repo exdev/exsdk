@@ -393,3 +393,25 @@ void ex_lua_dump_stack ( lua_State *_l ) {
 int ex_lua_totoal_memory ( struct lua_State *_l ) {
     return lua_gc(_l, LUA_GCCOUNT, 0);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_lua_run_interpretor ( lua_State *_l ) {
+    char buff[256];
+    int error;
+
+    while ( fgets(buff, sizeof(buff), stdin) != NULL ) {
+        error = luaL_loadbuffer ( _l, buff, strlen(buff), "line" ) ||
+            lua_pcall(_l, 0, 0, 0);
+        if (error) {
+            fprintf(stderr, "%s", lua_tostring(_l, -1));
+            lua_pop(_l, 1); /* pop error message from the stack */
+        }
+    }
+}
