@@ -143,7 +143,12 @@ int ex_lua_init () {
 
     //
     __L = luaL_newstate();
-    luaL_openlibs(__L); // open default libs
+
+    // open default lua libs
+    luaL_openlibs(__L);
+
+    // open ex_c libs
+    ex_lua_openlibs (__L);
 
     // init graphics wraps
 #if ( EX_PLATFORM != EX_IOS )
@@ -157,23 +162,23 @@ int ex_lua_init () {
     ex_lua_dostring ( __L, "package.path = \"\"" );
     ex_lua_dostring ( __L, "package.cpath = \"\"" );
 
-    // NOTE: we don't need any search path. 
-    // in exsdk, require("module") is deprecated because all script load as module.
-    // clear the package.path and package.cpath
-    ex_lua_dostring ( __L, "package.path = \"./?.lua\"" );
-    ex_lua_dostring ( __L, "package.cpath = \"./?.so;./?.dll\"" );
-    {
-        char **mounts = ex_fsys_mounts();
-        char **i;
-        for ( i = mounts; *i != NULL; ++i  ) {
-            ex_lua_add_path( __L, *i );
-            ex_lua_add_cpath( __L, *i );
-        }
-        ex_fsys_free_list(mounts);
-    }
+    // TODO: we need to find out the modules, and add them { 
+    // // NOTE: we don't need any search path. 
+    // // in exsdk, require("module") is deprecated because all script load as module.
+    // // clear the package.path and package.cpath
+    // ex_lua_dostring ( __L, "package.path = \"./?.lua\"" );
+    // ex_lua_dostring ( __L, "package.cpath = \"./?.so;./?.dll\"" );
+    // {
+    //     char **mounts = ex_fsys_mounts();
+    //     char **i;
+    //     for ( i = mounts; *i != NULL; ++i  ) {
+    //         ex_lua_add_path( __L, *i );
+    //         ex_lua_add_cpath( __L, *i );
+    //     }
+    //     ex_fsys_free_list(mounts);
+    // }
+    // } TODO end 
     // } OPTME end 
-
-    // TODO:
 
     __initialized = true;
     return 0;
@@ -212,6 +217,14 @@ bool ex_lua_initialized () {
 // ------------------------------------------------------------------ 
 
 lua_State *ex_lua_main_state () { return __L; }
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_lua_openlibs ( struct lua_State *_l ) {
+    // TODO:
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua interpreter op
