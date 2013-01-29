@@ -242,51 +242,44 @@ void ex_lua_openlibs ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_lua_dofile ( lua_State *_l, const char *_filepath, const char *_modname ) {
-// TODO { 
-//     int status;
-//     ex_file_t *file;
-//     size_t buf_size;
-//     void *buffer;
+int ex_lua_dofile ( lua_State *_l, const char *_filepath ) {
+    int status;
+    ex_file_t *file;
+    size_t buf_size;
+    void *buffer;
 
-//     // open the file
-//     file = ex_fopen_r(_filepath);
-//     if ( file == NULL ) {
-//         ex_error ( "can't find the file %s", _filepath );
-//         return -1;
-//     }
+    // open the file
+    file = ex_fsys_fopen_r(_filepath);
+    if ( file == NULL ) {
+        ex_log ( "[lua] Can't find the file %s", _filepath );
+        return -1;
+    }
 
-//     // get the file to the buffer we allocated.
-//     buf_size = ex_fsize (file);
-//     buffer = ex_malloc (buf_size);
-//     ex_fread (file, buffer, buf_size );
-//     ex_fclose(file);
+    // get the file to the buffer we allocated.
+    buf_size = ex_fsys_fsize (file);
+    buffer = ex_malloc (buf_size);
+    ex_fsys_fread (file, buffer, buf_size );
+    ex_fsys_fclose(file);
 
-//     // parse the buffer by lua interpreter
-//     status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath );
-//     if ( status ) {
-//         ex_lua_alert(_l);
-//         goto PARSE_FAILED;
-//     }
+    // parse the buffer by lua interpreter
+    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath );
+    if ( status ) {
+        ex_lua_alert(_l);
+        goto PARSE_FAILED;
+    }
 
-//     // call the script 
-//     if ( _modname ) {
-//         lua_pushstring(_l,_modname);
-//         status = lua_pcall(_l, 1, LUA_MULTRET, 0);
-//     }
-//     else {
-//         status = lua_pcall(_l, 0, LUA_MULTRET, 0);
-//     }
-//     if ( status ) {
-//         ex_lua_alert(_l);
-//         goto PARSE_FAILED;
-//     }
+    // call the script 
+    status = lua_pcall(_l, 0, LUA_MULTRET, 0);
+    if ( status ) {
+        ex_lua_alert(_l);
+        goto PARSE_FAILED;
+    }
 
-// PARSE_FAILED:
-//     ex_free(buffer);
-//     return -1;
-// } TODO end 
+    ex_free(buffer);
+    return 0;
 
+PARSE_FAILED:
+    ex_free(buffer);
     return -1;
 }
 

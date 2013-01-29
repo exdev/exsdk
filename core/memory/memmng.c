@@ -162,7 +162,7 @@ static void __verify_pattern ( alloc_unit_t *_au,
 
         //
         for( i_pre = 0; i_pre < PREFIX_COUNT; ++i_pre, ++pre ) {
-            ex_assert ( *pre != PREFIX_PATTERN );
+            ex_assert ( *pre == PREFIX_PATTERN );
             if ( *pre != PREFIX_PATTERN ) {
                 ex_log ( "Memory Prefix Conflict\n"
                          "FielName: %s\n"
@@ -185,7 +185,7 @@ static void __verify_pattern ( alloc_unit_t *_au,
 
         //
         for ( i_post = 0; i_post < SUFFIX_COUNT; ++i_post, ++post ) {
-            ex_assert ( *post != SUFFIX_PATTERN );
+            ex_assert ( *post == SUFFIX_PATTERN );
             if ( *post != SUFFIX_PATTERN ) {
                 ex_log ( "Memory Postfix Conflict\n"
                          "FielName: %s\n"

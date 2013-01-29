@@ -32,7 +32,7 @@ extern void ex_lua_openlibs ( struct lua_State *_l );
 // lua interpreter op
 ///////////////////////////////////////////////////////////////////////////////
 
-extern int ex_lua_dofile ( struct lua_State *_l, const char *_filepath, const char *_modname );
+extern int ex_lua_dofile ( struct lua_State *_l, const char *_filepath );
 extern int ex_lua_dostring ( struct lua_State *_l, const char *_fmt, ... );
   
 ///////////////////////////////////////////////////////////////////////////////

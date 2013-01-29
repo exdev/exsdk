@@ -45,7 +45,18 @@ static int vec2f_new ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int vec2f_delete ( lua_State *_l ) {
-    // TODO:
+    void *p;
+    int nargs = lua_gettop(_l); 
+
+    if ( nargs != 1 ) {
+        luaL_error ( _l, "Invalid number of arguments, should be 1" );
+        return 0;
+    }
+
+    ex_check ( lua_islightuserdata(_l,1) );
+    p = lua_touserdata(_l,1);
+    ex_free(p);
+
     return 0;
 }
 
