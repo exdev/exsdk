@@ -68,6 +68,7 @@ int ex_fsys_init () {
     // if app/ exists, we add it as the secondly search directory.
     if ( app_path ) {
         strncpy ( path, app_path, MAX_PATH );
+        // strcat ( path, "builtin/" );
 
         // NOTE: set write dir doesn't means you mount it.
         if ( ex_fsys_set_write_dir(path) != 0 )

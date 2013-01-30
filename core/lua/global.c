@@ -9,6 +9,7 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "allegro5/allegro.h"
 #include "exsdk.h"
 
 #include <lua.h>
@@ -116,6 +117,30 @@ int __lua_index ( lua_State *_l, int _idx ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+extern int luaopen_vec2f ( lua_State * );
+
+static const luaL_Reg loadedlibs[] = {
+    { "ex_c", luaopen_vec2f },
+    { NULL, NULL }
+};
+// ------------------------------------------------------------------ 
+
+static void __ex_lua_openlibs ( lua_State *_l ) {
+    const luaL_Reg *lib;
+
+    // call open functions from 'loadedlibs' and set results to global table
+    for ( lib = loadedlibs; lib->func; ++lib ) {
+        luaL_requiref ( _l, lib->name, lib->func, 1 );
+        lua_pop ( _l, 1 );  // remove lib
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// defines
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
 #if ( EX_PLATFORM != EX_IOS )
 extern int luaopen_luagl ( lua_State * );
 extern int luaopen_luaglu ( lua_State * );
@@ -142,7 +167,7 @@ int ex_lua_init () {
     // open ex_c libs
     ex_log ( "[lua] Loading ex_c library..." );
     lua_settop ( __L, 0 ); // clear the stack
-    ex_lua_openlibs (__L);
+    __ex_lua_openlibs (__L);
 
     // init graphics wraps
 #if ( EX_PLATFORM != EX_IOS )
@@ -152,18 +177,19 @@ int ex_lua_init () {
     luaopen_luaglu (__L);
 #endif
 
-    // OPTME { 
-    // clear the package.path and package.cpath
-    ex_lua_dostring ( __L, "package.path = \"\"" );
-    ex_lua_dostring ( __L, "package.cpath = \"\"" );
+    // TODO: load builtin modules
+    // NOTE: think about cross reference problem, to solve this, a package.preload is needed
+    // NOTE: my solution is, first add everything to package.preload, then load each module excactly
+    // search builtin/modules/ and add each folder in as module
+    // Write the load modules script here ...
 
-    // TODO: Consider use package.preload, in luaL_openlibs function, there have some example. 
-    // TODO: we need to find out the modules, and add them. { 
-    // // NOTE: we don't need any search path. 
-    // // in exsdk, require("module") is deprecated because all script load as module.
-    // // clear the package.path and package.cpath
-    // ex_lua_dostring ( __L, "package.path = \"./?.lua\"" );
-    // ex_lua_dostring ( __L, "package.cpath = \"./?.so;./?.dll\"" );
+    // clear the package.path and package.cpath
+    ex_lua_clear_path(__L);
+    ex_lua_clear_cpath(__L);
+
+    // TODO: add simple requires search path, this is different than modules
+    // ex_lua_set_path ( __L, "\"./?.lua\"" );
+    // ex_lua_set_cpath ( __L, "\"./?.so;./?.dll\"" );
     // {
     //     char **mounts = ex_fsys_mounts();
     //     char **i;
@@ -173,8 +199,6 @@ int ex_lua_init () {
     //     }
     //     ex_fsys_free_list(mounts);
     // }
-    // } TODO end 
-    // } OPTME end 
 
     __initialized = true;
     return 0;
@@ -216,22 +240,95 @@ lua_State *ex_lua_main_state () { return __L; }
 
 // ------------------------------------------------------------------ 
 // Desc: 
-extern int luaopen_vec2f ( lua_State * );
-
-static const luaL_Reg loadedlibs[] = {
-    { "ex_c", luaopen_vec2f },
-    { NULL, NULL }
-};
 // ------------------------------------------------------------------ 
 
-void ex_lua_openlibs ( lua_State *_l ) {
-    const luaL_Reg *lib;
+void ex_lua_load_module ( struct lua_State *_l, const char *_moduleName ) { 
+    // TODO: package.loaded[modname] = table
+    // TODO: package.preload[modname] = load_function <= can be a lua file have a function in it.
+    // NOTE: Consider use package.preload, in luaL_openlibs function, there have some example. 
+}
 
-    // call open functions from 'loadedlibs' and set results to global table
-    for ( lib = loadedlibs; lib->func; ++lib ) {
-        luaL_requiref ( _l, lib->name, lib->func, 1 );
-        lua_pop ( _l, 1 );  // remove lib
-    }
+///////////////////////////////////////////////////////////////////////////////
+// lua op
+///////////////////////////////////////////////////////////////////////////////
+
+static inline int __lua_set_path ( struct lua_State *_l, const char * _fieldName, const char *_path ) {
+    lua_getglobal( _l, "package" );
+    lua_pushstring( _l, _path );
+
+    lua_setfield( _l, -2, _fieldName ); // package.path = "\"\""
+
+    lua_pop( _l, 1 ); // get rid of package table from top of stack
+    return 0;
+}
+static inline int __lua_add_path ( struct lua_State *_l, const char * _fieldName, const char *_path ) {
+    // {
+    //     ALLEGRO_PATH *path1 = al_create_path("/d/foo/bar");
+    //     ALLEGRO_PATH *path2 = al_create_path("/d/foo/bar/");
+    //     ALLEGRO_PATH *path3 = al_create_path("/d/foo/bar/foobar.txt");
+
+    //     ex_log ( "[TEST] path1 = %s", al_path_cstr(path1, '/') );
+    //     ex_log ( "[TEST] path2 = %s", al_path_cstr(path2, '/') );
+    //     ex_log ( "[TEST] path3 = %s", al_path_cstr(path3, '/') );
+
+    //     al_drop_path_tail (path1);
+    //     al_drop_path_tail (path2);
+    //     al_drop_path_tail (path3);
+
+    //     ex_log ( "[TEST] path1 = %s", al_path_cstr(path1, '/') );
+    //     ex_log ( "[TEST] path2 = %s", al_path_cstr(path2, '/') );
+    //     ex_log ( "[TEST] path3 = %s", al_path_cstr(path3, '/') );
+    // }
+
+    // TODO: use allegro path and allegro ustr
+    // TODO: don't forget to convert win32 path separator to unix separator
+
+    // lua_getglobal( L, "package" );
+    // lua_getfield( L, -1, "path" ); // get field "path" from table at top of stack (-1)
+    // std::string cur_path = lua_tostring( L, -1 ); // grab path string from top of stack
+    // cur_path.append( ';' ); // do your path magic here
+    // cur_path.append( path );
+    // lua_pop( L, 1 ); // get rid of the string on the stack we just pushed on line 5
+    // lua_pushstring( L, cur_path.c_str() ); // push the new one
+    // lua_setfield( L, -2, "path" ); // set the field "path" in table at -2 with value at top of stack
+    // lua_pop( L, 1 ); // get rid of package table from top of stack
+
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_lua_clear_path ( struct lua_State *_l ) {
+    return __lua_set_path ( _l, "path", "\"\"" );
+}
+int ex_lua_set_path ( struct lua_State *_l, const char *_path ) {
+    // "package.path = "\";%s?.lua\""
+    return __lua_set_path ( _l, "path", _path );
+}
+int ex_lua_add_path ( struct lua_State *_l, const char *_path ) {
+    // "package.path = package.path .. \";%s?.lua\"", _path, 
+
+    return __lua_add_path ( _l, "path", _path );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_lua_clear_cpath ( struct lua_State *_l ) {
+    return __lua_set_path ( _l, "cpath", "\"\"" );
+}
+int ex_lua_set_cpath ( struct lua_State *_l, const char *_path ) {
+    // "package.cpath = "\";%s?.so;%s?.dll\""
+
+    return __lua_set_path ( _l, "cpath", _path );
+}
+int ex_lua_add_cpath ( struct lua_State *_l, const char *_path ) {
+    // "package.cpath = package.cpath .. \";%s?.so;%s?.dll\"", 
+
+    return __lua_add_path ( _l, "cpath", _path );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -324,6 +421,24 @@ int ex_lua_dostring ( lua_State *_l, const char *_fmt, ... ) {
     return 0;
 }
 
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_lua_run_interpretor ( lua_State *_l ) {
+    char buff[256];
+    int error;
+
+    while ( fgets(buff, sizeof(buff), stdin) != NULL ) {
+        error = luaL_loadbuffer ( _l, buff, strlen(buff), "line" ) ||
+            lua_pcall(_l, 0, 0, 0);
+        if (error) {
+            fprintf(stderr, "%s", lua_tostring(_l, -1));
+            lua_pop(_l, 1); /* pop error message from the stack */
+        }
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // lua debug op
 ///////////////////////////////////////////////////////////////////////////////
@@ -385,26 +500,4 @@ void ex_lua_dump_stack ( lua_State *_l ) {
 
 int ex_lua_totoal_memory ( struct lua_State *_l ) {
     return lua_gc(_l, LUA_GCCOUNT, 0);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-///////////////////////////////////////////////////////////////////////////////
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_lua_run_interpretor ( lua_State *_l ) {
-    char buff[256];
-    int error;
-
-    while ( fgets(buff, sizeof(buff), stdin) != NULL ) {
-        error = luaL_loadbuffer ( _l, buff, strlen(buff), "line" ) ||
-            lua_pcall(_l, 0, 0, 0);
-        if (error) {
-            fprintf(stderr, "%s", lua_tostring(_l, -1));
-            lua_pop(_l, 1); /* pop error message from the stack */
-        }
-    }
 }

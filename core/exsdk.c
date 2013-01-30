@@ -258,7 +258,7 @@ int ex_sdk_init () {
     }
 
     __initialized = true;
-    ex_log ( "[exSDK] initialized!" );
+    ex_log ( "[exSDK] Initialized!" );
     return 0;
 }
 
@@ -284,7 +284,7 @@ void ex_sdk_deinit () {
     ex_mem_deinit ();
 
     __initialized = false;
-    ex_log ( "[exSDK] closed" );
+    ex_log ( "[exSDK] Closed!" );
 }
 
 // ------------------------------------------------------------------ 

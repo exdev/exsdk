@@ -26,7 +26,19 @@ extern bool ex_lua_initialized ();
 
 extern struct lua_State *ex_lua_main_state ();
 
-extern void ex_lua_openlibs ( struct lua_State *_l );
+///////////////////////////////////////////////////////////////////////////////
+// lua op
+///////////////////////////////////////////////////////////////////////////////
+
+// path
+extern int ex_lua_clear_path ( struct lua_State *_l );
+extern int ex_lua_set_path ( struct lua_State *_l, const char *_path );
+extern int ex_lua_add_path ( struct lua_State *_l, const char *_path );
+
+// cpath
+extern int ex_lua_clear_cpath ( struct lua_State *_l );
+extern int ex_lua_set_cpath ( struct lua_State *_l, const char *_path );
+extern int ex_lua_add_cpath ( struct lua_State *_l, const char *_path );
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua interpreter op
@@ -34,6 +46,7 @@ extern void ex_lua_openlibs ( struct lua_State *_l );
 
 extern int ex_lua_dofile ( struct lua_State *_l, const char *_filepath );
 extern int ex_lua_dostring ( struct lua_State *_l, const char *_fmt, ... );
+extern void ex_lua_run_interpretor ( struct lua_State *_l );
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua checks
@@ -46,19 +59,9 @@ extern int ex_lua_dostring ( struct lua_State *_l, const char *_fmt, ... );
 // lua debug op
 ///////////////////////////////////////////////////////////////////////////////
 
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
 extern void ex_lua_alert ( struct lua_State *_l );
 extern void ex_lua_dump_stack ( struct lua_State *_l );
 extern int ex_lua_totoal_memory ( struct lua_State *_l );
-
-///////////////////////////////////////////////////////////////////////////////
-// TEMP
-///////////////////////////////////////////////////////////////////////////////
-
-extern void ex_lua_run_interpretor ( struct lua_State *_l );
 
 // ######################### 
 #ifdef __cplusplus
