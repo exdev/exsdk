@@ -118,9 +118,11 @@ int __lua_index ( lua_State *_l, int _idx ) {
 // ------------------------------------------------------------------ 
 // Desc: 
 extern int luaopen_vec2f ( lua_State * );
+extern int luaopen_vec3f ( lua_State * );
 
 static const luaL_Reg loadedlibs[] = {
     { "ex_c", luaopen_vec2f },
+    { "ex_c", luaopen_vec3f },
     { NULL, NULL }
 };
 // ------------------------------------------------------------------ 
@@ -187,19 +189,6 @@ int ex_lua_init () {
     ex_lua_clear_path(__L);
     ex_lua_clear_cpath(__L);
 
-    // TODO: add simple requires search path, this is different than modules
-    // ex_lua_set_path ( __L, "\"./?.lua\"" );
-    // ex_lua_set_cpath ( __L, "\"./?.so;./?.dll\"" );
-    // {
-    //     char **mounts = ex_fsys_mounts();
-    //     char **i;
-    //     for ( i = mounts; *i != NULL; ++i  ) {
-    //         ex_lua_add_path( __L, *i );
-    //         ex_lua_add_cpath( __L, *i );
-    //     }
-    //     ex_fsys_free_list(mounts);
-    // }
-
     __initialized = true;
     return 0;
 }
@@ -243,9 +232,16 @@ lua_State *ex_lua_main_state () { return __L; }
 // ------------------------------------------------------------------ 
 
 void ex_lua_load_module ( struct lua_State *_l, const char *_moduleName ) { 
+    ALLEGRO_USTR *ustr;
+
+    ustr = al_ustr_newf( "modules/%s/.module.lua", _moduleName );
+
     // TODO: package.loaded[modname] = table
     // TODO: package.preload[modname] = load_function <= can be a lua file have a function in it.
     // NOTE: Consider use package.preload, in luaL_openlibs function, there have some example. 
+    ex_lua_dofile ( _l, al_cstr(ustr) );
+
+    al_ustr_free(ustr);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -262,36 +258,20 @@ static inline int __lua_set_path ( struct lua_State *_l, const char * _fieldName
     return 0;
 }
 static inline int __lua_add_path ( struct lua_State *_l, const char * _fieldName, const char *_path ) {
-    // {
-    //     ALLEGRO_PATH *path1 = al_create_path("/d/foo/bar");
-    //     ALLEGRO_PATH *path2 = al_create_path("/d/foo/bar/");
-    //     ALLEGRO_PATH *path3 = al_create_path("/d/foo/bar/foobar.txt");
+    ALLEGRO_USTR *ustr;
 
-    //     ex_log ( "[TEST] path1 = %s", al_path_cstr(path1, '/') );
-    //     ex_log ( "[TEST] path2 = %s", al_path_cstr(path2, '/') );
-    //     ex_log ( "[TEST] path3 = %s", al_path_cstr(path3, '/') );
+    lua_getglobal( _l, "package" );
+    lua_getfield( _l, -1, _fieldName );
 
-    //     al_drop_path_tail (path1);
-    //     al_drop_path_tail (path2);
-    //     al_drop_path_tail (path3);
+    ustr = al_ustr_new ( lua_tostring( _l, -1 ) ); // grab path string from top of stack
+    al_ustr_appendf ( ustr, ";%s", _path );
 
-    //     ex_log ( "[TEST] path1 = %s", al_path_cstr(path1, '/') );
-    //     ex_log ( "[TEST] path2 = %s", al_path_cstr(path2, '/') );
-    //     ex_log ( "[TEST] path3 = %s", al_path_cstr(path3, '/') );
-    // }
+    lua_pop( _l, 1 ); // get rid of the string on the stack we just pushed on line 5
+    lua_pushstring( _l, al_cstr(ustr) ); // push the new one
+    lua_setfield( _l, -2, _fieldName ); // set the field "path" in table at -2 with value at top of stack
+    lua_pop( _l, 1 ); // get rid of package table from top of stack
 
-    // TODO: use allegro path and allegro ustr
-    // TODO: don't forget to convert win32 path separator to unix separator
-
-    // lua_getglobal( L, "package" );
-    // lua_getfield( L, -1, "path" ); // get field "path" from table at top of stack (-1)
-    // std::string cur_path = lua_tostring( L, -1 ); // grab path string from top of stack
-    // cur_path.append( ';' ); // do your path magic here
-    // cur_path.append( path );
-    // lua_pop( L, 1 ); // get rid of the string on the stack we just pushed on line 5
-    // lua_pushstring( L, cur_path.c_str() ); // push the new one
-    // lua_setfield( L, -2, "path" ); // set the field "path" in table at -2 with value at top of stack
-    // lua_pop( L, 1 ); // get rid of package table from top of stack
+    al_ustr_free(ustr);
 
     return 0;
 }
@@ -304,13 +284,34 @@ int ex_lua_clear_path ( struct lua_State *_l ) {
     return __lua_set_path ( _l, "path", "\"\"" );
 }
 int ex_lua_set_path ( struct lua_State *_l, const char *_path ) {
-    // "package.path = "\";%s?.lua\""
-    return __lua_set_path ( _l, "path", _path );
+    ALLEGRO_PATH *dir;
+    ALLEGRO_USTR *ustr;
+    
+    dir = al_create_path_for_directory ( _path );
+    ustr = al_ustr_newf ( "\"%s?.lua\"", al_path_cstr ( dir, '/' ) );
+
+    // "package.path = "\"${_path}?.lua\""
+    __lua_set_path ( _l, "path", al_cstr(ustr) );
+
+    al_destroy_path (dir);
+    al_ustr_free (ustr);
+
+    return 0;
 }
 int ex_lua_add_path ( struct lua_State *_l, const char *_path ) {
-    // "package.path = package.path .. \";%s?.lua\"", _path, 
+    ALLEGRO_PATH *dir;
+    ALLEGRO_USTR *ustr;
+    
+    dir = al_create_path_for_directory ( _path );
+    ustr = al_ustr_newf ( ";\"%s?.lua\"", al_path_cstr ( dir, '/' ) );
 
-    return __lua_add_path ( _l, "path", _path );
+    // "package.path = package.path .. \";${_path}?.lua\""
+    __lua_add_path ( _l, "path", al_cstr(ustr) );
+
+    al_destroy_path (dir);
+    al_ustr_free (ustr);
+
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -321,14 +322,38 @@ int ex_lua_clear_cpath ( struct lua_State *_l ) {
     return __lua_set_path ( _l, "cpath", "\"\"" );
 }
 int ex_lua_set_cpath ( struct lua_State *_l, const char *_path ) {
-    // "package.cpath = "\";%s?.so;%s?.dll\""
+    ALLEGRO_PATH *dir;
+    ALLEGRO_USTR *ustr;
+    const char *dir_cstr;
+    
+    dir = al_create_path_for_directory ( _path );
+    dir_cstr = al_path_cstr ( dir, '/' );
+    ustr = al_ustr_newf ( "\"%s?.so;%s?.dll\"", dir_cstr, dir_cstr );
 
-    return __lua_set_path ( _l, "cpath", _path );
+    // "package.cpath = "\"${_path}?.so;${_path}?.dll\""
+    __lua_set_path ( _l, "cpath", al_cstr(ustr) );
+
+    al_destroy_path (dir);
+    al_ustr_free (ustr);
+
+    return 0;
 }
 int ex_lua_add_cpath ( struct lua_State *_l, const char *_path ) {
-    // "package.cpath = package.cpath .. \";%s?.so;%s?.dll\"", 
+    ALLEGRO_PATH *dir;
+    ALLEGRO_USTR *ustr;
+    const char *dir_cstr;
+    
+    dir = al_create_path_for_directory ( _path );
+    dir_cstr = al_path_cstr ( dir, '/' );
+    ustr = al_ustr_newf ( ";\"%s?.so;%s?.dll\"", dir_cstr, dir_cstr );
 
-    return __lua_add_path ( _l, "cpath", _path );
+    // "package.cpath = package.cpath .. \";${_path}?.so;${_path}?.dll\"", 
+    __lua_add_path ( _l, "cpath", _path );
+
+    al_destroy_path (dir);
+    al_ustr_free (ustr);
+
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
