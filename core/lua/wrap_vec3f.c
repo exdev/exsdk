@@ -116,7 +116,9 @@ static const luaL_Reg lib[] = {
     { NULL, NULL }
 };
 
-int luaopen_vec3f ( lua_State *_l ) {
-    luaL_newlib(_l, lib);
-    return 1;
+int __ex_lua_add_vec3f ( lua_State *_l ) {
+    lua_pushvalue( _l, -1 );
+    luaL_setfuncs( _l, lib, 0 );
+    lua_pop ( _l, 1 );
+    return 0;
 }

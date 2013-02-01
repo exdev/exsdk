@@ -117,24 +117,37 @@ int __lua_index ( lua_State *_l, int _idx ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
-extern int luaopen_vec2f ( lua_State * );
-extern int luaopen_vec3f ( lua_State * );
+extern int __ex_lua_add_vec2f ( lua_State * );
+extern int __ex_lua_add_vec3f ( lua_State * );
 
-static const luaL_Reg loadedlibs[] = {
-    { "ex_c", luaopen_vec2f },
-    { "ex_c", luaopen_vec3f },
-    { NULL, NULL }
+static const lua_CFunction loadedlibs[] = {
+    { __ex_lua_add_vec2f },
+    { __ex_lua_add_vec3f },
+    { NULL }
 };
 // ------------------------------------------------------------------ 
 
 static void __ex_lua_openlibs ( lua_State *_l ) {
-    const luaL_Reg *lib;
+    const lua_CFunction *pfunc;
+    const char *modname = "ex_c";
 
-    // call open functions from 'loadedlibs' and set results to global table
-    for ( lib = loadedlibs; lib->func; ++lib ) {
-        luaL_requiref ( _l, lib->name, lib->func, 1 );
-        lua_pop ( _l, 1 );  // remove lib
-    }
+    // create ex_c table
+    lua_newtable(_l);
+
+        // call open functions from 'loadedlibs' and set results to global table
+        for ( pfunc = loadedlibs; *pfunc; ++pfunc ) {
+            (*pfunc) (_l); // add functions to the table
+        }
+
+        luaL_getsubtable(_l, LUA_REGISTRYINDEX, "_LOADED");
+        lua_pushvalue(_l, -2);  /* make copy of module (call result) */
+        lua_setfield(_l, -2, modname);  /* _LOADED[modname] = module */
+        lua_pop(_l, 1);  /* remove _LOADED table */
+
+        lua_pushvalue(_l, -1);  /* copy of 'mod' */
+        lua_setglobal(_l, modname);  /* _G[modname] = module */
+
+    lua_pop(_l, 1);  /* remove module table */
 }
 
 ///////////////////////////////////////////////////////////////////////////////
