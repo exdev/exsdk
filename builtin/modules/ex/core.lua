@@ -17,8 +17,6 @@ local pairs = pairs
 local rawget = rawget
 local rawset = rawset
 
-module("ex")
-
 --/////////////////////////////////////////////////////////////////////////////
 -- base functions
 --/////////////////////////////////////////////////////////////////////////////
@@ -71,7 +69,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-metaclass = {
+local metaclass = {
     __call = function ( _self, ... )
         local table = ... or {}
         table.__isinstance = true

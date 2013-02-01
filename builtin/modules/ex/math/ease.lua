@@ -9,17 +9,12 @@
 -- modules
 --/////////////////////////////////////////////////////////////////////////////
 
-require("ex.math") 
-
 local math = math
-local ex_math = ex.math
 local assert,type = assert,type
 local pi,two_pi,half_pi = math.pi,ex.math.two_pi,ex.math.half_pi
 local sin,cos,asin,acos,sqrt,min,max,abs = math.sin,math.cos,math.asin,math.acos,math.sqrt,math.min,math.max,math.abs
 local os = os
 local ex_time = ex.time
-
-module(...)
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions
@@ -375,6 +370,6 @@ function make_curve ( _from, _to, _duration, _curve )
         local curTime = ex_time.time
         local t = math.min( 1.0, (curTime - startTime) / _duration )
         local ratio = curve(t)
-        return ex_math.lerp( _from, _to, ratio ), (t == 1.0) -- current value, finished
+        return lerp( _from, _to, ratio ), (t == 1.0) -- current value, finished
     end
 end

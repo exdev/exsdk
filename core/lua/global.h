@@ -25,6 +25,7 @@ extern void ex_lua_deinit ();
 extern bool ex_lua_initialized ();
 
 extern struct lua_State *ex_lua_main_state ();
+extern void ex_lua_load_module ( struct lua_State *_l, const char *_moduleName );
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua op

@@ -5,15 +5,18 @@
 -- Description  : 
 -- ======================================================================================
 
-local old_path = package.path
-package.path = "./?.lua"
+local _M = {}
 
-local _M = {
-    class = require ("class"),
-    vec2f = require ("math.vec2f"),
-}
+_ENV = _M
 
-package.path = old_path
+    dofile("core.lua")
+    dofile("class.lua")
+    dofile("debug.lua")
+    dofile("math/math.lua")
+    dofile("math/ease.lua")
+    dofile("math/vec2f.lua")
+
+_ENV = _G
 
 _G[ex] = _M
 package.loaded[ex] = _M 

@@ -192,11 +192,12 @@ int ex_lua_init () {
     luaopen_luaglu (__L);
 #endif
 
-    // TODO: load builtin modules
-    // NOTE: think about cross reference problem, to solve this, a package.preload is needed
-    // NOTE: my solution is, first add everything to package.preload, then load each module excactly
+    // load builtin modules
+    // TODO: think about cross reference problem, to solve this, a package.preload is needed
+    // my solution is, first add everything to package.preload, then load each module excactly
     // search builtin/modules/ and add each folder in as module
-    // Write the load modules script here ...
+    // NOTE: Consider use package.preload, in luaL_openlibs function, there have some example. 
+    ex_lua_load_module ( __L, "ex" );
 
     // clear the package.path and package.cpath
     ex_lua_clear_path(__L);
@@ -247,11 +248,7 @@ lua_State *ex_lua_main_state () { return __L; }
 void ex_lua_load_module ( struct lua_State *_l, const char *_moduleName ) { 
     ALLEGRO_USTR *ustr;
 
-    ustr = al_ustr_newf( "modules/%s/.module.lua", _moduleName );
-
-    // TODO: package.loaded[modname] = table
-    // TODO: package.preload[modname] = load_function <= can be a lua file have a function in it.
-    // NOTE: Consider use package.preload, in luaL_openlibs function, there have some example. 
+    ustr = al_ustr_newf( "builtin/modules/%s/.module.lua", _moduleName );
     ex_lua_dofile ( _l, al_cstr(ustr) );
 
     al_ustr_free(ustr);
