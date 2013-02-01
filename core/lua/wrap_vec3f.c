@@ -116,9 +116,6 @@ static const luaL_Reg lib[] = {
     { NULL, NULL }
 };
 
-int __ex_lua_add_vec3f ( lua_State *_l ) {
-    lua_pushvalue( _l, -1 );
+void __ex_lua_add_vec3f ( lua_State *_l ) {
     luaL_setfuncs( _l, lib, 0 );
-    lua_pop ( _l, 1 );
-    return 0;
 }
