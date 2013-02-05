@@ -6,24 +6,6 @@
 -- ======================================================================================
 
 --/////////////////////////////////////////////////////////////////////////////
--- require and module
---/////////////////////////////////////////////////////////////////////////////
-
-local assert = assert
-local type = type
-local print = print
-local pairs = pairs
-local next = next
-local tostring = tostring
-local assert = assert
-local type = type
-local pairs = pairs
-local next = next
-local getmetatable = getmetatable
-local debug = debug
-local string, io = string, io
-
---/////////////////////////////////////////////////////////////////////////////
 -- functions defines
 --/////////////////////////////////////////////////////////////////////////////
 
@@ -60,8 +42,7 @@ indent is a first indentation (optional).
 --]]
 -- ------------------------------------------------------------------ 
 
-
-function dump(_t, _name, _indent, _show_meta)
+local function dump(_t, _name, _indent, _show_meta)
     local cart     -- a container
     local autoref  -- for self references
 
@@ -154,3 +135,11 @@ function dump(_t, _name, _indent, _show_meta)
     addtocart(_t, _name, _indent, {}, _name, _show_meta)
     print(cart .. autoref)
 end
+
+--/////////////////////////////////////////////////////////////////////////////
+-- 
+--/////////////////////////////////////////////////////////////////////////////
+
+return {
+    dump = dump
+}

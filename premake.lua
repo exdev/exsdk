@@ -5,7 +5,7 @@
 -- Description  : 
 -- ======================================================================================
 
-local __SCRIPT_DIR = path.getdirectory(_SCRIPT)
+local __SCRIPT_DIR = path.getdirectory(_SCRIPT) .. "/"
 local __DEST_DIR = "_build/" .. _ACTION .. "/"
 local __PLATFORM = _ARGS[1] or "macosx"
 
@@ -255,6 +255,7 @@ solution "exSDK"
         configuration "Debug"
             objdir ( __DEST_DIR .. "ex/debug/objs/" )
             targetdir ( __DEST_DIR .. "ex/debug/bin/" )
+            debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex/debug/bin/" )
 
             defines { "DEBUG" }
             flags { "Symbols" }
@@ -262,6 +263,7 @@ solution "exSDK"
         configuration "Release"
             objdir ( __DEST_DIR .. "ex/release/objs/" )
             targetdir ( __DEST_DIR .. "ex/release/bin/" )
+            debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex/release/bin/" )
 
             defines { "NDEBUG" }
             flags { "Optimize" }

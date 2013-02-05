@@ -203,6 +203,20 @@ int ex_lua_init () {
     ex_lua_clear_path(__L);
     ex_lua_clear_cpath(__L);
 
+    // DELME { 
+    // ex_lua_add_path( __L, "./" );
+    // ex_lua_add_cpath( __L, "./" );
+    // {
+    //     char **mounts = ex_fsys_mounts();
+    //     char **i;
+    //     for ( i = mounts; *i != NULL; ++i  ) {
+    //         ex_lua_add_path( __L, *i );
+    //         ex_lua_add_cpath( __L, *i );
+    //     }
+    //     ex_fsys_free_list(mounts);
+    // }
+    // } DELME end 
+
     __initialized = true;
     return 0;
 }
@@ -248,7 +262,7 @@ lua_State *ex_lua_main_state () { return __L; }
 void ex_lua_load_module ( struct lua_State *_l, const char *_moduleName ) { 
     ALLEGRO_USTR *ustr;
 
-    ustr = al_ustr_newf( "builtin/modules/%s/.module.lua", _moduleName );
+    ustr = al_ustr_newf( "builtin/modules/%s/__module__.lua", _moduleName );
     ex_lua_dofile ( _l, al_cstr(ustr) );
 
     al_ustr_free(ustr);
