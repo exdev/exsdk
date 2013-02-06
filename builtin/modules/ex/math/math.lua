@@ -5,15 +5,24 @@
 -- Description  : 
 -- ======================================================================================
 
+local __M = {}
+
 --/////////////////////////////////////////////////////////////////////////////
 -- constants
 --/////////////////////////////////////////////////////////////////////////////
 
-two_pi = math.pi*2 
-half_pi = math.pi/2
+local two_pi = math.pi*2 
+__M.two_pi = two_pi
 
-deg_to_rad = math.pi/180.0
-rad_to_deg = 180.0/math.pi
+local half_pi = math.pi/2
+__M.half_pi = half_pi
+
+local deg_to_rad = math.pi/180.0
+__M.deg_to_rad = deg_to_rad
+
+local rad_to_deg = 180.0/math.pi
+__M.rad_to_deg = rad_to_deg
+
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions
@@ -23,12 +32,13 @@ rad_to_deg = 180.0/math.pi
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function lerp ( _src, _dest, _ratio )
+local function lerp ( _src, _dest, _ratio )
     -- assert ( type(_src) == "number", "_src is not a number" )
     -- assert ( type(_dest) == "number", "_dest is not a number" )
     assert ( type(_ratio) == "number", "_ratio is not a number" )
     return _src * (1.0 - _ratio) + _dest * _ratio 
 end
+__M.lerp = lerp
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -38,7 +48,7 @@ end
 -- drop_item = item[gen_idx()]
 -- ------------------------------------------------------------------ 
 
-function probability( _weights )
+local function probability( _weights )
     local sum = 0.0
     local cdf = {}
 
@@ -63,4 +73,10 @@ function probability( _weights )
         return -1
     end
 end
+__M.probability = probability
 
+--/////////////////////////////////////////////////////////////////////////////
+--
+--/////////////////////////////////////////////////////////////////////////////
+
+return __M

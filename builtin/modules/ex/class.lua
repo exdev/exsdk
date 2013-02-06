@@ -5,6 +5,8 @@
 -- Description  : 
 -- ======================================================================================
 
+local __M = {}
+
 --/////////////////////////////////////////////////////////////////////////////
 -- base functions
 --/////////////////////////////////////////////////////////////////////////////
@@ -16,8 +18,8 @@
 local function deepcopy (_obj)
     local lookup_table = {}
     local function _copy(_obj)
-        if isbuiltin( _obj ) then
-            assert(_obj.copy, "please provide copy function for builtin type: " .. typename(_obj) )
+        if isvalue( _obj ) then
+            assert(_obj.copy, "please provide copy function for value type: " .. typename(_obj) )
             return _obj:copy()
         elseif type(_obj) ~= "table" then
             return _obj
@@ -33,6 +35,7 @@ local function deepcopy (_obj)
     end
     return _copy(_obj)
 end
+__M.deepcopy = deepcopy
 
 --/////////////////////////////////////////////////////////////////////////////
 -- type-op
@@ -52,18 +55,7 @@ local function typeof (_object)
     end
     return nil
 end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local metaclass = {
-    __call = function ( _self, ... )
-        local table = ... or {}
-        table.__isinstance = true
-        return setmetatable( table, _self )
-    end
-}
+__M.typeof = typeof
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -81,37 +73,39 @@ local function isclass (_object)
     end
     return r
 end
+__M.isclass = isclass
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function isbuiltin (_object)
+local function isvalue (_object)
     local tp = typeof(_object)
     if type(tp) ~= "table" then 
         return false 
     end 
 
-    local r = rawget(tp, "__isbuiltin")
+    local r = rawget(tp, "__isvalue")
     if r == nil then 
         return false 
     end
     return r
 end
+__M.isvalue = isvalue
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
 local function typename(_object)
-    if isbuiltin(_object) or isclass(_object) then 
+    if isvalue(_object) or isclass(_object) then 
         local name = rawget(typeof(_object), "__typename")
         assert ( name ~= nil, "can't find __typename define in your class." )
         return name
     end
     return type(_object)
 end
-
+__M.typename = typename
 
 --/////////////////////////////////////////////////////////////////////////////
 -- classes functions
@@ -129,7 +123,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function __childof(_myclass,_superclass)
+local function __childof ( _myclass,_superclass )
     local super = rawget(_myclass,"__super")
     while super ~= nil do
         if super == _superclass then 
@@ -141,14 +135,12 @@ local function __childof(_myclass,_superclass)
 end
 
 --
-
-local function childof(_object, _superclass)
+local function childof ( _object, _superclass )
     return __childof(typeof(_object),_superclass)
 end
 
 --
-
-local function superof(_object, _subclass)
+local function superof ( _object, _subclass )
 	return __childof(_subclass,typeof(_object))
 end
 
@@ -156,7 +148,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function isa(_object, _class)
+local function isa (_object, _class)
     local cls = typeof(_object)
     return cls == _class or __childof(cls,_class)
 end
@@ -256,7 +248,7 @@ local function class_index ( _t, _k )
     --     assert( mt, "can't find the metatable of _t" )
     --     local super = rawget(mt,"__super")
 
-    --     if super and rawget(super, "__isbuiltin") then
+    --     if super and rawget(super, "__isvalue") then
     --         return rawget(_t, "__cobject")
     --     else
     --         -- NOTE: in class_newindex, it will check if table have __readonly, and prevent setting things.
@@ -313,54 +305,61 @@ local function class(...)
     assert( type(base) == "table", "the first parameter must be a table" )
     assert( base.__typename ~= nil, "please define __typename for your class" )
 
+    -- set super class
     if super == nil then
         rawset(base, "__super", nil)
     else
         assert( type(super) == "table", "the super parameter must be a table" )
         assert( rawget(super,"__isclass"), "the super parameter must be a class" )
-        rawset(base, "__super", super)
+        rawset( base, "__super", super )
     end
 
-    base.__isclass = true
-    base.__index = class_index
-    base.__newindex = class_newindex
-    base.instanceof = instanceof
-    base.superof = superof
-    base.childof = childof
-    base.isa = isa
-    base.derive = function (_t)
-        return class( _t, base )
+    -- set basic functions
+    rawset( base, "__isclass", true )
+    if rawget ( base, "__index" ) == nil then
+        rawset( base, "__index", class_index )
     end
+    if rawget ( base, "__newindex" ) == nil then
+        rawset( base, "__newindex", class_newindex )
+    end
+    rawset( base, "instanceof", instanceof )
+    rawset( base, "superof", superof )
+    rawset( base, "childof", childof )
+    rawset( base, "isa", isa )
+    rawset( base, "extend", function (_t)
+                                return class( _t, base )
+                            end
+    )
 
-    -- check if we derived from builtin class
-    local derived_from_builtin = false
-    local builtin_class = nil
-    while super ~= nil do 
-        derived_from_builtin = rawget(super, "__isbuiltin")
-        if derived_from_builtin then 
-            builtin_class = super
-            break 
+    -- check if we derived from value type
+    local isvalue = rawget( base, "__isvalue" )
+    if isvalue == nil then
+        while super ~= nil do 
+            isvalue = rawget(super, "__isvalue")
+            if isvalue ~= nil then 
+                break 
+            end
+            super = rawget(super, "__super")
         end
-        super = rawget(super, "__super")
+        rawset ( base, "__isvalue", isvalue )
     end
 
-    -- 
-    if derived_from_builtin then
-        return setmetatable(base,builtin_class.__metaclass)
-    else
-        return setmetatable(base,metaclass)
+    -- set metaclass
+    if rawget ( base, "__metaclass" ) == nil then
+        rawset ( base, "__metaclass",  {
+            __call = function ( _self, ... )
+                local table = ... or {}
+                table.__isinstance = true
+                return setmetatable( table, _self )
+            end
+        }) 
     end
+    return setmetatable(base,base.__metaclass)
 end
+__M.class = class
 
 --/////////////////////////////////////////////////////////////////////////////
 -- 
 --/////////////////////////////////////////////////////////////////////////////
 
-return {
-    deepcopy = deepcopy,
-    typeof = typeof,
-    isclass = isclass,
-    isbuiltin = isbuiltin,
-    typename = typename,
-    class = class,
-}
+return __M

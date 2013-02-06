@@ -29,6 +29,4 @@ __M.math = {}
 module_add( __M.math, "ex", "math/math" )
 module_add( __M.math, "ex", "math/ease" )
 
-ex.dump( __M, "ex" )
-
 return __M

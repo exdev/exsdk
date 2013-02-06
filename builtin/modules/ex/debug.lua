@@ -5,6 +5,8 @@
 -- Description  : 
 -- ======================================================================================
 
+local __M = {}
+
 --/////////////////////////////////////////////////////////////////////////////
 -- functions defines
 --/////////////////////////////////////////////////////////////////////////////
@@ -43,6 +45,8 @@ indent is a first indentation (optional).
 -- ------------------------------------------------------------------ 
 
 local function dump(_t, _name, _indent, _show_meta)
+    assert ( type(_t) == "table" )
+
     local cart     -- a container
     local autoref  -- for self references
 
@@ -135,11 +139,10 @@ local function dump(_t, _name, _indent, _show_meta)
     addtocart(_t, _name, _indent, {}, _name, _show_meta)
     print(cart .. autoref)
 end
+__M.dump = dump
 
 --/////////////////////////////////////////////////////////////////////////////
 -- 
 --/////////////////////////////////////////////////////////////////////////////
 
-return {
-    dump = dump
-}
+return __M
