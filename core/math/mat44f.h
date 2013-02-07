@@ -194,7 +194,7 @@ static inline void ex_mat44f_neg ( ex_mat44f_t *_m ) {
  @sa mat44f_neg
 */// ------------------------------------------------------------------ 
 
-static inline void ex_mat44f_get_neg ( const ex_mat44f_t *_m, ex_mat44f_t *_r ) {
+static inline void ex_mat44f_get_neg ( ex_mat44f_t *_r, const ex_mat44f_t *_m ) {
     ex_assert ( _r != _m );
     _r->m00 = -_m->m00, _r->m01 = -_m->m01, _r->m02 = -_m->m02, _r->m03 = -_m->m03; 
     _r->m10 = -_m->m10, _r->m11 = -_m->m11, _r->m12 = -_m->m12, _r->m13 = -_m->m13; 

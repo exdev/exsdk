@@ -177,7 +177,7 @@ static inline void ex_mat22f_neg ( ex_mat22f_t *_m ) {
  @sa ex_mat22f_neg
 */// ------------------------------------------------------------------ 
 
-static inline void ex_mat22f_get_neg ( const ex_mat22f_t *_m, ex_mat22f_t *_r ) {
+static inline void ex_mat22f_get_neg ( ex_mat22f_t *_r, const ex_mat22f_t *_m ) {
     ex_assert ( _r != _m );
     _r->m00 = -_m->m00, _r->m01 = -_m->m01; 
     _r->m10 = -_m->m10, _r->m11 = -_m->m11; 

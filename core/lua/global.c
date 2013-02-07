@@ -117,10 +117,12 @@ int __lua_index ( lua_State *_l, int _idx ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
-extern void __ex_lua_add_vec2f ( lua_State * );
-extern void __ex_lua_add_vec3f ( lua_State * );
+extern int __ex_lua_add_core ( lua_State * );
+extern int __ex_lua_add_vec2f ( lua_State * );
+extern int __ex_lua_add_vec3f ( lua_State * );
 
 static const lua_CFunction loadedlibs[] = {
+    { __ex_lua_add_core },
     { __ex_lua_add_vec2f },
     { __ex_lua_add_vec3f },
     { NULL }
@@ -513,7 +515,7 @@ void ex_lua_alert ( lua_State *_l ) {
 // Desc:
 // ------------------------------------------------------------------ 
 
-void ex_lua_dump_stack ( lua_State *_l ) {
+int ex_lua_dump_stack ( lua_State *_l ) {
     int i;
     int top = lua_gettop(_l);
     ex_log("dump lua stack:");
@@ -541,6 +543,8 @@ void ex_lua_dump_stack ( lua_State *_l ) {
         }
     }
     ex_log("|__________");
+
+    return 0;
 }
 
 // ------------------------------------------------------------------ 

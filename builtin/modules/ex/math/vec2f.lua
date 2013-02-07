@@ -6,7 +6,7 @@
 -- ======================================================================================
 
 local __M = {}
-local deepcopy, typeof, typename = ex.deepcopy, ex.typeof, ex.typename
+local property, typeof, typename = ex.property, ex.typeof, ex.typename
 
 --/////////////////////////////////////////////////////////////////////////////
 --
@@ -15,65 +15,125 @@ local deepcopy, typeof, typename = ex.deepcopy, ex.typeof, ex.typename
 local vec2f = ex.class ({
     __typename = "vec2f",
     __isvalue = true,
-    __metaclass = {
-        __call = function ( _self, _x, _y )
-            assert ( type(_x) == "number" )
-            assert ( type(_y) == "number" )
-            local table = {
-                __isinstance = true,
-                _handle = ex_c.vec2f_new(_x,_y),
-            }
-            return setmetatable( table, _self )
-        end,
-    },
+
+    -- constructor & destructor
+    __init = function ( _self, _x, _y )
+        assert ( type(_x) == "number", "Type error: _x must be number" )
+        assert ( type(_y) == "number", "Type error: _y must be number" )
+        _self._cptr = ex_c.vec2f_new(_x,_y)
+    end,
+
     __gc = function (_self)
-        ex_c.vec2f_delete(_self._handle)
-    end,
-    __index = function ( _self, _k )
-        local mt = getmetatable(_self) 
-        assert( mt, "can't find the metatable of _self" )
-
-        local get_table = rawget(mt,"__get")
-        assert ( get_table ~= nil and type(get_table) == "table", "can't find __get table" )
-
-        local get_func = get_table[_k]
-        assert ( get_func ~= nil and type(get_func) == "function", "can't find key " .. _k )
-
-        return get_func(_self._handle)
-    end,
-    __newindex = function ( _self, _k, _v )
-        local mt = getmetatable(_self) 
-        assert( mt, "can't find the metatable of _self" )
-
-        local set_table = rawget(mt,"__set")
-        assert ( set_table ~= nil and type(set_table) == "table", "can't find __set table" )
-
-        local set_func = set_table[_k]
-        assert ( set_func ~= nil and type(set_func) == "function", "can't find key " .. _k )
-
-        set_func(_self._handle,_v)
+        ex_c.vec2f_delete(_self._cptr)
     end,
 
-    --
-    __get = {
-        x = function (_self)
-            return ex_c.vec2f_get_x ( _self._handle )
-        end,
-        y = function (_self)
-            return ex_c.vec2f_get_y ( _self._handle )
-        end,
+    -- meta-methods
+    __tostring = function (_op)
+        return string.format ( "{ %.3f, %.3f }", _op.x, _op.y )
+    end,
+    __concat = function (_op1,_op2)
+        return tostring(_op1)..tostring(_op2)
+    end,
+    __len = function (_op)
+        return 2
+    end,
+    __add = function (_op1,_op2)
+        assert ( typename(_op1) == "vec2f", "Type error: _op1 must be vec2f" )
+        assert ( typename(_op2) == "vec2f", "Type error: _op2 must be vec2f" )
+
+        r = ex.vec2f( 0.0, 0.0 )
+        ex_c.vec2f_add ( r._cptr, _op1._cptr, _op2._cptr )
+        return r
+    end,
+    __sub = function (_op1,_op2)
+        assert ( typename(_op1) == "vec2f", "Type error: _op1 must be vec2f" )
+        assert ( typename(_op2) == "vec2f", "Type error: _op2 must be vec2f" )
+
+        r = ex.vec2f( 0.0, 0.0 )
+        ex_c.vec2f_sub ( r._cptr, _op1._cptr, _op2._cptr )
+        return r
+    end,
+    __mul = function (_op1,_op2)
+        type1 = typename(_op1)
+        type2 = typename(_op2)
+
+        if type1 == "vec2f" and type2 == "vec2f" then
+            r = ex.vec2f( 0.0, 0.0 )
+            ex_c.vec2f_mul ( r._cptr, _op1._cptr, _op2._cptr )
+            return r
+        elseif type1 == "vec2f" and type2 == "number" then
+            r = ex.vec2f( 0.0, 0.0 )
+            ex_c.vec2f_mul_scalar ( r._cptr, _op1._cptr, _op2 )
+            return r
+        elseif type1 == "number" and type2 == "vec2f" then
+            r = ex.vec2f( 0.0, 0.0 )
+            ex_c.vec2f_mul_scalar ( r._cptr, _op2._cptr, _op1 )
+            return r
+        end
+
+        error ( "Type error: _op1, _op2 must be vec2f or number" )
+        return nil
+    end,
+    __div = function (_op1,_op2)
+        type1 = typename(_op1)
+        type2 = typename(_op2)
+
+        if type1 == "vec2f" and type2 == "vec2f" then
+            r = ex.vec2f( 0.0, 0.0 )
+            ex_c.vec2f_div ( r._cptr, _op1._cptr, _op2._cptr )
+            return r
+        elseif type1 == "vec2f" and type2 == "number" then
+            r = ex.vec2f( 0.0, 0.0 )
+            ex_c.vec2f_div_scalar ( r._cptr, _op1._cptr, _op2 )
+            return r
+        elseif type1 == "number" and type2 == "vec2f" then
+            r = ex.vec2f( 0.0, 0.0 )
+            ex_c.scalar_div_vec2f ( r._cptr, _op1, _op2._cptr )
+            return r
+        end
+
+        error ( "Type error: _op1, _op2 must be vec2f or number" )
+        return nil
+    end,
+    __unm = function (_op)
+        r = ex.vec2f( 0.0, 0.0 )
+        ex_c.vec2f_neg ( r._cptr, _op )
+        return r
+    end,
+    __eq = function (_op1,_op2)
+        assert ( typename(_op1) == "vec2f", "Type error: _op1 must be vec2f" )
+        assert ( typename(_op2) == "vec2f", "Type error: _op2 must be vec2f" )
+
+        return ex_c.vec2f_eq ( _op1._cptr, _op2._cptr )
+    end,
+
+    --/////////////////////////////////////////////////////////////////////////////
+    -- static 
+    --/////////////////////////////////////////////////////////////////////////////
+
+    -- TODO { 
+    -- __static = {
+    --     -- zero = ,
+    --     -- one = ,
+    -- }
+    -- } TODO end 
+
+    --/////////////////////////////////////////////////////////////////////////////
+    -- properties
+    --/////////////////////////////////////////////////////////////////////////////
+
+    _cptr = ex_c.null,
+    x = property {
+        get = function (_self) return ex_c.vec2f_get_x ( _self._cptr ) end,
+        set = function (_self,_v) return ex_c.vec2f_set_x ( _self._cptr, _v ) end
     },
-    __set = {
-        x = function (_self,_v)
-            return ex_c.vec2f_set_x ( _self._handle, _v )
-        end,
-        y = function (_self,_v)
-            return ex_c.vec2f_set_y ( _self._handle, _v )
-        end,
+    y = property { 
+        get = function (_self) return ex_c.vec2f_get_y ( _self._cptr ) end,
+        set = function (_self,_v) return ex_c.vec2f_set_y ( _self._cptr, _v ) end
     },
 
     --/////////////////////////////////////////////////////////////////////////////
-    -- functions
+    -- methods
     --/////////////////////////////////////////////////////////////////////////////
 
     -- ------------------------------------------------------------------ 
@@ -82,8 +142,6 @@ local vec2f = ex.class ({
 
     copy = function ( _self )
         t = typeof (_self)
-        assert ( typeof(_self) == ex.vec2f )
-
         return t( _self.x, _self.y )
     end
 }) 

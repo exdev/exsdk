@@ -87,7 +87,7 @@ static inline void ex_vec2f_neg ( ex_vec2f_t *_v ) {
  @sa ex_vec2f_neg
 */// ------------------------------------------------------------------ 
 
-static inline void ex_vec2f_get_neg ( const ex_vec2f_t *_v, ex_vec2f_t *_r ) { 
+static inline void ex_vec2f_get_neg ( ex_vec2f_t *_r, const ex_vec2f_t *_v ) { 
     ex_assert ( _r != _v );
     _r->x = -_v->x; 
     _r->y = -_v->y; 

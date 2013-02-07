@@ -61,7 +61,7 @@ extern void ex_lua_run_interpretor ( struct lua_State *_l );
 ///////////////////////////////////////////////////////////////////////////////
 
 extern void ex_lua_alert ( struct lua_State *_l );
-extern void ex_lua_dump_stack ( struct lua_State *_l );
+extern int ex_lua_dump_stack ( struct lua_State *_l );
 extern int ex_lua_totoal_memory ( struct lua_State *_l );
 
 // ######################### 

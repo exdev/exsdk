@@ -107,15 +107,67 @@ static int vec3f_get_z ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int vec3f_set_x ( lua_State *_l ) {
+    void *p;
+
+    ex_lua_check_nargs(_l,2);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    p = lua_touserdata(_l,1);
+
+    ((ex_vec3f_t *)p)->x = (float)luaL_checknumber(_l,2);
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int vec3f_set_y ( lua_State *_l ) {
+    void *p;
+
+    ex_lua_check_nargs(_l,2);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    p = lua_touserdata(_l,1);
+
+    ((ex_vec3f_t *)p)->y = (float)luaL_checknumber(_l,2);
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int vec3f_set_z ( lua_State *_l ) {
+    void *p;
+
+    ex_lua_check_nargs(_l,2);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    p = lua_touserdata(_l,1);
+
+    ((ex_vec3f_t *)p)->z = (float)luaL_checknumber(_l,2);
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg lib[] = {
     { "vec3f_new",      vec3f_new },
     { "vec3f_delete",   vec3f_delete },
     { "vec3f_get_x",    vec3f_get_x },
     { "vec3f_get_y",    vec3f_get_y },
     { "vec3f_get_z",    vec3f_get_z },
+    { "vec3f_set_x",    vec3f_set_x },
+    { "vec3f_set_y",    vec3f_set_y },
+    { "vec3f_set_z",    vec3f_set_z },
     { NULL, NULL }
 };
 
-void __ex_lua_add_vec3f ( lua_State *_l ) {
+int __ex_lua_add_vec3f ( lua_State *_l ) {
     luaL_setfuncs( _l, lib, 0 );
+    return 0;
 }

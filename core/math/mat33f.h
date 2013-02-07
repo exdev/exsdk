@@ -250,7 +250,7 @@ static inline void ex_mat33f_neg ( ex_mat33f_t *_m ) {
  @sa ex_mat33f_neg
 */// ------------------------------------------------------------------ 
 
-static inline void ex_mat33f_get_neg ( const ex_mat33f_t *_m, ex_mat33f_t *_r ) {
+static inline void ex_mat33f_get_neg ( ex_mat33f_t *_r, const ex_mat33f_t *_m ) {
     ex_assert ( _r != _m );
     _r->m00 = -_m->m00, _r->m01 = -_m->m01, _r->m02 = -_m->m02; 
     _r->m10 = -_m->m10, _r->m11 = -_m->m11, _r->m12 = -_m->m12; 

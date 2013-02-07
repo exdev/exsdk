@@ -90,7 +90,7 @@ static inline void ex_vec3f_neg ( ex_vec3f_t *_v ) {
  @sa ex_vec3f_neg
 */// ------------------------------------------------------------------ 
 
-static inline void ex_vec3f_get_neg ( const ex_vec3f_t *_v, ex_vec3f_t *_r ) { 
+static inline void ex_vec3f_get_neg ( ex_vec3f_t *_r, const ex_vec3f_t *_v ) { 
     ex_assert ( _r != _v );
     _r->x = -_v->x; 
     _r->y = -_v->y; 
