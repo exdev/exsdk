@@ -217,7 +217,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function class_newindex ( _t, _k, _v )
+local function instance_newindex ( _t, _k, _v )
     -- NOTE: the _t is an object instance
 
     -- make sure only get __readonly in table _t, not invoke __index method.
@@ -280,7 +280,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function class_index ( _t, _k )
+local function instance_index ( _t, _k )
     -- NOTE: the _t is an object instance
 
     -- check if the metatable have the key
@@ -338,6 +338,34 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+local function class_newindex ( _t, _k, _v )
+    error ( "The table is readonly" )
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function class_index ( _t, _k, _v )
+    --
+    local v = rawget(_t,_k)
+    if v ~= nil then
+        if isproperty(v) then 
+            assert ( v.get, string.format("Can't find get function in property %s", _k) )
+            return v.get(_t)
+        end
+        return v
+    end
+
+    -- return
+    error( "Can't find the key " .. _k )
+    return nil
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function class(...)
     local base,super = ...
     assert( type(base) == "table", "The first parameter must be a table" )
@@ -355,10 +383,10 @@ local function class(...)
     -- set basic functions
     rawset( base, "__isclass", true )
     if rawget ( base, "__index" ) == nil then
-        rawset( base, "__index", class_index )
+        rawset( base, "__index", instance_index )
     end
     if rawget ( base, "__newindex" ) == nil then
-        rawset( base, "__newindex", class_newindex )
+        rawset( base, "__newindex", instance_newindex )
     end
     rawset( base, "instanceof", instanceof )
     rawset( base, "superof", superof )
@@ -385,14 +413,20 @@ local function class(...)
     local metaclass = {}
     local init = rawget ( base, "__init" )
     if init == nil then
-        metaclass = { __call = instantiate }
+        metaclass = { 
+            __call = instantiate,
+            __newindex = class_newindex,
+            __index = class_index
+        }
     else
         metaclass = { 
             __call = function ( _class, ... ) 
                 local object = instantiate (_class)
                 init ( object, ... )
                 return object
-            end
+            end,
+            __newindex = class_newindex,
+            __index = class_index
         }
     end
     return setmetatable( base, metaclass )
