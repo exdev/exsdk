@@ -179,7 +179,14 @@ solution "exSDK"
         excludes {
             "ext/lua-5.2.1/lua.c",
             "ext/lua-5.2.1/luac.c",
+            "ext/physfs-2.0.3/lzma/**.c",
         }
+        if __PLATFORM == "macosx" then
+            excludes {
+                "ext/physfs-2.0.3/lzma/**.c",
+            }
+        elseif __PLATFORM == "win32" then
+        end
 
         -- configurations
         configuration "Debug"
@@ -255,7 +262,7 @@ solution "exSDK"
         configuration "Debug"
             objdir ( __DEST_DIR .. "ex/debug/objs/" )
             targetdir ( __DEST_DIR .. "ex/debug/bin/" )
-            debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex/debug/bin/" )
+            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex/debug/bin/" )
 
             defines { "DEBUG" }
             flags { "Symbols" }
@@ -263,7 +270,7 @@ solution "exSDK"
         configuration "Release"
             objdir ( __DEST_DIR .. "ex/release/objs/" )
             targetdir ( __DEST_DIR .. "ex/release/bin/" )
-            debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex/release/bin/" )
+            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex/release/bin/" )
 
             defines { "NDEBUG" }
             flags { "Optimize" }

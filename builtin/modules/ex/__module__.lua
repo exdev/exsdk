@@ -5,8 +5,13 @@
 -- Description  : 
 -- ======================================================================================
 
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function module_add ( _module, _moduleName, _fileName )
-    local lib = dofile ( string.format( "builtin/modules/%s/%s.lua", 
+    -- NOTE: in MacOSX, fopen() can not open short path unless it is an app package
+    local lib = dofile ( string.format( ex_c.fsys_app_dir() .. "builtin/modules/%s/%s.lua", 
                                         _moduleName, 
                                         _fileName ) )
     -- for each var in lib, add to _module
@@ -16,11 +21,15 @@ local function module_add ( _module, _moduleName, _fileName )
     end
 end
 
+--/////////////////////////////////////////////////////////////////////////////
+--
+--/////////////////////////////////////////////////////////////////////////////
+
 local __M = {}
 _G["ex"] = __M
 package.loaded["ex"] = __M 
 
--- module_add( __M, "ex", "core" )
+module_add( __M, "ex", "core" )
 module_add( __M, "ex", "debug" )
 module_add( __M, "ex", "class" )
 module_add( __M, "ex", "math/vec2f" )

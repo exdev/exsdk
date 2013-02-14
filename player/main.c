@@ -27,12 +27,12 @@ int main (void) {
 
     // load project
     strncpy ( path, ex_fsys_app_dir(), MAX_PATH );
-    strcat ( path, "MyProject_01/" );
+    strcat ( path, "Main/" );
     ex_sdk_open_project ( path );
 
     // main-loop 
     // ex_lua_run_interpretor ( ex_lua_main_state() );
-    ex_lua_dofile ( ex_lua_main_state(), "foobar.lua" );
+    ex_lua_dofile ( ex_lua_main_state(), "main.lua" );
 
     // deinits 
     ex_sdk_deinit ();
