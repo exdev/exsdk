@@ -314,22 +314,93 @@ static int vec2f_eq ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int vec2f_normalize ( lua_State *_l ) {
+    void *v1;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    v1 = lua_touserdata(_l,1);
+
+    ex_vec2f_normalize(v1);
+
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int vec2f_get_normalize ( lua_State *_l ) {
+    void *v1, *v2;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    v1 = lua_touserdata(_l,1);
+
+    ex_vec2f_get_normalize(v1,v2);
+
+    lua_pushlightuserdata(_l,v2);
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int vec2f_len ( lua_State *_l ) {
+    void *v1;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    v1 = lua_touserdata(_l,1);
+
+    lua_pushnumber( _l, ex_vec2f_len(v1) );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int vec2f_lenSQR ( lua_State *_l ) {
+    void *v1;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    v1 = lua_touserdata(_l,1);
+
+    lua_pushnumber( _l, ex_vec2f_lenSQR(v1) );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg lib[] = {
-    { "vec2f_new",          vec2f_new },
-    { "vec2f_delete",       vec2f_delete },
-    { "vec2f_get_x",        vec2f_get_x },
-    { "vec2f_get_y",        vec2f_get_y },
-    { "vec2f_set_x",        vec2f_set_x },
-    { "vec2f_set_y",        vec2f_set_y },
-    { "vec2f_add",          vec2f_add },
-    { "vec2f_sub",          vec2f_sub },
-    { "vec2f_mul",          vec2f_mul },
-    { "vec2f_mul_scalar",   vec2f_mul_scalar },
-    { "vec2f_div",          vec2f_div },
-    { "vec2f_div_scalar",   vec2f_div_scalar },
-    { "scalar_div_vec2f",   scalar_div_vec2f },
-    { "vec2f_neg",          vec2f_neg },
-    { "vec2f_eq",           vec2f_eq },
+    { "vec2f_new",              vec2f_new },
+    { "vec2f_delete",           vec2f_delete },
+    { "vec2f_get_x",            vec2f_get_x },
+    { "vec2f_get_y",            vec2f_get_y },
+    { "vec2f_set_x",            vec2f_set_x },
+    { "vec2f_set_y",            vec2f_set_y },
+    { "vec2f_add",              vec2f_add },
+    { "vec2f_sub",              vec2f_sub },
+    { "vec2f_mul",              vec2f_mul },
+    { "vec2f_mul_scalar",       vec2f_mul_scalar },
+    { "vec2f_div",              vec2f_div },
+    { "vec2f_div_scalar",       vec2f_div_scalar },
+    { "scalar_div_vec2f",       scalar_div_vec2f },
+    { "vec2f_neg",              vec2f_neg },
+    { "vec2f_eq",               vec2f_eq },
+    { "vec2f_normalize",        vec2f_normalize },
+    { "vec2f_get_normalize",    vec2f_get_normalize },
+    { "vec2f_len",              vec2f_len },
+    { "vec2f_lenSQR",           vec2f_lenSQR },
     { NULL, NULL }
 };
 

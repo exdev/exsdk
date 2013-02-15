@@ -347,12 +347,18 @@ end
 -- ------------------------------------------------------------------ 
 
 local function class_index ( _t, _k, _v )
+    -- NOTE: the _t is a class table
+
+    -- check if the metatable have the key
+    local mt = getmetatable(_t) 
+    assert( mt, "Can't find the metatable of _t" )
+
     --
-    local v = rawget(_t,_k)
+    local v = rawget(mt,_k)
     if v ~= nil then
         if isproperty(v) then 
             assert ( v.get, string.format("Can't find get function in property %s", _k) )
-            return v.get(_t)
+            return v.get() -- NOTE: we don't need to send any argument compare to instance property 
         end
         return v
     end
@@ -428,6 +434,15 @@ local function class(...)
             __newindex = class_newindex,
             __index = class_index
         }
+    end
+
+    -- copy __static properties to class-metatable
+    -- NOTE: we don't do deepcopy to save memory
+    local static = rawget( base, "__static" )
+    if static ~= nil then
+        for index, value in pairs(static) do
+            metaclass[index] = value
+        end
     end
     return setmetatable( base, metaclass )
 end

@@ -7,6 +7,7 @@
 
 local __M = {}
 local property, typeof, typename = ex.property, ex.typeof, ex.typename
+local ex_math_lerp = ex.math.lerp
 
 --/////////////////////////////////////////////////////////////////////////////
 --
@@ -41,7 +42,7 @@ local vec2f = ex.class ({
         assert ( typename(_op1) == "vec2f", "Type error: _op1 must be vec2f" )
         assert ( typename(_op2) == "vec2f", "Type error: _op2 must be vec2f" )
 
-        r = ex.vec2f( 0.0, 0.0 )
+        r = ex.vec2f.zero
         ex_c.vec2f_add ( r._cptr, _op1._cptr, _op2._cptr )
         return r
     end,
@@ -49,7 +50,7 @@ local vec2f = ex.class ({
         assert ( typename(_op1) == "vec2f", "Type error: _op1 must be vec2f" )
         assert ( typename(_op2) == "vec2f", "Type error: _op2 must be vec2f" )
 
-        r = ex.vec2f( 0.0, 0.0 )
+        r = ex.vec2f.zero
         ex_c.vec2f_sub ( r._cptr, _op1._cptr, _op2._cptr )
         return r
     end,
@@ -58,15 +59,15 @@ local vec2f = ex.class ({
         type2 = typename(_op2)
 
         if type1 == "vec2f" and type2 == "vec2f" then
-            r = ex.vec2f( 0.0, 0.0 )
+            r = ex.vec2f.zero
             ex_c.vec2f_mul ( r._cptr, _op1._cptr, _op2._cptr )
             return r
         elseif type1 == "vec2f" and type2 == "number" then
-            r = ex.vec2f( 0.0, 0.0 )
+            r = ex.vec2f.zero
             ex_c.vec2f_mul_scalar ( r._cptr, _op1._cptr, _op2 )
             return r
         elseif type1 == "number" and type2 == "vec2f" then
-            r = ex.vec2f( 0.0, 0.0 )
+            r = ex.vec2f.zero
             ex_c.vec2f_mul_scalar ( r._cptr, _op2._cptr, _op1 )
             return r
         end
@@ -79,15 +80,15 @@ local vec2f = ex.class ({
         type2 = typename(_op2)
 
         if type1 == "vec2f" and type2 == "vec2f" then
-            r = ex.vec2f( 0.0, 0.0 )
+            r = ex.vec2f.zero
             ex_c.vec2f_div ( r._cptr, _op1._cptr, _op2._cptr )
             return r
         elseif type1 == "vec2f" and type2 == "number" then
-            r = ex.vec2f( 0.0, 0.0 )
+            r = ex.vec2f.zero
             ex_c.vec2f_div_scalar ( r._cptr, _op1._cptr, _op2 )
             return r
         elseif type1 == "number" and type2 == "vec2f" then
-            r = ex.vec2f( 0.0, 0.0 )
+            r = ex.vec2f.zero
             ex_c.scalar_div_vec2f ( r._cptr, _op1, _op2._cptr )
             return r
         end
@@ -96,7 +97,7 @@ local vec2f = ex.class ({
         return nil
     end,
     __unm = function (_op)
-        r = ex.vec2f( 0.0, 0.0 )
+        r = ex.vec2f.zero
         ex_c.vec2f_neg ( r._cptr, _op )
         return r
     end,
@@ -111,12 +112,19 @@ local vec2f = ex.class ({
     -- static 
     --/////////////////////////////////////////////////////////////////////////////
 
-    -- TODO { 
-    -- __static = {
-    --     -- zero = ,
-    --     -- one = ,
-    -- }
-    -- } TODO end 
+    __static = {
+        zero  = property { get = function () return ex.vec2f( 0.0, 0.0 ) end },
+        one   = property { get = function () return ex.vec2f( 1.0, 1.0 ) end },
+        right = property { get = function () return ex.vec2f( 1.0, 0.0 ) end },
+        up    = property { get = function () return ex.vec2f( 0.0, 1.0 ) end },
+        lerp  = function ( _from, _to, _t )
+            -- TODO: do we need to use ex_c.vec2f_lerp instead?
+            local r = ex.vec2f.zero
+            r.x = ex_math_lerp ( _from.x, _to.x, _t )
+            r.y = ex_math_lerp ( _from.y, _to.y, _t )
+            return r
+        end
+    },
 
     --/////////////////////////////////////////////////////////////////////////////
     -- properties
@@ -131,6 +139,15 @@ local vec2f = ex.class ({
         get = function (_self) return ex_c.vec2f_get_y ( _self._cptr ) end,
         set = function (_self,_v) return ex_c.vec2f_set_y ( _self._cptr, _v ) end
     },
+    normalized = property { 
+        get = function (_self) return ex_c.vec2f_get_normalize ( _self._cptr ) end
+    },
+    len = property {
+        get = function (_self) return ex_c.vec2f_len ( _self._cptr ) end
+    },
+    lenSQR = property {
+        get = function (_self) return ex_c.vec2f_lenSQR ( _self._cptr ) end
+    },
 
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
@@ -143,7 +160,15 @@ local vec2f = ex.class ({
     copy = function ( _self )
         t = typeof (_self)
         return t( _self.x, _self.y )
-    end
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    normalize = function (_self) 
+        ex_c.vec2f_normalize ( _self._cptr ) 
+    end,
 }) 
 __M.vec2f = vec2f
 

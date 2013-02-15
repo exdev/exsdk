@@ -29,13 +29,17 @@ local __M = {}
 _G["ex"] = __M
 package.loaded["ex"] = __M 
 
+-- basic module
 module_add( __M, "ex", "core" )
 module_add( __M, "ex", "debug" )
 module_add( __M, "ex", "class" )
-module_add( __M, "ex", "math/vec2f" )
 
+-- math module
 __M.math = {}
 module_add( __M.math, "ex", "math/math" )
 module_add( __M.math, "ex", "math/ease" )
+
+-- basic classes
+module_add( __M, "ex", "math/vec2f" )
 
 return __M
