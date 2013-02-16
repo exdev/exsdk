@@ -23,7 +23,7 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec3f_new ( lua_State *_l ) {
+static int __lua_vec3f_new ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,3);
@@ -43,7 +43,7 @@ static int vec3f_new ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec3f_delete ( lua_State *_l ) {
+static int __lua_vec3f_delete ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,1);
@@ -59,7 +59,7 @@ static int vec3f_delete ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec3f_get_x ( lua_State *_l ) {
+static int __lua_vec3f_get_x ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,1);
@@ -75,7 +75,7 @@ static int vec3f_get_x ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec3f_get_y ( lua_State *_l ) {
+static int __lua_vec3f_get_y ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,1);
@@ -91,7 +91,7 @@ static int vec3f_get_y ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec3f_get_z ( lua_State *_l ) {
+static int __lua_vec3f_get_z ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,1);
@@ -107,7 +107,7 @@ static int vec3f_get_z ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec3f_set_x ( lua_State *_l ) {
+static int __lua_vec3f_set_x ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,2);
@@ -123,7 +123,7 @@ static int vec3f_set_x ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec3f_set_y ( lua_State *_l ) {
+static int __lua_vec3f_set_y ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,2);
@@ -139,7 +139,7 @@ static int vec3f_set_y ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec3f_set_z ( lua_State *_l ) {
+static int __lua_vec3f_set_z ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,2);
@@ -156,14 +156,14 @@ static int vec3f_set_z ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static const luaL_Reg lib[] = {
-    { "vec3f_new",      vec3f_new },
-    { "vec3f_delete",   vec3f_delete },
-    { "vec3f_get_x",    vec3f_get_x },
-    { "vec3f_get_y",    vec3f_get_y },
-    { "vec3f_get_z",    vec3f_get_z },
-    { "vec3f_set_x",    vec3f_set_x },
-    { "vec3f_set_y",    vec3f_set_y },
-    { "vec3f_set_z",    vec3f_set_z },
+    { "vec3f_new",      __lua_vec3f_new },
+    { "vec3f_delete",   __lua_vec3f_delete },
+    { "vec3f_get_x",    __lua_vec3f_get_x },
+    { "vec3f_get_y",    __lua_vec3f_get_y },
+    { "vec3f_get_z",    __lua_vec3f_get_z },
+    { "vec3f_set_x",    __lua_vec3f_set_x },
+    { "vec3f_set_y",    __lua_vec3f_set_y },
+    { "vec3f_set_z",    __lua_vec3f_set_z },
     { NULL, NULL }
 };
 

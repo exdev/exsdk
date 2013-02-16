@@ -62,7 +62,8 @@ static void display_flags_to_window_styles(int flags,
    }
    else if (flags & ALLEGRO_RESIZABLE) {
       *style = WS_OVERLAPPEDWINDOW;
-      *ex_style = WS_EX_APPWINDOW | WS_EX_OVERLAPPEDWINDOW;
+      // *ex_style = WS_EX_APPWINDOW | WS_EX_OVERLAPPEDWINDOW;
+      *ex_style = WS_EX_APPWINDOW;
    }
    else {
       *style = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;

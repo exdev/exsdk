@@ -23,7 +23,7 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_new ( lua_State *_l ) {
+static int __lua_vec2f_new ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,2);
@@ -39,7 +39,7 @@ static int vec2f_new ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_delete ( lua_State *_l ) {
+static int __lua_vec2f_delete ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,1);
@@ -55,7 +55,7 @@ static int vec2f_delete ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_get_x ( lua_State *_l ) {
+static int __lua_vec2f_get_x ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,1);
@@ -71,7 +71,7 @@ static int vec2f_get_x ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_get_y ( lua_State *_l ) {
+static int __lua_vec2f_get_y ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,1);
@@ -87,7 +87,7 @@ static int vec2f_get_y ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_set_x ( lua_State *_l ) {
+static int __lua_vec2f_set_x ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,2);
@@ -103,7 +103,7 @@ static int vec2f_set_x ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_set_y ( lua_State *_l ) {
+static int __lua_vec2f_set_y ( lua_State *_l ) {
     void *p;
 
     ex_lua_check_nargs(_l,2);
@@ -119,7 +119,7 @@ static int vec2f_set_y ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_add ( lua_State *_l ) {
+static int __lua_vec2f_add ( lua_State *_l ) {
     void *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
@@ -141,7 +141,7 @@ static int vec2f_add ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_sub ( lua_State *_l ) {
+static int __lua_vec2f_sub ( lua_State *_l ) {
     void *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
@@ -163,7 +163,7 @@ static int vec2f_sub ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_mul ( lua_State *_l ) {
+static int __lua_vec2f_mul ( lua_State *_l ) {
     void *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
@@ -185,7 +185,7 @@ static int vec2f_mul ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_mul_scalar ( lua_State *_l ) {
+static int __lua_vec2f_mul_scalar ( lua_State *_l ) {
     void *r, *v1;
     float s;
 
@@ -207,7 +207,7 @@ static int vec2f_mul_scalar ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_div ( lua_State *_l ) {
+static int __lua_vec2f_div ( lua_State *_l ) {
     void *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
@@ -229,7 +229,7 @@ static int vec2f_div ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_div_scalar ( lua_State *_l ) {
+static int __lua_vec2f_div_scalar ( lua_State *_l ) {
     void *r, *v1;
     float s;
 
@@ -251,7 +251,7 @@ static int vec2f_div_scalar ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int scalar_div_vec2f ( lua_State *_l ) {
+static int __lua_scalar_div_vec2f ( lua_State *_l ) {
     void *r, *v1;
     float s;
 
@@ -273,7 +273,7 @@ static int scalar_div_vec2f ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_neg ( lua_State *_l ) {
+static int __lua_vec2f_neg ( lua_State *_l ) {
     void *r, *v1;
 
     ex_lua_check_nargs(_l,2);
@@ -292,7 +292,7 @@ static int vec2f_neg ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_eq ( lua_State *_l ) {
+static int __lua_vec2f_eq ( lua_State *_l ) {
     void *v1, *v2;
     bool r;
 
@@ -314,7 +314,7 @@ static int vec2f_eq ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_normalize ( lua_State *_l ) {
+static int __lua_vec2f_normalize ( lua_State *_l ) {
     void *v1;
 
     ex_lua_check_nargs(_l,1);
@@ -331,25 +331,26 @@ static int vec2f_normalize ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_get_normalize ( lua_State *_l ) {
+static int __lua_vec2f_get_normalize ( lua_State *_l ) {
     void *v1, *v2;
 
-    ex_lua_check_nargs(_l,1);
+    ex_lua_check_nargs(_l,2);
 
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
     v1 = lua_touserdata(_l,1);
 
-    ex_vec2f_get_normalize(v1,v2);
+    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
+    v2 = lua_touserdata(_l,2);
 
-    lua_pushlightuserdata(_l,v2);
-    return 1;
+    ex_vec2f_get_normalize(v1,v2);
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_len ( lua_State *_l ) {
+static int __lua_vec2f_len ( lua_State *_l ) {
     void *v1;
 
     ex_lua_check_nargs(_l,1);
@@ -365,7 +366,7 @@ static int vec2f_len ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int vec2f_lenSQR ( lua_State *_l ) {
+static int __lua_vec2f_lenSQR ( lua_State *_l ) {
     void *v1;
 
     ex_lua_check_nargs(_l,1);
@@ -381,26 +382,59 @@ static int vec2f_lenSQR ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_vec2f_lerp ( lua_State *_l ) {
+    ex_vec2f_t *v1, *v2;
+    void *r;
+    float t, x, y;
+
+    ex_lua_check_nargs(_l,4);
+
+    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
+    v1 = (ex_vec2f_t *)lua_touserdata(_l,2);
+
+    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
+    v2 = (ex_vec2f_t *)lua_touserdata(_l,3);
+
+    t = (float)luaL_checknumber(_l,4);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    r = (ex_vec2f_t *)lua_touserdata(_l,1);
+
+    // lerp
+    x = ex_lerpf ( v1->x, v2->x, t );
+    y = ex_lerpf ( v1->y, v2->y, t );
+
+    ex_vec2f_set ( (ex_vec2f_t *)r, x, y );
+    lua_pushlightuserdata ( _l, r );
+
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg lib[] = {
-    { "vec2f_new",              vec2f_new },
-    { "vec2f_delete",           vec2f_delete },
-    { "vec2f_get_x",            vec2f_get_x },
-    { "vec2f_get_y",            vec2f_get_y },
-    { "vec2f_set_x",            vec2f_set_x },
-    { "vec2f_set_y",            vec2f_set_y },
-    { "vec2f_add",              vec2f_add },
-    { "vec2f_sub",              vec2f_sub },
-    { "vec2f_mul",              vec2f_mul },
-    { "vec2f_mul_scalar",       vec2f_mul_scalar },
-    { "vec2f_div",              vec2f_div },
-    { "vec2f_div_scalar",       vec2f_div_scalar },
-    { "scalar_div_vec2f",       scalar_div_vec2f },
-    { "vec2f_neg",              vec2f_neg },
-    { "vec2f_eq",               vec2f_eq },
-    { "vec2f_normalize",        vec2f_normalize },
-    { "vec2f_get_normalize",    vec2f_get_normalize },
-    { "vec2f_len",              vec2f_len },
-    { "vec2f_lenSQR",           vec2f_lenSQR },
+    { "vec2f_new",              __lua_vec2f_new },
+    { "vec2f_delete",           __lua_vec2f_delete },
+    { "vec2f_get_x",            __lua_vec2f_get_x },
+    { "vec2f_get_y",            __lua_vec2f_get_y },
+    { "vec2f_set_x",            __lua_vec2f_set_x },
+    { "vec2f_set_y",            __lua_vec2f_set_y },
+    { "vec2f_add",              __lua_vec2f_add },
+    { "vec2f_sub",              __lua_vec2f_sub },
+    { "vec2f_mul",              __lua_vec2f_mul },
+    { "vec2f_mul_scalar",       __lua_vec2f_mul_scalar },
+    { "vec2f_div",              __lua_vec2f_div },
+    { "vec2f_div_scalar",       __lua_vec2f_div_scalar },
+    { "scalar_div_vec2f",       __lua_scalar_div_vec2f },
+    { "vec2f_neg",              __lua_vec2f_neg },
+    { "vec2f_eq",               __lua_vec2f_eq },
+    { "vec2f_normalize",        __lua_vec2f_normalize },
+    { "vec2f_get_normalize",    __lua_vec2f_get_normalize },
+    { "vec2f_len",              __lua_vec2f_len },
+    { "vec2f_lenSQR",           __lua_vec2f_lenSQR },
+    { "vec2f_lerp",             __lua_vec2f_lerp },
     { NULL, NULL }
 };
 

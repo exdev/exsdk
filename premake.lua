@@ -214,6 +214,10 @@ solution "exSDK"
 
         -- include
         includedirs {
+            -- TEMP, DELME { 
+            "ext/allegro-5.0.8/include/",
+            "ext/allegro-5.0.8/addons/primitives/",
+            -- } TEMP end 
             "core/"
         } 
 

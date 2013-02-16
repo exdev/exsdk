@@ -1,7 +1,7 @@
 // ======================================================================================
-// File         : wrap_fsys.c
+// File         : wrap_array.c
 // Author       : Wu Jie 
-// Last Change  : 02/14/2013 | 09:26:48 AM | Thursday,February
+// Last Change  : 02/16/2013 | 10:51:37 AM | Saturday,February
 // Description  : 
 // ======================================================================================
 
@@ -23,18 +23,16 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int __lua_fsys_app_dir ( lua_State *_l ) {
-    lua_pushstring( _l, ex_fsys_app_dir() );
-    return 1;
+static int __lua_array_new ( lua_State *_l ) {
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int __lua_fsys_user_dir ( lua_State *_l ) {
-    lua_pushstring( _l, ex_fsys_user_dir() );
-    return 1;
+static int __lua_array_delete ( lua_State *_l ) {
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -42,12 +40,24 @@ static int __lua_fsys_user_dir ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static const luaL_Reg lib[] = {
-    { "fsys_app_dir",       __lua_fsys_app_dir },
-    { "fsys_user_dir",      __lua_fsys_user_dir },
+    { "array_new",          __lua_array_new },
+    { "array_delete",       __lua_array_delete },
+    // ex_array_set
+    // ex_array_get
+    // ex_array_add
+    // ex_array_add_range
+    // ex_array_insert
+    // ex_array_insert_range
+    // ex_array_ncpy
+    // ex_array_remove_at
+    // ex_array_remove_at_fast
+    // ex_array_remove_range
+    // ex_array_remove_all
+    // ex_array_sort
     { NULL, NULL }
 };
 
-int __ex_lua_add_fsys ( lua_State *_l ) {
+int __ex_lua_add_array ( lua_State *_l ) {
     luaL_setfuncs( _l, lib, 0 );
     return 0;
 }

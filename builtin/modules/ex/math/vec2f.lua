@@ -118,10 +118,13 @@ local vec2f = ex.class ({
         right = property { get = function () return ex.vec2f( 1.0, 0.0 ) end },
         up    = property { get = function () return ex.vec2f( 0.0, 1.0 ) end },
         lerp  = function ( _from, _to, _t )
-            -- TODO: do we need to use ex_c.vec2f_lerp instead?
+            -- local r = ex.vec2f.zero
+            -- r.x = ex_math_lerp ( _from.x, _to.x, _t )
+            -- r.y = ex_math_lerp ( _from.y, _to.y, _t )
+            -- return r
+
             local r = ex.vec2f.zero
-            r.x = ex_math_lerp ( _from.x, _to.x, _t )
-            r.y = ex_math_lerp ( _from.y, _to.y, _t )
+            ex_c.vec2f_lerp( r._cptr, _from._cptr, _to._cptr, _t )
             return r
         end
     },
@@ -140,7 +143,11 @@ local vec2f = ex.class ({
         set = function (_self,_v) return ex_c.vec2f_set_y ( _self._cptr, _v ) end
     },
     normalized = property { 
-        get = function (_self) return ex_c.vec2f_get_normalize ( _self._cptr ) end
+        get = function (_self) 
+            r = ex.vec2f.zero
+            ex_c.vec2f_get_normalize ( _self._cptr, r._cptr ) 
+            return r
+        end
     },
     len = property {
         get = function (_self) return ex_c.vec2f_len ( _self._cptr ) end
