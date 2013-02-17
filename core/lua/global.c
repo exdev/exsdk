@@ -118,14 +118,12 @@ int __lua_index ( lua_State *_l, int _idx ) {
 // ------------------------------------------------------------------ 
 // Desc: 
 extern int __ex_lua_add_core ( lua_State * );
-extern int __ex_lua_add_fsys ( lua_State * );
 extern int __ex_lua_add_array ( lua_State * );
 extern int __ex_lua_add_vec2f ( lua_State * );
 extern int __ex_lua_add_vec3f ( lua_State * );
 
 static const lua_CFunction loadedlibs[] = {
     __ex_lua_add_core,
-    __ex_lua_add_fsys,
     __ex_lua_add_array,
     __ex_lua_add_vec2f,
     __ex_lua_add_vec3f,
@@ -203,7 +201,9 @@ int ex_lua_init () {
     // my solution is, first add everything to package.preload, then load each module excactly
     // search builtin/modules/ and add each folder in as module
     // NOTE: Consider use package.preload, in luaL_openlibs function, there have some example. 
+    ex_lua_dofile ( __L, "builtin/modules/init.lua" );
     ex_lua_load_module ( __L, "ex" );
+    ex_lua_load_module ( __L, "editor" );
 
     // clear the package.path and package.cpath
     ex_lua_clear_path(__L);
@@ -557,4 +557,75 @@ int ex_lua_dump_stack ( lua_State *_l ) {
 
 int ex_lua_totoal_memory ( struct lua_State *_l ) {
     return lua_gc(_l, LUA_GCCOUNT, 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// main.lua
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+static int __refID_init, __refID_deinit, __refID_update;
+// ------------------------------------------------------------------ 
+
+void ex_lua_parse_main ( struct lua_State *_l ) {
+    ex_lua_dofile ( _l, "main.lua" );
+
+    lua_getglobal( _l, "init" );
+    __refID_init = luaL_ref( _l, LUA_REGISTRYINDEX );
+    ex_assert ( __refID_init != LUA_REFNIL );
+
+    lua_getglobal( _l, "deinit" );
+    __refID_deinit = luaL_ref( _l, LUA_REGISTRYINDEX );
+    ex_assert ( __refID_deinit != LUA_REFNIL );
+
+    lua_getglobal( _l, "update" );
+    __refID_update = luaL_ref( _l, LUA_REGISTRYINDEX );
+    ex_assert ( __refID_update != LUA_REFNIL );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_lua_main_init ( struct lua_State *_l ) {
+    lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_init );
+    if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
+        lua_pushvalue(_l,-2);
+        if ( lua_pcall( _l, 1, 0, 0 ) ) {
+            ex_lua_alert(_l);
+        }
+    }
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_lua_main_deinit ( struct lua_State *_l ) {
+    lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_deinit );
+    if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
+        lua_pushvalue(_l,-2);
+        if ( lua_pcall( _l, 1, 0, 0 ) ) {
+            ex_lua_alert(_l);
+        }
+    }
+
+    luaL_unref( _l, LUA_REGISTRYINDEX, __refID_init );
+    luaL_unref( _l, LUA_REGISTRYINDEX, __refID_deinit );
+    luaL_unref( _l, LUA_REGISTRYINDEX, __refID_update );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_lua_main_update ( struct lua_State *_l ) {
+    lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_update );
+    if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
+        lua_pushvalue(_l,-2);
+        if ( lua_pcall( _l, 1, 0, 0 ) ) {
+            ex_lua_alert(_l);
+        }
+    }
 }

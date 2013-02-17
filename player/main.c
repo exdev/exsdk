@@ -28,13 +28,14 @@ static void main_loop () {
     ALLEGRO_DISPLAY *display;
     ALLEGRO_EVENT_QUEUE *queue;
     ALLEGRO_EVENT event;
-    bool redraw, abort;
 
     // init allegro keyboard
     al_install_keyboard();
 
     // init allegro display
-    al_set_new_display_flags( ALLEGRO_RESIZABLE|ALLEGRO_GENERATE_EXPOSE_EVENTS );
+    al_set_new_display_flags( ALLEGRO_OPENGL
+                            | ALLEGRO_RESIZABLE
+                            | ALLEGRO_GENERATE_EXPOSE_EVENTS );
     display = al_create_display(640,480);
     if ( !display ) {
         ex_log ( "Could not create allegro display!" );
@@ -45,46 +46,52 @@ static void main_loop () {
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
 
-    // start main-loop
+    // parsing main.lua
     // ex_lua_run_interpretor ( ex_lua_main_state() );
-    ex_lua_dofile ( ex_lua_main_state(), "main.lua" );
-    redraw = true;
-    abort = false;
+    ex_lua_parse_main ( ex_lua_main_state() );
+    ex_lua_main_init ( ex_lua_main_state() );
+
+    // NOTE: there is two ways for update, using Timer or using Event-Poll, 
+    // the timer is suitable for GUI tool, and Event-Poll is better for game
+
+    // start main-loop
     while (1) {
+        //
+        ex_lua_main_update ( ex_lua_main_state() );
+
         // draw one frame
-        if ( redraw && al_is_event_queue_empty(queue) ) {
+        if ( al_is_event_queue_empty(queue) ) {
             al_clear_to_color( al_map_rgb(0,128,255) );
             al_flip_display();
         }
 
         // handle events
-        al_wait_for_event(queue, &event);
-        switch ( event.type ) {
-        case ALLEGRO_EVENT_DISPLAY_RESIZE:
-            al_acknowledge_resize(event.display.source);
-            redraw = true;
-            break;
+        if ( !al_is_event_queue_empty(queue) ) {
+            while ( al_get_next_event(queue, &event) ) {
+                switch ( event.type ) {
+                case ALLEGRO_EVENT_DISPLAY_RESIZE:
+                    al_acknowledge_resize(event.display.source);
+                    break;
 
-        case ALLEGRO_EVENT_DISPLAY_EXPOSE:
-            redraw = true;
-            break;
+                case ALLEGRO_EVENT_DISPLAY_EXPOSE:
+                    break;
 
-        case ALLEGRO_EVENT_DISPLAY_CLOSE:
-            abort = true;
-            break;
+                case ALLEGRO_EVENT_DISPLAY_CLOSE:
+                    goto done;
+                    break;
 
-        case ALLEGRO_EVENT_KEY_DOWN:
-            if ( event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
-                abort = true;
-            break;
+                case ALLEGRO_EVENT_KEY_DOWN:
+                    if ( event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
+                        goto done;
+                    break;
+                }
+            }
         }
-
-        //
-        if ( abort ) 
-            break;
     }
 
-    //
+    // deinit
+done:
+    ex_lua_main_deinit ( ex_lua_main_state() );
     al_destroy_display(display);
 }
 

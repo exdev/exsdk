@@ -305,23 +305,23 @@ int ex_sdk_open_project ( const char *_path ) {
     ex_assert ( _path != NULL );
 
     // if the media_path exists, use it. if not, try to search it in the app/ directory
-    if ( ex_os_exists (_path) ) {
-        ex_log ( "[exSDK] Open project: %s", _path  );
-
-        strncpy ( path, _path, MAX_PATH );
-
-        // set write dir
-        if ( ex_fsys_set_write_dir(path) != 0 )
-            return -1;
-
-        // mount the write dir. NOTE: set write dir doesn't means you mount it.
-        if ( ex_fsys_mount( path, NULL, true ) != 0 )
-            return -1;
-    }
-    else {
+    if ( ex_os_exists (_path) == false ) {
         ex_log ( "[exSDK] Error: Can't load project at %s", _path );
         return -1;
     }
+
+    ex_log ( "[exSDK] Open project: %s", _path  );
+    strncpy ( path, _path, MAX_PATH );
+
+    // set write dir
+    if ( ex_fsys_set_write_dir(path) != 0 )
+        return -1;
+
+    // mount the write dir. NOTE: set write dir doesn't means you mount it.
+    if ( ex_fsys_mount( path, NULL, true ) != 0 )
+        return -1;
+
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
