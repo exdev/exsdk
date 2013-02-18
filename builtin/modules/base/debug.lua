@@ -33,7 +33,7 @@ which logically are exactly not equivalent to the original code.
 This routine can serve for pretty formating tables with
 proper indentations, apart from printing them:
 
-dump(t, "t")   -- a typical use
+debug.dump(t, "t")   -- a typical use
 
 Heavily based on "Saving tables with cycles", PIL2, p. 113.
 

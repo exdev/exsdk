@@ -5,13 +5,6 @@
 -- Description  : 
 -- ======================================================================================
 
-local __M = {}
-_G["editor"] = __M
-package.loaded["editor"] = __M 
-
 -- basic module
-__M.asset_db = {}
-module_add( __M.asset_db, "editor", "asset_db" )
-module_add( __M, "editor", "importer" )
-
-return __M
+module_add( "asset_db.lua", "asset_db" )
+module_add( "importer.lua" )

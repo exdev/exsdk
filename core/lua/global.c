@@ -117,12 +117,14 @@ int __lua_index ( lua_State *_l, int _idx ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+extern int __ex_lua_add_base ( lua_State * );
 extern int __ex_lua_add_core ( lua_State * );
 extern int __ex_lua_add_array ( lua_State * );
 extern int __ex_lua_add_vec2f ( lua_State * );
 extern int __ex_lua_add_vec3f ( lua_State * );
 
 static const lua_CFunction loadedlibs[] = {
+    __ex_lua_add_base,
     __ex_lua_add_core,
     __ex_lua_add_array,
     __ex_lua_add_vec2f,
@@ -202,8 +204,6 @@ int ex_lua_init () {
     // search builtin/modules/ and add each folder in as module
     // NOTE: Consider use package.preload, in luaL_openlibs function, there have some example. 
     ex_lua_dofile ( __L, "builtin/modules/init.lua" );
-    ex_lua_load_module ( __L, "ex" );
-    ex_lua_load_module ( __L, "editor" );
 
     // clear the package.path and package.cpath
     ex_lua_clear_path(__L);
@@ -260,19 +260,6 @@ bool ex_lua_initialized () {
 // ------------------------------------------------------------------ 
 
 lua_State *ex_lua_main_state () { return __L; }
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_lua_load_module ( struct lua_State *_l, const char *_moduleName ) { 
-    ALLEGRO_USTR *ustr;
-
-    ustr = al_ustr_newf( "builtin/modules/%s/__module__.lua", _moduleName );
-    ex_lua_dofile ( _l, al_cstr(ustr) );
-
-    al_ustr_free(ustr);
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua op
@@ -404,7 +391,7 @@ int ex_lua_dofile ( lua_State *_l, const char *_filepath ) {
     file = ex_fsys_fopen_r(_filepath);
     if ( file == NULL ) {
         ex_log ( "[lua] Can't find the file %s", _filepath );
-        return -1;
+        return 1;
     }
 
     // get the file to the buffer we allocated.
@@ -427,12 +414,9 @@ int ex_lua_dofile ( lua_State *_l, const char *_filepath ) {
         goto PARSE_FAILED;
     }
 
-    ex_free(buffer);
-    return 0;
-
 PARSE_FAILED:
     ex_free(buffer);
-    return -1;
+    return status;
 }
 
 // ------------------------------------------------------------------ 

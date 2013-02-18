@@ -5,25 +5,12 @@
 -- Description  : 
 -- ======================================================================================
 
-local __M = {}
-_G["ex"] = __M
-package.loaded["ex"] = __M 
-
 -- generic
-__M.path = {}
-module_add( __M.path, "ex", "path" )
-
--- basic module
-module_add( __M, "ex", "core" )
-module_add( __M, "ex", "debug" )
-module_add( __M, "ex", "class" )
+module_add( "class.lua" )
 
 -- math module
-__M.math = {}
-module_add( __M.math, "ex", "math/math" )
-module_add( __M.math, "ex", "math/ease" )
+module_add( "math/math.lua", "math" )
+module_add( "math/ease.lua", "math" )
 
 -- basic classes
-module_add( __M, "ex", "math/vec2f" )
-
-return __M
+module_add( "math/vec2f.lua" )

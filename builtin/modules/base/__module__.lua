@@ -1,21 +1,20 @@
 -- ======================================================================================
--- File         : core.lua
+-- File         : __module__.lua
 -- Author       : Wu Jie 
--- Last Change  : 01/24/2013 | 19:06:45 PM | Thursday,January
+-- Last Change  : 02/17/2013 | 16:30:40 PM | Sunday,February
 -- Description  : 
 -- ======================================================================================
 
-local __M = {}
-
 --/////////////////////////////////////////////////////////////////////////////
--- base functions
+--
 --/////////////////////////////////////////////////////////////////////////////
 
-local cwd = ex_c.fsys_app_dir()
-__M.cwd = cwd
+-- lua internal extension
+module_add ( "global.lua" )
+module_add ( "debug.lua", "debug" )
+module_add ( "table.lua", "table" )
 
---/////////////////////////////////////////////////////////////////////////////
--- 
---/////////////////////////////////////////////////////////////////////////////
-
-return __M
+-- ex internal extension
+module_add ( "os.lua", "os" )
+module_add ( "app.lua", "app" )
+module_add ( "path.lua", "path" )

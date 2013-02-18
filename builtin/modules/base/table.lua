@@ -1,37 +1,32 @@
 -- ======================================================================================
--- File         : path.lua
+-- File         : table.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/17/2013 | 18:26:39 PM | Sunday,February
+-- Last Change  : 02/18/2013 | 16:59:48 PM | Monday,February
 -- Description  : 
 -- ======================================================================================
 
 local __M = {}
 
 --/////////////////////////////////////////////////////////////////////////////
--- functions
+-- base functions
 --/////////////////////////////////////////////////////////////////////////////
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function translate ( _path, _sep )
-    assert ( type(_path) == "string", "Type error: _path must be string" )
-
-    if _sep == nil then
-        if ex.platform == "windows" then
-            _sep = "\\"
-        else
-            _sep = "/"
+local function contains (_t,_v)
+    for _,v in pairs(_t) do
+        if v == _v then
+            return true
         end
     end
-    return _path:gsub("[/\\]", _sep)
+    return false
 end
-__M.translate = translate
+__M.contains = contains
 
 --/////////////////////////////////////////////////////////////////////////////
 -- 
 --/////////////////////////////////////////////////////////////////////////////
 
 return __M
-

@@ -15,8 +15,23 @@ local __M = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+local function exists ( _path )
+    return ex_c.fsys_exists(_path)
+end
+__M.exists = exists
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function get_importer ( _path )
-    -- TODO
+    if exists (_path) == false then
+        error ( "Can't find file at " .. _path )
+    end
+
+    if path.is ( _path, {".bmp", ".jpg", ".png", ".tga"} ) then
+        return editor.texture_importer(_path)
+    end
 end
 __M.get_importer = get_importer
 
@@ -26,18 +41,11 @@ __M.get_importer = get_importer
 
 local function import ( _path )
     local importer = get_importer(_path)
-    importer:exec()
+    if importer then
+        importer:exec()
+    end
 end
 __M.import = import
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local function fullpath ( _path )
-    return ex_c.fsys_realpath(_path)
-end
-__M.fullpath = fullpath
 
 --/////////////////////////////////////////////////////////////////////////////
 --
