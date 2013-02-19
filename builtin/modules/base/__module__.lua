@@ -13,6 +13,7 @@
 module_add ( "global.lua" )
 module_add ( "debug.lua", "debug" )
 module_add ( "table.lua", "table" )
+module_add ( "string.lua", "string" )
 
 -- ex internal extension
 module_add ( "os.lua", "os" )

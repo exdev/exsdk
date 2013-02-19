@@ -10,6 +10,8 @@
     2. I copy alplatf.h directly from CMake generates. This file will be
     different when your platform or compiler changes.
 
+    3. Allegro-Image-Addon depends on libjpeg and libpng
+
 * dlmalloc (http://gee.cs.oswego.edu/)
 
     1. Rename the header and source file from malloc to dlmalloc
@@ -23,3 +25,12 @@
 * luaGL (http://luagl.sourceforge.net/)
 
 * physfs (http://icculus.org/physfs/)
+
+* DevIL (http://openil.sourceforge.net/)
+
+    Depends on libjpeg and libpng, but I didn't use DevIL because Allegro-Image-Addon 
+    currently meet what I need
+
+* libjpeg (http://libjpeg.sourceforge.net/)
+
+* libpng (http://www.libpng.org/pub/png/libpng.html)

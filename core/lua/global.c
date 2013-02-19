@@ -122,6 +122,7 @@ extern int __ex_lua_add_core ( lua_State * );
 extern int __ex_lua_add_array ( lua_State * );
 extern int __ex_lua_add_vec2f ( lua_State * );
 extern int __ex_lua_add_vec3f ( lua_State * );
+extern int __ex_lua_add_texture ( lua_State * );
 
 static const lua_CFunction loadedlibs[] = {
     __ex_lua_add_base,
@@ -129,6 +130,7 @@ static const lua_CFunction loadedlibs[] = {
     __ex_lua_add_array,
     __ex_lua_add_vec2f,
     __ex_lua_add_vec3f,
+    __ex_lua_add_texture,
     NULL
 };
 // ------------------------------------------------------------------ 
@@ -197,13 +199,6 @@ int ex_lua_init () {
     luaopen_luagl (__L);
     luaopen_luaglu (__L);
 #endif
-
-    // load builtin modules
-    // TODO: think about cross reference problem, to solve this, a package.preload is needed
-    // my solution is, first add everything to package.preload, then load each module excactly
-    // search builtin/modules/ and add each folder in as module
-    // NOTE: Consider use package.preload, in luaL_openlibs function, there have some example. 
-    ex_lua_dofile ( __L, "builtin/modules/init.lua" );
 
     // clear the package.path and package.cpath
     ex_lua_clear_path(__L);

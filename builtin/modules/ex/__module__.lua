@@ -13,4 +13,5 @@ module_add( "math/math.lua", "math" )
 module_add( "math/ease.lua", "math" )
 
 -- basic classes
-module_add( "math/vec2f.lua" )
+module_add( "classes/vec2f.lua" )
+module_add( "classes/texture.lua" )

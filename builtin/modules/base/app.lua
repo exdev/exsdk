@@ -22,10 +22,8 @@ __M.cwd = cwd
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function fullpath (_path)
-    return ex_c.fsys_realpath(_path)
-end
-__M.fullpath = fullpath
+local data_path = ex_c.fsys_writedir()
+__M.data_path = data_path
 
 -- ------------------------------------------------------------------ 
 -- Desc: 

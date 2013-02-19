@@ -25,7 +25,7 @@
 
 static int __lua_string_ncmp ( lua_State *_l ) {
     const char *str1, *str2;
-    int idx, cnt;
+    size_t idx, cnt;
 
     ex_lua_check_nargs(_l,4);
 

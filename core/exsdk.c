@@ -10,6 +10,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "allegro5/allegro.h"
+#include "allegro5/allegro_image.h"
+#include "allegro5/allegro_primitives.h"
 #include "exSDK.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -235,6 +237,8 @@ int ex_sdk_init () {
         ex_log ( "[exSDK] Error: Could not init Allegro!" );
         return -1;
     }
+    al_init_image_addon();
+    al_init_primitives_addon();
 
     // init memory
     ex_log ( "[exSDK] Initializing memory..." );
@@ -320,6 +324,13 @@ int ex_sdk_open_project ( const char *_path ) {
     // mount the write dir. NOTE: set write dir doesn't means you mount it.
     if ( ex_fsys_mount( path, NULL, true ) != 0 )
         return -1;
+
+    // load builtin modules
+    // TODO: think about cross reference problem, to solve this, a package.preload is needed
+    // my solution is, first add everything to package.preload, then load each module excactly
+    // search builtin/modules/ and add each folder in as module
+    // NOTE: Consider use package.preload, in luaL_openlibs function, there have some example. 
+    ex_lua_dofile ( ex_lua_main_state(), "builtin/modules/init.lua" );
 
     return 0;
 }

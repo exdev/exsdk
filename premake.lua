@@ -37,6 +37,9 @@ solution "exSDK"
         "ALLEGRO_LIB_BUILD",
         "ALLEGRO_SRC",
 
+        -- physfs
+        "PHYSFS_SUPPORTS_ZIP",
+
         -- lua
         "LUA_COMPAT_ALL",
 
@@ -57,6 +60,48 @@ solution "exSDK"
     end
 
     -- ======================================================== 
+    -- Project: Deps
+    -- ======================================================== 
+
+    project "Deps"
+        kind "StaticLib"
+        language "C"
+        targetname "Deps"
+
+        -- build options
+        if __PLATFORM == "macosx" then
+        elseif __PLATFORM == "win32" then
+            buildoptions { "/wd4996" }
+        end
+
+        -- include
+        includedirs {
+            "ext/zlib-1.2.7/",
+            "ext/lpng1514/",
+        } 
+
+        -- source
+        files { 
+            "ext/zlib-1.2.7/**.c",
+            "ext/lpng1514/**.c",
+        }
+
+        -- configurations
+        configuration "Debug"
+            objdir ( __DEST_DIR .. "ext/debug/objs/" )
+            targetdir ( __DEST_DIR .. "ext/debug/bin/" )
+
+            defines { "DEBUG" }
+            flags { "Symbols" }
+
+        configuration "Release"
+            objdir ( __DEST_DIR .. "ext/release/objs/" )
+            targetdir ( __DEST_DIR .. "ext/release/bin/" )
+
+            defines { "NDEBUG" }
+            flags { "Optimize" }    
+
+    -- ======================================================== 
     -- Project: Allegro (library) 
     -- ======================================================== 
 
@@ -74,6 +119,9 @@ solution "exSDK"
         -- include
         includedirs {
             "ext/allegro-5.0.8/include/",
+            "ext/zlib-1.2.7/",
+            "ext/lpng1514/",
+            "ext/jpeg-6b/include/",
         } 
         if __PLATFORM == "macosx" then
             includedirs {
@@ -89,6 +137,7 @@ solution "exSDK"
         files { 
             "ext/allegro-5.0.8/src/**.c",
             "ext/allegro-5.0.8/addons/primitives/**.c",
+            "ext/allegro-5.0.8/addons/image/**.c",
             "ext/allegro-5.0.8/addons/main/**.c",
         }
         if __PLATFORM == "macosx" then
@@ -151,12 +200,14 @@ solution "exSDK"
 
         -- include
         includedirs {
+            "ext/zlib-1.2.7/",
+            "ext/freetype-2.4.2-1/include/",
             "ext/allegro-5.0.8/include/",
             "ext/allegro-5.0.8/addons/primitives/",
+            "ext/allegro-5.0.8/addons/image/",
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.1/",
             "ext/luagl/",
-            "ext/freetype-2.4.2-1/include/",
             "core/"
         } 
         if __PLATFORM == "macosx" then
@@ -180,11 +231,9 @@ solution "exSDK"
             "ext/lua-5.2.1/lua.c",
             "ext/lua-5.2.1/luac.c",
             "ext/physfs-2.0.3/lzma/**.c",
+            "ext/physfs-2.0.3/zlib123/**.c",
         }
         if __PLATFORM == "macosx" then
-            excludes {
-                "ext/physfs-2.0.3/lzma/**.c",
-            }
         elseif __PLATFORM == "win32" then
         end
 
@@ -214,10 +263,7 @@ solution "exSDK"
 
         -- include
         includedirs {
-            -- TEMP, DELME { 
             "ext/allegro-5.0.8/include/",
-            "ext/allegro-5.0.8/addons/primitives/",
-            -- } TEMP end 
             "core/"
         } 
 
@@ -233,9 +279,11 @@ solution "exSDK"
 
         -- link
         links {
+            "jpeg",
+            "freetype",
+            "Deps",
             "Allegro",
             "exCore",
-            "freetype",
         }
         if __PLATFORM == "macosx" then
             links {
@@ -301,6 +349,7 @@ solution "exSDK"
             includedirs {
                 "ext/allegro-5.0.8/include/",
                 "ext/allegro-5.0.8/addons/primitives/",
+                "ext/allegro-5.0.8/addons/image/",
                 "ext/lua-5.2.1/",
                 "ext/luagl/",
                 "core/"
@@ -325,9 +374,11 @@ solution "exSDK"
 
             -- link
             links {
+                "jpeg",
+                "freetype",
+                "Deps",
                 "Allegro",
                 "exCore",
-                "freetype",
             }
             if __PLATFORM == "macosx" then
                 links {

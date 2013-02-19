@@ -11,13 +11,13 @@ local __M = {}
 -- 
 --/////////////////////////////////////////////////////////////////////////////
 
-local texture_importer = ex.importer.extend ({
+local texture_importer = editor.importer.extend ({
     __typename = "texture_importer",
 
     -- constructor & destructor
     __init = function ( _self, _path )
         assert ( type(_path) == "string", "Type error: _path must be path" )
-        -- TODO
+        _self.path = _path
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,11 @@ local texture_importer = ex.importer.extend ({
     -- ------------------------------------------------------------------ 
 
     exec = function (_self)
-        -- TODO
+        local tex = ex.instantiate( ex.texture )
+        local cptr = ex_c.texture_load ( editor.asset_db.fullpath(_self.path) )
+        tex:_setptr(cptr)
+
+        return tex
     end,
 })
 __M.texture_importer = texture_importer

@@ -148,7 +148,7 @@ __M.join = join
 -- ------------------------------------------------------------------ 
 
 local function is ( _fname, _ext_list )
-    local ext = extension(_fname)
+    local ext = extname(_fname)
     if type(_ext_list) == "string" then 
         return ext == _ext_list
     else

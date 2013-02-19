@@ -56,14 +56,8 @@ static int __lua_fsys_user_dir ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int __lua_fsys_realpath ( lua_State *_l ) {
-    const char *path;
-
-    ex_lua_check_nargs(_l,1);
-
-    path = luaL_checkstring(_l,1);
-    lua_pushstring( _l, ex_fsys_realpath(path) );
-
+static int __lua_fsys_writedir ( lua_State *_l ) {
+    lua_pushstring( _l, ex_fsys_write_dir() );
     return 1;
 }
 
@@ -92,7 +86,7 @@ static const luaL_Reg lib[] = {
     { "lua_dofile",         __lua_dofile },
     { "fsys_app_dir",       __lua_fsys_app_dir },
     { "fsys_user_dir",      __lua_fsys_user_dir },
-    { "fsys_realpath",      __lua_fsys_realpath },
+    { "fsys_writedir",      __lua_fsys_writedir },
     { "fsys_exists",        __lua_fsys_exists },
     { NULL, NULL }
 };
