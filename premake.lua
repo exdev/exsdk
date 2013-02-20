@@ -79,12 +79,26 @@ solution "exSDK"
         includedirs {
             "ext/zlib-1.2.7/",
             "ext/lpng1514/",
+            "ext/physfs-2.0.3/",
+            "ext/lua-5.2.1/",
         } 
 
         -- source
         files { 
             "ext/zlib-1.2.7/**.c",
             "ext/lpng1514/**.c",
+            "ext/physfs-2.0.3/**.c",
+            "ext/lua-5.2.1/**.c",
+            "ext/luagl-1.8/**.c",
+            "ext/lpeg-0.10.2/**.c",
+        }
+
+        -- source exclude
+        excludes {
+            "ext/lua-5.2.1/lua.c",
+            "ext/lua-5.2.1/luac.c",
+            "ext/physfs-2.0.3/lzma/**.c",
+            "ext/physfs-2.0.3/zlib123/**.c",
         }
 
         -- configurations
@@ -201,7 +215,6 @@ solution "exSDK"
 
         -- include
         includedirs {
-            "ext/zlib-1.2.7/",
             "ext/freetype-2.4.2-1/include/",
             "ext/allegro-5.0.8/include/",
             "ext/allegro-5.0.8/addons/primitives/",
@@ -220,23 +233,8 @@ solution "exSDK"
 
         -- source
         files { 
-            "ext/physfs-2.0.3/**.c",
-            "ext/lua-5.2.1/**.c",
-            "ext/luagl-1.8/**.c",
-            "ext/lpeg-0.10.2/**.c",
             "core/**.c",
         }
-
-        -- source exclude
-        excludes {
-            "ext/lua-5.2.1/lua.c",
-            "ext/lua-5.2.1/luac.c",
-            "ext/physfs-2.0.3/lzma/**.c",
-            "ext/physfs-2.0.3/zlib123/**.c",
-        }
-        if __PLATFORM == "macosx" then
-        elseif __PLATFORM == "win32" then
-        end
 
         -- configurations
         configuration "Debug"
