@@ -19,6 +19,7 @@
 #include "date.h"
 #include "dtime.h"
 #include "uid.h"
+#include "str_op.h"
 
 // #################################################################################
 #endif // END MISC_INC_H_1277863963

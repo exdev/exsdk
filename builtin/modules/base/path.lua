@@ -23,10 +23,13 @@ __M.sep = sep
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
--- example:
---      path.dirname("/foo/bar/baz/asdf/quux")
--- result:
---      /foo/bar/baz/asdf
+--      "assets/foo/bar/foobar.txt" ==> "assets/foo/bar/" 
+--      "assets/foo/bar/foobar" ==> "assets/foo/bar/" 
+--      "assets/foo/bar/.foobar" ==> "assets/foo/bar/" 
+--      "assets/foo/bar/.foobar/" ==> "assets/foo/bar/.foobar/" 
+--      "foobar.txt" ==> "" 
+--      "foobar" ==> "" 
+--      "foobar/" ==> "foobar/" 
 -- ------------------------------------------------------------------ 
 
 local function dirname (_p)
@@ -42,20 +45,12 @@ __M.dirname = dirname
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
--- example:
---     path.extname("index.html")
--- result:
---     .html
---
--- example:
---     path.extname("index.")
--- result:
---     .
---
--- example:
---     path.extname("index")
--- result:
---     ""
+--      "assets/foo/bar/foobar.txt" ==> ".txt" 
+--      "assets/foo/bar/foobar" ==> "" 
+--      "assets/foo/bar/.foobar" ==> "" 
+--      "foobar.txt" ==> ".txt" 
+--      "foobar" ==> "" 
+--      "foobar/" ==> "" 
 -- ------------------------------------------------------------------ 
 
 local function extname (_p) 
@@ -70,10 +65,12 @@ __M.extname = extname
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
--- example:
---      path.filename("/foo/bar/baz/asdf/quux.html")
--- result:
---      quux.html
+--      "assets/foo/bar/foobar.txt" ==> "foobar.txt" 
+--      "assets/foo/bar/foobar" ==> "foobar" 
+--      "assets/foo/bar/.foobar" ==> ".foobar" 
+--      "foobar.txt" ==> "foobar.txt" 
+--      "foobar" ==> "foobar" 
+--      "foobar/" ==> "" 
 -- ------------------------------------------------------------------ 
 
 local function filename (_p)
@@ -88,10 +85,12 @@ __M.filename = filename
 
 -- ------------------------------------------------------------------ 
 -- Desc: filename without extension
--- example:
---      path.basename("/foo/bar/baz/asdf/quux.html")
--- result:
---      quux
+--      "assets/foo/bar/foobar.txt" ==> "foobar" 
+--      "assets/foo/bar/foobar" ==> "foobar" 
+--      "assets/foo/bar/.foobar" ==> ".foobar" 
+--      "foobar.txt" ==> "foobar" 
+--      "foobar" ==> "foobar" 
+--      "foobar/" ==> "" 
 -- ------------------------------------------------------------------ 
 
 local function basename (_p) 
@@ -107,6 +106,8 @@ __M.basename = basename
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
+--      path.translate("assets/foo/bar/foobar.txt","\\") 
+--          ==> "assets\\foo\\bar\\foobar.txt" 
 -- ------------------------------------------------------------------ 
 
 local function translate (_p, _sep)

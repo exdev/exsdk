@@ -119,25 +119,38 @@ int __lua_index ( lua_State *_l, int _idx ) {
 // Desc: 
 extern int __ex_lua_add_base ( lua_State * );
 extern int __ex_lua_add_core ( lua_State * );
+extern int __ex_lua_add_fsys ( lua_State * );
 extern int __ex_lua_add_array ( lua_State * );
 extern int __ex_lua_add_vec2f ( lua_State * );
 extern int __ex_lua_add_vec3f ( lua_State * );
 extern int __ex_lua_add_texture ( lua_State * );
+extern int __ex_lua_add_renderer ( lua_State * );
 
 static const lua_CFunction loadedlibs[] = {
     __ex_lua_add_base,
     __ex_lua_add_core,
+    __ex_lua_add_fsys,
     __ex_lua_add_array,
     __ex_lua_add_vec2f,
     __ex_lua_add_vec3f,
     __ex_lua_add_texture,
+    __ex_lua_add_renderer,
     NULL
 };
 // ------------------------------------------------------------------ 
 
+static void __ex_lua_add_module ( lua_State *_l, const char *_modname ) {
+    luaL_getsubtable(_l, LUA_REGISTRYINDEX, "_LOADED");
+    lua_pushvalue(_l, -2);  /* make copy of module (call result) */
+    lua_setfield(_l, -2, _modname);  /* _LOADED[modname] = module */
+    lua_pop(_l, 1);  /* remove _LOADED table */
+
+    lua_pushvalue(_l, -1);  /* copy of 'mod' */
+    lua_setglobal(_l, _modname);  /* _G[modname] = module */
+}
+
 static void __ex_lua_openlibs ( lua_State *_l ) {
     const lua_CFunction *pfunc;
-    const char *modname = "ex_c";
 
     // create ex_c table
     lua_newtable(_l);
@@ -147,14 +160,15 @@ static void __ex_lua_openlibs ( lua_State *_l ) {
             (*pfunc) (_l); // add functions to the table
         }
 
-        luaL_getsubtable(_l, LUA_REGISTRYINDEX, "_LOADED");
-        lua_pushvalue(_l, -2);  /* make copy of module (call result) */
-        lua_setfield(_l, -2, modname);  /* _LOADED[modname] = module */
-        lua_pop(_l, 1);  /* remove _LOADED table */
+        __ex_lua_add_module ( _l, "ex_c" );
 
-        lua_pushvalue(_l, -1);  /* copy of 'mod' */
-        lua_setglobal(_l, modname);  /* _G[modname] = module */
+    lua_pop(_l, 1);  /* remove module table */
+}
 
+extern int luaopen_lpeg ( lua_State * );
+static void __ex_lua_openlpeg ( lua_State *_l ) {
+    luaopen_lpeg (__L); // new lpeg table
+    __ex_lua_add_module ( _l, "lpeg" );
     lua_pop(_l, 1);  /* remove module table */
 }
 
@@ -192,7 +206,12 @@ int ex_lua_init () {
     lua_settop ( __L, 0 ); // clear the stack
     __ex_lua_openlibs (__L);
 
-    // init graphics wraps
+    // open lpeg
+    ex_log ( "[lua] Loading lpeg library..." );
+    lua_settop ( __L, 0 ); // clear the stack
+    __ex_lua_openlpeg (__L);
+
+    // open luagl
 #if ( EX_PLATFORM != EX_IOS )
     ex_log ( "[lua] Loading gl library..." );
     lua_settop ( __L, 0 ); // clear the stack
@@ -544,7 +563,7 @@ int ex_lua_totoal_memory ( struct lua_State *_l ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
-static int __refID_init, __refID_deinit, __refID_update;
+static int __refID_init, __refID_deinit, __refID_update, __refID_render;
 // ------------------------------------------------------------------ 
 
 void ex_lua_parse_main ( struct lua_State *_l ) {
@@ -561,6 +580,10 @@ void ex_lua_parse_main ( struct lua_State *_l ) {
     lua_getglobal( _l, "update" );
     __refID_update = luaL_ref( _l, LUA_REGISTRYINDEX );
     ex_assert ( __refID_update != LUA_REFNIL );
+
+    lua_getglobal( _l, "render" );
+    __refID_render = luaL_ref( _l, LUA_REGISTRYINDEX );
+    ex_assert ( __refID_render != LUA_REFNIL );
 }
 
 // ------------------------------------------------------------------ 
@@ -593,6 +616,7 @@ void ex_lua_main_deinit ( struct lua_State *_l ) {
     luaL_unref( _l, LUA_REGISTRYINDEX, __refID_init );
     luaL_unref( _l, LUA_REGISTRYINDEX, __refID_deinit );
     luaL_unref( _l, LUA_REGISTRYINDEX, __refID_update );
+    luaL_unref( _l, LUA_REGISTRYINDEX, __refID_render );
 }
 
 // ------------------------------------------------------------------ 
@@ -601,6 +625,20 @@ void ex_lua_main_deinit ( struct lua_State *_l ) {
 
 void ex_lua_main_update ( struct lua_State *_l ) {
     lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_update );
+    if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
+        lua_pushvalue(_l,-2);
+        if ( lua_pcall( _l, 1, 0, 0 ) ) {
+            ex_lua_alert(_l);
+        }
+    }
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_lua_main_render ( struct lua_State *_l ) {
+    lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_render );
     if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
         lua_pushvalue(_l,-2);
         if ( lua_pcall( _l, 1, 0, 0 ) ) {

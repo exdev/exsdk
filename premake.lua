@@ -42,6 +42,7 @@ solution "exSDK"
 
         -- lua
         "LUA_COMPAT_ALL",
+        -- "LPEG_DEBUG_PRINT",
 
         -- exsdk defines
         "EX_USE_DL_MALLOC",
@@ -207,7 +208,6 @@ solution "exSDK"
             "ext/allegro-5.0.8/addons/image/",
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.1/",
-            "ext/luagl/",
             "core/"
         } 
         if __PLATFORM == "macosx" then
@@ -223,6 +223,7 @@ solution "exSDK"
             "ext/physfs-2.0.3/**.c",
             "ext/lua-5.2.1/**.c",
             "ext/luagl-1.8/**.c",
+            "ext/lpeg-0.10.2/**.c",
             "core/**.c",
         }
 
@@ -351,7 +352,6 @@ solution "exSDK"
                 "ext/allegro-5.0.8/addons/primitives/",
                 "ext/allegro-5.0.8/addons/image/",
                 "ext/lua-5.2.1/",
-                "ext/luagl/",
                 "core/"
             } 
             if __PLATFORM == "macosx" then

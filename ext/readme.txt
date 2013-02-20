@@ -29,8 +29,11 @@
 * DevIL (http://openil.sourceforge.net/)
 
     Depends on libjpeg and libpng, but I didn't use DevIL because Allegro-Image-Addon 
-    currently meet what I need
+    currently meet what I need.
 
+* ijg (http://www.ijg.org/)
 * libjpeg (http://libjpeg.sourceforge.net/)
+
+    The libjpeg is too old to Windows, and will cause crash, people suggest use ijg instead.
 
 * libpng (http://www.libpng.org/pub/png/libpng.html)

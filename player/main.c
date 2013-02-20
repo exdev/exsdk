@@ -61,7 +61,9 @@ static void main_loop () {
 
         // draw one frame
         if ( al_is_event_queue_empty(queue) ) {
-            al_clear_to_color( al_map_rgb(0,128,255) );
+            // al_clear_to_color( al_map_rgb(0,128,255) );
+            al_clear_to_color( al_map_rgb(0,0,0) );
+            ex_lua_main_render( ex_lua_main_state() );
             al_flip_display();
         }
 
@@ -115,6 +117,7 @@ int main (void) {
     // load project
     strncpy ( path, ex_fsys_app_dir(), MAX_PATH );
     strcat ( path, "Main/" );
+    ex_unix_path(path);
     ex_sdk_open_project ( path );
 
     // ======================================================== 

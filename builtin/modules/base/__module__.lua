@@ -14,8 +14,9 @@ module_add ( "global.lua" )
 module_add ( "debug.lua", "debug" )
 module_add ( "table.lua", "table" )
 module_add ( "string.lua", "string" )
+module_add ( "os.lua", "os" )
 
 -- ex internal extension
-module_add ( "os.lua", "os" )
+module_add ( "re.lua", "re" ) -- lpeg re module
 module_add ( "app.lua", "app" )
 module_add ( "path.lua", "path" )

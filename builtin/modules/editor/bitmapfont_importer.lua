@@ -1,36 +1,28 @@
 -- ======================================================================================
--- File         : texture.lua
+-- File         : bitmapfont_importer.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/19/2013 | 18:27:04 PM | Tuesday,February
+-- Last Change  : 02/20/2013 | 13:48:36 PM | Wednesday,February
 -- Description  : 
 -- ======================================================================================
 
 local __M = {}
-local property, typeof, typename = ex.property, ex.typeof, ex.typename
 
 --/////////////////////////////////////////////////////////////////////////////
---
+-- 
 --/////////////////////////////////////////////////////////////////////////////
 
-local texture = ex.class ({
-    __typename = "texture",
+local bitmapfont_importer = editor.importer.extend ({
+    __typename = "bitmapfont_importer",
 
     -- constructor & destructor
-    __init = function ( _self, _w, _h )
-        assert ( type(_w) == "number", "Type error: _x must be number" )
-        assert ( type(_h) == "number", "Type error: _y must be number" )
-        _self._cptr = ex_c.texture_new(_w,_h)
-    end,
-
-    __gc = function (_self)
-        ex_c.texture_destroy(_self._cptr)
+    __init = function ( _self, _path )
+        assert ( type(_path) == "string", "Type error: _path must be path" )
+        _self.path = _path
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
     -- properties
     --/////////////////////////////////////////////////////////////////////////////
-
-    _cptr = ex_c.null,
 
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
@@ -40,11 +32,15 @@ local texture = ex.class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    _setptr = function ( _self, _ptr )
-        _self._cptr = _ptr
+    exec = function (_self)
+        -- local tex = ex.instantiate( ex.texture )
+        -- local cptr = ex_c.texture_load ( editor.asset_db.fullpath(_self.path) )
+        -- tex:_setptr(cptr)
+
+        -- return tex
     end,
-}) 
-__M.texture = texture
+})
+__M.bitmapfont_importer = bitmapfont_importer
 
 --/////////////////////////////////////////////////////////////////////////////
 --

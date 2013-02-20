@@ -71,6 +71,7 @@ extern void ex_lua_parse_main ( struct lua_State *_l );
 extern void ex_lua_main_init ( struct lua_State *_l );
 extern void ex_lua_main_deinit ( struct lua_State *_l );
 extern void ex_lua_main_update ( struct lua_State *_l );
+extern void ex_lua_main_render ( struct lua_State *_l );
 
 // ######################### 
 #ifdef __cplusplus

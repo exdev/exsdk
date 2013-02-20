@@ -1,7 +1,7 @@
 // ======================================================================================
-// File         : wrap_core.c
+// File         : wrap_renderer.c
 // Author       : Wu Jie 
-// Last Change  : 02/07/2013 | 15:00:11 PM | Thursday,February
+// Last Change  : 02/20/2013 | 13:06:57 PM | Wednesday,February
 // Description  : 
 // ======================================================================================
 
@@ -9,6 +9,7 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "allegro5/allegro.h"
 #include "exsdk.h"
 
 #include <lua.h>
@@ -23,15 +24,20 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int __lua_dofile ( lua_State *_l ) {
-    const char *path;
+static int __lua_draw_texture ( lua_State *_l ) {
+    ALLEGRO_BITMAP *bitmap;
 
-    ex_lua_check_nargs(_l,1);
+    ex_lua_check_nargs(_l,3);
 
-    path = luaL_checkstring(_l,1);
-    ex_lua_dofile( _l, path );
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    bitmap = lua_touserdata(_l,1);
 
-    return lua_gettop(_l) - 1;
+    al_draw_bitmap( bitmap, 
+                    (float)luaL_checknumber(_l,2), 
+                    (float)luaL_checknumber(_l,3),
+                    0 );
+
+	return 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -39,18 +45,11 @@ static int __lua_dofile ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static const luaL_Reg lib[] = {
-    { "lua_dump_stack",     ex_lua_dump_stack },
-    { "lua_total_memory",   ex_lua_totoal_memory },
-    { "lua_dofile",         __lua_dofile },
+    { "draw_texture",       __lua_draw_texture },
     { NULL, NULL }
 };
 
-int __ex_lua_add_core ( lua_State *_l ) {
+int __ex_lua_add_renderer ( lua_State *_l ) {
     luaL_setfuncs( _l, lib, 0 );
-
-    // ex_c.null = NULL
-    lua_pushlightuserdata ( _l, NULL );
-    lua_setfield( _l, -2, "null" );
-
     return 0;
 }
