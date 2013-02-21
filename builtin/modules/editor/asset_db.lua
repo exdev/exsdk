@@ -27,7 +27,7 @@ __M.exists = exists
 -- ------------------------------------------------------------------ 
 
 local function fullpath (_path)
-    return path.join( path.translate(app.data_path,"/"), _path )
+    return path.join( app.data_path, _path )
 end
 __M.fullpath = fullpath
 
@@ -66,6 +66,19 @@ local function import ( _path )
     return asset
 end
 __M.import = import
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function load ( _path )
+    local asset = path_to_asset[_path]
+    if asset == nil then
+        return import(_path)
+    end
+    return asset
+end
+__M.load = load
 
 --/////////////////////////////////////////////////////////////////////////////
 --

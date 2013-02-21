@@ -31,33 +31,6 @@ local property = setmetatable( {}, {
 } )
 __M.property = property
 
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local function deepcopy ( _v )
-    local lookup_table = {}
-    local function _copy ( _v )
-        if isvalue ( _v ) then
-            assert ( _v.copy, "Please provide copy function for value type: " .. typename(_v)  )
-            return _v:copy()
-        elseif type(_v) ~= "table" then
-            return _v
-        elseif lookup_table[_v] then
-            return lookup_table[_v]
-        end
-
-        local new_table = {}
-        lookup_table[_v] = new_table
-        for index, value in pairs(_v) do
-            new_table[_copy(index)] = _copy(value)
-        end
-        return setmetatable(new_table, getmetatable(_v))
-    end
-    return _copy(_v)
-end
-__M.deepcopy = deepcopy
-
 --/////////////////////////////////////////////////////////////////////////////
 -- type-op
 --/////////////////////////////////////////////////////////////////////////////
@@ -151,6 +124,33 @@ local function instantiate ( _class, ... )
     return setmetatable( object, _class )
 end
 __M.instantiate = instantiate
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function deepcopy ( _v )
+    local lookup_table = {}
+    local function _copy ( _v )
+        if isvalue ( _v ) then
+            assert ( _v.copy, "Please provide copy function for value type: " .. typename(_v)  )
+            return _v:copy()
+        elseif type(_v) ~= "table" then
+            return _v
+        elseif lookup_table[_v] then
+            return lookup_table[_v]
+        end
+
+        local new_table = {}
+        lookup_table[_v] = new_table
+        for index, value in pairs(_v) do
+            new_table[_copy(index)] = _copy(value)
+        end
+        return setmetatable(new_table, getmetatable(_v))
+    end
+    return _copy(_v)
+end
+__M.deepcopy = deepcopy
 
 --/////////////////////////////////////////////////////////////////////////////
 -- classes functions
@@ -422,8 +422,6 @@ local function class(...)
     if init == nil then
         metaclass = { 
             __call = instantiate,
-            __newindex = class_newindex,
-            __index = class_index
         }
     else
         metaclass = { 
@@ -432,10 +430,12 @@ local function class(...)
                 init ( object, ... )
                 return object
             end,
-            __newindex = class_newindex,
-            __index = class_index
         }
     end
+    rawset ( metaclass, "__newindex", class_newindex )
+    rawset ( metaclass, "__index", class_index )
+    rawset ( metaclass, "null", property { get = function () return instantiate(base) end } )
+    rawset ( metaclass, "new", function (...) return instantiate(base,...) end )
 
     -- copy __static properties to class-metatable
     -- NOTE: we don't do deepcopy to save memory

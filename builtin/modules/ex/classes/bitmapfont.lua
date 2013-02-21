@@ -1,33 +1,37 @@
 -- ======================================================================================
--- File         : texture_importer.lua
+-- File         : bitmapfont.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/18/2013 | 17:33:43 PM | Monday,February
+-- Last Change  : 02/21/2013 | 14:09:11 PM | Thursday,February
 -- Description  : 
 -- ======================================================================================
 
 local __M = {}
+local property, typeof, typename = ex.property, ex.typeof, ex.typename
 
 --/////////////////////////////////////////////////////////////////////////////
--- 
+--
 --/////////////////////////////////////////////////////////////////////////////
 
-local texture_importer = editor.importer.extend ({
-    __typename = "texture_importer",
-
-    -- constructor & destructor
-    __init = function ( _self, _path )
-        assert ( type(_path) == "string", "Type error: _path must be path" )
-        _self.path = _path
-    end,
+local bitmapfont = ex.class ({
+    __typename = "bitmapfont",
 
     --/////////////////////////////////////////////////////////////////////////////
     -- properties
     --/////////////////////////////////////////////////////////////////////////////
 
-    textureFormat = "ARGB32",
-    writable = false,
-    filterMode = "Bilinear",
-    wrapMode = "Clamp",
+    -- basic information
+    name = "",
+    size = -1,
+    isBold = false,
+    isItalic = false,  
+    isUnicode = false,
+    isSmooth = false,
+    isAA = false,
+    charset = "",
+
+    -- for details, please read the parse code in bitmapfont_importer.lua
+    charInfos = {},
+    pageInfos = {},
 
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
@@ -36,16 +40,8 @@ local texture_importer = editor.importer.extend ({
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
-
-    exec = function (_self)
-        local tex = ex.texture.new()
-        local cptr = ex_c.texture_load ( editor.asset_db.fullpath(_self.path) )
-        tex:_setptr(cptr)
-
-        return tex
-    end,
-})
-__M.texture_importer = texture_importer
+}) 
+__M.bitmapfont = bitmapfont
 
 --/////////////////////////////////////////////////////////////////////////////
 --
