@@ -11,14 +11,32 @@ local __M = {}
 --
 --/////////////////////////////////////////////////////////////////////////////
 
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function create_pattern () 
     local space = lpeg.space^0
     local name = lpeg.C(lpeg.alpha^1) * space
-    local value = lpeg.C(lpeg.graph^1) * space
+    local range = lpeg.graph - lpeg.S("\"")
+    local value = lpeg.S("\"")^0 * lpeg.C(range^1) * lpeg.S("\"")^0 * space
     local sep = lpeg.S(",;") * space
     local value_pair = lpeg.Cg(name * "=" * space * value) * sep^-1
     local command_pair = lpeg.Cg(lpeg.Cc("command") * name) * sep^-1
     return lpeg.Cf(lpeg.Ct("") * command_pair^-1 * value_pair^0, rawset)
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function convert ( _from, _keys, _func ) 
+    local to = {}
+    for i=1,#_keys do
+        local k = _keys[i]
+        to[k] = _func( k, _from[k] )
+    end
+    return to
 end
 
 --/////////////////////////////////////////////////////////////////////////////
@@ -54,23 +72,9 @@ local bitmapfont_importer = editor.importer.extend ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    _gen_table = function ( _self, _table, _keys, _func ) 
-        local t = {}
-        for i=1,#_keys do
-            local k = _keys[i]
-            t[k] = _func( k, _table[_keys] )
-        end
-        return t
-    end,
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
     exec = function (_self)
         local asset_db = editor.asset_db
-        local asset_path = asset_db.fullpath(_self.path)
-        local files = ex_c.fsys_files_in(asset_path)
+        local files = asset_db.files_in(_self.path)
         local file = nil
 
         -- get the first txt/fnt file
@@ -81,7 +85,7 @@ local bitmapfont_importer = editor.importer.extend ({
                 break
             end
         end
-        assert ( file, string.format("Can't find .txt/.fnt file at %s", asset_path) )
+        assert ( file, string.format("Can't find .txt/.fnt file at %s", _self.path) )
 
         -- instantiate a bitmapfont for parsing
         local btfont = ex.bitmapfont.new()
@@ -93,44 +97,50 @@ local bitmapfont_importer = editor.importer.extend ({
 
             -- parse the basic info
             if t.command == "info" then
-                local info = _self:_gen_table ( 
-                                     t, 
-                                     { "name", "size", "isBold", "isItalic", "isUnicode", "isSmooth", "isAA", "charset" },
-                                     function (_k,_text)
-                                         if _k == "size" then
-                                             return tonumber(_text) 
-                                         elseif _k == "isBold" 
-                                             or _k == "isItalic" 
-                                             or _k == "isUnicode" 
-                                             or _k == "isSmooth" 
-                                             or _k == "isAA" then
-                                             return tonumber(_text) == 1 
-                                         end
-                                         return _text
-                                     end 
-                                 )
+                local info = convert ( 
+                                 t, 
+                                 { "name", "size", "isBold", "isItalic", "isUnicode", "isSmooth", "isAA", "charset" },
+                                 function (_k,_text)
+                                     if _k == "size" then
+                                         return tonumber(_text) 
+                                     elseif _k == "isBold" 
+                                         or _k == "isItalic" 
+                                         or _k == "isUnicode" 
+                                         or _k == "isSmooth" 
+                                         or _k == "isAA" then
+                                         return tonumber(_text) == 1 
+                                     end
+                                     return _text
+                                 end 
+                             )
                  table.add( btfont, info )
 
             -- parse the char info
             elseif t.command == "char" then
-                local charinfo = _self:_gen_table ( 
+                local charinfo = convert ( 
                                      t, 
                                      { "id", "x", "y", "width", "height", "xoffset", "yoffset", "xadvance", "page" },
-                                     function (_k,_text) return tonumber(_text) end 
+                                     function (_k,_text) 
+                                         return tonumber(_text) 
+                                     end 
                                  )
                 btfont.charInfos[charinfo.id] = charinfo
 
             -- parse the page
             elseif t.command == "page" then
-                local pageinfo = _self:_gen_table ( 
+                local pageinfo = convert ( 
                                      t, 
                                      { "id", "file" },
                                      function (_k,_text) 
-                                         if _k == "id" then return tonumber(_text) end
+                                         if _k == "id" then 
+                                             return tonumber(_text) 
+                                         end
                                          return _text
                                      end 
                                  )
-
+                assert ( pageinfo.file ~= nil and
+                         pageinfo.file ~= "", 
+                         "Can't find image file in pageinfo" )
                 imagefile = path.join(_self.path,pageinfo.file)
                 if asset_db.exists( imagefile ) then
                     btfont.pageInfos[pageinfo.id] = asset_db.load(imagefile)

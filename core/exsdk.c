@@ -319,7 +319,7 @@ int ex_sdk_open_project ( const char *_path ) {
         return -1;
 
     // mount the write dir. NOTE: set write dir doesn't means you mount it.
-    if ( ex_fsys_mount( _path, NULL, true ) != 0 )
+    if ( ex_fsys_mount( _path, "__project__", true ) != 0 )
         return -1;
 
     // load builtin modules

@@ -17,8 +17,16 @@ local path_to_asset = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+local function fsys_path (_path)
+    return path.join("__project__",_path)
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function exists ( _path )
-    return ex_c.fsys_exists(_path)
+    return ex_c.fsys_exists( fsys_path(_path) )
 end
 __M.exists = exists
 
@@ -27,9 +35,28 @@ __M.exists = exists
 -- ------------------------------------------------------------------ 
 
 local function fullpath (_path)
-    return path.join( app.data_path, _path )
+    local fpath = fsys_path(_path)
+    if ex_c.fsys_exists(fpath) then
+        return path.join( ex_c.fsys_realdir(fpath), _path )
+    end
+
+    error ( "Can't get the real path by %s", _path )
 end
 __M.fullpath = fullpath
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function files_in (_path)
+    local fpath = fsys_path(_path)
+    if ex_c.fsys_exists(fpath) then
+        return ex_c.fsys_files_in(fpath)
+    end
+
+    error ( "Can't get the files at path %s", _path )
+end
+__M.files_in = files_in
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -72,6 +99,7 @@ __M.import = import
 -- ------------------------------------------------------------------ 
 
 local function load ( _path )
+    print ( "[asset_db] load file: " .. _path )
     local asset = path_to_asset[_path]
     if asset == nil then
         return import(_path)

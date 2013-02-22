@@ -54,13 +54,17 @@ extern bool ex_fsys_initialized ();
 //     // set the main bundle path
 //     ex_fsys_set_main_bundle_path(c_path);
 
-extern void ex_fsys_set_main_bundle_path ( const char *_path );
 extern const char *ex_fsys_main_bundle_path (); // main bundle path in iOS device
-
 extern const char *ex_fsys_app_dir (); // current application's directory
 extern const char *ex_fsys_user_dir (); // current user's home directory
-
 extern const char *ex_fsys_write_dir ();
+
+// So, if you look for "maps/level1.map", 
+// and C:\mygame is in your search path and C:\mygame\maps\level1.map exists, 
+// then "C:\mygame" is returned.
+extern const char *ex_fsys_realdir ( const char *_path );
+
+extern void ex_fsys_set_main_bundle_path ( const char *_path );
 extern int ex_fsys_set_write_dir ( const char *_new_dir );
 
 // ------------------------------------------------------------------ 
@@ -93,8 +97,6 @@ extern int ex_fsys_rm ( const char *_path );
 extern char **ex_fsys_mounts (); // NOTE: needs call ex_fsys_free_list(file_list); after
 extern char **ex_fsys_files_in ( const char *_path ); // NOTE: needs call ex_fsys_free_list(file_list); after
 extern void ex_fsys_free_list ( void *_list );
-
-extern const char *ex_fsys_realpath ( const char *_path );
 
 // ------------------------------------------------------------------ 
 // Desc: 

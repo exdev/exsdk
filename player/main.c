@@ -46,9 +46,7 @@ static void main_loop () {
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
 
-    // parsing main.lua
-    // ex_lua_run_interpretor ( ex_lua_main_state() );
-    ex_lua_parse_main ( ex_lua_main_state() );
+    // call init() in __project__/main.lua
     ex_lua_main_init ( ex_lua_main_state() );
 
     // NOTE: there is two ways for update, using Timer or using Event-Poll, 
@@ -56,15 +54,14 @@ static void main_loop () {
 
     // start main-loop
     while (1) {
-        //
+        // call update() in __project__/main.lua
         ex_lua_main_update ( ex_lua_main_state() );
 
         // draw one frame
         if ( al_is_event_queue_empty(queue) ) {
-            // al_clear_to_color( al_map_rgb(0,128,255) );
-            al_clear_to_color( al_map_rgb(0,0,0) );
+
+            // call render() in __project__/main.lua
             ex_lua_main_render( ex_lua_main_state() );
-            al_flip_display();
         }
 
         // handle events
@@ -91,8 +88,9 @@ static void main_loop () {
         }
     }
 
-    // deinit
+    // finish
 done:
+    // call deinit() in __project__/main.lua
     ex_lua_main_deinit ( ex_lua_main_state() );
     al_destroy_display(display);
 }
@@ -102,7 +100,6 @@ done:
 // ------------------------------------------------------------------ 
 
 int main (void) {
-    char path[MAX_PATH];
 
     // ======================================================== 
     // init 
@@ -114,11 +111,12 @@ int main (void) {
         return 1;
     }
 
-    // load project
-    strncpy ( path, ex_fsys_app_dir(), MAX_PATH );
-    strcat ( path, "Main/" );
-    ex_unix_path(path);
-    ex_sdk_open_project ( path );
+    // load init 
+    ex_lua_dofile ( ex_lua_main_state(), "startup.lua" );
+
+    // parsing main.lua
+    // ex_lua_run_interpretor ( ex_lua_main_state() );
+    ex_lua_parse_main ( ex_lua_main_state() );
 
     // ======================================================== 
     // main-loop 

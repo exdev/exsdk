@@ -22,17 +22,8 @@ __M.cwd = cwd
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local data_path = ex_c.fsys_writedir()
-__M.data_path = data_path
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local function dofile (_path)
-    return ex_c.lua_dofile(_path)
-end
-__M.dofile = dofile
+local project_path = ex_c.fsys_writedir()
+__M.project_path = project_path
 
 --/////////////////////////////////////////////////////////////////////////////
 -- 

@@ -104,33 +104,19 @@ bool ex_fsys_initialized () {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+const char *ex_fsys_main_bundle_path () { return __main_bundle_path; }
+const char *ex_fsys_app_dir () { return PHYSFS_getBaseDir(); }
+const char *ex_fsys_user_dir () { return PHYSFS_getUserDir(); }
+const char *ex_fsys_write_dir () { return PHYSFS_getWriteDir(); }
+const char *ex_fsys_realdir ( const char *_path ) { return PHYSFS_getRealDir(_path); }
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void ex_fsys_set_main_bundle_path ( const char *_path ) {
     strncpy( __main_bundle_path, _path, MAX_PATH );
 }
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-const char *ex_fsys_main_bundle_path () { return __main_bundle_path; }
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-const char *ex_fsys_app_dir () { return PHYSFS_getBaseDir(); }
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-const char *ex_fsys_user_dir () { return PHYSFS_getUserDir(); }
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-const char *ex_fsys_write_dir () { return PHYSFS_getWriteDir(); }
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -233,12 +219,6 @@ char **ex_fsys_files_in ( const char *_path ) {
 void ex_fsys_free_list( void *_list ) {
     PHYSFS_freeList(_list);
 }
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-const char *ex_fsys_realpath ( const char *_path ) { return PHYSFS_getRealDir(_path); }
 
 // ------------------------------------------------------------------ 
 // Desc: 
