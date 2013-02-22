@@ -99,32 +99,41 @@ local bitmapfont_importer = editor.importer.extend ({
             if t.command == "info" then
                 local info = convert ( 
                                  t, 
-                                 { "name", "size", "isBold", "isItalic", "isUnicode", "isSmooth", "isAA", "charset" },
+                                 { "face", "size", "bold", "italic", "unicode", "smooth", "aa" },
                                  function (_k,_text)
                                      if _k == "size" then
                                          return tonumber(_text) 
-                                     elseif _k == "isBold" 
-                                         or _k == "isItalic" 
-                                         or _k == "isUnicode" 
-                                         or _k == "isSmooth" 
-                                         or _k == "isAA" then
+                                     elseif _k == "bold" 
+                                         or _k == "italic" 
+                                         or _k == "unicode" 
+                                         or _k == "smooth" 
+                                         or _k == "aa" then
                                          return tonumber(_text) == 1 
                                      end
                                      return _text
                                  end 
                              )
-                 table.add( btfont, info )
+                 btfont.faceName = info.face
+                 btfont.size = info.size
+                 btfont.isBold = info.bold
+                 btfont.isItalic = info.italic
+                 btfont.isUnicode = info.unicode
+                 btfont.isSmooth = info.smooth
+                 btfont.isAA = info.aa
 
-            -- parse the char info
-            elseif t.command == "char" then
-                local charinfo = convert ( 
-                                     t, 
-                                     { "id", "x", "y", "width", "height", "xoffset", "yoffset", "xadvance", "page" },
-                                     function (_k,_text) 
-                                         return tonumber(_text) 
-                                     end 
-                                 )
-                btfont.charInfos[charinfo.id] = charinfo
+            -- parse the common
+            elseif t.command == "common" then
+                local info = convert ( 
+                                 t, 
+                                 { "lineHeight", "pages", "scaleW", "scaleH" },
+                                 function (_k,_text)
+                                     return tonumber(_text) 
+                                 end 
+                             )
+                 btfont.lineHeight = info.lineHeight
+                 btfont.pages = info.pages
+                 btfont.pageWidth = info.scaleW
+                 btfont.pageHeight = info.scaleH
 
             -- parse the page
             elseif t.command == "page" then
@@ -145,6 +154,35 @@ local bitmapfont_importer = editor.importer.extend ({
                 if asset_db.exists( imagefile ) then
                     btfont.pageInfos[pageinfo.id] = asset_db.load(imagefile)
                 end
+
+            -- parse the char info
+            elseif t.command == "char" then
+                local charinfo = convert ( 
+                                     t, 
+                                     { "id", "x", "y", "width", "height", "xoffset", "yoffset", "xadvance", "page" },
+                                     function (_k,_text) 
+                                         return tonumber(_text) 
+                                     end 
+                                 )
+                btfont.charInfos[charinfo.id] = charinfo
+
+            -- parse the kernings
+            elseif t.command == "kernings" then
+                if tonumber(t.count) ~= 0 then 
+                    btfont.haskerning = true
+                end
+
+            -- parse the kerning info
+            elseif t.command == "kerning" then
+                local kerningInfo = convert ( 
+                                     t, 
+                                     { "first", "second", "amount" },
+                                     function (_k,_text) 
+                                         return tonumber(_text) 
+                                     end 
+                                 )
+                table.add( btfont.kerningInfos, kerningInfo )
+
             end
         end
 

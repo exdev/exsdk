@@ -99,9 +99,9 @@ __M.import = import
 -- ------------------------------------------------------------------ 
 
 local function load ( _path )
-    print ( "[asset_db] load file: " .. _path )
     local asset = path_to_asset[_path]
     if asset == nil then
+        print ( "[asset_db] load file: " .. _path )
         return import(_path)
     end
     return asset

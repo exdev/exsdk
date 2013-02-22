@@ -57,8 +57,12 @@ static int __lua_canvas_draw_texture ( lua_State *_l ) {
     bitmap = lua_touserdata(_l,1);
 
     al_draw_bitmap( bitmap, 
+
+                    // x, y
                     (float)luaL_checknumber(_l,2), 
                     (float)luaL_checknumber(_l,3),
+
+                    // flags
                     0 );
 
 	return 0;
@@ -68,10 +72,41 @@ static int __lua_canvas_draw_texture ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_canvas_draw_texture_region ( lua_State *_l ) {
+    ALLEGRO_BITMAP *bitmap;
+
+    ex_lua_check_nargs(_l,7);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    bitmap = lua_touserdata(_l,1);
+
+    al_draw_bitmap_region( bitmap, 
+
+                           // sx,sy,sw,sh
+                           (float)luaL_checknumber(_l,4), 
+                           (float)luaL_checknumber(_l,5),
+                           (float)luaL_checknumber(_l,6),
+                           (float)luaL_checknumber(_l,7),
+
+                           // x, y
+                           (float)luaL_checknumber(_l,2), 
+                           (float)luaL_checknumber(_l,3),
+
+                           // flags
+                           0 );
+
+	return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg lib[] = {
-    { "canvas_clear",         __lua_canvas_clear },
-    { "canvas_flush",         __lua_canvas_flush },
-    { "canvas_draw_texture",  __lua_canvas_draw_texture },
+    { "canvas_clear",                __lua_canvas_clear },
+    { "canvas_flush",                __lua_canvas_flush },
+    { "canvas_draw_texture",         __lua_canvas_draw_texture },
+    { "canvas_draw_texture_region",  __lua_canvas_draw_texture_region },
     { NULL, NULL }
 };
 

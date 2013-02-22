@@ -29,13 +29,37 @@ __M.contains = contains
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function add ( _to, _from )
+local function copy ( _to, _from )
     for k,v in pairs(_from) do
         _to[k] = v
     end
     return _to
 end
+__M.copy = copy
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function add ( _to, _el )
+    _to[#_to+1] = _el
+    return _to
+end
 __M.add = add
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function add_range ( _to, _list )
+    assert ( type(_list) == "table" and #_list > 0, "Invalid _list" )
+    for i=1,#_list do
+        _to[#_to+1] = _list[i]
+    end
+
+    return _to
+end
+__M.add_range = add_range
 
 --/////////////////////////////////////////////////////////////////////////////
 -- 

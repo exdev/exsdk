@@ -32,6 +32,13 @@ local texture = ex.class ({
 
     _cptr = ex_c.null,
 
+    width = property { 
+        get = function (_self) return ex_c.texture_get_width ( _self._cptr ) end 
+    },
+    height = property { 
+        get = function (_self) return ex_c.texture_get_height ( _self._cptr ) end 
+    },
+
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
     --/////////////////////////////////////////////////////////////////////////////

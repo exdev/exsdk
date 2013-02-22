@@ -7,6 +7,7 @@
 
 -- generic
 module_add( "class.lua" )
+module_add( "canvas.lua", "canvas" )
 
 -- math module
 module_add( "math/math.lua", "math" )

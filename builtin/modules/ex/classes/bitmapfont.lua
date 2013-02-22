@@ -20,18 +20,24 @@ local bitmapfont = ex.class ({
     --/////////////////////////////////////////////////////////////////////////////
 
     -- basic information
-    name = "",
-    size = -1,
+    faceName = "",
+    size = 0,
+    lineHeight = 0,
+    pages = 0,
+    pageWidth = 0,
+    pageHeight = 0,
+
     isBold = false,
     isItalic = false,  
     isUnicode = false,
     isSmooth = false,
     isAA = false,
-    charset = "",
+    haskerning = false,
 
     -- for details, please read the parse code in bitmapfont_importer.lua
     charInfos = {},
     pageInfos = {},
+    kerningInfos = {},
 
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
