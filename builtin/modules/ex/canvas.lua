@@ -37,6 +37,8 @@ local function draw_text ( _pos, _font, _content )
     local ustr_ptr = ex_c.ustr_new(_content)
     local count = ex_c.ustr_length(ustr_ptr)-1
 
+    ex_c.canvas_hold_bitmap_drawing(true)
+
     for i=0,count do
         local id = ex_c.ustr_get(ustr_ptr,i)
         local charInfo = _font.charInfos[id]
@@ -58,6 +60,8 @@ local function draw_text ( _pos, _font, _content )
         -- end
         -- } TODO end 
     end
+
+    ex_c.canvas_hold_bitmap_drawing(false)
     ex_c.ustr_delete(ustr_ptr)
 end
 __M.draw_text = draw_text

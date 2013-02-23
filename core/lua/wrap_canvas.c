@@ -48,6 +48,19 @@ static int __lua_canvas_flush ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_canvas_hold_bitmap_drawing ( lua_State *_l ) {
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TBOOLEAN );
+    al_hold_bitmap_drawing( lua_toboolean(_l,1) );
+
+    return 0;
+} 
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static int __lua_canvas_draw_texture ( lua_State *_l ) {
     ALLEGRO_BITMAP *bitmap;
 
@@ -105,6 +118,7 @@ static int __lua_canvas_draw_texture_region ( lua_State *_l ) {
 static const luaL_Reg lib[] = {
     { "canvas_clear",                __lua_canvas_clear },
     { "canvas_flush",                __lua_canvas_flush },
+    { "canvas_hold_bitmap_drawing",  __lua_canvas_hold_bitmap_drawing },
     { "canvas_draw_texture",         __lua_canvas_draw_texture },
     { "canvas_draw_texture_region",  __lua_canvas_draw_texture_region },
     { NULL, NULL }

@@ -54,6 +54,19 @@ __M.typeof = typeof
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+local function isclasstype (_class)
+    local r = rawget(tp, "__isclass")
+    if r == nil then 
+        return false 
+    end
+    return r
+end
+__M.isclasstype = isclasstype
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function isclass (_object)
     local tp = typeof(_object)
     if tp and type(tp) == "table" then 

@@ -24,6 +24,32 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int process_event ( ALLEGRO_EVENT _event ) {
+    switch ( _event.type ) {
+    case ALLEGRO_EVENT_DISPLAY_RESIZE:
+        al_acknowledge_resize(_event.display.source);
+        break;
+
+    case ALLEGRO_EVENT_DISPLAY_EXPOSE:
+        break;
+
+    case ALLEGRO_EVENT_DISPLAY_CLOSE:
+        return 1;
+        break;
+
+    case ALLEGRO_EVENT_KEY_DOWN:
+        if ( _event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
+            return 1;
+        break;
+    }
+
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static void main_loop () {
     ALLEGRO_DISPLAY *display;
     ALLEGRO_EVENT_QUEUE *queue;
@@ -57,34 +83,18 @@ static void main_loop () {
         // call update() in __project__/main.lua
         ex_lua_main_update ( ex_lua_main_state() );
 
-        // draw one frame
-        if ( al_is_event_queue_empty(queue) ) {
-
-            // call render() in __project__/main.lua
-            ex_lua_main_render( ex_lua_main_state() );
-        }
-
         // handle events
         if ( !al_is_event_queue_empty(queue) ) {
             while ( al_get_next_event(queue, &event) ) {
-                switch ( event.type ) {
-                case ALLEGRO_EVENT_DISPLAY_RESIZE:
-                    al_acknowledge_resize(event.display.source);
-                    break;
-
-                case ALLEGRO_EVENT_DISPLAY_EXPOSE:
-                    break;
-
-                case ALLEGRO_EVENT_DISPLAY_CLOSE:
+                if ( process_event(event) ) {
                     goto done;
-                    break;
-
-                case ALLEGRO_EVENT_KEY_DOWN:
-                    if ( event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
-                        goto done;
-                    break;
                 }
             }
+        }
+        else {
+            // draw one frame
+            // call render() in __project__/main.lua
+            ex_lua_main_render( ex_lua_main_state() );
         }
     }
 
