@@ -6,7 +6,10 @@
 -- ======================================================================================
 
 local __M = {}
-local pi, two_pi, half_pi = math.pi, ex.two_pi, ex.half_pi
+
+local pi = math.pi
+local two_pi = math.two_pi
+local half_pi = math.half_pi
 local sqrt = math.sqrt
 
 --/////////////////////////////////////////////////////////////////////////////

@@ -63,20 +63,42 @@ static int __lua_canvas_hold_bitmap_drawing ( lua_State *_l ) {
 
 static int __lua_canvas_draw_texture ( lua_State *_l ) {
     ALLEGRO_BITMAP *bitmap;
+    ALLEGRO_COLOR tint;
 
-    ex_lua_check_nargs(_l,3);
+    ex_lua_check_nargs(_l,12);
 
+    // get bitmap ptr
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
     bitmap = lua_touserdata(_l,1);
 
-    al_draw_bitmap( bitmap, 
+    // convert tint color
+    tint = al_map_rgba_f ( (float)luaL_checknumber(_l,2),
+                           (float)luaL_checknumber(_l,3),
+                           (float)luaL_checknumber(_l,4),
+                           (float)luaL_checknumber(_l,5) );
 
-                    // x, y
-                    (float)luaL_checknumber(_l,2), 
-                    (float)luaL_checknumber(_l,3),
+    al_draw_tinted_scaled_rotated_bitmap ( bitmap, 
 
-                    // flags
-                    0 );
+                                           // tint color
+                                           tint,
+
+                                           // center x,y
+                                           (float)luaL_checknumber(_l,6), 
+                                           (float)luaL_checknumber(_l,7),
+
+                                           // destination x,y
+                                           (float)luaL_checknumber(_l,8), 
+                                           (float)luaL_checknumber(_l,9),
+
+                                           // scale x,y
+                                           (float)luaL_checknumber(_l,10), 
+                                           (float)luaL_checknumber(_l,11),
+
+                                           // angle (in radians)
+                                           (float)luaL_checknumber(_l,12), 
+
+                                           // flags
+                                           0 );
 
 	return 0;
 }
@@ -87,26 +109,48 @@ static int __lua_canvas_draw_texture ( lua_State *_l ) {
 
 static int __lua_canvas_draw_texture_region ( lua_State *_l ) {
     ALLEGRO_BITMAP *bitmap;
+    ALLEGRO_COLOR tint;
 
     ex_lua_check_nargs(_l,7);
 
+    // get bitmap ptr
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
     bitmap = lua_touserdata(_l,1);
 
-    al_draw_bitmap_region( bitmap, 
-
-                           // sx,sy,sw,sh
-                           (float)luaL_checknumber(_l,4), 
-                           (float)luaL_checknumber(_l,5),
-                           (float)luaL_checknumber(_l,6),
-                           (float)luaL_checknumber(_l,7),
-
-                           // x, y
-                           (float)luaL_checknumber(_l,2), 
+    // convert tint color
+    tint = al_map_rgba_f ( (float)luaL_checknumber(_l,2),
                            (float)luaL_checknumber(_l,3),
+                           (float)luaL_checknumber(_l,4),
+                           (float)luaL_checknumber(_l,5) );
 
-                           // flags
-                           0 );
+    al_draw_tinted_scaled_rotated_bitmap_region( bitmap, 
+
+                                                 // region x,y,w,h
+                                                 (float)luaL_checknumber(_l,6), 
+                                                 (float)luaL_checknumber(_l,7),
+                                                 (float)luaL_checknumber(_l,8),
+                                                 (float)luaL_checknumber(_l,9),
+
+                                                 // tint color
+                                                 tint,
+
+                                                 // center x,y
+                                                 (float)luaL_checknumber(_l,10), 
+                                                 (float)luaL_checknumber(_l,11),
+
+                                                 // destination x,y
+                                                 (float)luaL_checknumber(_l,12), 
+                                                 (float)luaL_checknumber(_l,13),
+
+                                                 // scale x,y
+                                                 (float)luaL_checknumber(_l,14), 
+                                                 (float)luaL_checknumber(_l,15),
+
+                                                 // angle (in radians)
+                                                 (float)luaL_checknumber(_l,16), 
+
+                                                 // flags
+                                                 0 );
 
 	return 0;
 }

@@ -6,13 +6,8 @@
 -- ======================================================================================
 
 -- generic
-module_add( "class.lua" )
 module_add( "canvas.lua", "canvas" )
 module_add( "scene.lua", "scene" )
-
--- math module
-module_add( "math/math.lua", "math" )
-module_add( "math/ease.lua", "math" )
 
 -- basic classes
 module_add( "classes/vec2f.lua" )

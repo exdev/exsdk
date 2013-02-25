@@ -7,7 +7,7 @@
 
 local asset_db = editor.asset_db
 
-local tex1
+local img1
 local btfont1
 local btfont2
 
@@ -22,7 +22,9 @@ function init()
     print ( "=======================" )
     print ( "" )
 
-    tex1 = asset_db.load("grossini_dance_09.png")
+    -- canvas.init()
+
+    img1 = asset_db.load("grossini_dance_09.png")
     btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
     btfont2 = asset_db.load("MolotShadow.bft")
 end
@@ -62,9 +64,9 @@ function render()
 
     ex_c.canvas_clear( 0.5, 0.5, 0.5 )
 
+    ex.canvas.draw_texture( ex.vec2f(10.0,10.0), img1 )
     -- ex.canvas.draw_texture( ex.vec2f(0.0,0.0), btfont2.pageInfos[0] )
-    -- ex.canvas.draw_texture( ex.vec2f(0.0,0.0), tex1 )
-    ex.canvas.draw_text( ex.vec2f(0.0,0.0), btfont1, "Hello World " )
+    -- ex.canvas.draw_text( ex.vec2f(0.0,0.0), btfont1, "Hello World " )
     -- ex.canvas.draw_texture( ex.vec2f(0.0,50.0), btfont1.pageInfos[0] )
 
     ex_c.canvas_flush()

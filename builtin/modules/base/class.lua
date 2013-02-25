@@ -7,6 +7,8 @@
 
 local __M = {}
 
+local __classes = {}
+
 --/////////////////////////////////////////////////////////////////////////////
 -- basic
 --/////////////////////////////////////////////////////////////////////////////
@@ -117,7 +119,34 @@ __M.isproperty = isproperty
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function typename(_object)
+local function __childof ( _myclass,_superclass )
+    local super = rawget(_myclass,"__super")
+    while super ~= nil do
+        if super == _superclass then 
+            return true 
+        end
+        super = rawget(super,"__super")
+    end
+    return false
+end
+
+--
+local function ischildof ( _myclass, _superclass )
+    return __childof(_myclass,_superclass)
+end
+__M.ischildof = ischildof
+
+--
+local function issuperof ( _myclass, _subclass )
+	return __childof(_subclass,_myclass)
+end
+__M.issuperof = issuperof
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function typename (_object)
     if isclass(_object) then 
         local name = rawget(typeof(_object), "__typename")
         assert ( name ~= nil, "Can't find __typename define in your class." )
@@ -131,10 +160,23 @@ __M.typename = typename
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function instantiate ( _class, ... )
+local function __instantiate ( _class, ... )
     local object = ... or {}
     object.__isinstance = true
     return setmetatable( object, _class )
+end
+
+--
+local function instantiate ( _class, ... )
+    local class_type = _class
+
+    -- if the argument is class type name
+    if type(_class) == "string" then
+        class_type = __classes[_class]
+        assert ( class_type ~= nil, "Can't find class type " .. _class )
+    end
+
+    return __instantiate( class_type, ... )
 end
 __M.instantiate = instantiate
 
@@ -173,73 +215,17 @@ __M.deepcopy = deepcopy
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function instanceof (_object, _class)
-    return typeof(_object) == _class
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local function __childof ( _myclass,_superclass )
-    local super = rawget(_myclass,"__super")
-    while super ~= nil do
-        if super == _superclass then 
-            return true 
-        end
-        super = rawget(super,"__super")
-    end
-    return false
-end
-
---
-local function childof ( _object, _superclass )
-    return __childof(typeof(_object),_superclass)
-end
-
---
-local function superof ( _object, _subclass )
-	return __childof(_subclass,typeof(_object))
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local function isa (_object, _class)
-    local cls = typeof(_object)
-    return cls == _class or __childof(cls,_class)
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local function member_readonly ( _t, _k, _v )
-    error( string.format( "the key %s is readonly", _k ) )
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local function member_readonly_get ( _t, _k )
-    return rawget(_t,_k)
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
 local function instance_newindex ( _t, _k, _v )
     -- NOTE: the _t is an object instance
 
-    -- make sure only get __readonly in table _t, not invoke __index method.
-    local readonly = rawget(_t,"__readonly")
-    if readonly then -- this equals to (is_readonly ~= nil and is_readonly == true)
-        error ( "The table is readonly" )
-        return
-    end
+    -- DISABLE { 
+    -- -- make sure only get __readonly in table _t, not invoke __index method.
+    -- local readonly = rawget(_t,"__readonly")
+    -- if readonly then -- this equals to (is_readonly ~= nil and is_readonly == true)
+    --     error ( "The table is readonly" )
+    --     return
+    -- end
+    -- } DISABLE end 
 
     -- check if the metatable have the key
     local mt = getmetatable(_t) 
@@ -390,6 +376,10 @@ local function class(...)
     local base,super = ...
     assert( type(base) == "table", "The first parameter must be a table" )
     assert( base.__typename ~= nil, "Please define __typename for your class" )
+    assert( __classes[base.__typename] == nil, string.format("The class %s already defined!", base.__typename) )
+
+    -- register name to class
+    __classes[base.__typename] = base
 
     -- set super class
     if super == nil then
@@ -401,18 +391,27 @@ local function class(...)
     end
 
     -- set basic functions
-    rawset( base, "__isclass", true )
+    rawset ( base, "__isclass", true )
     if rawget ( base, "__index" ) == nil then
-        rawset( base, "__index", instance_index )
+        rawset ( base, "__index", instance_index )
     end
     if rawget ( base, "__newindex" ) == nil then
-        rawset( base, "__newindex", instance_newindex )
+        rawset ( base, "__newindex", instance_newindex )
     end
-    rawset( base, "instanceof", instanceof )
-    rawset( base, "superof", superof )
-    rawset( base, "childof", childof )
-    rawset( base, "isa", isa )
-    rawset( base, "extend", function (_t)
+    rawset ( base, "instanceof", function (_object, _class)
+        return typeof(_object) == _class
+    end )
+    rawset ( base, "superof", function (_object, _subclass)
+        return __childof(_subclass,typeof(_object))
+    end )
+    rawset ( base, "childof", function (_object, _superclass)
+        return __childof(typeof(_object),_superclass)
+    end )
+    rawset ( base, "isa", function (_object, _class)
+        local cls = typeof(_object)
+        return cls == _class or __childof(cls,_class)
+    end )
+    rawset ( base, "extend", function (_t)
         return class( _t, base )
     end )
 
@@ -434,12 +433,12 @@ local function class(...)
     local init = rawget ( base, "__init" )
     if init == nil then
         metaclass = { 
-            __call = instantiate,
+            __call = __instantiate,
         }
     else
         metaclass = { 
             __call = function ( _class, ... ) 
-                local object = instantiate (_class)
+                local object = __instantiate (_class)
                 init ( object, ... )
                 return object
             end,
@@ -447,8 +446,8 @@ local function class(...)
     end
     rawset ( metaclass, "__newindex", class_newindex )
     rawset ( metaclass, "__index", class_index )
-    rawset ( metaclass, "null", property { get = function () return instantiate(base) end } )
-    rawset ( metaclass, "new", function (...) return instantiate(base,...) end )
+    rawset ( metaclass, "null", property { get = function () return __instantiate(base) end } )
+    rawset ( metaclass, "new", function (...) return __instantiate(base,...) end )
 
     -- copy __static properties to class-metatable
     -- NOTE: we don't do deepcopy to save memory

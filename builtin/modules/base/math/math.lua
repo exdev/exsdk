@@ -1,26 +1,28 @@
 -- ======================================================================================
 -- File         : math.lua
 -- Author       : Wu Jie 
--- Last Change  : 11/02/2010 | 16:40:09 PM | Tuesday,November
+-- Last Change  : 02/25/2013 | 14:46:40 PM | Monday,February
 -- Description  : 
 -- ======================================================================================
 
 local __M = {}
 
+local pi = math.pi
+
 --/////////////////////////////////////////////////////////////////////////////
 -- constants
 --/////////////////////////////////////////////////////////////////////////////
 
-local two_pi = math.pi*2 
+local two_pi = pi*2 
 __M.two_pi = two_pi
 
-local half_pi = math.pi/2
+local half_pi = pi/2
 __M.half_pi = half_pi
 
-local deg_to_rad = math.pi/180.0
+local deg_to_rad = pi/180.0
 __M.deg_to_rad = deg_to_rad
 
-local rad_to_deg = 180.0/math.pi
+local rad_to_deg = 180.0/pi
 __M.rad_to_deg = rad_to_deg
 
 --/////////////////////////////////////////////////////////////////////////////

@@ -6,13 +6,12 @@
 -- ======================================================================================
 
 local __M = {}
-local property, typeof, typename = ex.property, ex.typeof, ex.typename
 
 --/////////////////////////////////////////////////////////////////////////////
 --
 --/////////////////////////////////////////////////////////////////////////////
 
-local bitmapfont = ex.class ({
+local bitmapfont = class ({
     __typename = "bitmapfont",
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -32,7 +31,7 @@ local bitmapfont = ex.class ({
     isUnicode = false,
     isSmooth = false,
     isAA = false,
-    haskerning = false,
+    hasKerning = false,
 
     -- for details, please read the parse code in bitmapfont_importer.lua
     charInfos = {},

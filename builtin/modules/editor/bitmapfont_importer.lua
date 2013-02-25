@@ -169,7 +169,7 @@ local bitmapfont_importer = editor.importer.extend ({
             -- parse the kernings
             elseif t.command == "kernings" then
                 if tonumber(t.count) ~= 0 then 
-                    btfont.haskerning = true
+                    btfont.hasKerning = true
                 end
 
             -- parse the kerning info

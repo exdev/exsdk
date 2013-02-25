@@ -9,12 +9,17 @@
 --
 --/////////////////////////////////////////////////////////////////////////////
 
--- lua internal extension
+-- global extension
 module_add ( "global.lua" )
+module_add ( "class.lua" )
+
+-- lua internal extension
 module_add ( "debug.lua", "debug" )
 module_add ( "table.lua", "table" )
 module_add ( "string.lua", "string" )
 module_add ( "os.lua", "os" )
+module_add ( "math/math.lua", "math" )
+module_add ( "math/ease.lua", "math" )
 
 -- ex internal extension
 module_add ( "re.lua", "re" ) -- lpeg re module

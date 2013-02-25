@@ -6,13 +6,12 @@
 -- ======================================================================================
 
 local __M = {}
-local property, typeof, typename = ex.property, ex.typeof, ex.typename
 
 --/////////////////////////////////////////////////////////////////////////////
 --
 --/////////////////////////////////////////////////////////////////////////////
 
-local texture = ex.class ({
+local texture = class ({
     __typename = "texture",
 
     -- constructor & destructor

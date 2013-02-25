@@ -6,11 +6,22 @@
 -- ======================================================================================
 
 local __M = {}
-local typename = ex.typename
+
+local __cached_font_pages = {}
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function init ()
+    print ( "Init canvas" )
+    table.add( __cached_font_pages, ex.texture( 1024, 1024 ) )
+end
+__M.init = init
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -55,7 +66,7 @@ local function draw_text ( _pos, _font, _content )
         cur_x = cur_x + charInfo.xadvance
 
         -- TODO { 
-        -- if _font.haskerning then
+        -- if _font.hasKerning then
         --     cur_x = cur_x
         -- end
         -- } TODO end 

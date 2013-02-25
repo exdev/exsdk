@@ -6,14 +6,12 @@
 -- ======================================================================================
 
 local __M = {}
-local property, typeof, typename = ex.property, ex.typeof, ex.typename
-local ex_math_lerp = ex.math.lerp
 
 --/////////////////////////////////////////////////////////////////////////////
 --
 --/////////////////////////////////////////////////////////////////////////////
 
-local vec2f = ex.class ({
+local vec2f = class ({
     __typename = "vec2f",
     __isvalue = true,
 
@@ -119,8 +117,8 @@ local vec2f = ex.class ({
         up    = property { get = function () return ex.vec2f( 0.0, 1.0 ) end },
         lerp  = function ( _from, _to, _t )
             -- local r = ex.vec2f.zero
-            -- r.x = ex_math_lerp ( _from.x, _to.x, _t )
-            -- r.y = ex_math_lerp ( _from.y, _to.y, _t )
+            -- r.x = math.lerp ( _from.x, _to.x, _t )
+            -- r.y = math.lerp ( _from.y, _to.y, _t )
             -- return r
 
             local r = ex.vec2f.zero

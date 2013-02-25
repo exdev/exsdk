@@ -6,25 +6,12 @@
 -- ======================================================================================
 
 local __M = {}
-local property
-    , typeof
-    , typename
-    , isclass
-    , isclasstype
-    , component
-      = 
-      ex.property
-    , ex.typeof
-    , ex.typename
-    , ex.isclass
-    , ex.isclasstype
-    , ex.component
 
 --/////////////////////////////////////////////////////////////////////////////
 --
 --/////////////////////////////////////////////////////////////////////////////
 
-local entity = ex.class ({
+local entity = class ({
     __typename = "entity",
 
     -- constructor & destructor
@@ -37,7 +24,7 @@ local entity = ex.class ({
     __len = function (_op)
         local cnt = 0
         for _,v in pairs(op) do
-            if isclass(v) and v:childof(component) then
+            if isclass(v) and v:childof(ex.component) then
                 cnt = cnt+1
             end
         end
@@ -45,21 +32,14 @@ local entity = ex.class ({
     end,
     __add = function (_op1,_op2)
         assert ( typename(_op1) == "entity", "Type error: _op1 must be vec2f" )
-        assert ( isclasstype(_op2) or type(_op2) == "string", "Type error: _op2 must be class-type or string" )
+        assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: _op2 must be component or string" )
 
-        local inst = ex.instantiate(_op2)
-
-        if type(_op2) == "string" then
-            _op1[_op2] = inst
-        else
-            _op1[typename(_op2)] = inst
-        end
-
+        _op1:add_component (_op2)
         return _op1
     end,
     __sub = function (_op1,_op2)
         assert ( typename(_op1) == "entity", "Type error: _op1 must be vec2f" )
-        assert ( isclasstype(_op2) or type(_op2) == "string", "Type error: _op2 must be class-type or string" )
+        assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: _op2 must be component or string" )
 
         if type(_op2) == "string" then
             _op1[_op2] = nil
@@ -79,7 +59,6 @@ local entity = ex.class ({
     angle = 0.0,
     scale = ex.vec2f.one,
 
-    _cached_components = {},
 
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
@@ -96,14 +75,19 @@ local entity = ex.class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    get_component = function ( _self, _name )
-        local comp = _self[_name]
+    get_component = function ( _self, _comp )
+        local comp_name = _comp
+        if type(_comp) ~= "string" then
+            comp_name = typename(_comp)
+        end
 
-        if comp ~= nil 
-        and isclass(comp) 
-        and comp:childof(component) 
+        local comp_inst = _self[comp_name]
+
+        if comp_inst ~= nil 
+        and isclass(comp_inst) 
+        and comp_inst:childof(ex.component) 
         then
-            return comp
+            return comp_inst
         end
 
         return nil
@@ -113,7 +97,17 @@ local entity = ex.class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    add_component = function ( _self, _name )
+    add_component = function ( _self, _comp )
+        local inst = ex.instantiate(_comp)
+        inst.entity = _self
+
+        if type(_comp) == "string" then
+            _self[_comp] = inst
+        else
+            _self[typename(_comp)] = inst
+        end
+
+        return inst
     end,
 
 }) 

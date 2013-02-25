@@ -6,9 +6,8 @@
 -- ======================================================================================
 
 local __M = {}
-local typename = ex.typename
 
-local entities = {}
+local __entities = {}
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions
@@ -19,7 +18,7 @@ local entities = {}
 -- ------------------------------------------------------------------ 
 
 local function update ()
-    for _,ent in ipairs(entities) do
+    for _,ent in ipairs(__entities) do
         ent:update()
     end
 end
@@ -31,7 +30,7 @@ __M.update = update
 
 local function new_entity ( _name )
     local ent = ex.entity(_name)
-    entities[#entities+1] = ent
+    __entities[#__entities+1] = ent
     return ent
 end
 __M.new_entity = new_entity
