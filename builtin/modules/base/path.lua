@@ -111,8 +111,6 @@ __M.basename = basename
 -- ------------------------------------------------------------------ 
 
 local function translate (_p, _sep)
-    assert ( type(_p) == "string", "Type error: _p must be string" )
-
     if _sep == nil then
         if ex.platform == "windows" then
             _sep = "\\"

@@ -16,7 +16,8 @@ local texture_importer = editor.importer.extend ({
 
     -- constructor & destructor
     __init = function ( _self, _path )
-        assert ( type(_path) == "string", "Type error: _path must be path" )
+        checkarg(_path,"string")
+
         _self.path = _path
     end,
 

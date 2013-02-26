@@ -17,8 +17,9 @@ local vec2f = class ({
 
     -- constructor & destructor
     __init = function ( _self, _x, _y )
-        assert ( type(_x) == "number", "Type error: _x must be number" )
-        assert ( type(_y) == "number", "Type error: _y must be number" )
+        checkarg(_x,"number")
+        checkarg(_y,"number")
+
         _self._cptr = ex_c.vec2f_new(_x,_y)
     end,
 
@@ -37,16 +38,16 @@ local vec2f = class ({
         return 2
     end,
     __add = function (_op1,_op2)
-        assert ( typename(_op1) == "vec2f", "Type error: _op1 must be vec2f" )
-        assert ( typename(_op2) == "vec2f", "Type error: _op2 must be vec2f" )
+        checkarg(_op1,"vec2f")
+        checkarg(_op2,"vec2f")
 
         r = ex.vec2f.zero
         ex_c.vec2f_add ( r._cptr, _op1._cptr, _op2._cptr )
         return r
     end,
     __sub = function (_op1,_op2)
-        assert ( typename(_op1) == "vec2f", "Type error: _op1 must be vec2f" )
-        assert ( typename(_op2) == "vec2f", "Type error: _op2 must be vec2f" )
+        checkarg(_op1,"vec2f")
+        checkarg(_op2,"vec2f")
 
         r = ex.vec2f.zero
         ex_c.vec2f_sub ( r._cptr, _op1._cptr, _op2._cptr )
@@ -100,8 +101,8 @@ local vec2f = class ({
         return r
     end,
     __eq = function (_op1,_op2)
-        assert ( typename(_op1) == "vec2f", "Type error: _op1 must be vec2f" )
-        assert ( typename(_op2) == "vec2f", "Type error: _op2 must be vec2f" )
+        checkarg(_op1,"vec2f")
+        checkarg(_op2,"vec2f")
 
         return ex_c.vec2f_eq ( _op1._cptr, _op2._cptr )
     end,

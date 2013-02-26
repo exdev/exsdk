@@ -65,7 +65,7 @@ static int __lua_canvas_draw_texture ( lua_State *_l ) {
     ALLEGRO_BITMAP *bitmap;
     ALLEGRO_COLOR tint;
 
-    ex_lua_check_nargs(_l,12);
+    ex_lua_check_nargs(_l,7);
 
     // get bitmap ptr
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
@@ -83,19 +83,22 @@ static int __lua_canvas_draw_texture ( lua_State *_l ) {
                                            tint,
 
                                            // center x,y
+                                           // (float)luaL_checknumber(_l,6), 
+                                           // (float)luaL_checknumber(_l,7),
+                                           0.0f, 0.0f,
+
+                                           // destination x,y
                                            (float)luaL_checknumber(_l,6), 
                                            (float)luaL_checknumber(_l,7),
 
-                                           // destination x,y
-                                           (float)luaL_checknumber(_l,8), 
-                                           (float)luaL_checknumber(_l,9),
-
                                            // scale x,y
-                                           (float)luaL_checknumber(_l,10), 
-                                           (float)luaL_checknumber(_l,11),
+                                           // (float)luaL_checknumber(_l,10), 
+                                           // (float)luaL_checknumber(_l,11),
+                                           1.0f, 1.0f,
 
                                            // angle (in radians)
-                                           (float)luaL_checknumber(_l,12), 
+                                           // (float)luaL_checknumber(_l,12), 
+                                           0.0f,
 
                                            // flags
                                            0 );
@@ -111,7 +114,7 @@ static int __lua_canvas_draw_texture_region ( lua_State *_l ) {
     ALLEGRO_BITMAP *bitmap;
     ALLEGRO_COLOR tint;
 
-    ex_lua_check_nargs(_l,7);
+    ex_lua_check_nargs(_l,11);
 
     // get bitmap ptr
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
@@ -135,19 +138,22 @@ static int __lua_canvas_draw_texture_region ( lua_State *_l ) {
                                                  tint,
 
                                                  // center x,y
+                                                 // (float)luaL_checknumber(_l,10), 
+                                                 // (float)luaL_checknumber(_l,11),
+                                                 0.0f, 0.0f,
+
+                                                 // destination x,y
                                                  (float)luaL_checknumber(_l,10), 
                                                  (float)luaL_checknumber(_l,11),
 
-                                                 // destination x,y
-                                                 (float)luaL_checknumber(_l,12), 
-                                                 (float)luaL_checknumber(_l,13),
-
                                                  // scale x,y
-                                                 (float)luaL_checknumber(_l,14), 
-                                                 (float)luaL_checknumber(_l,15),
+                                                 // (float)luaL_checknumber(_l,14), 
+                                                 // (float)luaL_checknumber(_l,15),
+                                                 1.0f, 1.0f,
 
                                                  // angle (in radians)
-                                                 (float)luaL_checknumber(_l,16), 
+                                                 // (float)luaL_checknumber(_l,16), 
+                                                 0.0f,
 
                                                  // flags
                                                  0 );

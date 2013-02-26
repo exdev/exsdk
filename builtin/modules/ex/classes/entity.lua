@@ -16,7 +16,8 @@ local entity = class ({
 
     -- constructor & destructor
     __init = function ( _self, _name )
-        assert ( type(_name) == "string", "Type error: _name must be string" )
+        checkarg(_name,"string")
+
         _self.name = _name
     end,
 
@@ -31,15 +32,15 @@ local entity = class ({
         return cnt
     end,
     __add = function (_op1,_op2)
-        assert ( typename(_op1) == "entity", "Type error: _op1 must be vec2f" )
-        assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: _op2 must be component or string" )
+        checkarg(_op1,"entity")
+        assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: must be component or string" )
 
         _op1:add_component (_op2)
         return _op1
     end,
     __sub = function (_op1,_op2)
-        assert ( typename(_op1) == "entity", "Type error: _op1 must be vec2f" )
-        assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: _op2 must be component or string" )
+        checkarg(_op1,"entity")
+        assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: must be component or string" )
 
         if type(_op2) == "string" then
             _op1[_op2] = nil

@@ -63,8 +63,13 @@ function render()
     -- end
 
     ex_c.canvas_clear( 0.5, 0.5, 0.5 )
+    -- ex_c.canvas_clear( 0.0, 0.0, 0.0 )
 
-    ex.canvas.draw_texture( ex.vec2f(10.0,10.0), img1 )
+    ex.canvas.draw_texture( ex.vec2f(10.0,10.0), 
+                            ex.color4f( 1.0, 1.0, 1.0, 1.0 ),
+                            ex.vec2f.one,
+                            0.0,
+                            img1 )
     -- ex.canvas.draw_texture( ex.vec2f(0.0,0.0), btfont2.pageInfos[0] )
     -- ex.canvas.draw_text( ex.vec2f(0.0,0.0), btfont1, "Hello World " )
     -- ex.canvas.draw_texture( ex.vec2f(0.0,50.0), btfont1.pageInfos[0] )

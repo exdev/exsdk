@@ -59,7 +59,7 @@ extern "C" {
         ex_pool_node_t *__node__ = (_pool)->used_nodes_begin; \
         ex_pool_node_t *__node_next__; \
         _type _el; \
-        int __id__; \
+        size_t __id__; \
         while ( __node__ ) { \
             __node_next__ = __node__->next; \
             __id__ = __node__ - (_pool)->nodes; \
@@ -95,7 +95,7 @@ extern "C" {
         ex_pool_node_t *__node__ = (_pool)->used_nodes_begin; \
         ex_pool_node_t *__node_next__; \
         _type _el; \
-        int __id__; \
+        size_t __id__; \
         while ( __node__ ) { \
             __node_next__ = __node__->next; \
             __id__ = __node__ - (_pool)->nodes; \
@@ -206,14 +206,14 @@ static inline size_t ex_pool_capacity ( const ex_pool_t *_pool ) { return _pool-
 // @param _value: if NULL, means add an empty node.
 // ------------------------------------------------------------------ 
 
-extern int ex_pool_add_new ( ex_pool_t *_pool, void **_node );
-extern int ex_pool_add ( ex_pool_t *_pool, const void *_value );
+extern size_t ex_pool_add_new ( ex_pool_t *_pool, void **_node );
+extern size_t ex_pool_add ( ex_pool_t *_pool, const void *_value );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void *ex_pool_get ( const ex_pool_t *_pool, int _idx );
+extern void *ex_pool_get ( const ex_pool_t *_pool, size_t _idx );
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -225,9 +225,9 @@ extern void ex_pool_cpy ( ex_pool_t *_to, const ex_pool_t *_from );
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern bool ex_pool_isvalid ( const ex_pool_t *_pool, int _idx );
-extern void *ex_pool_remove_at ( ex_pool_t *_pool, int _idx );
-extern void *ex_pool_remove_at_safe ( ex_pool_t *_pool, int _idx );
+extern bool ex_pool_isvalid ( const ex_pool_t *_pool, size_t _idx );
+extern void *ex_pool_remove_at ( ex_pool_t *_pool, size_t _idx );
+extern void *ex_pool_remove_at_safe ( ex_pool_t *_pool, size_t _idx );
 
 // ######################### 
 #ifdef __cplusplus

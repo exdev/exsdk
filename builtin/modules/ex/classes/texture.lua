@@ -16,8 +16,9 @@ local texture = class ({
 
     -- constructor & destructor
     __init = function ( _self, _w, _h )
-        assert ( type(_w) == "number", "Type error: _x must be number" )
-        assert ( type(_h) == "number", "Type error: _y must be number" )
+        checkarg(_w,"number")
+        checkarg(_h,"number")
+
         _self._cptr = ex_c.texture_new(_w,_h)
     end,
 

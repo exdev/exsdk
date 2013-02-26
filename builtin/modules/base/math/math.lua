@@ -33,6 +33,24 @@ __M.rad_to_deg = rad_to_deg
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+local function todegrees ( _radians )
+    return _radians * rad_to_deg
+end
+__M.todegrees = todegrees
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function toradians ( _degrees )
+    return _degrees * deg_to_rad
+end
+__M.toradians = toradians
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function lerp ( _src, _dest, _ratio )
     assert ( type(_ratio) == "number", "Type error: _ratio is not a number" )
     return _src * (1.0 - _ratio) + _dest * _ratio 

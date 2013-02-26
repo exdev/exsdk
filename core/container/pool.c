@@ -275,9 +275,9 @@ void ex_pool_reserve ( ex_pool_t *_pool, size_t _count )
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_pool_add_new ( ex_pool_t *_pool, void **_node ) {
+size_t ex_pool_add_new ( ex_pool_t *_pool, void **_node ) {
     ex_pool_node_t *node = NULL;
-    int idx = -1;
+    size_t idx = -1;
 
     node = __request_free_node(_pool);
     ex_assert ( node != NULL );
@@ -295,9 +295,9 @@ int ex_pool_add_new ( ex_pool_t *_pool, void **_node ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_pool_add ( ex_pool_t *_pool, const void *_value ) {
+size_t ex_pool_add ( ex_pool_t *_pool, const void *_value ) {
     ex_pool_node_t *node = NULL;
-    int idx = -1;
+    size_t idx = -1;
 
     node = __request_free_node(_pool);
     ex_assert ( node != NULL );
@@ -356,7 +356,7 @@ void ex_pool_cpy ( ex_pool_t *_to, const ex_pool_t *_from ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-bool ex_pool_isvalid ( const ex_pool_t *_pool, int _idx ) {
+bool ex_pool_isvalid ( const ex_pool_t *_pool, size_t _idx ) {
     return ex_bitarray_get(_pool->used_bits, _idx) == 1;
 }
 
@@ -364,8 +364,8 @@ bool ex_pool_isvalid ( const ex_pool_t *_pool, int _idx ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void *ex_pool_remove_at ( ex_pool_t *_pool, int _idx ) {
-    ex_assert( _idx >= 0 && _idx < (int)_pool->capacity );
+void *ex_pool_remove_at ( ex_pool_t *_pool, size_t _idx ) {
+    ex_assert( _idx >= 0 && _idx < _pool->capacity );
     ex_assert( ex_bitarray_get(_pool->used_bits, _idx) == 1 );
 
     return __remove_at ( _pool, _idx );
@@ -375,8 +375,8 @@ void *ex_pool_remove_at ( ex_pool_t *_pool, int _idx ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void *ex_pool_remove_at_safe ( ex_pool_t *_pool, int _idx ) {
-    if ( _idx < 0 || _idx >= (int)_pool->capacity )
+void *ex_pool_remove_at_safe ( ex_pool_t *_pool, size_t _idx ) {
+    if ( _idx < 0 || _idx >= _pool->capacity )
         return NULL;
     if ( ex_bitarray_get(_pool->used_bits, _idx) != 1 )
         return NULL;
@@ -388,9 +388,9 @@ void *ex_pool_remove_at_safe ( ex_pool_t *_pool, int _idx ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void *ex_pool_get ( const ex_pool_t *_pool, int _idx )
+void *ex_pool_get ( const ex_pool_t *_pool, size_t _idx )
 {
-    ex_assert( _idx >= 0 && (size_t)_idx < _pool->capacity );
+    ex_assert( _idx >= 0 && _idx < _pool->capacity );
     // ex_assert( ex_bitarray_get(_pool->used_bits, _idx) == 1, NULL, "error: the node is not in used." );
     if ( ex_bitarray_get(_pool->used_bits, _idx) != 1 )
         return NULL;

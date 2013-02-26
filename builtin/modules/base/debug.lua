@@ -45,19 +45,21 @@ indent is a first indentation (optional).
 -- ------------------------------------------------------------------ 
 
 local function dump(_t, _name, _indent, _show_meta)
-    assert ( type(_t) == "table", "The 1st argument must be a table" )
+    if type(_t) ~= "table" then 
+        return tostring(_t)
+    end
 
     local cart     -- a container
     local autoref  -- for self references
 
     --[[ counts the number of elements in a table
     local function tablecount(_t)
-    local n = 0
-    for _, _ in pairs(_t) do n = n+1 end
-    return n
+        local n = 0
+        for _, _ in pairs(_t) do n = n+1 end
+        return n
     end
     ]]
-    -- (RiciLake) returns true if the table is empty
+    -- returns true if the table is empty
     local function isemptytable(_t) 
         return next(_t) == nil 
     end
