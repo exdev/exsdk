@@ -79,5 +79,9 @@ int __ex_lua_add_core ( lua_State *_l ) {
     lua_pushlightuserdata ( _l, NULL );
     lua_setfield( _l, -2, "null" );
 
+    // ex_c.invalid_handle = -1
+    lua_pushinteger ( _l, (size_t)-1 );
+    lua_setfield( _l, -2, "invalid_handle" );
+
     return 0;
 }

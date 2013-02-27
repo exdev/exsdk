@@ -20,11 +20,11 @@ local vec2f = class ({
         checkarg(_x,"number")
         checkarg(_y,"number")
 
-        _self._cptr = ex_c.vec2f_new(_x,_y)
+        _self._handle = ex_c.vec2f_new(_x,_y)
     end,
 
     __gc = function (_self)
-        ex_c.vec2f_delete(_self._cptr)
+        ex_c.vec2f_delete(_self._handle)
     end,
 
     -- meta-methods
@@ -42,7 +42,7 @@ local vec2f = class ({
         checkarg(_op2,"vec2f")
 
         r = ex.vec2f.zero
-        ex_c.vec2f_add ( r._cptr, _op1._cptr, _op2._cptr )
+        ex_c.vec2f_add ( r._handle, _op1._handle, _op2._handle )
         return r
     end,
     __sub = function (_op1,_op2)
@@ -50,7 +50,7 @@ local vec2f = class ({
         checkarg(_op2,"vec2f")
 
         r = ex.vec2f.zero
-        ex_c.vec2f_sub ( r._cptr, _op1._cptr, _op2._cptr )
+        ex_c.vec2f_sub ( r._handle, _op1._handle, _op2._handle )
         return r
     end,
     __mul = function (_op1,_op2)
@@ -59,15 +59,15 @@ local vec2f = class ({
 
         if type1 == "vec2f" and type2 == "vec2f" then
             r = ex.vec2f.zero
-            ex_c.vec2f_mul ( r._cptr, _op1._cptr, _op2._cptr )
+            ex_c.vec2f_mul ( r._handle, _op1._handle, _op2._handle )
             return r
         elseif type1 == "vec2f" and type2 == "number" then
             r = ex.vec2f.zero
-            ex_c.vec2f_mul_scalar ( r._cptr, _op1._cptr, _op2 )
+            ex_c.vec2f_mul_scalar ( r._handle, _op1._handle, _op2 )
             return r
         elseif type1 == "number" and type2 == "vec2f" then
             r = ex.vec2f.zero
-            ex_c.vec2f_mul_scalar ( r._cptr, _op2._cptr, _op1 )
+            ex_c.vec2f_mul_scalar ( r._handle, _op2._handle, _op1 )
             return r
         end
 
@@ -80,15 +80,15 @@ local vec2f = class ({
 
         if type1 == "vec2f" and type2 == "vec2f" then
             r = ex.vec2f.zero
-            ex_c.vec2f_div ( r._cptr, _op1._cptr, _op2._cptr )
+            ex_c.vec2f_div ( r._handle, _op1._handle, _op2._handle )
             return r
         elseif type1 == "vec2f" and type2 == "number" then
             r = ex.vec2f.zero
-            ex_c.vec2f_div_scalar ( r._cptr, _op1._cptr, _op2 )
+            ex_c.vec2f_div_scalar ( r._handle, _op1._handle, _op2 )
             return r
         elseif type1 == "number" and type2 == "vec2f" then
             r = ex.vec2f.zero
-            ex_c.scalar_div_vec2f ( r._cptr, _op1, _op2._cptr )
+            ex_c.scalar_div_vec2f ( r._handle, _op1, _op2._handle )
             return r
         end
 
@@ -97,14 +97,14 @@ local vec2f = class ({
     end,
     __unm = function (_op)
         r = ex.vec2f.zero
-        ex_c.vec2f_neg ( r._cptr, _op )
+        ex_c.vec2f_neg ( r._handle, _op )
         return r
     end,
     __eq = function (_op1,_op2)
         checkarg(_op1,"vec2f")
         checkarg(_op2,"vec2f")
 
-        return ex_c.vec2f_eq ( _op1._cptr, _op2._cptr )
+        return ex_c.vec2f_eq ( _op1._handle, _op2._handle )
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ local vec2f = class ({
             -- return r
 
             local r = ex.vec2f.zero
-            ex_c.vec2f_lerp( r._cptr, _from._cptr, _to._cptr, _t )
+            ex_c.vec2f_lerp( r._handle, _from._handle, _to._handle, _t )
             return r
         end
     },
@@ -132,27 +132,27 @@ local vec2f = class ({
     -- properties
     --/////////////////////////////////////////////////////////////////////////////
 
-    _cptr = ex_c.null,
+    _handle = ex_c.invalid_handle,
     x = property {
-        get = function (_self) return ex_c.vec2f_get_x ( _self._cptr ) end,
-        set = function (_self,_v) return ex_c.vec2f_set_x ( _self._cptr, _v ) end
+        get = function (_self) return ex_c.vec2f_get_x ( _self._handle ) end,
+        set = function (_self,_v) return ex_c.vec2f_set_x ( _self._handle, _v ) end
     },
     y = property { 
-        get = function (_self) return ex_c.vec2f_get_y ( _self._cptr ) end,
-        set = function (_self,_v) return ex_c.vec2f_set_y ( _self._cptr, _v ) end
+        get = function (_self) return ex_c.vec2f_get_y ( _self._handle ) end,
+        set = function (_self,_v) return ex_c.vec2f_set_y ( _self._handle, _v ) end
     },
     normalized = property { 
         get = function (_self) 
             r = ex.vec2f.zero
-            ex_c.vec2f_get_normalize ( _self._cptr, r._cptr ) 
+            ex_c.vec2f_get_normalize ( _self._handle, r._handle ) 
             return r
         end
     },
     len = property {
-        get = function (_self) return ex_c.vec2f_len ( _self._cptr ) end
+        get = function (_self) return ex_c.vec2f_len ( _self._handle ) end
     },
     lenSQR = property {
-        get = function (_self) return ex_c.vec2f_lenSQR ( _self._cptr ) end
+        get = function (_self) return ex_c.vec2f_lenSQR ( _self._handle ) end
     },
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -173,7 +173,7 @@ local vec2f = class ({
     -- ------------------------------------------------------------------ 
 
     normalize = function (_self) 
-        ex_c.vec2f_normalize ( _self._cptr ) 
+        ex_c.vec2f_normalize ( _self._handle ) 
     end,
 }) 
 __M.vec2f = vec2f

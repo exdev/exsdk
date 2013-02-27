@@ -125,6 +125,7 @@ extern int __ex_lua_add_ustr ( lua_State * );
 extern int __ex_lua_add_vec2f ( lua_State * );
 extern int __ex_lua_add_vec3f ( lua_State * );
 extern int __ex_lua_add_vec4f ( lua_State * );
+extern int __ex_lua_add_transform ( lua_State * );
 extern int __ex_lua_add_texture ( lua_State * );
 extern int __ex_lua_add_canvas ( lua_State * );
 
@@ -137,6 +138,7 @@ static const lua_CFunction loadedlibs[] = {
     __ex_lua_add_vec2f,
     __ex_lua_add_vec3f,
     __ex_lua_add_vec4f,
+    __ex_lua_add_transform,
     __ex_lua_add_texture,
     __ex_lua_add_canvas,
     NULL
@@ -186,6 +188,7 @@ static void __ex_lua_openlpeg ( lua_State *_l ) {
 extern int luaopen_luagl ( lua_State * );
 extern int luaopen_luaglu ( lua_State * );
 #endif
+extern void __ex_value_type_pool_init ();
 // ------------------------------------------------------------------ 
 
 int ex_lua_init () {
@@ -200,6 +203,7 @@ int ex_lua_init () {
 
     //
     __L = luaL_newstate();
+    __ex_value_type_pool_init ();
 
     // open default lua libs
     ex_log ( "[lua] Loading default library..." );
@@ -247,6 +251,7 @@ int ex_lua_init () {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+extern void __ex_value_type_pool_deinit ();
 // ------------------------------------------------------------------ 
 
 void ex_lua_deinit () {
@@ -257,10 +262,11 @@ void ex_lua_deinit () {
 
     // before close modules, force a complete garbage collection in case of memory leak
     lua_gc(__L, LUA_GCCOLLECT, 0);
-
-    // TODO:
-
     lua_close(__L);
+
+    // 
+    __ex_value_type_pool_deinit ();
+
     __L = NULL;
     __initialized = false;
 }

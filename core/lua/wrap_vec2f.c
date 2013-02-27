@@ -15,6 +15,10 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+extern size_t __ex_vec2f_pool_request ( ex_vec2f_t ** );
+extern void __ex_vec2f_pool_return ( size_t );
+ex_vec2f_t *__ex_vec2f_pool_get ( size_t );
+
 ///////////////////////////////////////////////////////////////////////////////
 // functions
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,14 +28,17 @@
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_new ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec2f_t *v;
 
     ex_lua_check_nargs(_l,2);
 
-    p = ex_malloc ( sizeof(ex_vec2f_t) );
-    ex_vec2f_set ( (ex_vec2f_t *)p, (float)luaL_checknumber(_l,1), (float)luaL_checknumber(_l,2) );
+    handle = __ex_vec2f_pool_request ( &v );
+    ex_vec2f_set ( v, 
+                   (float)luaL_checknumber(_l,1), 
+                   (float)luaL_checknumber(_l,2) );
 
-    lua_pushlightuserdata ( _l, p );
+    lua_pushinteger ( _l, handle );
     return 1;
 }
 
@@ -40,14 +47,14 @@ static int __lua_vec2f_new ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_delete ( lua_State *_l ) {
-    void *p;
+    size_t handle;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    if ( handle != -1 )
+        __ex_vec2f_pool_return(handle);
 
-    ex_free(p);
     return 0;
 }
 
@@ -56,14 +63,15 @@ static int __lua_vec2f_delete ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_get_x ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec2f_t *v;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec2f_pool_get(handle);
 
-    lua_pushnumber( _l, ((ex_vec2f_t *)p)->x );
+    lua_pushnumber( _l, v->x );
     return 1;
 }
 
@@ -72,14 +80,15 @@ static int __lua_vec2f_get_x ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_get_y ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec2f_t *v;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec2f_pool_get(handle);
 
-    lua_pushnumber( _l, ((ex_vec2f_t *)p)->y );
+    lua_pushnumber( _l, v->y );
     return 1;
 }
 
@@ -88,14 +97,15 @@ static int __lua_vec2f_get_y ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_set_x ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec2f_t *v;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec2f_pool_get(handle);
 
-    ((ex_vec2f_t *)p)->x = (float)luaL_checknumber(_l,2);
+    v->x = (float)luaL_checknumber(_l,2);
     return 0;
 }
 
@@ -104,14 +114,15 @@ static int __lua_vec2f_set_x ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_set_y ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec2f_t *v;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec2f_pool_get(handle);
 
-    ((ex_vec2f_t *)p)->y = (float)luaL_checknumber(_l,2);
+    v->y = (float)luaL_checknumber(_l,2);
     return 0;
 }
 
@@ -120,18 +131,19 @@ static int __lua_vec2f_set_y ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_add ( lua_State *_l ) {
-    void *r, *v1, *v2;
+    size_t handle;
+    ex_vec2f_t *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec2f_pool_get(handle);
 
     ex_vec2f_add ( r, v1, v2 );
     return 0;
@@ -142,18 +154,19 @@ static int __lua_vec2f_add ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_sub ( lua_State *_l ) {
-    void *r, *v1, *v2;
+    size_t handle;
+    ex_vec2f_t *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec2f_pool_get(handle);
 
     ex_vec2f_sub ( r, v1, v2 );
     return 0;
@@ -164,18 +177,19 @@ static int __lua_vec2f_sub ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_mul ( lua_State *_l ) {
-    void *r, *v1, *v2;
+    size_t handle;
+    ex_vec2f_t *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec2f_pool_get(handle);
 
     ex_vec2f_mul ( r, v1, v2 );
     return 0;
@@ -186,16 +200,17 @@ static int __lua_vec2f_mul ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_mul_scalar ( lua_State *_l ) {
-    void *r, *v1;
+    size_t handle;
+    ex_vec2f_t *r, *v1;
     float s;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec2f_pool_get(handle);
 
     s = (float)luaL_checknumber(_l,3);
 
@@ -208,18 +223,19 @@ static int __lua_vec2f_mul_scalar ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_div ( lua_State *_l ) {
-    void *r, *v1, *v2;
+    size_t handle;
+    ex_vec2f_t *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec2f_pool_get(handle);
 
     ex_vec2f_div ( r, v1, v2 );
     return 0;
@@ -230,16 +246,17 @@ static int __lua_vec2f_div ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_div_scalar ( lua_State *_l ) {
-    void *r, *v1;
+    size_t handle;
+    ex_vec2f_t *r, *v1;
     float s;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec2f_pool_get(handle);
 
     s = (float)luaL_checknumber(_l,3);
 
@@ -252,18 +269,19 @@ static int __lua_vec2f_div_scalar ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_scalar_div_vec2f ( lua_State *_l ) {
-    void *r, *v1;
+    size_t handle;
+    ex_vec2f_t *r, *v1;
     float s;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec2f_pool_get(handle);
 
     s = (float)luaL_checknumber(_l,2);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v1 = __ex_vec2f_pool_get(handle);
 
     ex_scalar_div_vec2f ( r, s, v1 );
     return 0;
@@ -274,15 +292,16 @@ static int __lua_scalar_div_vec2f ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_neg ( lua_State *_l ) {
-    void *r, *v1;
+    size_t handle;
+    ex_vec2f_t *r, *v1;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec2f_pool_get(handle);
 
     ex_vec2f_get_neg ( r, v1 );
     return 0;
@@ -293,16 +312,17 @@ static int __lua_vec2f_neg ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_eq ( lua_State *_l ) {
-    void *v1, *v2;
+    size_t handle;
+    ex_vec2f_t *v1, *v2;
     bool r;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v2 = __ex_vec2f_pool_get(handle);
 
     r = ex_vec2f_is_equal ( v1, v2 );
     lua_pushboolean(_l,r);
@@ -315,12 +335,13 @@ static int __lua_vec2f_eq ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_normalize ( lua_State *_l ) {
-    void *v1;
+    size_t handle;
+    ex_vec2f_t *v1;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec2f_pool_get(handle);
 
     ex_vec2f_normalize(v1);
 
@@ -332,15 +353,16 @@ static int __lua_vec2f_normalize ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_get_normalize ( lua_State *_l ) {
-    void *v1, *v2;
+    size_t handle;
+    ex_vec2f_t *v1, *v2;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v2 = __ex_vec2f_pool_get(handle);
 
     ex_vec2f_get_normalize(v1,v2);
     return 0;
@@ -351,12 +373,13 @@ static int __lua_vec2f_get_normalize ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_len ( lua_State *_l ) {
-    void *v1;
+    size_t handle;
+    ex_vec2f_t *v1;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec2f_pool_get(handle);
 
     lua_pushnumber( _l, ex_vec2f_len(v1) );
     return 1;
@@ -367,12 +390,13 @@ static int __lua_vec2f_len ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_lenSQR ( lua_State *_l ) {
-    void *v1;
+    size_t handle;
+    ex_vec2f_t *v1;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec2f_pool_get(handle);
 
     lua_pushnumber( _l, ex_vec2f_lenSQR(v1) );
     return 1;
@@ -383,22 +407,22 @@ static int __lua_vec2f_lenSQR ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec2f_lerp ( lua_State *_l ) {
-    ex_vec2f_t *v1, *v2;
-    void *r;
+    size_t handle;
+    ex_vec2f_t *r, *v1, *v2;
     float t, x, y;
 
     ex_lua_check_nargs(_l,4);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = (ex_vec2f_t *)lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec2f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = (ex_vec2f_t *)lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec2f_pool_get(handle);
+
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec2f_pool_get(handle);
 
     t = (float)luaL_checknumber(_l,4);
-
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = (ex_vec2f_t *)lua_touserdata(_l,1);
 
     // lerp
     x = ex_lerpf ( v1->x, v2->x, t );

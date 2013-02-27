@@ -27,17 +27,26 @@ __M.init = init
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function draw_texture ( _pos, _color, _scale, _degrees, _texture )
+local function draw_texture ( _pos, _anchor, _scale, _degrees, _color, _texture )
     checkarg(_pos,"vec2f")
     checkarg(_color,"color4f")
     checkarg(_scale,"vec2f")
     checkarg(_degrees,"number")
     checkarg(_texture,"texture")
 
+    -- local last_t = ex_c.transform_current()
+    -- local t = ex_c.transform_identity()
+    -- ex_c.transform_shear( t, _shear.x, _shear.y )
+    -- ex_c.transform_scale( t, _scale.x, _scale.y )
+    -- ex_c.transform_rotate( t, math.toradians(_degrees) )
+    -- ex_c.transform_compose( t, last_t )
+    -- ex_c.transform_apply( t )
+
     ex_c.canvas_draw_texture( _texture._cptr, 
                               _color.r, _color.g, _color.b, _color.a,
                               _pos.x, _pos.y
                               )
+    -- ex_c.transform_apply( last_t )
 end
 __M.draw_texture = draw_texture
 

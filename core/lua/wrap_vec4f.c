@@ -1,7 +1,7 @@
 // ======================================================================================
 // File         : wrap_vec4f.c
 // Author       : Wu Jie 
-// Last Change  : 02/26/2013 | 09:24:23 AM | Tuesday,February
+// Last Change  : 02/27/2013 | 15:12:37 PM | Wednesday,February
 // Description  : 
 // ======================================================================================
 
@@ -15,6 +15,10 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+extern size_t __ex_vec4f_pool_request ( ex_vec4f_t ** );
+extern void __ex_vec4f_pool_return ( size_t );
+ex_vec4f_t *__ex_vec4f_pool_get ( size_t );
+
 ///////////////////////////////////////////////////////////////////////////////
 // functions
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,19 +28,20 @@
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_new ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec4f_t *v;
 
     ex_lua_check_nargs(_l,4);
 
-    p = ex_malloc ( sizeof(ex_vec4f_t) );
-    ex_vec4f_set ( (ex_vec4f_t *)p, 
+    handle = __ex_vec4f_pool_request ( &v );
+    ex_vec4f_set ( v, 
                    (float)luaL_checknumber(_l,1), 
                    (float)luaL_checknumber(_l,2),
                    (float)luaL_checknumber(_l,3),
                    (float)luaL_checknumber(_l,4)
-                 );
+                   );
 
-    lua_pushlightuserdata ( _l, p );
+    lua_pushinteger ( _l, handle );
     return 1;
 }
 
@@ -45,14 +50,14 @@ static int __lua_vec4f_new ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_delete ( lua_State *_l ) {
-    void *p;
+    size_t handle;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    if ( handle != -1 )
+        __ex_vec4f_pool_return(handle);
 
-    ex_free(p);
     return 0;
 }
 
@@ -61,14 +66,15 @@ static int __lua_vec4f_delete ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_get_x ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec4f_t *v;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec4f_pool_get(handle);
 
-    lua_pushnumber( _l, ((ex_vec4f_t *)p)->x );
+    lua_pushnumber( _l, v->x );
     return 1;
 }
 
@@ -77,14 +83,15 @@ static int __lua_vec4f_get_x ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_get_y ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec4f_t *v;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec4f_pool_get(handle);
 
-    lua_pushnumber( _l, ((ex_vec4f_t *)p)->y );
+    lua_pushnumber( _l, v->y );
     return 1;
 }
 
@@ -93,14 +100,15 @@ static int __lua_vec4f_get_y ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_get_z ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec4f_t *v;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec4f_pool_get(handle);
 
-    lua_pushnumber( _l, ((ex_vec4f_t *)p)->z );
+    lua_pushnumber( _l, v->z );
     return 1;
 }
 
@@ -109,14 +117,15 @@ static int __lua_vec4f_get_z ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_get_w ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec4f_t *v;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec4f_pool_get(handle);
 
-    lua_pushnumber( _l, ((ex_vec4f_t *)p)->w );
+    lua_pushnumber( _l, v->w );
     return 1;
 }
 
@@ -125,14 +134,15 @@ static int __lua_vec4f_get_w ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_set_x ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec4f_t *v;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec4f_pool_get(handle);
 
-    ((ex_vec4f_t *)p)->x = (float)luaL_checknumber(_l,2);
+    v->x = (float)luaL_checknumber(_l,2);
     return 0;
 }
 
@@ -141,14 +151,15 @@ static int __lua_vec4f_set_x ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_set_y ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec4f_t *v;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec4f_pool_get(handle);
 
-    ((ex_vec4f_t *)p)->y = (float)luaL_checknumber(_l,2);
+    v->y = (float)luaL_checknumber(_l,2);
     return 0;
 }
 
@@ -157,14 +168,15 @@ static int __lua_vec4f_set_y ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_set_z ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec4f_t *v;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec4f_pool_get(handle);
 
-    ((ex_vec4f_t *)p)->z = (float)luaL_checknumber(_l,2);
+    v->z = (float)luaL_checknumber(_l,2);
     return 0;
 }
 
@@ -173,14 +185,15 @@ static int __lua_vec4f_set_z ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_set_w ( lua_State *_l ) {
-    void *p;
+    size_t handle;
+    ex_vec4f_t *v;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    p = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v = __ex_vec4f_pool_get(handle);
 
-    ((ex_vec4f_t *)p)->w = (float)luaL_checknumber(_l,2);
+    v->w = (float)luaL_checknumber(_l,2);
     return 0;
 }
 
@@ -189,18 +202,19 @@ static int __lua_vec4f_set_w ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_add ( lua_State *_l ) {
-    void *r, *v1, *v2;
+    size_t handle;
+    ex_vec4f_t *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec4f_pool_get(handle);
 
     ex_vec4f_add ( r, v1, v2 );
     return 0;
@@ -211,18 +225,19 @@ static int __lua_vec4f_add ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_sub ( lua_State *_l ) {
-    void *r, *v1, *v2;
+    size_t handle;
+    ex_vec4f_t *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec4f_pool_get(handle);
 
     ex_vec4f_sub ( r, v1, v2 );
     return 0;
@@ -233,18 +248,19 @@ static int __lua_vec4f_sub ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_mul ( lua_State *_l ) {
-    void *r, *v1, *v2;
+    size_t handle;
+    ex_vec4f_t *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec4f_pool_get(handle);
 
     ex_vec4f_mul ( r, v1, v2 );
     return 0;
@@ -255,16 +271,17 @@ static int __lua_vec4f_mul ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_mul_scalar ( lua_State *_l ) {
-    void *r, *v1;
+    size_t handle;
+    ex_vec4f_t *r, *v1;
     float s;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec4f_pool_get(handle);
 
     s = (float)luaL_checknumber(_l,3);
 
@@ -277,18 +294,19 @@ static int __lua_vec4f_mul_scalar ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_div ( lua_State *_l ) {
-    void *r, *v1, *v2;
+    size_t handle;
+    ex_vec4f_t *r, *v1, *v2;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec4f_pool_get(handle);
 
     ex_vec4f_div ( r, v1, v2 );
     return 0;
@@ -299,16 +317,17 @@ static int __lua_vec4f_div ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_div_scalar ( lua_State *_l ) {
-    void *r, *v1;
+    size_t handle;
+    ex_vec4f_t *r, *v1;
     float s;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec4f_pool_get(handle);
 
     s = (float)luaL_checknumber(_l,3);
 
@@ -321,18 +340,19 @@ static int __lua_vec4f_div_scalar ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_scalar_div_vec4f ( lua_State *_l ) {
-    void *r, *v1;
+    size_t handle;
+    ex_vec4f_t *r, *v1;
     float s;
 
     ex_lua_check_nargs(_l,3);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec4f_pool_get(handle);
 
     s = (float)luaL_checknumber(_l,2);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 3 );
+    v1 = __ex_vec4f_pool_get(handle);
 
     ex_scalar_div_vec4f ( r, s, v1 );
     return 0;
@@ -343,15 +363,16 @@ static int __lua_scalar_div_vec4f ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_neg ( lua_State *_l ) {
-    void *r, *v1;
+    size_t handle;
+    ex_vec4f_t *r, *v1;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec4f_pool_get(handle);
 
     ex_vec4f_get_neg ( r, v1 );
     return 0;
@@ -362,16 +383,17 @@ static int __lua_vec4f_neg ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_eq ( lua_State *_l ) {
-    void *v1, *v2;
+    size_t handle;
+    ex_vec4f_t *v1, *v2;
     bool r;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v2 = __ex_vec4f_pool_get(handle);
 
     r = ex_vec4f_is_equal ( v1, v2 );
     lua_pushboolean(_l,r);
@@ -384,12 +406,13 @@ static int __lua_vec4f_eq ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_normalize ( lua_State *_l ) {
-    void *v1;
+    size_t handle;
+    ex_vec4f_t *v1;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec4f_pool_get(handle);
 
     ex_vec4f_normalize(v1);
 
@@ -401,15 +424,16 @@ static int __lua_vec4f_normalize ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_get_normalize ( lua_State *_l ) {
-    void *v1, *v2;
+    size_t handle;
+    ex_vec4f_t *v1, *v2;
 
     ex_lua_check_nargs(_l,2);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v2 = lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 2 );
+    v2 = __ex_vec4f_pool_get(handle);
 
     ex_vec4f_get_normalize(v1,v2);
     return 0;
@@ -420,12 +444,13 @@ static int __lua_vec4f_get_normalize ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_len ( lua_State *_l ) {
-    void *v1;
+    size_t handle;
+    ex_vec4f_t *v1;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec4f_pool_get(handle);
 
     lua_pushnumber( _l, ex_vec4f_len(v1) );
     return 1;
@@ -436,12 +461,13 @@ static int __lua_vec4f_len ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_lenSQR ( lua_State *_l ) {
-    void *v1;
+    size_t handle;
+    ex_vec4f_t *v1;
 
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    v1 = lua_touserdata(_l,1);
+    handle = luaL_checkinteger( _l, 1 );
+    v1 = __ex_vec4f_pool_get(handle);
 
     lua_pushnumber( _l, ex_vec4f_lenSQR(v1) );
     return 1;
@@ -452,22 +478,22 @@ static int __lua_vec4f_lenSQR ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_vec4f_lerp ( lua_State *_l ) {
-    ex_vec4f_t *v1, *v2;
-    void *r;
+    size_t handle;
+    ex_vec4f_t *r, *v1, *v2;
     float t, x, y, z, w;
 
     ex_lua_check_nargs(_l,4);
 
-    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
-    v1 = (ex_vec4f_t *)lua_touserdata(_l,2);
+    handle = luaL_checkinteger( _l, 1 );
+    r = __ex_vec4f_pool_get(handle);
 
-    luaL_checktype( _l, 3, LUA_TLIGHTUSERDATA );
-    v2 = (ex_vec4f_t *)lua_touserdata(_l,3);
+    handle = luaL_checkinteger( _l, 2 );
+    v1 = __ex_vec4f_pool_get(handle);
+
+    handle = luaL_checkinteger( _l, 3 );
+    v2 = __ex_vec4f_pool_get(handle);
 
     t = (float)luaL_checknumber(_l,4);
-
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    r = (ex_vec4f_t *)lua_touserdata(_l,1);
 
     // lerp
     x = ex_lerpf ( v1->x, v2->x, t );

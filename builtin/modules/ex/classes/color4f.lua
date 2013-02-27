@@ -22,11 +22,11 @@ local color4f = class ({
         checkarg(_b,"number")
         checkarg(_a,"number")
 
-        _self._cptr = ex_c.vec4f_new(_r,_g,_b,_a)
+        _self._handle = ex_c.vec4f_new(_r,_g,_b,_a)
     end,
 
     __gc = function (_self)
-        ex_c.vec4f_delete(_self._cptr)
+        ex_c.vec4f_delete(_self._handle)
     end,
 
     -- meta-methods
@@ -44,7 +44,7 @@ local color4f = class ({
         checkarg(_op2,"color4f")
 
         r = ex.color4f.black
-        ex_c.vec4f_add ( r._cptr, _op1._cptr, _op2._cptr )
+        ex_c.vec4f_add ( r._handle, _op1._handle, _op2._handle )
         return r
     end,
     __sub = function (_op1,_op2)
@@ -52,7 +52,7 @@ local color4f = class ({
         checkarg(_op2,"color4f")
 
         r = ex.color4f.black
-        ex_c.vec4f_sub ( r._cptr, _op1._cptr, _op2._cptr )
+        ex_c.vec4f_sub ( r._handle, _op1._handle, _op2._handle )
         return r
     end,
     __mul = function (_op1,_op2)
@@ -61,15 +61,15 @@ local color4f = class ({
 
         if type1 == "color4f" and type2 == "color4f" then
             r = ex.color4f.black
-            ex_c.vec4f_mul ( r._cptr, _op1._cptr, _op2._cptr )
+            ex_c.vec4f_mul ( r._handle, _op1._handle, _op2._handle )
             return r
         elseif type1 == "color4f" and type2 == "number" then
             r = ex.color4f.black
-            ex_c.vec4f_mul_scalar ( r._cptr, _op1._cptr, _op2 )
+            ex_c.vec4f_mul_scalar ( r._handle, _op1._handle, _op2 )
             return r
         elseif type1 == "number" and type2 == "color4f" then
             r = ex.color4f.black
-            ex_c.vec4f_mul_scalar ( r._cptr, _op2._cptr, _op1 )
+            ex_c.vec4f_mul_scalar ( r._handle, _op2._handle, _op1 )
             return r
         end
 
@@ -82,15 +82,15 @@ local color4f = class ({
 
         if type1 == "color4f" and type2 == "color4f" then
             r = ex.color4f.black
-            ex_c.vec4f_div ( r._cptr, _op1._cptr, _op2._cptr )
+            ex_c.vec4f_div ( r._handle, _op1._handle, _op2._handle )
             return r
         elseif type1 == "color4f" and type2 == "number" then
             r = ex.color4f.black
-            ex_c.vec4f_div_scalar ( r._cptr, _op1._cptr, _op2 )
+            ex_c.vec4f_div_scalar ( r._handle, _op1._handle, _op2 )
             return r
         elseif type1 == "number" and type2 == "color4f" then
             r = ex.color4f.black
-            ex_c.scalar_div_vec4f ( r._cptr, _op1, _op2._cptr )
+            ex_c.scalar_div_vec4f ( r._handle, _op1, _op2._handle )
             return r
         end
 
@@ -99,14 +99,14 @@ local color4f = class ({
     end,
     __unm = function (_op)
         r = ex.color4f.black
-        ex_c.vec4f_neg ( r._cptr, _op )
+        ex_c.vec4f_neg ( r._handle, _op )
         return r
     end,
     __eq = function (_op1,_op2)
         checkarg(_op1,"color4f")
         checkarg(_op2,"color4f")
 
-        return ex_c.vec4f_eq ( _op1._cptr, _op2._cptr )
+        return ex_c.vec4f_eq ( _op1._handle, _op2._handle )
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ local color4f = class ({
         gray    = property { get = function () return ex.color4f( 0.5, 0.5, 0.5, 1.0 ) end },
         lerp  = function ( _from, _to, _t )
             local r = ex.color4f.black
-            ex_c.vec4f_lerp( r._cptr, _from._cptr, _to._cptr, _t )
+            ex_c.vec4f_lerp( r._handle, _from._handle, _to._handle, _t )
             return r
         end
     },
@@ -134,27 +134,27 @@ local color4f = class ({
     -- properties
     --/////////////////////////////////////////////////////////////////////////////
 
-    _cptr = ex_c.null,
+    _handle = ex_c.invalid_handle,
     r = property {
-        get = function (_self) return ex_c.vec4f_get_x ( _self._cptr ) end,
-        set = function (_self,_v) return ex_c.vec4f_set_x ( _self._cptr, _v ) end
+        get = function (_self) return ex_c.vec4f_get_x ( _self._handle ) end,
+        set = function (_self,_v) return ex_c.vec4f_set_x ( _self._handle, _v ) end
     },
     g = property { 
-        get = function (_self) return ex_c.vec4f_get_y ( _self._cptr ) end,
-        set = function (_self,_v) return ex_c.vec4f_set_y ( _self._cptr, _v ) end
+        get = function (_self) return ex_c.vec4f_get_y ( _self._handle ) end,
+        set = function (_self,_v) return ex_c.vec4f_set_y ( _self._handle, _v ) end
     },
     b = property { 
-        get = function (_self) return ex_c.vec4f_get_z ( _self._cptr ) end,
-        set = function (_self,_v) return ex_c.vec4f_set_z ( _self._cptr, _v ) end
+        get = function (_self) return ex_c.vec4f_get_z ( _self._handle ) end,
+        set = function (_self,_v) return ex_c.vec4f_set_z ( _self._handle, _v ) end
     },
     a = property { 
-        get = function (_self) return ex_c.vec4f_get_w ( _self._cptr ) end,
-        set = function (_self,_v) return ex_c.vec4f_set_w ( _self._cptr, _v ) end
+        get = function (_self) return ex_c.vec4f_get_w ( _self._handle ) end,
+        set = function (_self,_v) return ex_c.vec4f_set_w ( _self._handle, _v ) end
     },
     normalized = property { 
         get = function (_self) 
             r = ex.color4f.black
-            ex_c.vec4f_get_normalize ( _self._cptr, r._cptr ) 
+            ex_c.vec4f_get_normalize ( _self._handle, r._handle ) 
             return r
         end
     },
