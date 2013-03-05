@@ -30,6 +30,8 @@ static int __lua_texture_load ( lua_State *_l ) {
 
     ex_lua_check_nargs(_l,1);
 
+    al_set_new_bitmap_flags ( ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR );
+
     path = luaL_checkstring(_l,1);
     bitmap = al_load_bitmap(path);
     if ( bitmap == NULL ) {
@@ -53,6 +55,8 @@ static int __lua_texture_new ( lua_State *_l ) {
 
     w = luaL_checkint(_l,1);
     h = luaL_checkint(_l,2);
+
+    al_set_new_bitmap_flags ( ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR );
     bitmap = al_create_bitmap(w,h);
     if ( bitmap == NULL ) {
         luaL_error ( _l, "Failed to create texture" );

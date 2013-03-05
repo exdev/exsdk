@@ -6,6 +6,7 @@
 -- ======================================================================================
 
 -- generic
+module_add( "enums.lua" )
 module_add( "canvas.lua", "canvas" )
 module_add( "scene.lua", "scene" )
 
@@ -16,5 +17,5 @@ module_add( "classes/texture.lua" )
 module_add( "classes/bitmapfont.lua" )
 
 -- engine classes
-module_add( "classes/entity.lua" )
+module_add( "classes/node.lua" )
 module_add( "classes/component.lua" )

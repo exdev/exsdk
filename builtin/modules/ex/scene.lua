@@ -7,7 +7,7 @@
 
 local __M = {}
 
-local __entities = {}
+local __nodes = {}
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions
@@ -17,23 +17,30 @@ local __entities = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function update ()
-    for _,ent in ipairs(__entities) do
-        ent:update()
+local function tick ()
+    -- update entities and its components
+    for _,node in ipairs(__nodes) do
+        node:update()
     end
+
+    -- commit transforms
+    -- TODO: ex_c.pack_nodes () -- pack the node by DOP design as SONY said.
+    -- TODO: ex_c.update_transforms ()
+
+    -- batch draw by layer
 end
-__M.update = update
+__M.tick = tick
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function new_entity ( _name )
-    local ent = ex.entity(_name)
-    __entities[#__entities+1] = ent
-    return ent
+local function new_node ( _name )
+    local node = ex.node(_name)
+    __nodes[#__nodes+1] = node
+    return node
 end
-__M.new_entity = new_entity
+__M.new_node = new_node
 
 --/////////////////////////////////////////////////////////////////////////////
 --

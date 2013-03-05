@@ -18,7 +18,7 @@ local component = class ({
     -- properites
     --/////////////////////////////////////////////////////////////////////////////
 
-    entity = ex.entity.null,
+    node = ex.node.null,
 }) 
 __M.component = component
 

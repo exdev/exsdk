@@ -284,11 +284,11 @@ static void _draw_tinted_rotated_scaled_bitmap_region(ALLEGRO_BITMAP *bitmap,
    }
 
    al_translate_transform(&t, -cx, -cy);
-   al_scale_transform(&t, xscale, yscale);
    // TODO: jwu { 
    // t.m[1][0] = 1.0f; // shear x
    // t.m[0][1] = 1.0f; // shear y
    // } TODO end 
+   al_scale_transform(&t, xscale, yscale);
    al_rotate_transform(&t, angle);
    al_translate_transform(&t, dx, dy);
    al_compose_transform(&t, &backup);

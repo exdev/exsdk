@@ -27,6 +27,24 @@ __M.init = init
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+local function width ()
+    return ex_c.canvas_width()
+end
+__M.width = width
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function height ()
+    return ex_c.canvas_height()
+end
+__M.height = height
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function draw_texture ( _pos, _anchor, _scale, _degrees, _color, _texture )
     checkarg(_pos,"vec2f")
     checkarg(_color,"color4f")
@@ -34,19 +52,18 @@ local function draw_texture ( _pos, _anchor, _scale, _degrees, _color, _texture 
     checkarg(_degrees,"number")
     checkarg(_texture,"texture")
 
-    -- local last_t = ex_c.transform_current()
-    -- local t = ex_c.transform_identity()
-    -- ex_c.transform_shear( t, _shear.x, _shear.y )
-    -- ex_c.transform_scale( t, _scale.x, _scale.y )
-    -- ex_c.transform_rotate( t, math.toradians(_degrees) )
-    -- ex_c.transform_compose( t, last_t )
-    -- ex_c.transform_apply( t )
+    ex_c.canvas_hold_bitmap_drawing(true)
 
+    --
     ex_c.canvas_draw_texture( _texture._cptr, 
                               _color.r, _color.g, _color.b, _color.a,
-                              _pos.x, _pos.y
+                              _anchor.x, _anchor.y,
+                              _pos.x, _pos.y,
+                              _scale.x, _scale.y,
+                              math.rad(_degrees)
                               )
-    -- ex_c.transform_apply( last_t )
+
+    ex_c.canvas_hold_bitmap_drawing(false)
 end
 __M.draw_texture = draw_texture
 

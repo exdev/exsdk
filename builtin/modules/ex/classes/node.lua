@@ -1,7 +1,7 @@
 -- ======================================================================================
--- File         : entity.lua
+-- File         : node.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/23/2013 | 16:05:59 PM | Saturday,February
+-- Last Change  : 03/05/2013 | 14:51:35 PM | Tuesday,March
 -- Description  : 
 -- ======================================================================================
 
@@ -11,8 +11,8 @@ local __M = {}
 --
 --/////////////////////////////////////////////////////////////////////////////
 
-local entity = class ({
-    __typename = "entity",
+local node = class ({
+    __typename = "node",
 
     -- constructor & destructor
     __init = function ( _self, _name )
@@ -32,14 +32,14 @@ local entity = class ({
         return cnt
     end,
     __add = function (_op1,_op2)
-        checkarg(_op1,"entity")
+        checkarg(_op1,"node")
         assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: must be component or string" )
 
         _op1:add_component (_op2)
         return _op1
     end,
     __sub = function (_op1,_op2)
-        checkarg(_op1,"entity")
+        checkarg(_op1,"node")
         assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: must be component or string" )
 
         if type(_op2) == "string" then
@@ -55,15 +55,28 @@ local entity = class ({
     -- properties
     --/////////////////////////////////////////////////////////////////////////////
 
+    _isdead = false,
+    isvalid = property {
+        get = function (_self) return _self._isdead == false end,
+    },
+
     name = "",
     position = ex.vec2f.zero, 
     angle = 0.0,
     scale = ex.vec2f.one,
 
-
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
     --/////////////////////////////////////////////////////////////////////////////
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    destroy = function ( _self )
+        _isdead = true
+        -- TODO: destroy each component
+    end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -100,7 +113,7 @@ local entity = class ({
 
     add_component = function ( _self, _comp )
         local inst = ex.instantiate(_comp)
-        inst.entity = _self
+        inst.node = _self
 
         if type(_comp) == "string" then
             _self[_comp] = inst
@@ -112,7 +125,7 @@ local entity = class ({
     end,
 
 }) 
-__M.entity = entity
+__M.node = node
 
 --/////////////////////////////////////////////////////////////////////////////
 --
