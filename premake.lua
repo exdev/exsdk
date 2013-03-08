@@ -136,6 +136,8 @@ solution "exSDK"
         -- include
         includedirs {
             "ext/allegro-5.0.8/include/",
+            "ext/allegro-5.0.8/addons/primitives/",
+            "ext/allegro-5.0.8/addons/image/",
             "ext/zlib-1.2.7/",
             "ext/lpng1514/",
             "ext/jpeg-6b/include/",
