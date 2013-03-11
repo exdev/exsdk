@@ -305,10 +305,10 @@ static void draw_quad(ALLEGRO_BITMAP *bitmap,
       transform_vertex(&verts[4].x, &verts[4].y);
 
       // jwu ADD: this is for solving the sub-pixel problem { 
-      verts[0].x = ceil(verts[0].x); verts[0].y = ceil(verts[0].y);
-      verts[1].x = ceil(verts[1].x); verts[1].y = ceil(verts[1].y);
-      verts[2].x = ceil(verts[2].x); verts[2].y = ceil(verts[2].y);
-      verts[4].x = ceil(verts[4].x); verts[4].y = ceil(verts[4].y);
+      // verts[0].x = ceil(verts[0].x); verts[0].y = ceil(verts[0].y);
+      // verts[1].x = ceil(verts[1].x); verts[1].y = ceil(verts[1].y);
+      // verts[2].x = ceil(verts[2].x); verts[2].y = ceil(verts[2].y);
+      // verts[4].x = ceil(verts[4].x); verts[4].y = ceil(verts[4].y);
       // } jwu ADD end 
    }
    verts[3] = verts[1];
