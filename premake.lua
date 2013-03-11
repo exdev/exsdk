@@ -97,6 +97,7 @@ solution "exSDK"
 
         -- source exclude
         excludes {
+            "ext/lpng1514/pngtest.c",
             "ext/lua-5.2.1/lua.c",
             "ext/lua-5.2.1/luac.c",
             "ext/physfs-2.0.3/lzma/**.c",
@@ -136,9 +137,10 @@ solution "exSDK"
         -- include
         includedirs {
             "ext/allegro-5.0.8/include/",
+            "ext/allegro-5.0.8/addons/primitives/",
+            "ext/allegro-5.0.8/addons/image/",
             "ext/zlib-1.2.7/",
             "ext/lpng1514/",
-            "ext/jpeg-6b/include/",
         } 
         if __PLATFORM == "macosx" then
             includedirs {
@@ -146,6 +148,7 @@ solution "exSDK"
             } 
         elseif __PLATFORM == "win32" then
             includedirs {
+                "ext/jpeg-6b/include/",
                 "C:/Program Files/Microsoft DirectX SDK (June 2010)/Include/",
             } 
         end
@@ -160,6 +163,7 @@ solution "exSDK"
         if __PLATFORM == "macosx" then
             files { 
                 "ext/allegro-5.0.8/src/**.m",
+                "ext/allegro-5.0.8/addons/image/**.m",
                 "ext/allegro-5.0.8/addons/main/**.m",
             }
         elseif __PLATFORM == "win32" then
@@ -178,6 +182,8 @@ solution "exSDK"
                 -- "ext/allegro-5.0.8/src/unix/**",
                 "ext/allegro-5.0.8/src/win/**",
                 "ext/allegro-5.0.8/src/x/**",
+                "ext/allegro-5.0.8/addons/image/jpg.c",
+                "ext/allegro-5.0.8/addons/image/iphone.m",
             }
         elseif __PLATFORM == "win32" then
             excludes {
@@ -280,7 +286,6 @@ solution "exSDK"
 
         -- link
         links {
-            "jpeg",
             "freetype",
             "Deps",
             "Allegro",
@@ -297,6 +302,7 @@ solution "exSDK"
             }
         elseif __PLATFORM == "win32" then
             links {
+                "jpeg",
                 -- "d3d9",
                 -- "d3dx9",
                 -- "dinput8",
@@ -374,7 +380,6 @@ solution "exSDK"
 
             -- link
             links {
-                "jpeg",
                 "freetype",
                 "Deps",
                 "Allegro",
@@ -394,6 +399,7 @@ solution "exSDK"
                 }
             elseif __PLATFORM == "win32" then
                 links {
+                    "jpeg",
                     "winmm",
                     "psapi",
                     "shlwapi",
