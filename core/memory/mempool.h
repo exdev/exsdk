@@ -72,6 +72,8 @@ extern void ex_mempool_reserve ( ex_mempool_t *_pool, size_t _count );
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static inline size_t ex_mempool_used_count ( const ex_mempool_t *_pool ) { return _pool->block_count; }
+static inline size_t ex_mempool_free_count ( const ex_mempool_t *_pool ) { return _pool->free_count; }
 static inline size_t ex_mempool_capacity ( const ex_mempool_t *_pool ) { return _pool->capacity; }
 
 // ------------------------------------------------------------------ 
@@ -86,6 +88,12 @@ extern void ex_mempool_return ( ex_mempool_t *_pool, size_t _idx );
 // ------------------------------------------------------------------ 
 
 extern void *ex_mempool_get ( const ex_mempool_t *_pool, size_t _idx );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void ex_mempool_clear ( const ex_mempool_t *_pool );
 
 // ######################### 
 #ifdef __cplusplus
