@@ -16,13 +16,31 @@ extern "C" {
 #endif
 // ######################### 
 
+typedef struct ex_renderer_t {
+    bool initialized = false;
+
+    // ui data
+    ex_ui_state_t   ui_state;
+    ex_memblock_t    ui_node_block; 
+    ex_memblock_t    ui_vertex_buffer;
+    ex_memblock_t    ui_index_buffer;
+} ex_renderer_t;
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern int ex_renderer_init ();
-extern void ex_renderer_deinit ();
-extern bool ex_renderer_initialized ();
+extern int ex_renderer_init ( ex_renderer_t *_renderer );
+extern void ex_renderer_deinit ( ex_renderer_t *_renderer );
+static inline bool ex_renderer_initialized ( ex_renderer_t *_renderer ) {
+    return _renderer->initialized;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void ex_renderer_draw_nodes ( ex_renderer_t *_renderer );
 
 // ######################### 
 #ifdef __cplusplus

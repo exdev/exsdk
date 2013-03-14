@@ -300,6 +300,7 @@ typedef struct ex_rectf_t {
 typedef struct ex_recti_t {
     union {
         struct { int x, y, w, h; }; // end struct
+        struct { int l, r, t, b; }; // end struct
         int data[4];
     };
 } ex_recti_t;

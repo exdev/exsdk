@@ -21,15 +21,16 @@ extern "C" {
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef struct ex_ui_state_t {
-    ex_ui_node_t *node;
     ex_mat44f_t matrix;
+    uint32 depth; 
 } ex_ui_state_t;
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_ui_draw_texture ( ex_recti_t _pos,
+extern void ex_ui_draw_texture ( void *_texture,
+                                 ex_recti_t _pos,
                                  ex_recti_t _border,
                                  ex_rectf_t _uv0,
                                  ex_vec4f_t _color );

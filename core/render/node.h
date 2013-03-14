@@ -21,8 +21,8 @@ typedef struct ex_ui_node_t {
     const char *text;
     const void *texture;
 
-    ex_ui_node_t *parent;
     ex_mat44f_t transform;
+    uint32 depth;
 
     ex_recti_t pos;
     ex_recti_t border;
