@@ -25,9 +25,9 @@
                     )
 
 typedef struct __ui_vertex_t {
-   float x, y;
-   float u, v;
-   float r, g, b, a;
+    ex_vec2f_t pos;
+    ex_vec2f_t uv0;
+    ex_vec4f_t color;
 } __ui_vertex_t;
 
 // ------------------------------------------------------------------ 
@@ -83,8 +83,15 @@ int ex_renderer_init ( ex_renderer_t *_renderer ) {
 
     // create ui node pool
     MEMBLOCK_INIT ( _renderer->ui_node_block, ex_ui_node_t, 512 );
-    MEMBLOCK_INIT ( _renderer->ui_vertex_buffer, __ui_vertex_t, 4096 );
-    MEMBLOCK_INIT ( _renderer->ui_index_buffer, sizeof(uint16), 4096 );
+    MEMBLOCK_INIT ( _renderer->ui_vb, __ui_vertex_t, 4096 );
+    MEMBLOCK_INIT ( _renderer->ui_ib, sizeof(uint16), 4096 );
+
+    glGenBuffers( 1, &_renderer->ui_vb_id );
+    glGenBuffers( 1, &_renderer->ui_ib_id );
+
+#ifdef VAO
+    glGenVertexArrays(1, &_renderer->ui_vao_id);
+#endif
 
     return 0;
 }
@@ -99,9 +106,16 @@ void ex_renderer_deinit ( ex_renderer_t *_renderer ) {
     if ( _renderer->initialized == false )
         return;
 
+    glDeleteBuffers(1, &_renderer->ui_vb_id);
+    glDeleteBuffers(1, &_renderer->ui_ib_id);
+
+#ifdef VAO
+    glDeleteVertexArrays(1, &_renderer->ui_vao_id);
+#endif
+
     // destroy ui node pool
     ex_memblock_deinit ( &_renderer->ui_node_block );
-    ex_memblock_deinit ( &_renderer->ui_vertex_buffer );
+    ex_memblock_deinit ( &_renderer->ui_vb );
 
     _renderer->initialized = false;
 }
@@ -110,7 +124,53 @@ void ex_renderer_deinit ( ex_renderer_t *_renderer ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void __flush_ui_vertices ( void *_vertices ) {
+enum {
+    VertexAttrib_Position,
+    VertexAttrib_Color,
+    VertexAttrib_TexCoords,
+
+    VertexAttrib_MAX,
+}
+
+void __flush_ui_vertices ( ex_renderer_t *_renderer ) {
+    // send buffer data
+    glBindBuffer ( GL_ARRAY_BUFFER, _renderer->ui_vb_id );
+    glBufferData ( GL_ARRAY_BUFFER, sizeof(__ui_vertex_t) * _renderer->ui_vb.count, _renderer->ui_vb.data, GL_DYNAMIC_DRAW );
+
+    glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, _renderer->ui_ib_id );
+    glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
+
+    // define vertex attribute
+#ifdef VAO
+    glBindVertexArray(_renderer->ui_vao_id);
+#else
+    glEnableVertexAttribArray( VertexAttrib_Position );
+    glEnableVertexAttribArray( VertexAttrib_Color );
+    glEnableVertexAttribArray( VertexAttrib_TexCoords );
+
+    glVertexAttribPointer( VertexAttrib_Position , 2, GL_FLOAT        , GL_FALSE, sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, pos)   );
+    glVertexAttribPointer( VertexAttrib_Color    , 4, GL_UNSIGNED_BYTE, GL_TRUE , sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, color) );
+    glVertexAttribPointer( VertexAttrib_TexCoords, 2, GL_FLOAT        , GL_FALSE, sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, uv0)   );
+#endif
+
+    // draw elements 
+#if USE_TRIANGLE_STRIP
+    // TODO: the n here should be calculate by code because we have Nine-Scaled-Bitmap and Quad Bitmap shapes
+    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
+#else
+    glDrawElements(GL_TRIANGLES, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
+#endif // USE_TRIANGLE_STRIP
+
+    // unbind buffers
+#ifdef VAO
+    glBindVertexArray(0);
+#endif
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // clear memory
+    ex_memblock_clear(_renderer->ui_vb);
+    ex_memblock_clear(_renderer->ui_ib);
 }
 
 void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
@@ -136,8 +196,7 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
 
         // if this is not the first node,
         if ( i != 0 && node->texture != last_texture ) {
-            __flush_ui_vertices ( _renderer->ui_vertex_buffer.data );
-            ex_memblock_clear(_renderer->ui_vertex_buffer);
+            __flush_ui_vertices ( _renderer );
         }
 
         ogl_bitmap = (ALLEGRO_BITMAP_OGL *)node->texture;
@@ -164,8 +223,8 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
             tex_r -= (w - sx - sw) / true_w;
             tex_b += (h - sy - sh) / true_h;
 
-            // ui_vertex_buffer
-            verts = (__ui_vertex_t *)ex_memblock_request ( &_renderer->ui_vertex_buffer, 6 );
+            // ui_vb
+            verts = (__ui_vertex_t *)ex_memblock_request ( &_renderer->ui_vb, 6 );
         }
 
         // draw as border sprite
@@ -176,9 +235,8 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
     }
 
     // if we still have verices remain, flush it at the end
-    if ( ex_memblock_count (_renderer->ui_vertex_buffer) > 0 ) {
-        __flush_ui_vertices ( _renderer->ui_vertex_buffer.data );
-        ex_memblock_clear(_renderer->ui_vertex_buffer);
+    if ( ex_memblock_count (_renderer->ui_vb) > 0 ) {
+        __flush_ui_vertices ( _renderer );
     }
 }
 

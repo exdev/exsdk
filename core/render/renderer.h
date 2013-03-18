@@ -22,8 +22,10 @@ typedef struct ex_renderer_t {
     // ui data
     ex_ui_state_t   ui_state;
     ex_memblock_t    ui_node_block; 
-    ex_memblock_t    ui_vertex_buffer;
-    ex_memblock_t    ui_index_buffer;
+    uint             ui_vb_id
+    ex_memblock_t    ui_vb;
+    uint             ui_ib_id
+    ex_memblock_t    ui_ib;
 } ex_renderer_t;
 
 // ------------------------------------------------------------------ 
