@@ -164,6 +164,10 @@ void __flush_ui_vertices ( ex_renderer_t *_renderer ) {
     // unbind buffers
 #ifdef VAO
     glBindVertexArray(0);
+#else
+    glDisableVertexAttribArray( VertexAttrib_Position );
+    glDisableVertexAttribArray( VertexAttrib_Color );
+    glDisableVertexAttribArray( VertexAttrib_TexCoords );
 #endif
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
