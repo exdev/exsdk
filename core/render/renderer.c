@@ -15,6 +15,14 @@
 // static
 ///////////////////////////////////////////////////////////////////////////////
 
+// you can use VAO, VBO or FIXED_PIEPLINE
+#define VAO   1
+#define VBO   2
+#define FIXED 3
+#define BUFFER_OP FIXED
+
+#define USE_TRIANGLE_STRIP 1
+
 #define MEMBLOCK_INIT( _block, _type, _size ) \
     ex_memblock_init ( &_block \
                       , sizeof(_type) \
@@ -29,6 +37,14 @@ typedef struct __ui_vertex_t {
     ex_vec2f_t uv0;
     ex_vec4f_t color;
 } __ui_vertex_t;
+
+// vertex attribute type
+enum {
+    VAT_POSITION = 0,
+    VAT_COLOR,
+    VAT_TEXCOORD,
+    VAT_MAX,
+}
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -78,6 +94,10 @@ int ex_renderer_init ( ex_renderer_t *_renderer ) {
     if ( _renderer->initialized )
         return -1;
 
+    // ======================================================== 
+    // init ui 
+    // ======================================================== 
+
     // init current ui state
     __reset_ui_state (&_renderer->ui_state);
 
@@ -86,11 +106,33 @@ int ex_renderer_init ( ex_renderer_t *_renderer ) {
     MEMBLOCK_INIT ( _renderer->ui_vb, __ui_vertex_t, 4096 );
     MEMBLOCK_INIT ( _renderer->ui_ib, sizeof(uint16), 4096 );
 
+    // init ui VBO
     glGenBuffers( 1, &_renderer->ui_vb_id );
     glGenBuffers( 1, &_renderer->ui_ib_id );
 
-#ifdef VAO
+    // init ui USE_VAO
+#ifdef (BUFFER_OP == VAO)
     glGenVertexArrays(1, &_renderer->ui_vao_id);
+    glBindVertexArray(_renderer->ui_vao_id);
+
+        // send buffer data
+        glBindBuffer ( GL_ARRAY_BUFFER, _renderer->ui_vb_id );
+        glBufferData ( GL_ARRAY_BUFFER, sizeof(__ui_vertex_t) * _renderer->ui_vb.count, _renderer->ui_vb.data, GL_DYNAMIC_DRAW );
+
+        glEnableVertexAttribArray( VAT_POSITION );
+        glEnableVertexAttribArray( VAT_COLOR );
+        glEnableVertexAttribArray( VAT_TEXCOORD );
+
+        glVertexAttribPointer( VAT_POSITION, 2, GL_FLOAT        , GL_FALSE, sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, pos)   );
+        glVertexAttribPointer( VAT_COLOR   , 4, GL_UNSIGNED_BYTE, GL_TRUE , sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, color) );
+        glVertexAttribPointer( VAT_TEXCOORD, 2, GL_FLOAT        , GL_FALSE, sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, uv0)   );
+
+        glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, _renderer->ui_ib_id );
+        glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
 
     return 0;
@@ -109,7 +151,7 @@ void ex_renderer_deinit ( ex_renderer_t *_renderer ) {
     glDeleteBuffers(1, &_renderer->ui_vb_id);
     glDeleteBuffers(1, &_renderer->ui_ib_id);
 
-#ifdef VAO
+#ifdef (BUFFER_OP == VAO)
     glDeleteVertexArrays(1, &_renderer->ui_vao_id);
 #endif
 
@@ -124,58 +166,166 @@ void ex_renderer_deinit ( ex_renderer_t *_renderer ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-enum {
-    VertexAttrib_Position,
-    VertexAttrib_Color,
-    VertexAttrib_TexCoords,
+void __flush_ui_vertices_vao ( ex_renderer_t *_renderer ) {
 
-    VertexAttrib_MAX,
-}
+    // ======================================================== 
+    // send buffer data 
+    // ======================================================== 
 
-void __flush_ui_vertices ( ex_renderer_t *_renderer ) {
-    // send buffer data
+    // send vertex buffer data
+    // TODO: in cocos2d-x they do this for sending data.
+    // glBindBuffer ( GL_ARRAY_BUFFER, _renderer->ui_vb_id );
+    // glBufferData ( GL_ARRAY_BUFFER, sizeof(__ui_vertex_t) * _renderer->ui_vb.count, NULL, GL_DYNAMIC_DRAW );
+    // void *buf = glMapBuffer ( GL_ARRAY_BUFFER, GL_WRITE_ONLY );
+    // memcpy ( buf, _renderer->ui_vb.data, sizeof(__ui_vertex_t) * _renderer->ui_vb.count );
+    // glUnmapBuffer(GL_ARRAY_BUFFER);
     glBindBuffer ( GL_ARRAY_BUFFER, _renderer->ui_vb_id );
     glBufferData ( GL_ARRAY_BUFFER, sizeof(__ui_vertex_t) * _renderer->ui_vb.count, _renderer->ui_vb.data, GL_DYNAMIC_DRAW );
 
+    // define vertex attribute
+    glBindVertexArray(_renderer->ui_vao_id);
+
+    // send index buffer data
     glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, _renderer->ui_ib_id );
     glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
 
-    // define vertex attribute
-#ifdef VAO
-    glBindVertexArray(_renderer->ui_vao_id);
-#else
-    glEnableVertexAttribArray( VertexAttrib_Position );
-    glEnableVertexAttribArray( VertexAttrib_Color );
-    glEnableVertexAttribArray( VertexAttrib_TexCoords );
-
-    glVertexAttribPointer( VertexAttrib_Position , 2, GL_FLOAT        , GL_FALSE, sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, pos)   );
-    glVertexAttribPointer( VertexAttrib_Color    , 4, GL_UNSIGNED_BYTE, GL_TRUE , sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, color) );
-    glVertexAttribPointer( VertexAttrib_TexCoords, 2, GL_FLOAT        , GL_FALSE, sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, uv0)   );
-#endif
-
+    // ======================================================== 
     // draw elements 
-#if USE_TRIANGLE_STRIP
+    // ======================================================== 
+
     // TODO: the n here should be calculate by code because we have Nine-Scaled-Bitmap and Quad Bitmap shapes
+#if USE_TRIANGLE_STRIP
     glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
 #else
     glDrawElements(GL_TRIANGLES, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
 #endif // USE_TRIANGLE_STRIP
 
+    // ======================================================== 
     // unbind buffers
-#ifdef VAO
+    // ======================================================== 
+
     glBindVertexArray(0);
-#else
-    glDisableVertexAttribArray( VertexAttrib_Position );
-    glDisableVertexAttribArray( VertexAttrib_Color );
-    glDisableVertexAttribArray( VertexAttrib_TexCoords );
-#endif
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    // clear memory
+    // ======================================================== 
+    // reset memory
+    // ======================================================== 
+
     ex_memblock_clear(_renderer->ui_vb);
     ex_memblock_clear(_renderer->ui_ib);
 }
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void __flush_ui_vertices_vbo ( ex_renderer_t *_renderer ) {
+    // ======================================================== 
+    // send buffer data 
+    // ======================================================== 
+
+    // send vertex buffer data
+    glBindBuffer ( GL_ARRAY_BUFFER, _renderer->ui_vb_id );
+    glBufferData ( GL_ARRAY_BUFFER, sizeof(__ui_vertex_t) * _renderer->ui_vb.count, _renderer->ui_vb.data, GL_DYNAMIC_DRAW );
+
+    // define vertex attribute
+    glEnableVertexAttribArray( VAT_POSITION );
+    glEnableVertexAttribArray( VAT_COLOR );
+    glEnableVertexAttribArray( VAT_TEXCOORD );
+
+    glVertexAttribPointer( VAT_POSITION, 2, GL_FLOAT        , GL_FALSE, sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, pos)   );
+    glVertexAttribPointer( VAT_COLOR   , 4, GL_UNSIGNED_BYTE, GL_TRUE , sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, color) );
+    glVertexAttribPointer( VAT_TEXCOORD, 2, GL_FLOAT        , GL_FALSE, sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, uv0)   );
+
+    // send index buffer data
+    glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, _renderer->ui_ib_id );
+    glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
+
+    // ======================================================== 
+    // draw elements 
+    // ======================================================== 
+
+    // TODO: the n here should be calculate by code because we have Nine-Scaled-Bitmap and Quad Bitmap shapes
+#if USE_TRIANGLE_STRIP
+    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
+#else
+    glDrawElements(GL_TRIANGLES, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
+#endif // USE_TRIANGLE_STRIP
+
+    // ======================================================== 
+    // unbind buffers
+    // ======================================================== 
+
+    glDisableVertexAttribArray( VAT_POSITION );
+    glDisableVertexAttribArray( VAT_COLOR );
+    glDisableVertexAttribArray( VAT_TEXCOORD );
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // ======================================================== 
+    // reset memory
+    // ======================================================== 
+
+    ex_memblock_clear(_renderer->ui_vb);
+    ex_memblock_clear(_renderer->ui_ib);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void __flush_ui_vertices_fixed ( ex_renderer_t *_renderer ) {
+    // ======================================================== 
+    // send buffer data 
+    // ======================================================== 
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glVertexPointer  ( 2, GL_FLOAT, sizeof(__ui_vertex_t), _renderer->ui_vb.data );
+    glColorPointer   ( 4, GL_FLOAT, sizeof(__ui_vertex_t), (char*)(_renderer->ui_vb.data) + offsetof(__ui_vertex_t, color) );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof(__ui_vertex_t), (char*)(_renderer->ui_vb.data) + offsetof(__ui_vertex_t, uv0) );
+
+    // ======================================================== 
+    // draw elements 
+    // ======================================================== 
+
+    // TODO: the n here should be calculate by code because we have Nine-Scaled-Bitmap and Quad Bitmap shapes
+#if USE_TRIANGLE_STRIP
+    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)n*6, GL_UNSIGNED_SHORT, _renderer->ui_ib.data);
+#else
+    glDrawElements(GL_TRIANGLES, (GLsizei)n*6, GL_UNSIGNED_SHORT, _renderer->ui_ib.data);
+#endif // USE_TRIANGLE_STRIP
+
+    // ======================================================== 
+    // unbind buffers
+    // ======================================================== 
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    // ======================================================== 
+    // reset memory
+    // ======================================================== 
+
+    ex_memblock_clear(_renderer->ui_vb);
+    ex_memblock_clear(_renderer->ui_ib);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+#if ( BUFFER_OP == VAO )
+    #define flush_ui_vertices __flush_ui_vertices_vao
+#elif ( BUFFER_OP == VBO )
+    #define flush_ui_vertices __flush_ui_vertices_vbo
+#else
+    #define flush_ui_vertices __flush_ui_vertices_fixed
+#endif
+// ------------------------------------------------------------------ 
 
 void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
     ex_ui_node_t *node;
@@ -200,7 +350,7 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
 
         // if this is not the first node,
         if ( i != 0 && node->texture != last_texture ) {
-            __flush_ui_vertices ( _renderer );
+            flush_ui_vertices ( _renderer );
         }
 
         ogl_bitmap = (ALLEGRO_BITMAP_OGL *)node->texture;
@@ -240,9 +390,13 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
 
     // if we still have verices remain, flush it at the end
     if ( ex_memblock_count (_renderer->ui_vb) > 0 ) {
-        __flush_ui_vertices ( _renderer );
+        flush_ui_vertices ( _renderer );
     }
 }
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
 
 void ex_renderer_draw_nodes ( ex_renderer_t *_renderer ) {
     // TODO: process 2d nodes
