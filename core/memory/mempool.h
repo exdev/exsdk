@@ -93,7 +93,7 @@ extern void *ex_mempool_get ( const ex_mempool_t *_pool, size_t _idx );
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_mempool_clear ( const ex_mempool_t *_pool );
+extern void ex_mempool_clear ( ex_mempool_t *_pool );
 
 // ######################### 
 #ifdef __cplusplus

@@ -139,7 +139,7 @@ void *ex_memblock_get ( const ex_memblock_t *_block, size_t _idx ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_memblock_clear ( const ex_memblock_t *_block ) {
+void ex_memblock_clear ( ex_memblock_t *_block ) {
     int data_size = _block->element_bytes * _block->capacity;
     int index_size = sizeof(size_t) * _block->capacity;
 

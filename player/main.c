@@ -20,6 +20,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+ex_renderer_t renderer;
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
@@ -67,6 +69,7 @@ static void main_loop () {
         ex_log ( "Could not create allegro display!" );
         exit(1);
     }
+    ex_renderer_init(&renderer);
 
     queue = al_create_event_queue();
     al_register_event_source(queue, al_get_keyboard_event_source());
@@ -95,6 +98,7 @@ static void main_loop () {
             // draw one frame
             // call render() in __project__/main.lua
             ex_lua_main_render( ex_lua_main_state() );
+            ex_renderer_draw_nodes (&renderer);
         }
     }
 
@@ -103,6 +107,8 @@ done:
     // call deinit() in __project__/main.lua
     ex_lua_main_deinit ( ex_lua_main_state() );
     al_destroy_display(display);
+
+    ex_renderer_deinit(&renderer);
 }
 
 // ------------------------------------------------------------------ 

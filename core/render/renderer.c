@@ -9,7 +9,12 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "allegro5/allegro.h"
+#include "allegro5/allegro_opengl.h"
+#include "allegro5/internal/aintern_opengl.h"
+
 #include "exsdk.h"
+// #include "gl/gl_inc.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // static
@@ -43,16 +48,16 @@ enum {
     VAT_POSITION = 0,
     VAT_COLOR,
     VAT_TEXCOORD,
-    VAT_MAX,
-}
+    VAT_MAX
+};
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
 static void __reset_ui_state ( ex_ui_state_t *_ui_state ) {
-    ui_state.matrix = EX_MAT44F_IDENTITY;
-    ui_state.depth = 0;
+    ex_mat44f_identity(&_ui_state->matrix);
+    _ui_state->depth = 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -69,7 +74,7 @@ static int __ui_node_cmp ( const void *_a, const void *_b ) {
     r = node_a->depth - node_b->depth;
     if ( r != 0 ) return r;
 
-    return (uint32)node_a->texture - (uint32)node_b->texture
+    return (uint32)node_a->texture - (uint32)node_b->texture;
 }
 
 // ------------------------------------------------------------------ 
@@ -77,7 +82,7 @@ static int __ui_node_cmp ( const void *_a, const void *_b ) {
 // ------------------------------------------------------------------ 
 
 static inline ex_ui_node_t *__request_ui_node ( ex_renderer_t *_renderer ) {
-    return ex_mempool_request( &_renderer->ui_node_block, 1 );
+    return ex_memblock_request( &_renderer->ui_node_block, 1 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,7 +116,7 @@ int ex_renderer_init ( ex_renderer_t *_renderer ) {
     glGenBuffers( 1, &_renderer->ui_ib_id );
 
     // init ui USE_VAO
-#ifdef (BUFFER_OP == VAO)
+#if (BUFFER_OP == VAO)
     glGenVertexArrays(1, &_renderer->ui_vao_id);
     glBindVertexArray(_renderer->ui_vao_id);
 
@@ -135,6 +140,7 @@ int ex_renderer_init ( ex_renderer_t *_renderer ) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
 
+    _renderer->initialized = true;
     return 0;
 }
 
@@ -151,13 +157,14 @@ void ex_renderer_deinit ( ex_renderer_t *_renderer ) {
     glDeleteBuffers(1, &_renderer->ui_vb_id);
     glDeleteBuffers(1, &_renderer->ui_ib_id);
 
-#ifdef (BUFFER_OP == VAO)
+#if (BUFFER_OP == VAO)
     glDeleteVertexArrays(1, &_renderer->ui_vao_id);
 #endif
 
     // destroy ui node pool
     ex_memblock_deinit ( &_renderer->ui_node_block );
     ex_memblock_deinit ( &_renderer->ui_vb );
+    ex_memblock_deinit ( &_renderer->ui_ib );
 
     _renderer->initialized = false;
 }
@@ -195,9 +202,15 @@ void __flush_ui_vertices_vao ( ex_renderer_t *_renderer ) {
 
     // TODO: the n here should be calculate by code because we have Nine-Scaled-Bitmap and Quad Bitmap shapes
 #if USE_TRIANGLE_STRIP
-    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
+    glDrawElements( GL_TRIANGLE_STRIP, 
+                    (GLsizei)_renderer->ui_ib.count, 
+                    GL_UNSIGNED_SHORT, 
+                    _renderer->ui_ib.data );
 #else
-    glDrawElements(GL_TRIANGLES, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
+    glDrawElements( GL_TRIANGLES, 
+                    (GLsizei)_renderer->ui_ib.count, 
+                    GL_UNSIGNED_SHORT, 
+                    _renderer->ui_ib.data );
 #endif // USE_TRIANGLE_STRIP
 
     // ======================================================== 
@@ -212,8 +225,8 @@ void __flush_ui_vertices_vao ( ex_renderer_t *_renderer ) {
     // reset memory
     // ======================================================== 
 
-    ex_memblock_clear(_renderer->ui_vb);
-    ex_memblock_clear(_renderer->ui_ib);
+    ex_memblock_clear(&_renderer->ui_vb);
+    ex_memblock_clear(&_renderer->ui_ib);
 }
 
 // ------------------------------------------------------------------ 
@@ -248,9 +261,15 @@ void __flush_ui_vertices_vbo ( ex_renderer_t *_renderer ) {
 
     // TODO: the n here should be calculate by code because we have Nine-Scaled-Bitmap and Quad Bitmap shapes
 #if USE_TRIANGLE_STRIP
-    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
+    glDrawElements( GL_TRIANGLE_STRIP, 
+                    (GLsizei)_renderer->ui_ib.count, 
+                    GL_UNSIGNED_SHORT, 
+                    _renderer->ui_ib.data );
 #else
-    glDrawElements(GL_TRIANGLES, (GLsizei)n*6, GL_UNSIGNED_SHORT, NULL);
+    glDrawElements( GL_TRIANGLES, 
+                    (GLsizei)_renderer->ui_ib.count, 
+                    GL_UNSIGNED_SHORT, 
+                    _renderer->ui_ib.data );
 #endif // USE_TRIANGLE_STRIP
 
     // ======================================================== 
@@ -268,8 +287,8 @@ void __flush_ui_vertices_vbo ( ex_renderer_t *_renderer ) {
     // reset memory
     // ======================================================== 
 
-    ex_memblock_clear(_renderer->ui_vb);
-    ex_memblock_clear(_renderer->ui_ib);
+    ex_memblock_clear(&_renderer->ui_vb);
+    ex_memblock_clear(&_renderer->ui_ib);
 }
 
 // ------------------------------------------------------------------ 
@@ -295,9 +314,15 @@ void __flush_ui_vertices_fixed ( ex_renderer_t *_renderer ) {
 
     // TODO: the n here should be calculate by code because we have Nine-Scaled-Bitmap and Quad Bitmap shapes
 #if USE_TRIANGLE_STRIP
-    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)n*6, GL_UNSIGNED_SHORT, _renderer->ui_ib.data);
+    glDrawElements( GL_TRIANGLE_STRIP, 
+                    (GLsizei)_renderer->ui_ib.count, 
+                    GL_UNSIGNED_SHORT, 
+                    _renderer->ui_ib.data );
 #else
-    glDrawElements(GL_TRIANGLES, (GLsizei)n*6, GL_UNSIGNED_SHORT, _renderer->ui_ib.data);
+    glDrawElements( GL_TRIANGLES, 
+                    (GLsizei)_renderer->ui_ib.count, 
+                    GL_UNSIGNED_SHORT, 
+                    _renderer->ui_ib.data );
 #endif // USE_TRIANGLE_STRIP
 
     // ======================================================== 
@@ -312,8 +337,8 @@ void __flush_ui_vertices_fixed ( ex_renderer_t *_renderer ) {
     // reset memory
     // ======================================================== 
 
-    ex_memblock_clear(_renderer->ui_vb);
-    ex_memblock_clear(_renderer->ui_ib);
+    ex_memblock_clear(&_renderer->ui_vb);
+    ex_memblock_clear(&_renderer->ui_ib);
 }
 
 // ------------------------------------------------------------------ 
@@ -329,23 +354,22 @@ void __flush_ui_vertices_fixed ( ex_renderer_t *_renderer ) {
 
 void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
     ex_ui_node_t *node;
-    int i, last_depth;
+    size_t i;
     void *last_texture;
     __ui_vertex_t *verts;
-
-    float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
-    float dw = sw, dh = sh;
     ALLEGRO_BITMAP_OGL *ogl_bitmap;
+    float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
+    float sx, sy, sw, sh;
 
     // process ui nodes
     qsort ( _renderer->ui_node_block.data, 
-            _renderer->ui_node_block.block_count,
+            _renderer->ui_node_block.count,
             sizeof(ex_ui_node_t),
             __ui_node_cmp );
 
     // loop all ui node and draw
     last_texture = NULL;
-    for ( i = 0; i < _renderer->ui_node_block.block_count; ++i ) {
+    for ( i = 0; i < _renderer->ui_node_block.count; ++i ) {
         node = (ex_ui_node_t *)ex_memblock_get ( &_renderer->ui_node_block, i );
 
         // if this is not the first node,
@@ -357,15 +381,20 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
 
 
         // draw as pure sprite
-        if ( node.border.l != 0 
-          || node.border.r != 0 
-          || node.border.t != 0 
-          || node.border.b != 0 ) {
+        if ( node->border.l != 0 
+          || node->border.r != 0 
+          || node->border.t != 0 
+          || node->border.b != 0 ) {
 
             tex_l = ogl_bitmap->left;
             tex_r = ogl_bitmap->right;
             tex_t = ogl_bitmap->top;
             tex_b = ogl_bitmap->bottom;
+
+            sx = node->rect.x;
+            sy = node->rect.y;
+            sw = node->rect.w;
+            sh = node->rect.h;
 
             w = bitmap->w;
             h = bitmap->h;
@@ -378,7 +407,7 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
             tex_b += (h - sy - sh) / true_h;
 
             // ui_vb
-            verts = (__ui_vertex_t *)ex_memblock_request ( &_renderer->ui_vb, 6 );
+            verts = (__ui_vertex_t *)ex_memblock_request ( &_renderer->ui_vb, 4 );
         }
 
         // draw as border sprite
@@ -389,7 +418,7 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
     }
 
     // if we still have verices remain, flush it at the end
-    if ( ex_memblock_count (_renderer->ui_vb) > 0 ) {
+    if ( ex_memblock_count (&_renderer->ui_vb) > 0 ) {
         flush_ui_vertices ( _renderer );
     }
 }
@@ -420,7 +449,7 @@ void ex_ui_draw_texture ( ex_renderer_t *_renderer,
                           void *_texture,
                           ex_recti_t _pos,
                           ex_recti_t _border,
-                          ex_rectf_t _uv0,
+                          ex_recti_t _rect,
                           ex_vec4f_t _color ) 
 {
     ex_ui_node_t *node;
@@ -435,6 +464,6 @@ void ex_ui_draw_texture ( ex_renderer_t *_renderer,
 
     node->pos = _pos;
     node->border = _border;
-    node->uv0 = _uv0;
+    node->rect = _rect;
     node->color = _color;
 }

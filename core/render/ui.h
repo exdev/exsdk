@@ -29,10 +29,11 @@ typedef struct ex_ui_state_t {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_ui_draw_texture ( void *_texture,
+extern void ex_ui_draw_texture ( struct ex_renderer_t *_renderer,
+                                 void *_texture,
                                  ex_recti_t _pos,
                                  ex_recti_t _border,
-                                 ex_rectf_t _uv0,
+                                 ex_recti_t _rect,
                                  ex_vec4f_t _color );
 
 // ######################### 

@@ -17,14 +17,14 @@ extern "C" {
 // ######################### 
 
 typedef struct ex_renderer_t {
-    bool initialized = false;
+    bool initialized;
 
     // ui data
     ex_ui_state_t    ui_state;
     ex_memblock_t    ui_node_block; 
-    uint             ui_vb_id
+    uint             ui_vb_id;
     ex_memblock_t    ui_vb;
-    uint             ui_ib_id
+    uint             ui_ib_id;
     ex_memblock_t    ui_ib;
     uint             ui_vao_id;
 } ex_renderer_t;

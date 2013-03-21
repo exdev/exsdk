@@ -89,7 +89,7 @@ extern void *ex_memblock_get ( const ex_memblock_t *_block, size_t _idx );
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_memblock_clear ( const ex_memblock_t *_block );
+extern void ex_memblock_clear ( ex_memblock_t *_block );
 
 // ######################### 
 #ifdef __cplusplus

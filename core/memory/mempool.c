@@ -174,7 +174,7 @@ void *ex_mempool_get ( const ex_mempool_t *_pool, size_t _idx ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_mempool_clear ( const ex_mempool_t *_pool ) {
+void ex_mempool_clear ( ex_mempool_t *_pool ) {
     int data_size = _pool->element_bytes * _pool->capacity;
     int index_size = sizeof(size_t) * _pool->capacity;
 

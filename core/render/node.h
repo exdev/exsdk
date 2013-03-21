@@ -19,14 +19,14 @@ extern "C" {
 typedef struct ex_ui_node_t {
     // ex_material_t *mat;
     const char *text;
-    const void *texture;
+    void *texture;
 
     ex_mat44f_t transform;
     uint32 depth;
 
     ex_recti_t pos;
     ex_recti_t border;
-    ex_rectf_t uv0;
+    ex_recti_t rect;
     ex_vec4f_t color;
 } ex_ui_node_t;
 
