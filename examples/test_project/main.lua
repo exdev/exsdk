@@ -82,20 +82,26 @@ function render()
                                 ex.color4f( 1.0, 1.0, 1.0, 1.0 ), -- color
                                 img1 )
 
-        -- local pos2 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
-        -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
-        -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
-        local pos2 = screen_center
-        -- pos2 = ex.vec2f( math.ceil(pos2.x), math.ceil(pos2.y) )
-        ex.canvas.draw_texture( pos2, -- destination 
-                                ex.vec2f(img1.width, img1.height) * 0.5, -- anchor
-                                ex.vec2f(1.0,1.0), -- scale 
-                                0.0,               -- angle in degrees
-                                ex.color4f( 1.0, 1.0, 1.0, 1.0 ), -- color
-                                img1 )
-        -- ex.canvas.draw_texture( ex.vec2f(0.0,0.0), btfont2.pageInfos[0] )
-        -- ex.canvas.draw_text( ex.vec2f(0.0,0.0), btfont1, "Hello World " )
-        -- ex.canvas.draw_texture( ex.vec2f(0.0,50.0), btfont1.pageInfos[0] )
+        -- -- local pos2 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
+        -- -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
+        -- -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
+        -- local pos2 = screen_center
+        -- -- pos2 = ex.vec2f( math.ceil(pos2.x), math.ceil(pos2.y) )
+        -- ex.canvas.draw_texture( pos2, -- destination 
+        --                         ex.vec2f(img1.width, img1.height) * 0.5, -- anchor
+        --                         ex.vec2f(1.0,1.0), -- scale 
+        --                         0.0,               -- angle in degrees
+        --                         ex.color4f( 1.0, 1.0, 1.0, 1.0 ), -- color
+        --                         img1 )
+        -- -- ex.canvas.draw_texture( ex.vec2f(0.0,0.0), btfont2.pageInfos[0] )
+        -- -- ex.canvas.draw_text( ex.vec2f(0.0,0.0), btfont1, "Hello World " )
+        -- -- ex.canvas.draw_texture( ex.vec2f(0.0,50.0), btfont1.pageInfos[0] )
+
+        ex_c.gui_draw_texture ( img1._cptr,
+                              screen_center.x, screen_center.y, img1.width, img1.height,
+                              0, 0, 0, 0,
+                              0, 0, img1.width, img1.height,
+                              1.0, 1.0, 1.0, 1.0 )
 
     ex_c.canvas_flush()
 end

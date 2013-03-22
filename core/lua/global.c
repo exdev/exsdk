@@ -128,6 +128,7 @@ extern int __ex_lua_add_vec4f ( lua_State * );
 extern int __ex_lua_add_transform ( lua_State * );
 extern int __ex_lua_add_texture ( lua_State * );
 extern int __ex_lua_add_canvas ( lua_State * );
+extern int __ex_lua_add_gui ( lua_State * );
 
 static const lua_CFunction loadedlibs[] = {
     __ex_lua_add_base,
@@ -141,6 +142,7 @@ static const lua_CFunction loadedlibs[] = {
     __ex_lua_add_transform,
     __ex_lua_add_texture,
     __ex_lua_add_canvas,
+    __ex_lua_add_gui,
     NULL
 };
 // ------------------------------------------------------------------ 

@@ -39,6 +39,9 @@ static inline bool ex_renderer_initialized ( ex_renderer_t *_renderer ) {
     return _renderer->initialized;
 }
 
+extern void ex_set_current_renderer ( ex_renderer_t *_renderer );
+extern ex_renderer_t *ex_current_renderer ();
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 

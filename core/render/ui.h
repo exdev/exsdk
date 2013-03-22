@@ -21,7 +21,7 @@ extern "C" {
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef struct ex_ui_state_t {
-    ex_mat44f_t matrix;
+    ex_mat33f_t matrix;
     uint32 depth; 
 } ex_ui_state_t;
 

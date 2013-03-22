@@ -40,6 +40,17 @@ void ex_mat33f_mul_vec3f ( ex_vec3f_t *_r, const ex_mat33f_t *_lhs, const ex_vec
 // Desc: 
 // ------------------------------------------------------------------ 
 
+void ex_vec2f_mul_mat33f ( ex_vec2f_t *_r, const ex_vec2f_t *_lhs, const ex_mat33f_t *_rhs ) {
+    float t;
+    t = _lhs->x;
+    _r->x = t * _rhs->m00 + _lhs->y * _rhs->m10 + _rhs->m20;
+    _r->y = t * _rhs->m01 + _lhs->y * _rhs->m11 + _rhs->m21;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void ex_vec3f_mul_mat33f ( ex_vec3f_t *_r, const ex_vec3f_t *_lhs, const ex_mat33f_t *_rhs ) {
     float x, y, z;
     ex_vec3f_t tmp;

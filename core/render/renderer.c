@@ -53,10 +53,20 @@ enum {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+ex_renderer_t *current_renderer;
+// ------------------------------------------------------------------ 
+
+void ex_set_current_renderer ( ex_renderer_t *_renderer ) {
+    current_renderer = _renderer;
+}
+ex_renderer_t *ex_current_renderer () { return current_renderer; } 
+
+// ------------------------------------------------------------------ 
+// Desc: 
 // ------------------------------------------------------------------ 
 
 static void __reset_ui_state ( ex_ui_state_t *_ui_state ) {
-    ex_mat44f_identity(&_ui_state->matrix);
+    ex_mat33f_identity(&_ui_state->matrix);
     _ui_state->depth = 0;
 }
 
@@ -133,7 +143,7 @@ int ex_renderer_init ( ex_renderer_t *_renderer ) {
         glVertexAttribPointer( VAT_TEXCOORD, 2, GL_FLOAT        , GL_FALSE, sizeof(__ui_vertex_t), (GLvoid*)offsetof(__ui_vertex_t, uv0)   );
 
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, _renderer->ui_ib_id );
-        glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
+        glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GL_UNSIGNED_SHORT) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -194,7 +204,7 @@ void __flush_ui_vertices_vao ( ex_renderer_t *_renderer ) {
 
     // send index buffer data
     glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, _renderer->ui_ib_id );
-    glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
+    glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GL_UNSIGNED_SHORT) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
 
     // ======================================================== 
     // draw elements 
@@ -205,12 +215,12 @@ void __flush_ui_vertices_vao ( ex_renderer_t *_renderer ) {
     glDrawElements( GL_TRIANGLE_STRIP, 
                     (GLsizei)_renderer->ui_ib.count, 
                     GL_UNSIGNED_SHORT, 
-                    _renderer->ui_ib.data );
+                    NULL );
 #else
     glDrawElements( GL_TRIANGLES, 
                     (GLsizei)_renderer->ui_ib.count, 
                     GL_UNSIGNED_SHORT, 
-                    _renderer->ui_ib.data );
+                    NULL );
 #endif // USE_TRIANGLE_STRIP
 
     // ======================================================== 
@@ -253,7 +263,7 @@ void __flush_ui_vertices_vbo ( ex_renderer_t *_renderer ) {
 
     // send index buffer data
     glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, _renderer->ui_ib_id );
-    glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
+    glBufferData ( GL_ELEMENT_ARRAY_BUFFER, sizeof(GL_UNSIGNED_SHORT) * _renderer->ui_ib.count, _renderer->ui_ib.data, GL_DYNAMIC_DRAW );
 
     // ======================================================== 
     // draw elements 
@@ -264,12 +274,12 @@ void __flush_ui_vertices_vbo ( ex_renderer_t *_renderer ) {
     glDrawElements( GL_TRIANGLE_STRIP, 
                     (GLsizei)_renderer->ui_ib.count, 
                     GL_UNSIGNED_SHORT, 
-                    _renderer->ui_ib.data );
+                    NULL );
 #else
     glDrawElements( GL_TRIANGLES, 
                     (GLsizei)_renderer->ui_ib.count, 
                     GL_UNSIGNED_SHORT, 
-                    _renderer->ui_ib.data );
+                    NULL );
 #endif // USE_TRIANGLE_STRIP
 
     // ======================================================== 
@@ -343,23 +353,38 @@ void __flush_ui_vertices_fixed ( ex_renderer_t *_renderer ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+// ------------------------------------------------------------------ 
+
+void __setup_blending ( ex_renderer_t *_renderer ) {
+    glEnable ( GL_BLEND );
+    glBlendFuncSeparate ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                          GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glBlendEquationSeparate ( GL_FUNC_ADD, 
+                              GL_FUNC_ADD );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
 #if ( BUFFER_OP == VAO )
-    #define flush_ui_vertices __flush_ui_vertices_vao
+    #define __flush_ui_vertices __flush_ui_vertices_vao
 #elif ( BUFFER_OP == VBO )
-    #define flush_ui_vertices __flush_ui_vertices_vbo
+    #define __flush_ui_vertices __flush_ui_vertices_vbo
 #else
-    #define flush_ui_vertices __flush_ui_vertices_fixed
+    #define __flush_ui_vertices __flush_ui_vertices_fixed
 #endif
 // ------------------------------------------------------------------ 
 
 void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
     ex_ui_node_t *node;
-    size_t i;
+    size_t i, index_start;
     void *last_texture;
     __ui_vertex_t *verts;
+    uint16 *indices;
+    ALLEGRO_BITMAP *bitmap;
     ALLEGRO_BITMAP_OGL *ogl_bitmap;
     float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
-    float sx, sy, sw, sh;
+    int sx, sy, sw, sh;
+    float dw, dh;
 
     // process ui nodes
     qsort ( _renderer->ui_node_block.data, 
@@ -374,22 +399,27 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
 
         // if this is not the first node,
         if ( i != 0 && node->texture != last_texture ) {
-            flush_ui_vertices ( _renderer );
+            glBindTexture ( GL_TEXTURE_2D, ogl_bitmap->texture );
+            __setup_blending ( _renderer );
+            __flush_ui_vertices ( _renderer );
         }
 
+        bitmap = (ALLEGRO_BITMAP *)node->texture;
         ogl_bitmap = (ALLEGRO_BITMAP_OGL *)node->texture;
 
-
         // draw as pure sprite
-        if ( node->border.l != 0 
-          || node->border.r != 0 
-          || node->border.t != 0 
-          || node->border.b != 0 ) {
+        if ( node->border.l == 0 
+          && node->border.r == 0 
+          && node->border.t == 0 
+          && node->border.b == 0 ) {
 
             tex_l = ogl_bitmap->left;
             tex_r = ogl_bitmap->right;
             tex_t = ogl_bitmap->top;
             tex_b = ogl_bitmap->bottom;
+
+            dw = (float)node->pos.w;
+            dh = (float)node->pos.h;
 
             sx = node->rect.x;
             sy = node->rect.y;
@@ -408,6 +438,50 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
 
             // ui_vb
             verts = (__ui_vertex_t *)ex_memblock_request ( &_renderer->ui_vb, 4 );
+
+            verts[0].pos.x = 0.0f;
+            verts[0].pos.y = dh;
+            verts[0].uv0.x = tex_l;
+            verts[0].uv0.y = tex_b;
+            verts[0].color = node->color;
+
+            verts[1].pos.x = 0.0f;
+            verts[1].pos.y = 0.0f;
+            verts[1].uv0.x = tex_l;
+            verts[1].uv0.y = tex_t;
+            verts[1].color = node->color;
+
+            verts[2].pos.x = dw;
+            verts[2].pos.y = dh;
+            verts[2].uv0.x = tex_r;
+            verts[2].uv0.y = tex_b;
+            verts[2].color = node->color;
+
+            verts[3].pos.x = dw;
+            verts[3].pos.y = 0.0f;
+            verts[3].uv0.x = tex_r;
+            verts[3].uv0.y = tex_t;
+            verts[3].color = node->color;
+
+            ex_vec2f_mul_mat33f ( &verts[0].pos, &verts[0].pos, &node->transform );
+            ex_vec2f_mul_mat33f ( &verts[1].pos, &verts[1].pos, &node->transform );
+            ex_vec2f_mul_mat33f ( &verts[2].pos, &verts[2].pos, &node->transform );
+            ex_vec2f_mul_mat33f ( &verts[3].pos, &verts[3].pos, &node->transform );
+
+            verts[0].pos.x = ceilf(verts[0].pos.x); verts[0].pos.y = ceilf(verts[0].pos.y);
+            verts[1].pos.x = ceilf(verts[1].pos.x); verts[1].pos.y = ceilf(verts[1].pos.y);
+            verts[2].pos.x = ceilf(verts[2].pos.x); verts[2].pos.y = ceilf(verts[2].pos.y);
+            verts[3].pos.x = ceilf(verts[3].pos.x); verts[3].pos.y = ceilf(verts[3].pos.y);
+
+            // ui_ib
+            index_start = _renderer->ui_ib.count;
+            indices = (uint16 *)ex_memblock_request ( &_renderer->ui_ib, 6 );
+            indices[0] = index_start;
+            indices[1] = index_start + 1;
+            indices[2] = index_start + 2;
+            indices[3] = index_start + 2;
+            indices[4] = index_start + 1;
+            indices[5] = index_start + 3;
         }
 
         // draw as border sprite
@@ -419,7 +493,9 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
 
     // if we still have verices remain, flush it at the end
     if ( ex_memblock_count (&_renderer->ui_vb) > 0 ) {
-        flush_ui_vertices ( _renderer );
+        glBindTexture ( GL_TEXTURE_2D, ogl_bitmap->texture );
+        __setup_blending ( _renderer );
+        __flush_ui_vertices ( _renderer );
     }
 }
 
