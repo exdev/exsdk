@@ -43,14 +43,6 @@ typedef struct __ui_vertex_t {
     ex_vec4f_t color;
 } __ui_vertex_t;
 
-// vertex attribute type
-enum {
-    VAT_POSITION = 0,
-    VAT_COLOR,
-    VAT_TEXCOORD,
-    VAT_MAX
-};
-
 // ------------------------------------------------------------------ 
 // Desc: 
 ex_renderer_t *current_renderer;
@@ -384,13 +376,15 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
     ALLEGRO_BITMAP_OGL *ogl_bitmap;
     float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
     int sx, sy, sw, sh;
-    float dw, dh;
+    float dx, dy, dw, dh;
 
     // process ui nodes
     qsort ( _renderer->ui_node_block.data, 
             _renderer->ui_node_block.count,
             sizeof(ex_ui_node_t),
             __ui_node_cmp );
+
+    glEnable(GL_TEXTURE_2D);
 
     // loop all ui node and draw
     last_texture = NULL;
@@ -418,6 +412,8 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
             tex_t = ogl_bitmap->top;
             tex_b = ogl_bitmap->bottom;
 
+            dx = (float)node->pos.x;
+            dy = (float)node->pos.y;
             dw = (float)node->pos.w;
             dh = (float)node->pos.h;
 
@@ -439,26 +435,26 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
             // ui_vb
             verts = (__ui_vertex_t *)ex_memblock_request ( &_renderer->ui_vb, 4 );
 
-            verts[0].pos.x = 0.0f;
-            verts[0].pos.y = dh;
+            verts[0].pos.x = dx;
+            verts[0].pos.y = dy + dh;
             verts[0].uv0.x = tex_l;
             verts[0].uv0.y = tex_b;
             verts[0].color = node->color;
 
-            verts[1].pos.x = 0.0f;
-            verts[1].pos.y = 0.0f;
+            verts[1].pos.x = dx;
+            verts[1].pos.y = dy;
             verts[1].uv0.x = tex_l;
             verts[1].uv0.y = tex_t;
             verts[1].color = node->color;
 
-            verts[2].pos.x = dw;
-            verts[2].pos.y = dh;
+            verts[2].pos.x = dx + dw;
+            verts[2].pos.y = dy + dh;
             verts[2].uv0.x = tex_r;
             verts[2].uv0.y = tex_b;
             verts[2].color = node->color;
 
-            verts[3].pos.x = dw;
-            verts[3].pos.y = 0.0f;
+            verts[3].pos.x = dx + dw;
+            verts[3].pos.y = dy;
             verts[3].uv0.x = tex_r;
             verts[3].uv0.y = tex_t;
             verts[3].color = node->color;
@@ -468,10 +464,12 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
             ex_vec2f_mul_mat33f ( &verts[2].pos, &verts[2].pos, &node->transform );
             ex_vec2f_mul_mat33f ( &verts[3].pos, &verts[3].pos, &node->transform );
 
-            verts[0].pos.x = ceilf(verts[0].pos.x); verts[0].pos.y = ceilf(verts[0].pos.y);
-            verts[1].pos.x = ceilf(verts[1].pos.x); verts[1].pos.y = ceilf(verts[1].pos.y);
-            verts[2].pos.x = ceilf(verts[2].pos.x); verts[2].pos.y = ceilf(verts[2].pos.y);
-            verts[3].pos.x = ceilf(verts[3].pos.x); verts[3].pos.y = ceilf(verts[3].pos.y);
+            // DISABLE: since we use integer here { 
+            // verts[0].pos.x = ceilf(verts[0].pos.x); verts[0].pos.y = ceilf(verts[0].pos.y);
+            // verts[1].pos.x = ceilf(verts[1].pos.x); verts[1].pos.y = ceilf(verts[1].pos.y);
+            // verts[2].pos.x = ceilf(verts[2].pos.x); verts[2].pos.y = ceilf(verts[2].pos.y);
+            // verts[3].pos.x = ceilf(verts[3].pos.x); verts[3].pos.y = ceilf(verts[3].pos.y);
+            // } DISABLE end 
 
             // ui_ib
             index_start = _renderer->ui_ib.count;
@@ -497,6 +495,11 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
         __setup_blending ( _renderer );
         __flush_ui_vertices ( _renderer );
     }
+
+    glDisable(GL_TEXTURE_2D);
+
+    //
+    ex_memblock_clear( &_renderer->ui_node_block );
 }
 
 // ------------------------------------------------------------------ 

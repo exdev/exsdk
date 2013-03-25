@@ -99,7 +99,6 @@ static void main_loop () {
             // call render() in __project__/main.lua
             ex_set_current_renderer (&renderer);
             ex_lua_main_render ( ex_lua_main_state() );
-            ex_renderer_draw_nodes (&renderer);
         }
     }
 

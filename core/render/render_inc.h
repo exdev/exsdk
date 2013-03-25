@@ -12,6 +12,7 @@
 
 #include "node.h"
 #include "ui.h"
+#include "shader.h"
 #include "renderer.h"
 
 // #################################################################################

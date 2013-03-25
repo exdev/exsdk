@@ -74,15 +74,15 @@ function render()
                              , ex.blend_mode.inverse_alpha )
 
         -- local pos1 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
-        local pos1 = ex.vec2f.zero
-        ex.canvas.draw_texture( pos1, -- destination 
-                                ex.vec2f(0.0,0.0), -- anchor
-                                ex.vec2f(1.0,1.0), -- scale 
-                                0.0,               -- angle in degrees
-                                ex.color4f( 1.0, 1.0, 1.0, 1.0 ), -- color
-                                img1 )
+        -- local pos1 = ex.vec2f.zero
+        -- ex.canvas.draw_texture( pos1, -- destination 
+        --                         ex.vec2f(0.0,0.0), -- anchor
+        --                         ex.vec2f(1.0,1.0), -- scale 
+        --                         0.0,               -- angle in degrees
+        --                         ex.color4f( 1.0, 1.0, 1.0, 1.0 ), -- color
+        --                         img1 )
 
-        -- -- local pos2 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
+        local pos2 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
         -- -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
         -- -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
         -- local pos2 = screen_center
@@ -98,10 +98,10 @@ function render()
         -- -- ex.canvas.draw_texture( ex.vec2f(0.0,50.0), btfont1.pageInfos[0] )
 
         ex_c.gui_draw_texture ( img1._cptr,
-                              screen_center.x, screen_center.y, img1.width, img1.height,
-                              0, 0, 0, 0,
-                              0, 0, img1.width, img1.height,
-                              1.0, 1.0, 1.0, 1.0 )
+                                pos2.x, pos2.y, img1.width, img1.height,
+                                0, 0, 0, 0,
+                                0, 0, img1.width, img1.height,
+                                1.0, 1.0, 1.0, 1.0 )
 
     ex_c.canvas_flush()
 end
