@@ -16,6 +16,38 @@ extern "C" {
 #endif
 // ######################### 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// vertex attribute type
+enum {
+    VAT_POSITION = 0,
+    VAT_COLOR,
+    VAT_TEXCOORD,
+    VAT_MAX
+};
+
+// uniform constants
+enum {
+    UNIFORM_MATRIX_P,
+    UNIFORM_MATRIX_MV,
+    UNIFORM_MATRIX_MVP,
+
+    UNIFORM_FLOAT_TIME,
+
+    UNIFORM_MAX
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef struct ex_ui_state_t {
+    ex_mat33f_t matrix;
+    uint32 depth; 
+} ex_ui_state_t;
+
 typedef struct ex_renderer_t {
     bool initialized;
 
@@ -28,6 +60,10 @@ typedef struct ex_renderer_t {
     ex_memblock_t    ui_ib;
     uint             ui_vao_id;
 } ex_renderer_t;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -47,6 +83,13 @@ extern ex_renderer_t *ex_current_renderer ();
 // ------------------------------------------------------------------ 
 
 extern void ex_renderer_draw_nodes ( ex_renderer_t *_renderer );
+
+///////////////////////////////////////////////////////////////////////////////
+// interface
+///////////////////////////////////////////////////////////////////////////////
+
+#include "ui.h"
+#include "shader.h"
 
 // ######################### 
 #ifdef __cplusplus

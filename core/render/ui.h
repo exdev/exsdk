@@ -16,20 +16,11 @@ extern "C" {
 #endif
 // ######################### 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-///////////////////////////////////////////////////////////////////////////////
-
-typedef struct ex_ui_state_t {
-    ex_mat33f_t matrix;
-    uint32 depth; 
-} ex_ui_state_t;
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_ui_draw_texture ( struct ex_renderer_t *_renderer,
+extern void ex_ui_draw_texture ( ex_renderer_t *_renderer,
                                  void *_texture,
                                  ex_recti_t _pos,
                                  ex_recti_t _border,

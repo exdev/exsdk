@@ -68,11 +68,11 @@ uint ex_shader_load ( const char *_vbuf, const char *_fbuf ) {
     GLuint programHandle = 0;
 
     // Load the vertex/fragment shaders
-    vertexShader = __compile_shader ( _vbuf, GL_VERTEX_SHADER );
+    vertexShader = __compile_shader ( GL_VERTEX_SHADER, _vbuf );
     if ( vertexShader == 0 )
         return 0;
     
-    fragmentShader = __compile_shader ( _fbuf, GL_FRAGMENT_SHADER );
+    fragmentShader = __compile_shader ( GL_FRAGMENT_SHADER, _fbuf );
     if ( fragmentShader == 0 ) {
         glDeleteShader(vertexShader);
         return 0;

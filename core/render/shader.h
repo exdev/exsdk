@@ -16,25 +16,6 @@ extern "C" {
 #endif
 // ######################### 
 
-// vertex attribute type
-enum {
-    VAT_POSITION = 0,
-    VAT_COLOR,
-    VAT_TEXCOORD,
-    VAT_MAX
-};
-
-// uniform constants
-enum {
-    UNIFORM_MATRIX_P,
-    UNIFORM_MATRIX_MV,
-    UNIFORM_MATRIX_MVP,
-
-    UNIFORM_FLOAT_TIME,
-
-    UNIFORM_MAX
-};
-
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 

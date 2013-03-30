@@ -61,7 +61,7 @@ void __ex_value_type_pool_deinit () {
 // ------------------------------------------------------------------ 
 
 size_t __ex_vec2f_pool_request ( ex_vec2f_t **_ptr ) {
-    return ex_mempool_request( &__vec2f_pool, _ptr );
+    return ex_mempool_request( &__vec2f_pool, (void **)_ptr );
 }
 void __ex_vec2f_pool_return ( size_t _handle ) {
     ex_mempool_return( &__vec2f_pool, _handle );
@@ -75,7 +75,7 @@ ex_vec2f_t *__ex_vec2f_pool_get ( size_t _handle ) {
 // ------------------------------------------------------------------ 
 
 size_t __ex_vec3f_pool_request ( ex_vec3f_t **_ptr ) {
-    return ex_mempool_request( &__vec3f_pool, _ptr );
+    return ex_mempool_request( &__vec3f_pool, (void **)_ptr );
 }
 void __ex_vec3f_pool_return ( size_t _handle ) {
     ex_mempool_return( &__vec3f_pool, _handle );
@@ -89,7 +89,7 @@ ex_vec3f_t *__ex_vec3f_pool_get ( size_t _handle ) {
 // ------------------------------------------------------------------ 
 
 size_t __ex_vec4f_pool_request ( ex_vec4f_t **_ptr ) {
-    return ex_mempool_request( &__vec4f_pool, _ptr );
+    return ex_mempool_request( &__vec4f_pool, (void **)_ptr );
 }
 void __ex_vec4f_pool_return ( size_t _handle ) {
     ex_mempool_return( &__vec4f_pool, _handle );
@@ -103,7 +103,7 @@ ex_vec4f_t *__ex_vec4f_pool_get ( size_t _handle ) {
 // ------------------------------------------------------------------ 
 
 size_t __ex_al_transform_pool_request ( ALLEGRO_TRANSFORM **_ptr ) {
-    return ex_mempool_request( &__al_transform_pool, _ptr );
+    return ex_mempool_request( &__al_transform_pool, (void **)_ptr );
 }
 void __ex_al_transform_pool_return ( size_t _handle ) {
     ex_mempool_return( &__al_transform_pool, _handle );

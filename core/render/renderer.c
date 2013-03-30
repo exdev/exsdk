@@ -43,6 +43,20 @@ typedef struct __ui_vertex_t {
     ex_vec4f_t color;
 } __ui_vertex_t;
 
+typedef struct __ui_node_t {
+    // ex_material_t *mat;
+    const char *text;
+    void *texture;
+
+    ex_mat33f_t transform;
+    uint32 depth;
+
+    ex_recti_t pos;
+    ex_recti_t border;
+    ex_recti_t rect;
+    ex_vec4f_t color;
+} __ui_node_t;
+
 // ------------------------------------------------------------------ 
 // Desc: 
 ex_renderer_t *current_renderer;
@@ -68,10 +82,10 @@ static void __reset_ui_state ( ex_ui_state_t *_ui_state ) {
 
 static int __ui_node_cmp ( const void *_a, const void *_b ) {
     int r;
-    ex_ui_node_t *node_a, *node_b;
+    __ui_node_t *node_a, *node_b;
     
-    node_a = (ex_ui_node_t *)_a;
-    node_b = (ex_ui_node_t *)_b;
+    node_a = (__ui_node_t *)_a;
+    node_b = (__ui_node_t *)_b;
 
     r = node_a->depth - node_b->depth;
     if ( r != 0 ) return r;
@@ -83,7 +97,7 @@ static int __ui_node_cmp ( const void *_a, const void *_b ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static inline ex_ui_node_t *__request_ui_node ( ex_renderer_t *_renderer ) {
+static inline __ui_node_t *__request_ui_node ( ex_renderer_t *_renderer ) {
     return ex_memblock_request( &_renderer->ui_node_block, 1 );
 }
 
@@ -109,7 +123,7 @@ int ex_renderer_init ( ex_renderer_t *_renderer ) {
     __reset_ui_state (&_renderer->ui_state);
 
     // create ui node pool
-    MEMBLOCK_INIT ( _renderer->ui_node_block, ex_ui_node_t, 512 );
+    MEMBLOCK_INIT ( _renderer->ui_node_block, __ui_node_t, 512 );
     MEMBLOCK_INIT ( _renderer->ui_vb, __ui_vertex_t, 4096 );
     MEMBLOCK_INIT ( _renderer->ui_ib, sizeof(uint16), 4096 );
 
@@ -367,7 +381,7 @@ void __setup_blending ( ex_renderer_t *_renderer ) {
 // ------------------------------------------------------------------ 
 
 void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
-    ex_ui_node_t *node;
+    __ui_node_t *node;
     size_t i, index_start;
     void *last_texture;
     __ui_vertex_t *verts;
@@ -381,7 +395,7 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
     // process ui nodes
     qsort ( _renderer->ui_node_block.data, 
             _renderer->ui_node_block.count,
-            sizeof(ex_ui_node_t),
+            sizeof(__ui_node_t),
             __ui_node_cmp );
 
     glEnable(GL_TEXTURE_2D);
@@ -389,7 +403,7 @@ void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
     // loop all ui node and draw
     last_texture = NULL;
     for ( i = 0; i < _renderer->ui_node_block.count; ++i ) {
-        node = (ex_ui_node_t *)ex_memblock_get ( &_renderer->ui_node_block, i );
+        node = (__ui_node_t *)ex_memblock_get ( &_renderer->ui_node_block, i );
 
         // if this is not the first node,
         if ( i != 0 && node->texture != last_texture ) {
@@ -531,7 +545,7 @@ void ex_ui_draw_texture ( ex_renderer_t *_renderer,
                           ex_recti_t _rect,
                           ex_vec4f_t _color ) 
 {
-    ex_ui_node_t *node;
+    __ui_node_t *node;
 
     node = __request_ui_node(_renderer);
 

@@ -376,7 +376,7 @@ void *ex_pool_remove_at ( ex_pool_t *_pool, size_t _idx ) {
 // ------------------------------------------------------------------ 
 
 void *ex_pool_remove_at_safe ( ex_pool_t *_pool, size_t _idx ) {
-    if ( _idx < 0 || _idx >= _pool->capacity )
+    if ( _idx >= _pool->capacity )
         return NULL;
     if ( ex_bitarray_get(_pool->used_bits, _idx) != 1 )
         return NULL;
