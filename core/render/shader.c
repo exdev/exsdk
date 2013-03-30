@@ -20,35 +20,35 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static GLuint __shader_load ( const char *_utf8, GLenum _type ) {
+static GLuint __compile_shader ( GLenum _type, const char *_buf ) {
+    GLint compiled = 0;
+    GLuint shader = 0;
+
     // Create the shader object
-    GLuint shader = glCreateShader(_type);
-    if (shader == 0) {
-        NSLog(@"Error: failed to create shader.");
+    shader = glCreateShader(_type);
+    if ( shader == 0 ) {
+        ex_log ( "[shader] Error: failed to create shader" );
         return 0;
     }
     
     // Load the shader source
-    const char * shaderStringUTF8 = [shaderString UTF8String];
-    glShaderSource(shader, 1, &shaderStringUTF8, NULL);
+    glShaderSource(shader, 1, &_buf, NULL);
     
     // Compile the shader
     glCompileShader(shader);
     
     // Check the compile status
-    GLint compiled = 0;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
     
-    if (!compiled) {
+    if ( !compiled ) {
         GLint infoLen = 0;
         glGetShaderiv ( shader, GL_INFO_LOG_LENGTH, &infoLen );
         
-        if (infoLen > 1) {
-            char * infoLog = malloc(sizeof(char) * infoLen);
+        if ( infoLen > 1 ) {
+            char *infoLog = ex_malloc(sizeof(char) * infoLen);
             glGetShaderInfoLog (shader, infoLen, NULL, infoLog);
-            NSLog(@"Error compiling shader:\n%s\n", infoLog );            
-            
-            free(infoLog);
+            ex_log( "[shader] Compile error: %s", infoLog  );            
+            ex_free(infoLog);
         }
         
         glDeleteShader(shader);
@@ -62,21 +62,25 @@ static GLuint __shader_load ( const char *_utf8, GLenum _type ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-GLuint ex_shader_load ( const char *_vpath, const char *_fpath ) {
+uint ex_shader_load ( const char *_vbuf, const char *_fbuf ) {
+    GLuint vertexShader = 0;
+    GLuint fragmentShader = 0;
+    GLuint programHandle = 0;
+
     // Load the vertex/fragment shaders
-    GLuint vertexShader = __shader_load ( GL_VERTEX_SHADER, _vpath );
-    if (vertexShader == 0)
+    vertexShader = __compile_shader ( _vbuf, GL_VERTEX_SHADER );
+    if ( vertexShader == 0 )
         return 0;
     
-    GLuint fragmentShader = __shader_load ( GL_FRAGMENT_SHADER, _fpath );
-    if (fragmentShader == 0) {
+    fragmentShader = __compile_shader ( _fbuf, GL_FRAGMENT_SHADER );
+    if ( fragmentShader == 0 ) {
         glDeleteShader(vertexShader);
         return 0;
     }
     
     // Create the program object
-    GLuint programHandle = glCreateProgram();
-    if (programHandle == 0)
+    programHandle = glCreateProgram();
+    if ( programHandle == 0 )
         return 0;
     
     glAttachShader(programHandle, vertexShader);
@@ -89,17 +93,15 @@ GLuint ex_shader_load ( const char *_vpath, const char *_fpath ) {
     GLint linked;
     glGetProgramiv(programHandle, GL_LINK_STATUS, &linked);
     
-    if (!linked) {
+    if ( !linked ) {
         GLint infoLen = 0;
         glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &infoLen);
         
-        if (infoLen > 1){
-            char * infoLog = malloc(sizeof(char) * infoLen);
+        if ( infoLen > 1 ) {
+            char * infoLog = ex_malloc(sizeof(char) * infoLen);
             glGetProgramInfoLog(programHandle, infoLen, NULL, infoLog);
-
-            NSLog(@"Error linking program:\n%s\n", infoLog);            
-            
-            free(infoLog);
+            ex_log( "[shader] Link error: %s", infoLog  );            
+            ex_free(infoLog);
         }
         
         glDeleteProgram(programHandle );
@@ -110,7 +112,7 @@ GLuint ex_shader_load ( const char *_vpath, const char *_fpath ) {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
     
-    return programHandle;
+    return (uint)programHandle;
 }
 
 // ------------------------------------------------------------------ 
@@ -120,8 +122,3 @@ GLuint ex_shader_load ( const char *_vpath, const char *_fpath ) {
 // GLuint programHandle = ex_shader_load ( ... );
 // _positionSlot = glGetAttribLocation(programHandle, "vPosition");
 // glBindAttribLocation(programHandle, index, attributeName);
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-

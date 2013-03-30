@@ -39,7 +39,7 @@ enum {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern int ex_shader_load ();
+extern uint ex_shader_load ( const char *_vbuf, const char *_fbuf );
 
 // ######################### 
 #ifdef __cplusplus
