@@ -7,6 +7,9 @@
 
 local asset_db = editor.asset_db
 
+local logo
+local checkerboard
+local box
 local img1
 local btfont1
 local btfont2
@@ -21,6 +24,10 @@ function init()
     print ( "start" )
     print ( "=======================" )
     print ( "" )
+
+    checkerboard = asset_db.load("Checkerboard_64x64.png")
+    logo = asset_db.load("ex2d_logo.png")
+    box = asset_db.load("box.png")
 
     img1 = asset_db.load("grossini_dance_09.png")
     btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
@@ -57,9 +64,9 @@ end
 
 local cnt = 0
 function render()
-    -- if cnt >= 1 then
-    --     return
-    -- end
+    if cnt >= 1 then
+        return
+    end
     cnt = cnt + 1 
 
     local screen_center = ex.vec2f( ex.canvas.width * 0.5,
@@ -67,6 +74,16 @@ function render()
 
     ex_c.canvas_clear( 0.5, 0.5, 0.5 )
     -- ex_c.canvas_clear( 0.0, 0.0, 0.0 )
+
+        -- local size = math.max( ex.canvas.width, ex.canvas.height )
+        -- ex.canvas.draw_image( checkerboard, 
+        --                       0, 0, size, size,
+        --                       0, 0, checkerboard.width * 10, checkerboard.height * 10 )
+        -- ex.canvas.draw_image( logo, 
+        --                       ex.canvas.width - 10 - logo.width * 0.5, 
+        --                       ex.canvas.height - 10 - logo.height * 0.5,
+        --                       logo.width * 0.5,
+        --                       logo.height * 0.5 )
 
         --
         -- local pos1 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
@@ -84,8 +101,11 @@ function render()
         ex.canvas.draw_image( img1, pos2.x, pos2.y )
 
         -- ex.canvas.draw_image( btfont1.pageInfos[0], 0.0, 0.0 )
-        ex.canvas.draw_bitmap_text( "Hello World", btfont1, 50, 10 )
-        ex.canvas.draw_bitmap_text( "hello world", btfont2, 50, 50 )
+        ex.canvas.draw_bitmap_text( "Hello World!\n[OK]\n[Cancel]", btfont1, 100, 10 )
+
+        ex.canvas.draw_image_border( box, 
+                                     100, 100, 300, 300,
+                                     3, 3, 3, 3 )
 
     ex_c.canvas_flush()
 end

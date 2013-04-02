@@ -110,28 +110,41 @@ local canvas = class ({
 
             for i=0,count do
                 local id = ex_c.ustr_get(ustr_ptr,i)
-                local charInfo = _font.charInfos[id]
-                assert( charInfo, "Can't find char info by id " .. id )
-                local page_texture = _font.pageInfos[charInfo.page]
 
-                if last_texture ~= page_texture then
-                    if last_texture ~= ex.texture.null then
-                        ex_c.gui_flush()
+                -- if this is \n(10) or \r(13)
+                if id == 10 or id == 13 then
+                    cur_y = cur_y + _font.lineHeight
+                    cur_x = _dx
+                else
+                    local charInfo = _font.charInfos[id]
+                    assert( charInfo, "Can't find char info by id " .. id )
+
+                    -- if this is space(32)
+                    if id == 32 then
+                        cur_x = cur_x + charInfo.xadvance
+                    else
+                        local page_texture = _font.pageInfos[charInfo.page]
+
+                        if last_texture ~= page_texture then
+                            if last_texture ~= ex.texture.null then
+                                ex_c.gui_flush()
+                            end
+                            ex_c.gui_set_texture(page_texture._cptr) 
+                            last_texture = page_texture
+                        end
+
+                        ex_c.gui_draw_texture( cur_x + charInfo.xoffset, cur_y + charInfo.yoffset, charInfo.width, charInfo.height, -- pos
+                        charInfo.x, charInfo.y, charInfo.width, charInfo.height -- rect
+                        )
+                        cur_x = cur_x + charInfo.xadvance
+
+                        -- TODO { 
+                        -- if _font.hasKerning then
+                        --     cur_x = cur_x
+                        -- end
+                        -- } TODO end 
                     end
-                    ex_c.gui_set_texture(page_texture._cptr) 
-                    last_texture = page_texture
                 end
-
-                ex_c.gui_draw_texture( cur_x, cur_y + charInfo.yoffset, charInfo.width, charInfo.height, -- pos
-                                       charInfo.x, charInfo.y, charInfo.width, charInfo.height -- rect
-                                     )
-                cur_x = cur_x + charInfo.xadvance
-
-                -- TODO { 
-                -- if _font.hasKerning then
-                --     cur_x = cur_x
-                -- end
-                -- } TODO end 
             end
 
             ex_c.gui_flush()

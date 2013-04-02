@@ -71,8 +71,8 @@ extern void ex_ui_draw_texture ( int _dx, int _dy, int _dw, int _dh,
 // ------------------------------------------------------------------ 
 
 extern void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
-                                        int _sx, int _sy, int _sw, int _sh,
-                                        int _l, int _r, int _t, int _b );
+                                        int _l, int _r, int _t, int _b, 
+                                        int _sx, int _sy, int _sw, int _sh );
 
 // ------------------------------------------------------------------ 
 // Desc: 
