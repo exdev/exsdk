@@ -22,8 +22,6 @@ function init()
     print ( "=======================" )
     print ( "" )
 
-    -- canvas.init()
-
     img1 = asset_db.load("grossini_dance_09.png")
     btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
     btfont2 = asset_db.load("MolotShadow.bft")
@@ -64,44 +62,30 @@ function render()
     -- end
     cnt = cnt + 1 
 
-    local screen_center = ex.vec2f( ex.canvas.width() * 0.5,
-                                    ex.canvas.height() * 0.5 )
+    local screen_center = ex.vec2f( ex.canvas.width * 0.5,
+                                    ex.canvas.height * 0.5 )
 
     ex_c.canvas_clear( 0.5, 0.5, 0.5 )
     -- ex_c.canvas_clear( 0.0, 0.0, 0.0 )
-    ex_c.canvas_set_blending ( ex.blend_op.add 
-                             , ex.blend_mode.alpha
-                             , ex.blend_mode.inverse_alpha )
 
+        --
         -- local pos1 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
-        -- local pos1 = ex.vec2f.zero
-        -- ex.canvas.draw_texture( pos1, -- destination 
-        --                         ex.vec2f(0.0,0.0), -- anchor
-        --                         ex.vec2f(1.0,1.0), -- scale 
-        --                         0.0,               -- angle in degrees
-        --                         ex.color4f( 1.0, 1.0, 1.0, 1.0 ), -- color
-        --                         img1 )
+        local pos1 = ex.vec2f.zero
+        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        ex.canvas.draw_image( img1, pos1.x, pos1.y )
 
+        --
         local pos2 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
         -- -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
         -- -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
         -- local pos2 = screen_center
         -- -- pos2 = ex.vec2f( math.ceil(pos2.x), math.ceil(pos2.y) )
-        -- ex.canvas.draw_texture( pos2, -- destination 
-        --                         ex.vec2f(img1.width, img1.height) * 0.5, -- anchor
-        --                         ex.vec2f(1.0,1.0), -- scale 
-        --                         0.0,               -- angle in degrees
-        --                         ex.color4f( 1.0, 1.0, 1.0, 1.0 ), -- color
-        --                         img1 )
-        -- -- ex.canvas.draw_texture( ex.vec2f(0.0,0.0), btfont2.pageInfos[0] )
-        -- -- ex.canvas.draw_text( ex.vec2f(0.0,0.0), btfont1, "Hello World " )
-        -- -- ex.canvas.draw_texture( ex.vec2f(0.0,50.0), btfont1.pageInfos[0] )
+        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        ex.canvas.draw_image( img1, pos2.x, pos2.y )
 
-        ex_c.gui_draw_texture ( img1._cptr,
-                                pos2.x, pos2.y, img1.width, img1.height,
-                                0, 0, 0, 0,
-                                0, 0, img1.width, img1.height,
-                                1.0, 1.0, 1.0, 1.0 )
+        -- ex.canvas.draw_image( btfont1.pageInfos[0], 0.0, 0.0 )
+        ex.canvas.draw_bitmap_text( "Hello World", btfont1, 50, 10 )
+        ex.canvas.draw_bitmap_text( "hello world", btfont2, 50, 50 )
 
     ex_c.canvas_flush()
 end

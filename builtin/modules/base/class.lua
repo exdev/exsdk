@@ -339,7 +339,25 @@ end
 -- ------------------------------------------------------------------ 
 
 local function class_newindex ( _t, _k, _v )
+    -- NOTE: the _t is a class table
+
+    -- check if the metatable have the key
+    local mt = getmetatable(_t) 
+    assert( mt, "Can't find the metatable of _t" )
+
+    --
+    local v = rawget(mt,_k)
+    if v ~= nil then
+        if isproperty(v) then 
+            assert ( v.set, string.format("Can't find set function in property %s", _k) )
+            v.set(_t,_v)
+            return
+        end
+    end
+
+    -- return
     error ( "The table is readonly" )
+    return
 end
 
 -- ------------------------------------------------------------------ 

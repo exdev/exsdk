@@ -261,6 +261,13 @@ int ex_sdk_init () {
         return -1;
     }
 
+    // init ui
+    ex_log ( "[exSDK] Initializing ui..." );
+    if ( ex_ui_init () != 0 ) {
+        ex_log ( "[exSDK] Error: Could not init ui!" );
+        return -1;
+    }
+
     __initialized = true;
     ex_log ( "[exSDK] Initialized!" );
     return 0;
@@ -277,6 +284,9 @@ void ex_sdk_deinit () {
         return;
 
     ex_log ( "[exSDK] Closing..." );
+
+    ex_log ( "[exSDK] Closing ui..." );
+    ex_ui_deinit ();
 
     ex_log ( "[exSDK] Closing lua..." );
     ex_lua_deinit ();

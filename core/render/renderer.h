@@ -43,16 +43,10 @@ enum {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef struct ex_ui_state_t {
-    ex_mat33f_t matrix;
-    uint32 depth; 
-} ex_ui_state_t;
-
 typedef struct ex_renderer_t {
     bool initialized;
 
     // ui data
-    ex_ui_state_t    ui_state;
     ex_memblock_t    ui_node_block; 
     uint             ui_vb_id;
     ex_memblock_t    ui_vb;
@@ -84,11 +78,21 @@ extern ex_renderer_t *ex_current_renderer ();
 
 extern void ex_renderer_draw_nodes ( ex_renderer_t *_renderer );
 
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void ex_renderer_draw_texture ( ex_renderer_t *_renderer,
+                                       void *_texture,
+                                       ex_recti_t _pos,
+                                       ex_recti_t _border,
+                                       ex_recti_t _rect,
+                                       ex_vec4f_t _color ); 
+
 ///////////////////////////////////////////////////////////////////////////////
 // interface
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ui.h"
 #include "shader.h"
 
 // ######################### 

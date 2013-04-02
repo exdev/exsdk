@@ -66,6 +66,7 @@ uint ex_shader_load ( const char *_vbuf, const char *_fbuf ) {
     GLuint vertexShader = 0;
     GLuint fragmentShader = 0;
     GLuint programHandle = 0;
+    GLint linked;
 
     // Load the vertex/fragment shaders
     vertexShader = __compile_shader ( GL_VERTEX_SHADER, _vbuf );
@@ -90,7 +91,6 @@ uint ex_shader_load ( const char *_vbuf, const char *_fbuf ) {
     glLinkProgram(programHandle);
     
     // Check the link status
-    GLint linked;
     glGetProgramiv(programHandle, GL_LINK_STATUS, &linked);
     
     if ( !linked ) {

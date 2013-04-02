@@ -135,11 +135,11 @@ local vec2f = class ({
     _handle = ex_c.invalid_handle,
     x = property {
         get = function (_self) return ex_c.vec2f_get_x ( _self._handle ) end,
-        set = function (_self,_v) return ex_c.vec2f_set_x ( _self._handle, _v ) end
+        set = function (_self,_v) ex_c.vec2f_set_x ( _self._handle, _v ) end
     },
     y = property { 
         get = function (_self) return ex_c.vec2f_get_y ( _self._handle ) end,
-        set = function (_self,_v) return ex_c.vec2f_set_y ( _self._handle, _v ) end
+        set = function (_self,_v) ex_c.vec2f_set_y ( _self._handle, _v ) end
     },
     normalized = property { 
         get = function (_self) 

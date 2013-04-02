@@ -137,19 +137,19 @@ local color4f = class ({
     _handle = ex_c.invalid_handle,
     r = property {
         get = function (_self) return ex_c.vec4f_get_x ( _self._handle ) end,
-        set = function (_self,_v) return ex_c.vec4f_set_x ( _self._handle, _v ) end
+        set = function (_self,_v) ex_c.vec4f_set_x ( _self._handle, _v ) end
     },
     g = property { 
         get = function (_self) return ex_c.vec4f_get_y ( _self._handle ) end,
-        set = function (_self,_v) return ex_c.vec4f_set_y ( _self._handle, _v ) end
+        set = function (_self,_v) ex_c.vec4f_set_y ( _self._handle, _v ) end
     },
     b = property { 
         get = function (_self) return ex_c.vec4f_get_z ( _self._handle ) end,
-        set = function (_self,_v) return ex_c.vec4f_set_z ( _self._handle, _v ) end
+        set = function (_self,_v) ex_c.vec4f_set_z ( _self._handle, _v ) end
     },
     a = property { 
         get = function (_self) return ex_c.vec4f_get_w ( _self._handle ) end,
-        set = function (_self,_v) return ex_c.vec4f_set_w ( _self._handle, _v ) end
+        set = function (_self,_v) ex_c.vec4f_set_w ( _self._handle, _v ) end
     },
     normalized = property { 
         get = function (_self) 

@@ -71,15 +71,6 @@ ex_renderer_t *ex_current_renderer () { return current_renderer; }
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static void __reset_ui_state ( ex_ui_state_t *_ui_state ) {
-    ex_mat33f_identity(&_ui_state->matrix);
-    _ui_state->depth = 0;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
 static int __ui_node_cmp ( const void *_a, const void *_b ) {
     int r;
     __ui_node_t *node_a, *node_b;
@@ -118,9 +109,6 @@ int ex_renderer_init ( ex_renderer_t *_renderer ) {
     // ======================================================== 
     // init ui 
     // ======================================================== 
-
-    // init current ui state
-    __reset_ui_state (&_renderer->ui_state);
 
     // create ui node pool
     MEMBLOCK_INIT ( _renderer->ui_node_block, __ui_node_t, 512 );
@@ -538,7 +526,7 @@ void ex_renderer_draw_nodes ( ex_renderer_t *_renderer ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_draw_texture ( ex_renderer_t *_renderer,
+void __ui_draw_texture ( ex_renderer_t *_renderer,
                           void *_texture,
                           ex_recti_t _pos,
                           ex_recti_t _border,
@@ -552,8 +540,8 @@ void ex_ui_draw_texture ( ex_renderer_t *_renderer,
     node->text = NULL;
     node->texture = _texture;
 
-    node->transform = _renderer->ui_state.matrix; 
-    node->depth = _renderer->ui_state.depth; 
+    ex_mat33f_identity(&node->transform);
+    node->depth = 0;
 
     node->pos = _pos;
     node->border = _border;

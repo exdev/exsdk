@@ -66,11 +66,6 @@ static int __lua_canvas_clear ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_canvas_flush ( lua_State *_l ) {
-    ex_renderer_t *renderer;
-
-    renderer = ex_current_renderer();
-    ex_renderer_draw_nodes (renderer);
-
     al_flip_display();
     return 0;
 }
