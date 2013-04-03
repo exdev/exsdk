@@ -7,10 +7,12 @@
 
 local asset_db = editor.asset_db
 
+local windowActive
 local logo
 local checkerboard
 local box
-local img1
+local grossini_dance
+
 local btfont1
 local btfont2
 
@@ -28,8 +30,9 @@ function init()
     checkerboard = asset_db.load("Checkerboard_64x64.png")
     logo = asset_db.load("ex2d_logo.png")
     box = asset_db.load("box.png")
+    windowActive = asset_db.load("windowActive.png")
 
-    img1 = asset_db.load("grossini_dance_09.png")
+    grossini_dance = asset_db.load("grossini_dance_09.png")
     btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
     btfont2 = asset_db.load("MolotShadow.bft")
 
@@ -86,26 +89,32 @@ function render()
         --                       logo.height * 0.5 )
 
         --
-        -- local pos1 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
+        -- local pos1 = screen_center - ex.vec2f( grossini_dance.width, grossini_dance.height ) * 0.5
         local pos1 = ex.vec2f.zero
         ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_image( img1, pos1.x, pos1.y )
+        ex.canvas.draw_image( grossini_dance, pos1.x, pos1.y )
 
         --
-        local pos2 = screen_center - ex.vec2f( img1.width, img1.height ) * 0.5
-        -- -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
-        -- -- local pos2 = pos1 + ex.vec2f( 0.0, img1.height ) + ex.vec2f(0.5,0.0)
+        local pos2 = screen_center - ex.vec2f( grossini_dance.width, grossini_dance.height ) * 0.5
+        -- -- local pos2 = pos1 + ex.vec2f( 0.0, grossini_dance.height ) + ex.vec2f(0.5,0.0)
+        -- -- local pos2 = pos1 + ex.vec2f( 0.0, grossini_dance.height ) + ex.vec2f(0.5,0.0)
         -- local pos2 = screen_center
         -- -- pos2 = ex.vec2f( math.ceil(pos2.x), math.ceil(pos2.y) )
         ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_image( img1, pos2.x, pos2.y )
+        ex.canvas.draw_image( grossini_dance, pos2.x, pos2.y )
 
         -- ex.canvas.draw_image( btfont1.pageInfos[0], 0.0, 0.0 )
         ex.canvas.draw_bitmap_text( "Hello World!\n[OK]\n[Cancel]", btfont1, 100, 10 )
 
+        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
         ex.canvas.draw_image_border( box, 
                                      100, 100, 300, 300,
                                      3, 3, 3, 3 )
+
+        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        ex.canvas.draw_image_border( windowActive, 
+                                     0, 0, ex.canvas.width, ex.canvas.height,
+                                     16, 16, 27, 16 )
 
     ex_c.canvas_flush()
 end

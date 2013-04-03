@@ -61,7 +61,8 @@ static void main_loop () {
     // init allegro display
     al_set_new_display_flags( ALLEGRO_OPENGL
                             | ALLEGRO_RESIZABLE
-                            | ALLEGRO_GENERATE_EXPOSE_EVENTS );
+                            | ALLEGRO_GENERATE_EXPOSE_EVENTS
+                            | ALLEGRO_FRAMELESS );
     display = al_create_display(640,480);
     if ( !display ) {
         ex_log ( "Could not create allegro display!" );

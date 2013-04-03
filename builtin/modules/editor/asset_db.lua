@@ -71,6 +71,8 @@ local function get_importer ( _path )
         return editor.texture_importer(_path)
     elseif path.is( _path, {".bft"} ) then
         return editor.bitmapfont_importer(_path)
+    elseif path.is( _path, {".ttf"} ) then
+        return editor.font_importer(_path)
     end
 end
 __M.get_importer = get_importer
