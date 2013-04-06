@@ -36,6 +36,13 @@ function init()
     btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
     btfont2 = asset_db.load("MolotShadow.bft")
 
+
+    ex_c.texture_lock_rect ( grossini_dance._cptr, grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
+    for i=0,10 do
+        ex_c.texture_set_pixel ( grossini_dance._cptr, i, i, 0, 0, 0, 1 )
+    end
+    ex_c.texture_unlock ( grossini_dance._cptr )
+
 end
 
 -- ------------------------------------------------------------------ 
@@ -111,10 +118,10 @@ function render()
                                      100, 100, 300, 300,
                                      3, 3, 3, 3 )
 
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_image_border( windowActive, 
-                                     0, 0, ex.canvas.width, ex.canvas.height,
-                                     16, 16, 27, 16 )
+        -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        -- ex.canvas.draw_image_border( windowActive, 
+        --                              0, 0, ex.canvas.width, ex.canvas.height,
+        --                              16, 16, 27, 16 )
 
     ex_c.canvas_flush()
 end
