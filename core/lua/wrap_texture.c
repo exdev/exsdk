@@ -124,11 +124,16 @@ static int __lua_texture_get_height ( lua_State *_l ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+ALLEGRO_STATE __al_state;
+ALLEGRO_BITMAP *__locked_bitmap = NULL;
 // ------------------------------------------------------------------ 
 
 static int __lua_texture_lock_rect ( lua_State *_l ) {
     ALLEGRO_BITMAP *bitmap;
 
+    if ( __locked_bitmap != NULL ) {
+        return luaL_error ( _l, "Can't operate different texture at the same time" );
+    } 
     ex_lua_check_nargs(_l,5);
 
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
@@ -141,6 +146,10 @@ static int __lua_texture_lock_rect ( lua_State *_l ) {
                             luaL_checkint(_l,5),
                             ALLEGRO_PIXEL_FORMAT_ANY,
                             ALLEGRO_LOCK_WRITEONLY );
+
+    al_store_state ( &__al_state, ALLEGRO_STATE_TARGET_BITMAP );
+    al_set_target_bitmap(bitmap);
+    __locked_bitmap = bitmap;
 
     return 0;
 }
@@ -157,7 +166,13 @@ static int __lua_texture_unlock ( lua_State *_l ) {
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
     bitmap = lua_touserdata(_l,1);
 
+    //
+    if ( __locked_bitmap != bitmap ) {
+        return luaL_error ( _l, "Can't operate different texture at the same time" );
+    } 
     al_unlock_bitmap ( bitmap );
+    al_restore_state(&__al_state);
+    __locked_bitmap = NULL;
 
     return 0;
 }
@@ -174,6 +189,10 @@ static int __lua_texture_set_pixel ( lua_State *_l ) {
 
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
     bitmap = lua_touserdata(_l,1);
+
+    if ( __locked_bitmap != bitmap ) {
+        return luaL_error ( _l, "Can't operate different texture at the same time" );
+    } 
 
     // convert color
     color = al_map_rgba_f ( (float)luaL_checknumber(_l,4),

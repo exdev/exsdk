@@ -37,11 +37,13 @@ function init()
     btfont2 = asset_db.load("MolotShadow.bft")
 
 
-    ex_c.texture_lock_rect ( grossini_dance._cptr, grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
-    for i=0,10 do
-        ex_c.texture_set_pixel ( grossini_dance._cptr, i, i, 0, 0, 0, 1 )
+    grossini_dance:lock( grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
+    for x=0,10 do
+        for y=0,10 do
+            grossini_dance:set_pixel( x, y, ex.color4f( 0.5, 0.5, 0.5, 0.5 ) )
+        end
     end
-    ex_c.texture_unlock ( grossini_dance._cptr )
+    grossini_dance:unlock()
 
 end
 
@@ -85,10 +87,10 @@ function render()
     ex_c.canvas_clear( 0.5, 0.5, 0.5 )
     -- ex_c.canvas_clear( 0.0, 0.0, 0.0 )
 
-        -- local size = math.max( ex.canvas.width, ex.canvas.height )
-        -- ex.canvas.draw_image( checkerboard, 
-        --                       0, 0, size, size,
-        --                       0, 0, checkerboard.width * 10, checkerboard.height * 10 )
+        local size = math.max( ex.canvas.width, ex.canvas.height )
+        ex.canvas.draw_image( checkerboard, 
+                              0, 0, size, size,
+                              0, 0, checkerboard.width * 10, checkerboard.height * 10 )
         -- ex.canvas.draw_image( logo, 
         --                       ex.canvas.width - 10 - logo.width * 0.5, 
         --                       ex.canvas.height - 10 - logo.height * 0.5,
