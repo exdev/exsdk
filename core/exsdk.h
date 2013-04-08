@@ -28,6 +28,9 @@
 // renderer
 #include "render/render_inc.h"
 
+// font
+#include "font/font_inc.h"
+
 // ui
 #include "ui/ui_inc.h"
 
