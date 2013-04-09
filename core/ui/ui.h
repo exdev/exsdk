@@ -78,6 +78,14 @@ extern void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
 // Desc: 
 // ------------------------------------------------------------------ 
 
+extern void ex_ui_draw_text ( const char *_text, 
+                              ex_font_t *_font,
+                              int _dx, int _dy, int _dw, int _dh );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 extern void ex_ui_flush ();
 
 // ######################### 

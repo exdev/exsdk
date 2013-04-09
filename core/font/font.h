@@ -34,6 +34,14 @@ extern bool ex_font_initialized ();
 extern ex_font_t *ex_font_load ( const char *_filepath, int _size );
 extern void ex_font_destroy ( ex_font_t *_font );
 
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void ex_font_set_size ( ex_font_t *_font, int _size );
+extern int ex_font_get_kerning ( ex_font_t *_font, int _first, int _second );
+
+
 // #################################################################################
 #endif // END FONT_H_1365409519
 // #################################################################################

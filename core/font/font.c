@@ -23,6 +23,16 @@ static bool __initialized = false;
 static FT_Library __ft_lib;
 static size_t __HRES = 64;
 
+#undef __FTERRORS_H__
+#define FT_ERRORDEF( e, v, s )  { e, s },
+#define FT_ERROR_START_LIST     {
+#define FT_ERROR_END_LIST       { 0, 0 } };
+const struct {
+    int          code;
+    const char  *message;
+} FT_Errors[] =
+#include FT_ERRORS_H
+
 ///////////////////////////////////////////////////////////////////////////////
 // includes
 ///////////////////////////////////////////////////////////////////////////////
@@ -143,4 +153,39 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
 void ex_font_destroy ( ex_font_t *_font ) {
     FT_Done_Face( _font->face );
     ex_free(_font);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_font_set_size ( ex_font_t *_font, int _size ) {
+    FT_Error error;
+
+    if ( _font->size == _size )
+        return;
+
+    error = FT_Set_Char_Size( _font->face, _size*64, 0, 72 * __HRES, 72 );
+    if ( error ) {
+        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
+                 FT_Errors[error].code, 
+                 FT_Errors[error].message );
+        return;
+    }
+
+    _font->size = _size;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_font_get_kerning ( ex_font_t *_font, int _first, int _second ) {
+   if ( _first != -1 ) {
+      FT_Vector delta;
+      FT_Get_Kerning( _font->face, _first, _second, FT_KERNING_DEFAULT, &delta );
+      return delta.x >> 6;
+   }
+
+   return 0;
 }

@@ -129,6 +129,28 @@ static int __lua_gui_draw_border_texture ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_gui_draw_text ( lua_State *_l ) {
+    ex_font_t *font;
+
+    ex_lua_check_nargs(_l,6);
+
+    luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
+    font = lua_touserdata(_l,2);
+
+    ex_ui_draw_text ( luaL_checkstring(_l,1),
+                      font,
+                      luaL_checkint(_l,3 ),
+                      luaL_checkint(_l,4 ),
+                      luaL_checkint(_l,5 ),
+                      luaL_checkint(_l,6 )
+                    );
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static int __lua_gui_flush ( lua_State *_l ) {
     ex_lua_check_nargs(_l,0);
     ex_ui_flush();
@@ -144,6 +166,7 @@ static const luaL_Reg lib[] = {
     { "gui_set_color",              __lua_gui_set_color },
     { "gui_draw_texture",           __lua_gui_draw_texture },
     { "gui_draw_border_texture",    __lua_gui_draw_border_texture },
+    { "gui_draw_text",              __lua_gui_draw_text },
     { "gui_flush",                  __lua_gui_flush },
     { NULL, NULL }
 };

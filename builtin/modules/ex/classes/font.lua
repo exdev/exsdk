@@ -1,49 +1,36 @@
 -- ======================================================================================
--- File         : font_importer.lua
+-- File         : font.lua
 -- Author       : Wu Jie 
--- Last Change  : 04/03/2013 | 11:53:08 AM | Wednesday,April
+-- Last Change  : 04/09/2013 | 13:34:44 PM | Tuesday,April
 -- Description  : 
 -- ======================================================================================
 
 local __M = {}
 
 --/////////////////////////////////////////////////////////////////////////////
--- 
+--
 --/////////////////////////////////////////////////////////////////////////////
 
-local font_importer = editor.importer.extend ({
-    __typename = "font_importer",
-
-    -- constructor & destructor
-    __init = function ( _self, _path )
-        checkarg(_path,"string")
-
-        _self.path = _path
-    end,
+local font = class ({
+    __typename = "font",
 
     --/////////////////////////////////////////////////////////////////////////////
     -- properties
     --/////////////////////////////////////////////////////////////////////////////
 
-    size = 16,
+    _cptr = ex_c.null, 
+
+    size = property { 
+        get = function (_self) return ex_c.font_get_size(_self._cptr) end, 
+        set = function (_self,_v) ex_c.font_set_size(_self._cptr,_v) end
+    },
 
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
     --/////////////////////////////////////////////////////////////////////////////
 
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
-    exec = function (_self)
-        local fnt = ex.font.new()
-        local cptr = ex_c.font_load ( editor.asset_db.fullpath(_self.path), size )
-        fnt._cptr = cptr
-
-        return fnt
-    end,
-})
-__M.font_importer = font_importer
+}) 
+__M.font = font
 
 --/////////////////////////////////////////////////////////////////////////////
 --

@@ -93,6 +93,24 @@ local canvas = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
+        draw_text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
+            checkarg(_text,"string")
+            checkarg(_font,"font")
+            checkarg(_dx,"number")
+            checkarg(_dy,"number")
+            -- TODO: auto calc size
+            -- checkarg(_dw,"number")
+            -- checkarg(_dh,"number")
+
+            ex_c.gui_draw_text( _text, _font._cptr, 
+                                _dx, _dy, _dw, _dh -- pos
+                              )
+        end,
+
+        -- ------------------------------------------------------------------ 
+        -- Desc: 
+        -- ------------------------------------------------------------------ 
+
         draw_bitmap_text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
             checkarg(_text,"string")
             checkarg(_font,"bitmapfont")
@@ -121,7 +139,7 @@ local canvas = class ({
                     assert( charInfo, "Can't find char info by id " .. id )
 
                     -- adjust kerning
-                    if _font.useKerning and i > 0 and _font.hasKerning then
+                    if i > 0 and _font.hasKerning then
                         cur_x = cur_x + _font:get_kerning( last_id, id )
                     end
 

@@ -32,7 +32,6 @@ local bitmapfont = class ({
     isSmooth = false,
     isAA = false,
     hasKerning = false,
-    useKerning = true,
 
     -- for details, please read the parse code in bitmapfont_importer.lua
     charInfos = {},
