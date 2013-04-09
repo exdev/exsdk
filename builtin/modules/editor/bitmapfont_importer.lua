@@ -183,7 +183,6 @@ local bitmapfont_importer = editor.importer.extend ({
                                      end 
                                  )
                 table.add( btfont.kerningInfos, kerningInfo )
-
             end
         end
 

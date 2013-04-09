@@ -107,6 +107,7 @@ local canvas = class ({
             local count = ex_c.ustr_length(ustr_ptr)-1
 
             local last_texture = ex.texture.null
+            local last_id = -1
 
             for i=0,count do
                 local id = ex_c.ustr_get(ustr_ptr,i)
@@ -118,6 +119,11 @@ local canvas = class ({
                 else
                     local charInfo = _font.charInfos[id]
                     assert( charInfo, "Can't find char info by id " .. id )
+
+                    -- adjust kerning
+                    if _font.useKerning and i > 0 and _font.hasKerning then
+                        cur_x = cur_x + _font:get_kerning( last_id, id )
+                    end
 
                     -- if this is space(32)
                     if id == 32 then
@@ -133,18 +139,16 @@ local canvas = class ({
                             last_texture = page_texture
                         end
 
-                        ex_c.gui_draw_texture( cur_x + charInfo.xoffset, cur_y + charInfo.yoffset, charInfo.width, charInfo.height, -- pos
-                        charInfo.x, charInfo.y, charInfo.width, charInfo.height -- rect
+                        -- draw
+                        ex_c.gui_draw_texture( 
+                            cur_x + charInfo.xoffset, cur_y + charInfo.yoffset, charInfo.width, charInfo.height, -- pos
+                            charInfo.x, charInfo.y, charInfo.width, charInfo.height -- rect
                         )
                         cur_x = cur_x + charInfo.xadvance
-
-                        -- TODO { 
-                        -- if _font.hasKerning then
-                        --     cur_x = cur_x
-                        -- end
-                        -- } TODO end 
                     end
                 end
+
+                last_id = id
             end
 
             ex_c.gui_flush()

@@ -113,12 +113,15 @@ function render()
         ex.canvas.draw_image( grossini_dance, pos2.x, pos2.y )
 
         -- ex.canvas.draw_image( btfont1.pageInfos[0], 0.0, 0.0 )
-        ex.canvas.draw_bitmap_text( "Hello World!\n[OK]\n[Cancel]", btfont1, 100, 10 )
+        -- ex.canvas.draw_bitmap_text( "Hello World!\n[OK]\n[Cancel]", btfont1, 100, 10 )
+        -- ex.canvas.draw_bitmap_text( "y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y", btfont2, 100, 5 )
+        -- btfont2.useKerning = false
+        -- ex.canvas.draw_bitmap_text( "y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y.y", btfont2, 100, 85 )
 
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_image_border( box, 
-                                     100, 100, 300, 300,
-                                     3, 3, 3, 3 )
+        -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        -- ex.canvas.draw_image_border( box, 
+        --                              100, 100, 300, 300,
+        --                              3, 3, 3, 3 )
 
         -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
         -- ex.canvas.draw_image_border( windowActive, 

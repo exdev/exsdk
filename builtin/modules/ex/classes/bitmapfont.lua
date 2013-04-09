@@ -32,6 +32,7 @@ local bitmapfont = class ({
     isSmooth = false,
     isAA = false,
     hasKerning = false,
+    useKerning = true,
 
     -- for details, please read the parse code in bitmapfont_importer.lua
     charInfos = {},
@@ -45,6 +46,18 @@ local bitmapfont = class ({
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
+
+    get_kerning = function ( _self, _first, _second )
+        for i=1,#_self.kerningInfos do
+            local kerningInfo = _self.kerningInfos[i]
+            if kerningInfo.first == _first and 
+               kerningInfo.second == _second then 
+               return kerningInfo.amount
+            end
+        end
+
+        return 0
+    end,
 }) 
 __M.bitmapfont = bitmapfont
 

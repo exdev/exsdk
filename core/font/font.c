@@ -21,6 +21,7 @@
 
 static bool __initialized = false;
 static FT_Library __ft_lib;
+static size_t __HRES = 64;
 
 ///////////////////////////////////////////////////////////////////////////////
 // includes
@@ -87,7 +88,6 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
     ex_file_t *file;
     size_t buf_size;
     void *buffer;
-    size_t hres = 64;
 
     // open the file
     file = ex_fsys_fopen_r(_filepath);
@@ -116,7 +116,7 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
     }
 
     //
-    error = FT_Set_Char_Size( face, _size*64, 0, 72*hres, 72 );
+    error = FT_Set_Char_Size( face, _size*64, 0, 72 * __HRES, 72 );
     if ( error ) {
         ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
                  FT_Errors[error].code, 
