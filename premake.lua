@@ -299,6 +299,8 @@ solution "exSDK"
                 "OpenAL.framework/",
                 "OpenGL.framework/",
                 "AGL.framework/",
+                "bz2",
+                "z",
             }
         elseif __PLATFORM == "win32" then
             links {
