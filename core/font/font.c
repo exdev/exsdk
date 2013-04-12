@@ -33,6 +33,49 @@ const struct {
 } FT_Errors[] =
 #include FT_ERRORS_H
 
+typedef struct __glyph_key_t {
+    int size;
+    int outline_type;
+    int outline_thickness;
+} __glyph_key_t;
+
+typedef struct __glyph_set_t {
+    ex_hashmap_t glyphs; // char_code -> ex_glyph_t
+    ex_array_t pages; // bitmap page
+} __glyph_set_t;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static uint32 __hashkey ( const void *_key ) {
+    __glyph_key_t *key = (__glyph_key_t *)_key;
+    return key->size << 16 | key->outline_type << 8 | key->outline_thickness;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __keycmp ( const void *_key1, const void *_key2 ) {
+    __glyph_key_t *key1 = (__glyph_key_t *)_key1;
+    __glyph_key_t *key2 = (__glyph_key_t *)_key2;
+
+    return (key1->size == key2->size) 
+        && (key1->outline_type == key2->outline_type)
+        && (key1->outline_thickness == key2->outline_thickness);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+// __cache_glyph ( data, ft_index );
+
 ///////////////////////////////////////////////////////////////////////////////
 // includes
 ///////////////////////////////////////////////////////////////////////////////
@@ -140,8 +183,16 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
 
     //
     font = (ex_font_t *)ex_malloc ( sizeof(ex_font_t) );
-    font->size = _size;
     font->face = face;
+    font->size = _size;
+    font->outline_type = 0;
+    font->outline_thickness = 1;
+    ex_hashmap_init ( &font->glyph_sets,
+                      sizeof(__glyph_key_t),
+                      sizeof(__glyph_set_t),
+                      8,
+                      __hashkey,
+                      __keycmp );
 
     return font;
 }
@@ -188,4 +239,12 @@ int ex_font_get_kerning ( ex_font_t *_font, int _first, int _second ) {
    }
 
    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+ex_glyph_t *ex_get_glyph ( ex_font_t *_font, int _ft_index ) {
+    return NULL;
 }
