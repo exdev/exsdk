@@ -45,6 +45,9 @@ typedef struct __glyph_key_t {
 typedef struct __glyph_set_t {
     ex_hashmap_t *glyphs; // char_code -> ex_glyph_t
     ex_array_t *pages; // bitmap page
+    int cur_x;
+    int cur_y;
+    int max_height;
 } __glyph_set_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,11 +80,99 @@ static int __keycmp ( const void *_key1, const void *_key2 ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static ALLEGRO_BITMAP *__new_texture () {
+    ALLEGRO_BITMAP *bitmap;
+    ALLEGRO_STATE state;
+
+    al_store_state(&state, ALLEGRO_STATE_NEW_BITMAP_PARAMETERS);
+        al_set_new_bitmap_format ( ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA );
+        al_set_new_bitmap_flags ( ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR );
+        bitmap = al_create_bitmap( 512, 512 );
+    al_restore_state(&state);
+
+    al_store_state(&state, ALLEGRO_STATE_TARGET_BITMAP);
+        al_hold_bitmap_drawing(false);
+        al_set_target_bitmap(bitmap);
+        al_clear_to_color(al_map_rgba_f(0, 0, 0, 0));
+    al_restore_state(&state);
+
+    return bitmap;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static uint8 *__atlas_alloc_region ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, int _w, int _h ) {
+    ALLEGRO_BITMAP *page;
+    ALLEGRO_LOCKED_REGION *region;
+
+    //
+    if ( _glyph_set->pages->count == 0 ) {
+        page = __new_texture();
+        ex_array_add ( _glyph_set->pages, &page );
+
+        _glyph_set->cur_x = 0;
+        _glyph_set->cur_y = 0;
+        _glyph_set->max_height = 0;
+    }
+    else {
+        page = (ALLEGRO_BITMAP *)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
+    }
+
+    //
+    ex_assert ( _w < al_get_bitmap_width(page) && _h < al_get_bitmap_height(page) );
+
+    //
+    if ( _glyph_set->cur_x + _w > al_get_bitmap_width(page) ) {
+        _glyph_set->cur_y += _glyph_set->max_height;
+        _glyph_set->cur_x = 0;
+        _glyph_set->max_height = 0;
+    }
+
+    //
+    if ( _glyph_set->cur_y + _h > al_get_bitmap_height(page) ) {
+        page = __new_texture();
+        ex_array_add ( _glyph_set->pages, &page );
+
+        _glyph_set->cur_x = 0;
+        _glyph_set->cur_y = 0;
+        _glyph_set->max_height = 0;
+    }
+
+    //
+    _glyph->x = _glyph_set->cur_x;
+    _glyph->y = _glyph_set->cur_y;
+    _glyph->w = _w;
+    _glyph->h = _h;
+
+    _glyph_set->cur_x += _w;
+    if ( _h > _glyph_set->max_height ) {
+        _glyph_set->max_height = _h;
+    }
+
+    //
+    region = al_lock_bitmap_region( page,
+                                    _glyph->x, _glyph->y,
+                                    _glyph->w, _glyph->h,
+                                    ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE, 
+                                    ALLEGRO_LOCK_WRITEONLY );
+
+    return (uint8 *)region->data
+        + (_glyph->y) * region->pitch
+        + (_glyph->x) * sizeof(int32);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, int _ft_index ) {
     FT_Int32 flags;
     FT_Error error;
     FT_Face face;
     FT_Bitmap ft_bitmap;
+    uint8 *lock_region;
 
     int ft_bitmap_width = 0;
     int ft_bitmap_rows = 0;
@@ -177,8 +268,19 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
         FT_Stroker_Done(stroker);
     }
 
-    // TODO:
-    // __atlas_alloc_region ( _font, )
+    // 
+    lock_region = __atlas_alloc_region ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows );
+
+    // if (font_data->flags & ALLEGRO_TTF_MONOCHROME)
+    //    copy_glyph_mono(font_data, face, glyph_data);
+    // else
+    //    copy_glyph_color(font_data, face, glyph_data);
+    // unlock_current_page(font_data);
+
+    //
+    _glyph->offset_x = ft_glyph_left;
+    _glyph->offset_y = ft_glyph_top;
+    _glyph->advance = face->glyph->advance.x >> 6;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -387,6 +489,9 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, int _ft_index ) {
                                             ex_keycmp_int
                                           );
         new_set.pages = ex_array_alloc ( sizeof(ALLEGRO_BITMAP *), 8 );
+        new_set.cur_x = 0;
+        new_set.cur_y = 0;
+        new_set.max_height = -1;
 
         ex_hashmap_add ( _font->glyph_sets, &key, &new_set, &idx );
 
