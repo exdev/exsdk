@@ -16,6 +16,9 @@
 #include "exsdk.h"
 // #include "gl/gl_inc.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
@@ -282,11 +285,63 @@ void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __draw_glyph ( ex_font_t *_font, int _prev_ft_index, int _ft_index, int _dx, int _dy ) {
+   ex_glyph_t *glyph;
+   int advance = 0;
+   void *last_texture = NULL;
+
+   //
+   glyph = ex_font_get_glyph ( _font, _ft_index );
+
+   //
+   advance += ex_font_get_kerning( _font, _prev_ft_index, _ft_index );
+   if ( glyph->page ) {
+       if ( glyph->page != ex_ui_state()->texture ) {
+           ex_ui_flush();
+           ex_ui_set_texture ( glyph->page );
+       }
+       ex_ui_draw_texture ( _dx + advance, _dy, glyph->w, glyph->h,
+                            glyph->x, glyph->y, glyph->w, glyph->h );
+   }
+   advance += glyph->advance;
+
+   return advance;
+} 
+
 void ex_ui_draw_text ( const char *_text, 
                        ex_font_t *_font,
                        int _dx, int _dy, int _dw, int _dh ) 
 {
-    // TODO:
+    ALLEGRO_USTR *utext;
+    int ch;
+    int ch_pos;
+    int ft_index, prev_ft_index;
+    int cur_x, cur_y;
+
+    utext = al_ustr_new(_text);
+    ch_pos = 0;
+    prev_ft_index = -1;
+    cur_x = _dx;
+    cur_y = _dy;
+
+    while ( (ch = al_ustr_get_next(utext, &ch_pos)) >= 0 ) {
+        int advance = 0;
+        int ft_index = FT_Get_Char_Index ( _font->face, ch );
+
+        // if this is \n(10) or \r(13)
+        if ( ft_index == 10 || ft_index == 13 ) {
+            cur_x = 0;
+            prev_ft_index = -1;
+            // TODO: y += line_height;
+        }
+        else {
+            advance = __draw_glyph ( _font, prev_ft_index, ft_index, cur_x, cur_y );
+            cur_x += advance;
+            prev_ft_index = ft_index;
+        }
+    }
+
+    al_ustr_free(utext);
 }
 
 // ------------------------------------------------------------------ 

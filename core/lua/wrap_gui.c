@@ -154,6 +154,8 @@ static int __lua_gui_draw_text ( lua_State *_l ) {
 static int __lua_gui_flush ( lua_State *_l ) {
     ex_lua_check_nargs(_l,0);
     ex_ui_flush();
+
+    return 0;
 }
 
 // ------------------------------------------------------------------ 

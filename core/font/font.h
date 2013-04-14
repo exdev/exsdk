@@ -30,7 +30,7 @@ typedef struct ex_font_t {
     int size;
     int outline_type; // ( 0 = None, 1 = Line, 2 = Inner, 3 = Outer )
     int outline_thickness;
-    ex_hashmap_t glyph_sets; // (size, outline_type, outline_thickness) -> ex_glyph_set_t 
+    ex_hashmap_t *glyph_sets; // (size, outline_type, outline_thickness) -> ex_glyph_set_t 
 } ex_font_t;
 
 // ------------------------------------------------------------------ 
@@ -54,6 +54,13 @@ extern void ex_font_destroy ( ex_font_t *_font );
 
 extern void ex_font_set_size ( ex_font_t *_font, int _size );
 extern int ex_font_get_kerning ( ex_font_t *_font, int _first, int _second );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, int _ft_index );
+extern void ex_font_cache_glyph ( ex_font_t *_font, ex_glyph_t *_glyph, int _ft_index );
 
 // #################################################################################
 #endif // END FONT_H_1365409519
