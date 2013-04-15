@@ -95,11 +95,83 @@ static int __lua_font_get_size ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_font_set_outline_type ( lua_State *_l ) {
+    ex_font_t *font;
+
+    ex_lua_check_nargs(_l,2);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    font = lua_touserdata(_l,1);
+
+    //
+    font->outline_type = luaL_checkint(_l,2);
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_font_get_outline_type ( lua_State *_l ) {
+    ex_font_t *font;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    font = lua_touserdata(_l,1);
+
+    //
+    lua_pushinteger( _l, font->outline_type );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_font_set_outline_thickness ( lua_State *_l ) {
+    ex_font_t *font;
+
+    ex_lua_check_nargs(_l,2);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    font = lua_touserdata(_l,1);
+
+    //
+    font->outline_thickness = (float)luaL_checknumber(_l,2);
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_font_get_outline_thickness ( lua_State *_l ) {
+    ex_font_t *font;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    font = lua_touserdata(_l,1);
+
+    //
+    lua_pushnumber( _l, font->outline_thickness );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg lib[] = {
-    { "font_load",       __lua_font_load },
-    { "font_destroy",    __lua_font_destroy },
-    { "font_set_size",   __lua_font_set_size },
-    { "font_get_size",   __lua_font_get_size },
+    { "font_load",                      __lua_font_load },
+    { "font_destroy",                   __lua_font_destroy },
+    { "font_set_size",                  __lua_font_set_size },
+    { "font_get_size",                  __lua_font_get_size },
+    { "font_set_outline_type",          __lua_font_set_outline_type },
+    { "font_get_outline_type",          __lua_font_get_outline_type },
+    { "font_set_outline_thickness",     __lua_font_set_outline_thickness },
+    { "font_get_outline_thickness",     __lua_font_get_outline_thickness },
     { NULL, NULL }
 };
 

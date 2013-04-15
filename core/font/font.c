@@ -38,7 +38,7 @@ const struct {
 typedef struct __glyph_key_t {
     int size;
     int outline_type;
-    int outline_thickness;
+    float outline_thickness;
 } __glyph_key_t;
 
 typedef struct __glyph_set_t {
@@ -59,7 +59,7 @@ typedef struct __glyph_set_t {
 
 static uint32 __hashkey ( const void *_key ) {
     __glyph_key_t *key = (__glyph_key_t *)_key;
-    return key->size << 16 | key->outline_type << 8 | key->outline_thickness;
+    return key->size << 16 | key->outline_type << 8 | (int)(key->outline_thickness * 10.0f);
 }
 
 // ------------------------------------------------------------------ 
@@ -77,7 +77,7 @@ static int __keycmp ( const void *_key1, const void *_key2 ) {
         return key1->outline_type - key2->outline_type; 
     }
     if ( key1->outline_thickness != key2->outline_thickness ) {
-        return key1->outline_thickness - key2->outline_thickness; 
+        return ex_signf(key1->outline_thickness - key2->outline_thickness); 
     }
     return 0;
 }
@@ -171,14 +171,14 @@ static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_s
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static void __copy_glyph_color ( FT_Face _face, ALLEGRO_LOCKED_REGION *_region ) {
+static void __copy_glyph_color ( FT_Bitmap _ft_bitmap, ALLEGRO_LOCKED_REGION *_region ) {
     int x, y;
 
-    for ( y = 0; y < _face->glyph->bitmap.rows; ++y ) {
-        const uint8 *ptr = _face->glyph->bitmap.buffer + _face->glyph->bitmap.pitch * y;
+    for ( y = 0; y < _ft_bitmap.rows; ++y ) {
+        const uint8 *ptr = _ft_bitmap.buffer + _ft_bitmap.pitch * y;
         uint8 *dptr = (uint8 *)_region->data + _region->pitch * y;
 
-        for ( x = 0; x < _face->glyph->bitmap.width; ++x ) {
+        for ( x = 0; x < _ft_bitmap.width; ++x ) {
             unsigned char c = *ptr;
             *dptr++ = 255;
             *dptr++ = 255;
@@ -197,6 +197,7 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     FT_Int32 flags;
     FT_Error error;
     FT_Face face;
+    FT_Glyph ft_glyph;
     FT_Bitmap ft_bitmap;
     ALLEGRO_BITMAP *cur_page;
     ALLEGRO_LOCKED_REGION *region;
@@ -239,7 +240,6 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     }
     else {
         FT_Stroker stroker;
-        FT_Glyph ft_glyph;
         FT_BitmapGlyph ft_bitmap_glyph;
 
         error = FT_Stroker_New( __ft_lib, &stroker );
@@ -251,7 +251,7 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
         }
 
         FT_Stroker_Set( stroker,
-                        _font->outline_thickness * 64,
+                        (int)(_font->outline_thickness * 64.0f),
                         FT_STROKER_LINECAP_ROUND,
                         FT_STROKER_LINEJOIN_ROUND,
                         0 );
@@ -300,15 +300,22 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     region = __atlas_alloc_region ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows );
     cur_page = *(ALLEGRO_BITMAP **)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
 
-    __copy_glyph_color ( _font->face, region );
+    __copy_glyph_color ( ft_bitmap, region );
     al_unlock_bitmap(cur_page);
 
     //
     _glyph->page = cur_page;
     _glyph->offset_x = ft_glyph_left;
     _glyph->offset_y = (face->size->metrics.ascender >> 6) - ft_glyph_top;
+
+    // Discard hinting to get advance
+    FT_Load_Glyph( face, _ft_index, FT_LOAD_RENDER | FT_LOAD_NO_HINTING);
+
     _glyph->advance_x = face->glyph->advance.x >> 6;
     _glyph->advance_y = face->glyph->advance.y >> 6;
+
+    if ( _font->outline_type > 0 )
+        FT_Done_Glyph( ft_glyph );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -421,7 +428,7 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
     font->face = face;
     font->size = _size;
     font->outline_type = 0;
-    font->outline_thickness = 1;
+    font->outline_thickness = 1.0f;
     font->glyph_sets = ex_hashmap_alloc ( sizeof(__glyph_key_t),
                                           sizeof(__glyph_set_t),
                                           8,
