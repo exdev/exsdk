@@ -24,7 +24,6 @@
 
 static bool __initialized = false;
 static FT_Library __ft_lib;
-static size_t __HRES = 64;
 
 #undef __FTERRORS_H__
 #define FT_ERRORDEF( e, v, s )  { e, s },
@@ -71,9 +70,16 @@ static int __keycmp ( const void *_key1, const void *_key2 ) {
     __glyph_key_t *key1 = (__glyph_key_t *)_key1;
     __glyph_key_t *key2 = (__glyph_key_t *)_key2;
 
-    return (key1->size == key2->size) 
-        && (key1->outline_type == key2->outline_type)
-        && (key1->outline_thickness == key2->outline_thickness);
+    if ( key1->size != key2->size ) {
+        return key1->size - key2->size; 
+    }
+    if ( key1->outline_type != key2->outline_type ) {
+        return key1->outline_type - key2->outline_type; 
+    }
+    if ( key1->outline_thickness != key2->outline_thickness ) {
+        return key1->outline_thickness - key2->outline_thickness; 
+    }
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -103,7 +109,7 @@ static ALLEGRO_BITMAP *__new_texture () {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static uint8 *__atlas_alloc_region ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, int _w, int _h ) {
+static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, int _w, int _h ) {
     ALLEGRO_BITMAP *page;
     ALLEGRO_LOCKED_REGION *region;
 
@@ -158,21 +164,19 @@ static uint8 *__atlas_alloc_region ( ex_font_t *_font, __glyph_set_t *_glyph_set
                                     ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE, 
                                     ALLEGRO_LOCK_WRITEONLY );
 
-    return (uint8 *)region->data
-        + (_glyph->y) * region->pitch
-        + (_glyph->x) * sizeof(int32);
+    return region;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static void __copy_glyph_color ( FT_Face _face, uint8 *_glyph_data, int _pitch ) {
+static void __copy_glyph_color ( FT_Face _face, ALLEGRO_LOCKED_REGION *_region ) {
     int x, y;
 
     for ( y = 0; y < _face->glyph->bitmap.rows; ++y ) {
         const uint8 *ptr = _face->glyph->bitmap.buffer + _face->glyph->bitmap.pitch * y;
-        uint8 *dptr = _glyph_data + _pitch * y;
+        uint8 *dptr = (uint8 *)_region->data + _region->pitch * y;
 
         for ( x = 0; x < _face->glyph->bitmap.width; ++x ) {
             unsigned char c = *ptr;
@@ -194,8 +198,8 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     FT_Error error;
     FT_Face face;
     FT_Bitmap ft_bitmap;
-    uint8 *lock_buffer;
     ALLEGRO_BITMAP *cur_page;
+    ALLEGRO_LOCKED_REGION *region;
 
     int ft_bitmap_width = 0;
     int ft_bitmap_rows = 0;
@@ -247,7 +251,7 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
         }
 
         FT_Stroker_Set( stroker,
-                        _font->outline_thickness * __HRES,
+                        _font->outline_thickness * 64,
                         FT_STROKER_LINECAP_ROUND,
                         FT_STROKER_LINEJOIN_ROUND,
                         0 );
@@ -293,15 +297,16 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     }
 
     // 
-    lock_buffer = __atlas_alloc_region ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows );
+    region = __atlas_alloc_region ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows );
     cur_page = *(ALLEGRO_BITMAP **)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
 
-    __copy_glyph_color ( _font->face, lock_buffer, al_get_pixel_size( al_get_bitmap_format(cur_page) ) );
+    __copy_glyph_color ( _font->face, region );
     al_unlock_bitmap(cur_page);
 
     //
+    _glyph->page = cur_page;
     _glyph->offset_x = ft_glyph_left;
-    _glyph->offset_y = ft_glyph_top;
+    _glyph->offset_y = (face->size->metrics.ascender >> 6) - ft_glyph_top;
     _glyph->advance_x = face->glyph->advance.x >> 6;
     _glyph->advance_y = face->glyph->advance.y >> 6;
 }
@@ -399,7 +404,7 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
     }
 
     //
-    error = FT_Set_Char_Size( face, _size*64, 0, 72 * __HRES, 72 );
+    error = FT_Set_Pixel_Sizes ( face, 0, _size );
     if ( error ) {
         ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
                  FT_Errors[error].code, 
@@ -461,7 +466,7 @@ void ex_font_set_size ( ex_font_t *_font, int _size ) {
     if ( _font->size == _size )
         return;
 
-    error = FT_Set_Char_Size( _font->face, _size*64, 0, 72 * __HRES, 72 );
+    error = FT_Set_Pixel_Sizes ( _font->face, 0, _size );
     if ( error ) {
         ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
                  FT_Errors[error].code, 

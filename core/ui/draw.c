@@ -300,7 +300,7 @@ static int __draw_glyph ( ex_font_t *_font, int _prev_ft_index, int _ft_index, i
            ex_ui_flush();
            ex_ui_set_texture ( glyph->page );
        }
-       ex_ui_draw_texture ( _dx + advance, _dy, glyph->w, glyph->h,
+       ex_ui_draw_texture ( _dx + advance + glyph->offset_x, _dy + glyph->offset_y, glyph->w, glyph->h,
                             glyph->x, glyph->y, glyph->w, glyph->h );
    }
    advance += glyph->advance_x;
@@ -330,7 +330,7 @@ void ex_ui_draw_text ( const char *_text,
         ft_index = FT_Get_Char_Index ( _font->face, ch );
 
         // if this is \n(10) or \r(13)
-        if ( ft_index == 10 || ft_index == 13 ) {
+        if ( ch == 10 || ch == 13 ) {
             cur_x = 0;
             prev_ft_index = -1;
             // TODO: y += line_height;

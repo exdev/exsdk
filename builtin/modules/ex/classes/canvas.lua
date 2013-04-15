@@ -108,6 +108,7 @@ local canvas = class ({
             ex_c.gui_draw_text( _text, _font._cptr, 
                                 _dx, _dy, _dw, _dh -- pos
                               )
+            ex_c.gui_flush()
         end,
 
         -- ------------------------------------------------------------------ 

@@ -129,6 +129,7 @@ function render()
         --                              0, 0, ex.canvas.width, ex.canvas.height,
         --                              16, 16, 27, 16 )
 
+        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
         ex.canvas.draw_text( "Hello World", ttf_font, 10, 10 ) 
 
     ex_c.canvas_flush()
