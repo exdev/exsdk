@@ -22,7 +22,8 @@ typedef struct ex_glyph_t {
    int16 h;
    int16 offset_x;
    int16 offset_y;
-   int16 advance;
+   int16 advance_x;
+   int16 advance_y;
 } ex_glyph_t;
 
 typedef struct ex_font_t {

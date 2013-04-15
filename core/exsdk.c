@@ -254,10 +254,10 @@ int ex_sdk_init () {
         return -1;
     }
 
-    // init lua
-    ex_log ( "[exSDK] Initializing lua..." );
-    if ( ex_lua_init () != 0 ) {
-        ex_log ( "[exSDK] Error: Could not init lua!" );
+    // init font
+    ex_log ( "[exSDK] Initializing font..." );
+    if ( ex_font_init () != 0 ) {
+        ex_log ( "[exSDK] Error: Could not init font!" );
         return -1;
     }
 
@@ -265,6 +265,13 @@ int ex_sdk_init () {
     ex_log ( "[exSDK] Initializing ui..." );
     if ( ex_ui_init () != 0 ) {
         ex_log ( "[exSDK] Error: Could not init ui!" );
+        return -1;
+    }
+
+    // init lua
+    ex_log ( "[exSDK] Initializing lua..." );
+    if ( ex_lua_init () != 0 ) {
+        ex_log ( "[exSDK] Error: Could not init lua!" );
         return -1;
     }
 
@@ -285,11 +292,14 @@ void ex_sdk_deinit () {
 
     ex_log ( "[exSDK] Closing..." );
 
+    ex_log ( "[exSDK] Closing lua..." );
+    ex_lua_deinit ();
+
     ex_log ( "[exSDK] Closing ui..." );
     ex_ui_deinit ();
 
-    ex_log ( "[exSDK] Closing lua..." );
-    ex_lua_deinit ();
+    ex_log ( "[exSDK] Closing font..." );
+    ex_font_deinit ();
 
     ex_log ( "[exSDK] Closing fsys..." );
     ex_fsys_deinit ();

@@ -16,6 +16,8 @@ local grossini_dance
 local btfont1
 local btfont2
 
+local ttf_font
+
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
@@ -36,6 +38,7 @@ function init()
     btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
     btfont2 = asset_db.load("MolotShadow.bft")
 
+    ttf_font = asset_db.load("VeraMono.ttf")
 
     grossini_dance:lock( grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
     for x=0,10 do
@@ -97,20 +100,20 @@ function render()
         --                       logo.width * 0.5,
         --                       logo.height * 0.5 )
 
-        --
-        -- local pos1 = screen_center - ex.vec2f( grossini_dance.width, grossini_dance.height ) * 0.5
-        local pos1 = ex.vec2f.zero
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_image( grossini_dance, pos1.x, pos1.y )
+        -- --
+        -- -- local pos1 = screen_center - ex.vec2f( grossini_dance.width, grossini_dance.height ) * 0.5
+        -- local pos1 = ex.vec2f.zero
+        -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        -- ex.canvas.draw_image( grossini_dance, pos1.x, pos1.y )
 
-        --
-        local pos2 = screen_center - ex.vec2f( grossini_dance.width, grossini_dance.height ) * 0.5
-        -- -- local pos2 = pos1 + ex.vec2f( 0.0, grossini_dance.height ) + ex.vec2f(0.5,0.0)
-        -- -- local pos2 = pos1 + ex.vec2f( 0.0, grossini_dance.height ) + ex.vec2f(0.5,0.0)
-        -- local pos2 = screen_center
-        -- -- pos2 = ex.vec2f( math.ceil(pos2.x), math.ceil(pos2.y) )
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_image( grossini_dance, pos2.x, pos2.y )
+        -- --
+        -- local pos2 = screen_center - ex.vec2f( grossini_dance.width, grossini_dance.height ) * 0.5
+        -- -- -- local pos2 = pos1 + ex.vec2f( 0.0, grossini_dance.height ) + ex.vec2f(0.5,0.0)
+        -- -- -- local pos2 = pos1 + ex.vec2f( 0.0, grossini_dance.height ) + ex.vec2f(0.5,0.0)
+        -- -- local pos2 = screen_center
+        -- -- -- pos2 = ex.vec2f( math.ceil(pos2.x), math.ceil(pos2.y) )
+        -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        -- ex.canvas.draw_image( grossini_dance, pos2.x, pos2.y )
 
         -- ex.canvas.draw_image( btfont1.pageInfos[0], 0.0, 0.0 )
         -- ex.canvas.draw_bitmap_text( "hello world", btfont2, 100, 5 )
@@ -125,6 +128,8 @@ function render()
         -- ex.canvas.draw_image_border( windowActive, 
         --                              0, 0, ex.canvas.width, ex.canvas.height,
         --                              16, 16, 27, 16 )
+
+        ex.canvas.draw_text( "Hello World", ttf_font, 10, 10 ) 
 
     ex_c.canvas_flush()
 end

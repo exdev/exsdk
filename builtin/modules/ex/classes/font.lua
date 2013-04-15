@@ -14,6 +14,11 @@ local __M = {}
 local font = class ({
     __typename = "font",
 
+    -- constructor & destructor
+    __gc = function (_self)
+        ex_c.font_destroy(_self._cptr)
+    end,
+
     --/////////////////////////////////////////////////////////////////////////////
     -- properties
     --/////////////////////////////////////////////////////////////////////////////

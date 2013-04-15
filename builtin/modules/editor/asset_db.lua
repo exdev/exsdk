@@ -20,6 +20,7 @@ local path_to_asset = {}
 local function fsys_path (_path)
     return path.join("__project__",_path)
 end
+__M.fsys_path = fsys_path
 
 -- ------------------------------------------------------------------ 
 -- Desc: 

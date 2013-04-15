@@ -37,7 +37,7 @@ local font_importer = editor.importer.extend ({
 
     exec = function (_self)
         local fnt = ex.font.new()
-        local cptr = ex_c.font_load ( editor.asset_db.fullpath(_self.path), size )
+        local cptr = ex_c.font_load ( editor.asset_db.fsys_path(_self.path), _self.size )
         fnt._cptr = cptr
 
         return fnt

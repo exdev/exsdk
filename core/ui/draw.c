@@ -303,7 +303,7 @@ static int __draw_glyph ( ex_font_t *_font, int _prev_ft_index, int _ft_index, i
        ex_ui_draw_texture ( _dx + advance, _dy, glyph->w, glyph->h,
                             glyph->x, glyph->y, glyph->w, glyph->h );
    }
-   advance += glyph->advance;
+   advance += glyph->advance_x;
 
    return advance;
 } 
@@ -317,6 +317,7 @@ void ex_ui_draw_text ( const char *_text,
     int ch_pos;
     int ft_index, prev_ft_index;
     int cur_x, cur_y;
+    int advance = 0;
 
     utext = al_ustr_new(_text);
     ch_pos = 0;
@@ -325,8 +326,8 @@ void ex_ui_draw_text ( const char *_text,
     cur_y = _dy;
 
     while ( (ch = al_ustr_get_next(utext, &ch_pos)) >= 0 ) {
-        int advance = 0;
-        int ft_index = FT_Get_Char_Index ( _font->face, ch );
+        advance = 0;
+        ft_index = FT_Get_Char_Index ( _font->face, ch );
 
         // if this is \n(10) or \r(13)
         if ( ft_index == 10 || ft_index == 13 ) {

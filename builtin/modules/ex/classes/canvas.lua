@@ -102,6 +102,9 @@ local canvas = class ({
             -- checkarg(_dw,"number")
             -- checkarg(_dh,"number")
 
+            _dw = _dw or -1
+            _dh = _dh or -1
+
             ex_c.gui_draw_text( _text, _font._cptr, 
                                 _dx, _dy, _dw, _dh -- pos
                               )

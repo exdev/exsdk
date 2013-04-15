@@ -117,7 +117,7 @@ static uint8 *__atlas_alloc_region ( ex_font_t *_font, __glyph_set_t *_glyph_set
         _glyph_set->max_height = 0;
     }
     else {
-        page = (ALLEGRO_BITMAP *)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
+        page = *(ALLEGRO_BITMAP **)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
     }
 
     //
@@ -167,12 +167,35 @@ static uint8 *__atlas_alloc_region ( ex_font_t *_font, __glyph_set_t *_glyph_set
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static void __copy_glyph_color ( FT_Face _face, uint8 *_glyph_data, int _pitch ) {
+    int x, y;
+
+    for ( y = 0; y < _face->glyph->bitmap.rows; ++y ) {
+        const uint8 *ptr = _face->glyph->bitmap.buffer + _face->glyph->bitmap.pitch * y;
+        uint8 *dptr = _glyph_data + _pitch * y;
+
+        for ( x = 0; x < _face->glyph->bitmap.width; ++x ) {
+            unsigned char c = *ptr;
+            *dptr++ = 255;
+            *dptr++ = 255;
+            *dptr++ = 255;
+            *dptr++ = c;
+            ptr++;
+        }
+    }
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, int _ft_index ) {
     FT_Int32 flags;
     FT_Error error;
     FT_Face face;
     FT_Bitmap ft_bitmap;
-    uint8 *lock_region;
+    uint8 *lock_buffer;
+    ALLEGRO_BITMAP *cur_page;
 
     int ft_bitmap_width = 0;
     int ft_bitmap_rows = 0;
@@ -180,11 +203,12 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     int ft_glyph_top = 0;
     int ft_glyph_left = 0;
 
-    if ( _glyph->page != NULL || _glyph->x < 0 )
+    if ( _glyph->page != NULL )
         return;
 
     face = _font->face;
 
+    flags = 0;
     flags |= FT_LOAD_FORCE_AUTOHINT;
     if( _font->outline_type > 0 )
         flags |= FT_LOAD_NO_BITMAP;
@@ -269,18 +293,17 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     }
 
     // 
-    lock_region = __atlas_alloc_region ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows );
+    lock_buffer = __atlas_alloc_region ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows );
+    cur_page = *(ALLEGRO_BITMAP **)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
 
-    // if (font_data->flags & ALLEGRO_TTF_MONOCHROME)
-    //    copy_glyph_mono(font_data, face, glyph_data);
-    // else
-    //    copy_glyph_color(font_data, face, glyph_data);
-    // unlock_current_page(font_data);
+    __copy_glyph_color ( _font->face, lock_buffer, al_get_pixel_size( al_get_bitmap_format(cur_page) ) );
+    al_unlock_bitmap(cur_page);
 
     //
     _glyph->offset_x = ft_glyph_left;
     _glyph->offset_y = ft_glyph_top;
-    _glyph->advance = face->glyph->advance.x >> 6;
+    _glyph->advance_x = face->glyph->advance.x >> 6;
+    _glyph->advance_y = face->glyph->advance.y >> 6;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -512,7 +535,8 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, int _ft_index ) {
         new_glyph.h = -1;
         new_glyph.offset_x = -1;
         new_glyph.offset_y = -1;
-        new_glyph.advance = -1;
+        new_glyph.advance_x = -1;
+        new_glyph.advance_y = -1;
 
         ex_hashmap_add ( set->glyphs, &_ft_index, &new_glyph, &idx );
 

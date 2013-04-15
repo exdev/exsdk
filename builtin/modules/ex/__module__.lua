@@ -15,6 +15,7 @@ module_add( "classes/rect.lua" )
 module_add( "classes/color4f.lua" )
 module_add( "classes/texture.lua" )
 module_add( "classes/bitmapfont.lua" )
+module_add( "classes/font.lua" )
 
 -- engine classes
 module_add( "classes/node.lua" )
