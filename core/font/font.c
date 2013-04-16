@@ -93,7 +93,7 @@ static ALLEGRO_BITMAP *__new_texture () {
     al_store_state(&state, ALLEGRO_STATE_NEW_BITMAP_PARAMETERS);
         al_set_new_bitmap_format ( ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA );
         al_set_new_bitmap_flags ( ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR );
-        bitmap = al_create_bitmap( 512, 512 );
+        bitmap = al_create_bitmap( 256, 256 );
     al_restore_state(&state);
 
     al_store_state(&state, ALLEGRO_STATE_TARGET_BITMAP);
@@ -109,7 +109,7 @@ static ALLEGRO_BITMAP *__new_texture () {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, int _w, int _h ) {
+static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, int _w, int _h, int _padding ) {
     ALLEGRO_BITMAP *page;
     ALLEGRO_LOCKED_REGION *region;
 
@@ -118,8 +118,8 @@ static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_s
         page = __new_texture();
         ex_array_add ( _glyph_set->pages, &page );
 
-        _glyph_set->cur_x = 0;
-        _glyph_set->cur_y = 0;
+        _glyph_set->cur_x = _padding;
+        _glyph_set->cur_y = _padding;
         _glyph_set->max_height = 0;
     }
     else {
@@ -127,22 +127,22 @@ static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_s
     }
 
     //
-    ex_assert ( _w < al_get_bitmap_width(page) && _h < al_get_bitmap_height(page) );
+    ex_assert ( _w + _padding < al_get_bitmap_width(page) && _h + _padding < al_get_bitmap_height(page) );
 
     //
-    if ( _glyph_set->cur_x + _w > al_get_bitmap_width(page) ) {
-        _glyph_set->cur_y += _glyph_set->max_height;
-        _glyph_set->cur_x = 0;
+    if ( _glyph_set->cur_x + _w + _padding > al_get_bitmap_width(page) ) {
+        _glyph_set->cur_y += (_glyph_set->max_height + _padding);
+        _glyph_set->cur_x = _padding;
         _glyph_set->max_height = 0;
     }
 
     //
-    if ( _glyph_set->cur_y + _h > al_get_bitmap_height(page) ) {
+    if ( _glyph_set->cur_y + _h + _padding > al_get_bitmap_height(page) ) {
         page = __new_texture();
         ex_array_add ( _glyph_set->pages, &page );
 
-        _glyph_set->cur_x = 0;
-        _glyph_set->cur_y = 0;
+        _glyph_set->cur_x = _padding;
+        _glyph_set->cur_y = _padding;
         _glyph_set->max_height = 0;
     }
 
@@ -152,8 +152,8 @@ static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_s
     _glyph->w = _w;
     _glyph->h = _h;
 
-    _glyph_set->cur_x += _w;
-    if ( _h > _glyph_set->max_height ) {
+    _glyph_set->cur_x += (_w + _padding);
+    if ( _h + _padding > _glyph_set->max_height ) {
         _glyph_set->max_height = _h;
     }
 
@@ -297,7 +297,7 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     }
 
     // 
-    region = __atlas_alloc_region ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows );
+    region = __atlas_alloc_region ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows, 1 );
     cur_page = *(ALLEGRO_BITMAP **)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
 
     __copy_glyph_color ( ft_bitmap, region );

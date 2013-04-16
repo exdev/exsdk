@@ -129,25 +129,20 @@ function render()
         --                              0, 0, ex.canvas.width, ex.canvas.height,
         --                              16, 16, 27, 16 )
 
+        ttf_font.outline_type = 0
+        ttf_font.outline_thickness = 1.0
+
         ttf_font.size = 30
-        ttf_font.outline_thickness = 2.0
+        ex.canvas.color = ex.color4f( 1.0, 0.0, 0.0, 1.0 )
+        ex.canvas.draw_text( "Hello World", ttf_font, 10, 10 ) 
 
-        ttf_font.outline_type = 2
-        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnopqrstuvwxyz", ttf_font, 10, 10 ) 
+        -- ttf_font.size = 40
+        -- ex.canvas.color = ex.color4f( 0.0, 1.0, 0.0, 1.0 )
+        -- ex.canvas.draw_text( "a", ttf_font, 10, 50 ) 
 
-        ttf_font.outline_type = 0
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnopqrstuvwxyz", ttf_font, 10, 10 ) 
-
-
-        ttf_font.outline_type = 2
-        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnopqrstuvwxyz", ttf_font, 10, 50 ) 
-
-        ttf_font.outline_type = 0
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnopqrstuvwxyz", ttf_font, 10, 50 ) 
+        -- ttf_font.size = 50
+        -- ex.canvas.color = ex.color4f( 0.0, 0.0, 1.0, 1.0 )
+        -- ex.canvas.draw_text( "a", ttf_font, 10, 100 ) 
 
     ex_c.canvas_flush()
 end
