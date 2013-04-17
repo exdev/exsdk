@@ -206,7 +206,7 @@ static void __verify_pattern ( alloc_unit_t *_au,
 // ------------------------------------------------------------------ 
 
 static void __reclaim_au ( alloc_unit_t *_au ) {
-    ex_check ( ex_hashmap_remove_at ( &__au_map, &_au->org_addr ) != NULL );
+    ex_check ( ex_hashmap_remove_at ( &__au_map, &_au->org_addr ) != false );
 
     // append to reserve alloc info
     _au->next = __reserved_au_list;
@@ -225,19 +225,17 @@ static void __reclaim_au ( alloc_unit_t *_au ) {
 
 //
 static inline int __push_au ( alloc_unit_t *_au ) { 
-    size_t idx = -1;
-    ex_hashmap_add ( &__au_map, &_au->org_addr, &_au, &idx ); 
-    return idx;
+    return ex_hashmap_add_unique ( &__au_map, &_au->org_addr, &_au ); 
 }
 
 //
 static inline alloc_unit_t *__get_au ( void *_ptr ) { 
-    return *((alloc_unit_t **)ex_hashmap_get ( &__au_map, &_ptr, NULL )); 
+    return *((alloc_unit_t **)ex_hashmap_get ( &__au_map, &_ptr )); 
 }
 
 //
 static inline int __rearrange_au ( void *_ptr, alloc_unit_t *au ) {
-    if ( ex_hashmap_remove_at ( &__au_map, &_ptr ) == NULL )
+    if ( ex_hashmap_remove_at ( &__au_map, &_ptr ) == false )
         return -1;
     return __push_au ( au );
 }
@@ -336,7 +334,7 @@ int ex_mem_init () {
 
     ex_hashmap_init ( &__au_map, 
                       sizeof(void *), sizeof(alloc_unit_t *), 
-                      256,
+                      4096,
                       ex_hashkey_ptr, ex_keycmp_ptr,
                       ex_func_alloc_nomng,
                       ex_func_realloc_nomng,

@@ -17,12 +17,6 @@ extern "C" {
 // ######################### 
 
 ///////////////////////////////////////////////////////////////////////////////
-// includes
-///////////////////////////////////////////////////////////////////////////////
-
-#include "pool.h"
-
-///////////////////////////////////////////////////////////////////////////////
 // foreach
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -53,17 +47,10 @@ extern "C" {
 
 #define ex_hashmap_each( _hashmap, _type, _el ) \
     { \
-        ex_pool_node_t *__node__ = (_hashmap)->nodes->used_nodes_begin; \
-        ex_pool_node_t *__node_begin__ = (_hashmap)->nodes->nodes; \
-        ex_pool_node_t *__node_next__; \
-        size_t __idx__; \
+        size_t __idx__ = 0; \
         _type _el; \
-        void *__key__; \
-        while ( __node__ ) { \
-            __node_next__ = __node__->next; \
-            __idx__ = __node__ - __node_begin__; \
-            __key__ = ( (char *)(_hashmap)->keys + __idx__ * (_hashmap)->key_bytes ); \
-            _el = *( (_type *) ( (char *)(_hashmap)->values + __idx__ * (_hashmap)->value_bytes ) );
+        while ( __idx__ < (_hashmap)->count ) { \
+            _el = *( (_type *) ( ex_hashmap_get_by_idx (_hashmap, __idx__) ) );
 
 // ------------------------------------------------------------------ 
 /*! 
@@ -92,16 +79,10 @@ extern "C" {
 
 #define ex_hashmap_raw_each( _hashmap, _type, _el ) \
     { \
-        ex_pool_node_t *__node__ = (_hashmap)->nodes->used_nodes_begin; \
-        ex_pool_node_t *__node_begin__ = (_hashmap)->nodes->nodes; \
-        ex_pool_node_t *__node_next__; \
-        size_t __idx__; \
+        size_t __idx__ = 0; \
         _type _el; \
-        while ( __node__ ) { \
-            __node_next__ = __node__->next; \
-            __idx__ = __node__ - __node_begin__; \
-            __key__ = ( (char *)(_hashmap)->keys + __idx__ * (_hashmap)->key_bytes ); \
-            _el = (_type)( (char *)(_hashmap)->values + __idx__ * (_hashmap)->value_bytes );
+        while ( __idx__ < (_hashmap)->count ) { \
+            _el = (_type)( ex_hashmap_get_by_idx (_hashmap, __idx__) );
 
 // ------------------------------------------------------------------ 
 /*! 
@@ -112,7 +93,7 @@ extern "C" {
 */// ------------------------------------------------------------------ 
 
 #define ex_hashmap_each_end \
-            __node__ = __node_next__; \
+            ++__idx__; \
         } \
     }
 
@@ -126,7 +107,7 @@ extern "C" {
 
 #define ex_hashmap_continue \
     { \
-        __node__ = __node_next__; \
+        ++__idx__; \
         continue; \
     }
 
@@ -145,26 +126,21 @@ typedef uint32 (*hashkey_t) (const void *);
 typedef int (*keycmp_t) (const void *, const void *);
 
 //
-typedef struct ex_hashmap_node_t {
-    size_t prev; // prev hash index
-    size_t next; // next hash index
-} ex_hashmap_node_t;
-
-//
 typedef struct ex_hashmap_t {
     // public
+    size_t count;
     size_t capacity;
 
     // private
     size_t hashsize;
-    void *keys;
     size_t key_bytes;
-    void *values;
     size_t value_bytes;
-    size_t *indices;
-    ex_pool_t *nodes;
     hashkey_t hashkey;
     keycmp_t keycmp;
+
+    void *nodes;
+    size_t *indices;
+    size_t node_bytes; // node bytes = key_bytes + value_bytes + sizeof(__node_t)
 
     // alloc methods
     void *(*alloc)      ( size_t );
@@ -179,14 +155,14 @@ typedef struct ex_hashmap_t {
 // ------------------------------------------------------------------ 
 
 // ex_hashset
-#define ex_hashset(_type,_count) \
+#define ex_hashset(_type,_hashsize) \
     ex_hashmap_alloc(sizeof(_type), sizeof(_type), \
-                   _count, \
+                   _hashsize, \
                    ex_hashkey_##_type, ex_keycmp_##_type \
                   )
 
 extern ex_hashmap_t *ex_hashmap_alloc ( size_t _key_bytes, size_t _value_bytes, 
-                                        size_t _count, 
+                                        size_t _hashsize, 
                                         hashkey_t _hashkey, keycmp_t _keycmp );
 
 // ------------------------------------------------------------------ 
@@ -201,7 +177,7 @@ extern void ex_hashmap_free ( ex_hashmap_t *_hashmap );
 
 extern void ex_hashmap_init ( ex_hashmap_t *_hashmap, 
                               size_t _key_bytes, size_t _value_bytes, 
-                              size_t _count, 
+                              size_t _hashsize, 
                               hashkey_t _hashkey, keycmp_t _keycmp, 
                               void *(*_alloc) ( size_t ),
                               void *(*_realloc) ( void *, size_t ),
@@ -220,24 +196,23 @@ extern void ex_hashmap_deinit ( ex_hashmap_t *_hashmap );
 //  exists then go for it.
 // ------------------------------------------------------------------ 
 
-extern void ex_hashmap_add_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t _hash_idx, size_t *_index );
+extern int ex_hashmap_add_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t _hash_idx );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void *ex_hashmap_get ( const ex_hashmap_t *_hashmap, const void *_key, size_t *_index );
-extern size_t ex_hashmap_get_hashidx ( const ex_hashmap_t *_hashmap, const void *_key, size_t *_index );
-extern void *ex_hashmap_get_by_idx ( const ex_hashmap_t *_hashmap, size_t _index );
+extern void *ex_hashmap_get ( const ex_hashmap_t *_hashmap, const void *_key );
+extern void *ex_hashmap_get_or_new ( ex_hashmap_t *_hashmap, const void *_key );
+extern void *ex_hashmap_get_by_idx ( const ex_hashmap_t *_hashmap, size_t _idx );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 //  @return: false: already exists
 // ------------------------------------------------------------------ 
 
-extern bool ex_hashmap_add ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t *_index );
-// set will still set the already exists value, add new one
-extern bool ex_hashmap_set ( ex_hashmap_t *_hashmap, const void *_key, const void *_val );
+extern int ex_hashmap_add_unique ( ex_hashmap_t *_hashmap, const void *_key, const void *_val );
+extern int ex_hashmap_set_or_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val );
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -249,14 +224,14 @@ extern void ex_hashmap_cpy ( ex_hashmap_t *_to, const ex_hashmap_t *_from );
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void *ex_hashmap_remove_at ( ex_hashmap_t *_hashmap, const void *_key );
-extern void *ex_hashmap_remove_by_idx ( ex_hashmap_t *_hashmap, uint32 _hash_idx, size_t _idx );
+extern bool ex_hashmap_remove_at ( ex_hashmap_t *_hashmap, const void *_key );
+extern void ex_hashmap_remove_by_idx ( ex_hashmap_t *_hashmap, size_t _idx );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static inline size_t ex_hashmap_count ( const ex_hashmap_t *_hashmap ) { return ex_pool_count(_hashmap->nodes); }
+static inline size_t ex_hashmap_count ( const ex_hashmap_t *_hashmap ) { return _hashmap->count; }
 static inline size_t ex_hashmap_capacity ( const ex_hashmap_t *_hashmap ) { return _hashmap->capacity; }
 
 ///////////////////////////////////////////////////////////////////////////////

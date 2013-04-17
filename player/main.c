@@ -104,7 +104,9 @@ static void main_loop () {
 done:
     // call deinit() in __project__/main.lua
     ex_lua_main_deinit ( ex_lua_main_state() );
+    al_destroy_event_queue(queue);  
     al_destroy_display(display);
+
 }
 
 // ------------------------------------------------------------------ 

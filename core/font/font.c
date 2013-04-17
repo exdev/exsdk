@@ -512,7 +512,7 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, int _ft_index ) {
     key.outline_thickness = _font->outline_thickness;
 
     // get glyph-set
-    set = ex_hashmap_get( _font->glyph_sets, &key, NULL ); 
+    set = ex_hashmap_get( _font->glyph_sets, &key ); 
     if ( set == NULL ) {
         size_t idx = -1;
         __glyph_set_t new_set;
@@ -528,14 +528,12 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, int _ft_index ) {
         new_set.cur_y = 0;
         new_set.max_height = -1;
 
-        ex_hashmap_add ( _font->glyph_sets, &key, &new_set, &idx );
-
-        ex_assert ( idx != -1 );
+        idx = ex_hashmap_add_unique ( _font->glyph_sets, &key, &new_set );
         set = ex_hashmap_get_by_idx ( _font->glyph_sets, idx );
     }
 
     // get glyph
-    glyph = ex_hashmap_get( set->glyphs, &_ft_index, NULL ); 
+    glyph = ex_hashmap_get( set->glyphs, &_ft_index ); 
     if ( glyph == NULL ) {
         size_t idx = -1;
         ex_glyph_t new_glyph;
@@ -550,9 +548,7 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, int _ft_index ) {
         new_glyph.advance_x = -1;
         new_glyph.advance_y = -1;
 
-        ex_hashmap_add ( set->glyphs, &_ft_index, &new_glyph, &idx );
-
-        ex_assert ( idx != -1 );
+        idx = ex_hashmap_add_unique ( set->glyphs, &_ft_index, &new_glyph );
         glyph = ex_hashmap_get_by_idx ( set->glyphs, idx );
 
         // init and cache the glyph data
