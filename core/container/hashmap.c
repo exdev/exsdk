@@ -398,18 +398,28 @@ void ex_hashmap_remove_by_idx ( ex_hashmap_t *_hashmap, size_t _idx ) {
         __getnode(_hashmap,prev_idx)->next = next_idx;
 
     // now use fast remove technique, replace the erased node by last node in the nodes
-    last_node = __getnode(_hashmap,_hashmap->count-1);
-    memcpy ( node, last_node, _hashmap->node_bytes );
-    last_node->next = -1;
-    last_node->prev = -1;
-    last_node->hash = -1;
+    if ( _idx == _hashmap->count-1 ) {
+        last_node = __getnode(_hashmap,_hashmap->count-1);
+        last_node->next = -1;
+        last_node->prev = -1;
+        last_node->hash = -1;
 
-    // adjust hash table
-    if ( node->prev == -1 ) 
-        _hashmap->indices[node->hash] = _idx;
-    else
-        __getnode(_hashmap,node->prev)->next = _idx;
+        _hashmap->count -= 1;
+    }
+    else {
+        last_node = __getnode(_hashmap,_hashmap->count-1);
+        memcpy ( node, last_node, _hashmap->node_bytes );
+        last_node->next = -1;
+        last_node->prev = -1;
+        last_node->hash = -1;
 
-    //
-    _hashmap->count -= 1;
+        // adjust hash table
+        if ( node->prev == -1 ) 
+            _hashmap->indices[node->hash] = _idx;
+        else
+            __getnode(_hashmap,node->prev)->next = _idx;
+
+        //
+        _hashmap->count -= 1;
+    }
 }

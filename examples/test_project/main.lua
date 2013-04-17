@@ -30,23 +30,23 @@ function init()
     print ( "" )
 
     checkerboard = asset_db.load("Checkerboard_64x64.png")
-    logo = asset_db.load("ex2d_logo.png")
-    box = asset_db.load("box.png")
-    windowActive = asset_db.load("windowActive.png")
+    -- logo = asset_db.load("ex2d_logo.png")
+    -- box = asset_db.load("box.png")
+    -- windowActive = asset_db.load("windowActive.png")
 
-    grossini_dance = asset_db.load("grossini_dance_09.png")
-    btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
-    btfont2 = asset_db.load("MolotShadow.bft")
+    -- grossini_dance = asset_db.load("grossini_dance_09.png")
+    -- btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
+    -- btfont2 = asset_db.load("MolotShadow.bft")
 
     ttf_font = asset_db.load("VeraMono.ttf")
 
-    grossini_dance:lock( grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
-    for x=0,10 do
-        for y=0,10 do
-            grossini_dance:set_pixel( x, y, ex.color4f( 0.5, 0.5, 0.5, 0.5 ) )
-        end
-    end
-    grossini_dance:unlock()
+    -- grossini_dance:lock( grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
+    -- for x=0,10 do
+    --     for y=0,10 do
+    --         grossini_dance:set_pixel( x, y, ex.color4f( 0.5, 0.5, 0.5, 0.5 ) )
+    --     end
+    -- end
+    -- grossini_dance:unlock()
 
 end
 
@@ -129,28 +129,28 @@ function render()
         --                              0, 0, ex.canvas.width, ex.canvas.height,
         --                              16, 16, 27, 16 )
 
-        -- ttf_font.outline_type = 0
+        ttf_font.outline_type = 0
         -- ttf_font.outline_thickness = 1.0
 
         ttf_font.size = 30
-        ttf_font.outline_type = 1
+        -- ttf_font.outline_type = 1
         ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
         ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font, 10, 10 ) 
 
-        ttf_font.size = 30
-        ttf_font.outline_type = 0
+        ttf_font.size = 40
+        -- ttf_font.outline_type = 0
         ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font, 10, 10 ) 
+        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font, 10, 50 ) 
 
-        ttf_font.size = 30
-        ttf_font.outline_type = 2
+        ttf_font.size = 50
+        -- ttf_font.outline_type = 2
         ex.canvas.color = ex.color4f( 0.0, 1.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font, 10, 50 ) 
+        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font, 10, 100 ) 
 
-        ttf_font.size = 30
-        ttf_font.outline_type = 0
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font, 10, 50 ) 
+        -- ttf_font.size = 30
+        -- ttf_font.outline_type = 0
+        -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font, 10, 50 ) 
 
     ex_c.canvas_flush()
 end
