@@ -196,7 +196,7 @@ extern void ex_hashmap_deinit ( ex_hashmap_t *_hashmap );
 //  exists then go for it.
 // ------------------------------------------------------------------ 
 
-extern int ex_hashmap_add_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t _hash_idx );
+extern size_t ex_hashmap_add_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val, size_t _hash_idx );
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -213,8 +213,8 @@ extern void *ex_hashmap_get_by_idx ( const ex_hashmap_t *_hashmap, size_t _idx )
 //  @return: false: already exists
 // ------------------------------------------------------------------ 
 
-extern int ex_hashmap_add_unique ( ex_hashmap_t *_hashmap, const void *_key, const void *_val );
-extern int ex_hashmap_set_or_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val );
+extern size_t ex_hashmap_add_unique ( ex_hashmap_t *_hashmap, const void *_key, const void *_val );
+extern size_t ex_hashmap_set_or_new ( ex_hashmap_t *_hashmap, const void *_key, const void *_val );
 
 // ------------------------------------------------------------------ 
 // Desc: 

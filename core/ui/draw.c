@@ -285,7 +285,7 @@ void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int __draw_glyph ( ex_font_t *_font, int _prev_ft_index, int _ft_index, int _dx, int _dy ) {
+static int __draw_glyph ( ex_font_t *_font, uint _prev_ft_index, uint _ft_index, int _dx, int _dy ) {
    ex_glyph_t *glyph;
    int advance = 0;
    void *last_texture = NULL;
@@ -315,7 +315,7 @@ void ex_ui_draw_text ( const char *_text,
     ALLEGRO_USTR *utext;
     int ch;
     int ch_pos;
-    int ft_index, prev_ft_index;
+    uint ft_index, prev_ft_index;
     int cur_x, cur_y;
     int advance = 0;
 

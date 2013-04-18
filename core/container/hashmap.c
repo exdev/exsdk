@@ -160,10 +160,10 @@ void ex_hashmap_free ( ex_hashmap_t *_hashmap ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_hashmap_add_new ( ex_hashmap_t *_hashmap, 
-                           const void *_key, 
-                           const void *_val, 
-                           size_t _hash_idx ) {
+size_t ex_hashmap_add_new ( ex_hashmap_t *_hashmap, 
+                            const void *_key, 
+                            const void *_val, 
+                            size_t _hash_idx ) {
     size_t cur_idx, next_idx;
     uint8 *dptr;
     __node_t *new_node;
@@ -289,9 +289,9 @@ void *ex_hashmap_get_by_idx ( const ex_hashmap_t *_hashmap, size_t _idx ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_hashmap_set_or_new ( ex_hashmap_t *_hashmap, 
-                             const void *_key, 
-                             const void *_val )
+size_t ex_hashmap_set_or_new ( ex_hashmap_t *_hashmap, 
+                               const void *_key, 
+                               const void *_val )
 {
     size_t hash_next;
     uint32 hash_idx = __hash_index ( _hashmap, _key ); 
@@ -318,9 +318,9 @@ int ex_hashmap_set_or_new ( ex_hashmap_t *_hashmap,
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_hashmap_add_unique ( ex_hashmap_t *_hashmap, 
-                             const void *_key, 
-                             const void *_val )
+size_t ex_hashmap_add_unique ( ex_hashmap_t *_hashmap, 
+                               const void *_key, 
+                               const void *_val )
 {
     size_t hash_next;
     uint32 hash_idx = __hash_index ( _hashmap, _key ); 

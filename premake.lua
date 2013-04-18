@@ -286,7 +286,7 @@ solution "exSDK"
 
         -- link
         links {
-            "freetype_D",
+            "freetype",
             "Deps",
             "Allegro",
             "exCore",
@@ -382,7 +382,7 @@ solution "exSDK"
 
             -- link
             links {
-                "freetype_D",
+                "freetype",
                 "Deps",
                 "Allegro",
                 "exCore",

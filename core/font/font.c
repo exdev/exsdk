@@ -229,7 +229,7 @@ static void __copy_glyph_color ( FT_Bitmap _ft_bitmap, ALLEGRO_LOCKED_REGION *_r
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, int _ft_index ) {
+static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, uint _ft_index ) {
     FT_Int32 flags;
     FT_Error error;
     FT_Face face;
@@ -483,7 +483,7 @@ void ex_font_set_size ( ex_font_t *_font, int _size ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_font_get_kerning ( ex_font_t *_font, int _first, int _second ) {
+int ex_font_get_kerning ( ex_font_t *_font, uint _first, uint _second ) {
    if ( _first != -1 ) {
       FT_Vector delta;
       FT_Get_Kerning( _font->face, _first, _second, FT_KERNING_DEFAULT, &delta );
@@ -497,7 +497,7 @@ int ex_font_get_kerning ( ex_font_t *_font, int _first, int _second ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, int _ft_index ) {
+ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, uint _ft_index ) {
     __glyph_key_t key;
     __glyph_set_t *set;
     ex_glyph_t *glyph;
