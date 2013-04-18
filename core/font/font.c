@@ -328,13 +328,13 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
 
 int ex_font_init () {
     FT_Error error;
+    int major,minor,patch;
 
     ex_assert ( __initialized == false );
 
     if ( __initialized )
         return -1;
 
-    ex_log ( "[FreeType] Initializing library..." );
     error = FT_Init_FreeType( &__ft_lib );
     if ( error ) {
         ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
@@ -342,6 +342,9 @@ int ex_font_init () {
                  FT_Errors[error].message );
         return -1;
     }
+
+    FT_Library_Version( __ft_lib, &major, &minor, &patch );
+    ex_log ( "[FreeType] Version %d.%d.%d", major, minor, patch );
 
     __initialized = true;
     return 0;
@@ -519,7 +522,7 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, int _ft_index ) {
 
         new_set.glyphs = ex_hashmap_alloc ( sizeof(int),
                                             sizeof(ex_glyph_t),
-                                            128,
+                                            1024,
                                             ex_hashkey_int,
                                             ex_keycmp_int
                                           );

@@ -42,6 +42,11 @@ int ex_fsys_init () {
     __PHYSFS_CHECK( PHYSFS_init(".") ); // NOTE: we write like this to prevent compile error 
     PHYSFS_permitSymbolicLinks(1); // yes, we permit symbolic links
 
+    ex_log ( "[fsys] Version: %d.%d.%d", 
+             PHYSFS_VER_MAJOR, 
+             PHYSFS_VER_MINOR,
+             PHYSFS_VER_PATCH );
+
 #if (EX_PLATFORM == EX_IOS)
     app_path = ex_fsys_main_bundle_path();
 #else

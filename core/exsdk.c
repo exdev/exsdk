@@ -237,6 +237,8 @@ int ex_sdk_init () {
         ex_log ( "[exSDK] Error: Could not init Allegro!" );
         return -1;
     }
+
+    ex_log ( "[Allegro] Version %s", ALLEGRO_VERSION_STR );
     al_init_image_addon();
     al_init_primitives_addon();
 

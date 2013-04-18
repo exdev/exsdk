@@ -209,6 +209,9 @@ int ex_lua_init () {
     __L = luaL_newstate();
     __ex_value_type_pool_init ();
 
+    //
+    ex_log ( "[lua] Version %0.f", *lua_version(__L) );
+
     // open default lua libs
     ex_log ( "[lua] Loading default library..." );
     luaL_openlibs(__L);

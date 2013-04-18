@@ -223,7 +223,7 @@ solution "exSDK"
 
         -- include
         includedirs {
-            "ext/freetype-2.4.2-1/include/",
+            "ext/freetype-2.4.11/include/",
             "ext/allegro-5.0.8/include/",
             "ext/allegro-5.0.8/addons/primitives/",
             "ext/allegro-5.0.8/addons/image/",
