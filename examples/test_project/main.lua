@@ -16,7 +16,8 @@ local grossini_dance
 local btfont1
 local btfont2
 
-local ttf_font
+local ttf_font1
+local ttf_font2
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -38,7 +39,8 @@ function init()
     -- btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
     -- btfont2 = asset_db.load("MolotShadow.bft")
 
-    ttf_font = asset_db.load("VeraMono.ttf")
+    ttf_font1 = asset_db.load("VeraMono.ttf")
+    ttf_font2 = asset_db.load("yahei.ttf")
 
     -- grossini_dance:lock( grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
     -- for x=0,10 do
@@ -129,28 +131,36 @@ function render()
         --                              0, 0, ex.canvas.width, ex.canvas.height,
         --                              16, 16, 27, 16 )
 
-        ttf_font.outline_type = 0
-        -- ttf_font.outline_thickness = 1.0
+        -- ttf_font1.outline_type = 0
+        -- -- ttf_font1.outline_thickness = 1.0
 
-        ttf_font.size = 10
-        -- ttf_font.outline_type = 1
-        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "a", ttf_font, 10, 10 ) 
+        -- ttf_font1.size = 10
+        -- -- ttf_font1.outline_type = 1
+        -- ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 10 ) 
 
-        ttf_font.size = 20
-        -- ttf_font.outline_type = 0
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_text( "a", ttf_font, 10, 50 ) 
-
-        ttf_font.size = 30
-        -- ttf_font.outline_type = 2
-        ex.canvas.color = ex.color4f( 0.0, 1.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "a", ttf_font, 10, 100 ) 
-
-        -- ttf_font.size = 30
-        -- ttf_font.outline_type = 0
+        -- ttf_font1.size = 20
+        -- -- ttf_font1.outline_type = 0
         -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font, 10, 50 ) 
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 50 ) 
+
+        -- ttf_font1.size = 30
+        -- -- ttf_font1.outline_type = 2
+        -- ex.canvas.color = ex.color4f( 0.0, 1.0, 0.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 100 ) 
+
+        -- ttf_font1.size = 30
+        -- ttf_font1.outline_type = 0
+        -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 50 ) 
+
+        file = io.open( asset_db.fullpath("content.txt"), "r" )
+        for line in file:lines() do 
+            ttf_font2.size = 20
+            ttf_font2.outline_type = 0
+            ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+            ex.canvas.draw_text( line, ttf_font2, 10, 50 ) 
+        end
 
     ex_c.canvas_flush()
 end

@@ -49,6 +49,23 @@ typedef struct __glyph_set_t {
     int max_height;
 } __glyph_set_t;
 
+#define FT_CHECK_ERROR_RETURN(error,ret) \
+    if ( error ) { \
+        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s", \
+                 FT_Errors[error].code,  \
+                 FT_Errors[error].message ); \
+        ex_assert (0); \
+        return ret; \
+    }
+
+#define FT_CHECK_ERROR_RETURN_VOID(error) \
+    if ( error ) { \
+        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s", \
+                 FT_Errors[error].code,  \
+                 FT_Errors[error].message ); \
+        ex_assert (0); \
+    }
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -91,7 +108,7 @@ static ALLEGRO_BITMAP *__new_texture () {
     ALLEGRO_STATE state;
 
     al_store_state(&state, ALLEGRO_STATE_NEW_BITMAP_PARAMETERS);
-        al_set_new_bitmap_format ( ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA );
+        al_set_new_bitmap_format ( ALLEGRO_PIXEL_FORMAT_ABGR_8888 );
         al_set_new_bitmap_flags ( ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR );
         bitmap = al_create_bitmap( 256, 256 );
     al_restore_state(&state);
@@ -101,6 +118,25 @@ static ALLEGRO_BITMAP *__new_texture () {
         al_set_target_bitmap(bitmap);
         al_clear_to_color(al_map_rgba_f(0, 0, 0, 0));
     al_restore_state(&state);
+
+    // DISABLE { 
+    // ALLEGRO_LOCKED_REGION *locked;
+    // int x, y, p;
+    // unsigned char *rgba;
+    // bitmap = al_create_bitmap( 256, 256 );
+    // locked = al_lock_bitmap ( bitmap, ALLEGRO_PIXEL_FORMAT_ABGR_8888, ALLEGRO_LOCK_WRITEONLY );
+    // rgba = locked->data;
+    // p = locked->pitch;
+    // for ( y = 0; y < 256; ++y ) {
+    //     for ( x = 0; x < 256; ++x ) {
+    //         rgba[y * p + x * 4 + 0] = 0;
+    //         rgba[y * p + x * 4 + 1] = 0;
+    //         rgba[y * p + x * 4 + 2] = 0;
+    //         rgba[y * p + x * 4 + 3] = 0;
+    //     }
+    // }
+    // al_unlock_bitmap(bitmap);
+    // } DISABLE end 
 
     return bitmap;
 }
@@ -161,7 +197,7 @@ static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_s
     region = al_lock_bitmap_region( page,
                                     _glyph->x, _glyph->y,
                                     _glyph->w, _glyph->h,
-                                    ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE, 
+                                    ALLEGRO_PIXEL_FORMAT_ABGR_8888, 
                                     ALLEGRO_LOCK_WRITEONLY );
 
     return region;
@@ -199,8 +235,8 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     FT_Face face;
     FT_Glyph ft_glyph;
     FT_Bitmap ft_bitmap;
-    ALLEGRO_BITMAP *cur_page;
-    ALLEGRO_LOCKED_REGION *region;
+    ALLEGRO_BITMAP *cur_page = NULL;
+    ALLEGRO_LOCKED_REGION *region = NULL;
 
     int ft_bitmap_width = 0;
     int ft_bitmap_rows = 0;
@@ -222,12 +258,7 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
 
     //
     error = FT_Load_Glyph( face, _ft_index, flags );
-    if ( error ) {
-        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
-                 FT_Errors[error].code, 
-                 FT_Errors[error].message );
-        return;
-    }
+    FT_CHECK_ERROR_RETURN_VOID (error);
 
     //
     if ( _font->outline_type == 0 ) {
@@ -243,12 +274,7 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
         FT_BitmapGlyph ft_bitmap_glyph;
 
         error = FT_Stroker_New( __ft_lib, &stroker );
-        if ( error ) {
-            ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
-                     FT_Errors[error].code, 
-                     FT_Errors[error].message );
-            return;
-        }
+        FT_CHECK_ERROR_RETURN_VOID (error);
 
         FT_Stroker_Set( stroker,
                         (int)(_font->outline_thickness * 64.0f),
@@ -256,12 +282,7 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
                         FT_STROKER_LINEJOIN_ROUND,
                         0 );
         error = FT_Get_Glyph ( face->glyph, &ft_glyph);
-        if ( error ) {
-            ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
-                     FT_Errors[error].code, 
-                     FT_Errors[error].message );
-            return;
-        }
+        FT_CHECK_ERROR_RETURN_VOID (error);
 
         //
         if( _font->outline_type == 1 )
@@ -270,21 +291,11 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
             error = FT_Glyph_StrokeBorder( &ft_glyph, stroker, 0, 1 );
         else if ( _font->outline_type == 3 )
             error = FT_Glyph_StrokeBorder( &ft_glyph, stroker, 1, 1 );
-        if ( error ) {
-            ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
-                     FT_Errors[error].code, 
-                     FT_Errors[error].message );
-            return;
-        }
+        FT_CHECK_ERROR_RETURN_VOID (error);
 
         //
         error = FT_Glyph_To_Bitmap( &ft_glyph, FT_RENDER_MODE_NORMAL, 0, 1);
-        if ( error ) {
-            ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
-                     FT_Errors[error].code, 
-                     FT_Errors[error].message );
-            return;
-        }
+        FT_CHECK_ERROR_RETURN_VOID (error);
 
         ft_bitmap_glyph = (FT_BitmapGlyph)ft_glyph;
         ft_bitmap       = ft_bitmap_glyph->bitmap;
@@ -336,12 +347,7 @@ int ex_font_init () {
         return -1;
 
     error = FT_Init_FreeType( &__ft_lib );
-    if ( error ) {
-        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
-                 FT_Errors[error].code, 
-                 FT_Errors[error].message );
-        return -1;
-    }
+    FT_CHECK_ERROR_RETURN (error,-1);
 
     FT_Library_Version( __ft_lib, &major, &minor, &patch );
     ex_log ( "[FreeType] Version %d.%d.%d", major, minor, patch );
@@ -406,22 +412,11 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
                                 buf_size,  /* size in bytes        */
                                 0,         /* face_index           */
                                 &face );
-    if ( error ) {
-        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
-                 FT_Errors[error].code, 
-                 FT_Errors[error].message );
-        return NULL;
-    }
+    FT_CHECK_ERROR_RETURN (error,NULL);
 
     //
     error = FT_Set_Pixel_Sizes ( face, 0, _size );
-    if ( error ) {
-        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
-                 FT_Errors[error].code, 
-                 FT_Errors[error].message );
-        FT_Done_Face( face );
-        return NULL;
-    }
+    FT_CHECK_ERROR_RETURN (error,NULL);
 
     //
     ex_free(buffer);
@@ -477,12 +472,7 @@ void ex_font_set_size ( ex_font_t *_font, int _size ) {
         return;
 
     error = FT_Set_Pixel_Sizes ( _font->face, 0, _size );
-    if ( error ) {
-        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s",
-                 FT_Errors[error].code, 
-                 FT_Errors[error].message );
-        return;
-    }
+    FT_CHECK_ERROR_RETURN_VOID(error);
 
     _font->size = _size;
 }
