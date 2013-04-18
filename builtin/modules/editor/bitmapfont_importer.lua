@@ -186,6 +186,8 @@ local bitmapfont_importer = editor.importer.extend ({
             end
         end
 
+        file:close()
+
         --
         return btfont
     end,

@@ -32,6 +32,10 @@ typedef struct ex_font_t {
     int outline_type; // ( 0 = None, 1 = Line, 2 = Inner, 3 = Outer )
     float outline_thickness;
     ex_hashmap_t *glyph_sets; // (size, outline_type, outline_thickness) -> ex_glyph_set_t 
+
+    //
+    void *face_buffer;
+    char facename[MAX_PATH];
 } ex_font_t;
 
 // ------------------------------------------------------------------ 

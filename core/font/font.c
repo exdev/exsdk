@@ -392,6 +392,7 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
     ex_file_t *file;
     size_t buf_size;
     void *buffer;
+    char *name;
 
     // open the file
     file = ex_fsys_fopen_r(_filepath);
@@ -419,10 +420,11 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
     FT_CHECK_ERROR_RETURN (error,NULL);
 
     //
-    ex_free(buffer);
-
-    //
     font = (ex_font_t *)ex_malloc ( sizeof(ex_font_t) );
+    font->face_buffer = buffer;
+    name = strrchr ( _filepath, '/' );
+    strncpy ( font->facename, name == NULL ? _filepath : name+1, MAX_PATH );
+
     font->face = face;
     font->size = _size;
     font->outline_type = 0;
@@ -457,7 +459,7 @@ void ex_font_destroy ( ex_font_t *_font ) {
     ex_hashmap_free(_font->glyph_sets);
 
     FT_Done_Face( _font->face );
-
+    ex_free(_font->face_buffer);
     ex_free(_font);
 }
 
