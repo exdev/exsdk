@@ -115,6 +115,24 @@ local canvas = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
+        draw_outline_text = function ( _text, _font, _color, _outline_color, _outline_thickness, _dx, _dy, _dw, _dh ) 
+            _font.outline_type = 1
+            _font.outline_thickness = _outline_thickness
+
+            ex.canvas.color = _outline_color
+            ex.canvas.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
+
+            _font.outline_type = 0
+            _font.outline_thickness = 0.0
+
+            ex.canvas.color = _color
+            ex.canvas.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
+        end,
+
+        -- ------------------------------------------------------------------ 
+        -- Desc: 
+        -- ------------------------------------------------------------------ 
+
         draw_bitmap_text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
             checkarg(_text,"string")
             checkarg(_font,"bitmapfont")

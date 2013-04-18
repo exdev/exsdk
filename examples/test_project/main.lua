@@ -81,16 +81,18 @@ end
 
 local cnt = 0
 function render()
-    if cnt >= 1 then
-        return
-    end
-    cnt = cnt + 1 
+    -- if cnt >= 1 then
+    --     return
+    -- end
+    -- cnt = cnt + 1 
 
     local screen_center = ex.vec2f( ex.canvas.width * 0.5,
                                     ex.canvas.height * 0.5 )
 
     ex_c.canvas_clear( 0.5, 0.5, 0.5 )
     -- ex_c.canvas_clear( 0.0, 0.0, 0.0 )
+
+        ex.canvas.color = ex.color4f.white
 
         local size = math.max( ex.canvas.width, ex.canvas.height )
         ex.canvas.draw_image( checkerboard, 
@@ -131,39 +133,32 @@ function render()
         --                              0, 0, ex.canvas.width, ex.canvas.height,
         --                              16, 16, 27, 16 )
 
-        -- ttf_font1.outline_type = 0
-        -- -- ttf_font1.outline_thickness = 1.0
+        ttf_font1.size = 20
+        ex.canvas.draw_outline_text( 
+            "Hello World!", 
+            ttf_font1, 
+            ex.color4f.black,
+            ex.color4f.yellow,
+            1.0,
+            10, 10 ) 
 
-        -- ttf_font1.size = 20
-        -- ttf_font1.outline_type = 1
-        -- ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
-        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 10 ) 
+        ttf_font1.size = 30
+        ex.canvas.draw_outline_text( 
+            "abcdefghijklmnopqrstuvwxyz", 
+            ttf_font1, 
+            ex.color4f.green,
+            ex.color4f.black,
+            2.0,
+            10, 50 ) 
 
-        -- ttf_font1.size = 20
-        -- ttf_font1.outline_type = 0
-        -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 10 ) 
-
-        -- ttf_font1.size = 30
-        -- ttf_font1.outline_type = 2
-        -- ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
-        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 50 ) 
-
-        -- ttf_font1.size = 30
-        -- ttf_font1.outline_type = 0
-        -- ex.canvas.color = ex.color4f( 0.0, 1.0, 0.0, 1.0 )
-        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 50 ) 
-
-        -- ttf_font1.size = 40
-        -- ttf_font1.outline_type = 1
-        -- ttf_font1.outline_thickness = 2
-        -- ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
-        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 100 ) 
-
-        -- ttf_font1.size = 40
-        -- ttf_font1.outline_type = 0
-        -- ex.canvas.color = ex.color4f( 1.0, 0.0, 0.0, 1.0 )
-        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 100 ) 
+        ttf_font1.size = 40
+        ex.canvas.draw_outline_text( 
+            "abcdefghijklmnopqrstuvwxyz", 
+            ttf_font1, 
+            ex.color4f.white,
+            ex.color4f.red,
+            2.0,
+            10, 100 ) 
 
         -- ======================================================== 
         -- 
@@ -176,21 +171,16 @@ function render()
         end
         file:close()
 
-        ttf_font2.size = 15
-        ttf_font2.outline_type = 1
-        ttf_font2.outline_thickness = 1.5
-        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
+        ttf_font2.size = 40
         for i=1,#lines do 
             line = lines[i]
-            ex.canvas.draw_text( line, ttf_font2, 10, 200 ) 
-        end
-
-        ttf_font2.size = 15
-        ttf_font2.outline_type = 0
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        for i=1,#lines do 
-            line = lines[i]
-            ex.canvas.draw_text( line, ttf_font2, 10, 200 ) 
+            ex.canvas.draw_outline_text( 
+                line, 
+                ttf_font2, 
+                ex.color4f.white,
+                ex.color4f.black,
+                2.0,
+                10, 200 ) 
         end
 
     ex_c.canvas_flush()
