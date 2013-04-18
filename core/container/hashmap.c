@@ -203,6 +203,32 @@ int ex_hashmap_add_new ( ex_hashmap_t *_hashmap,
 // Desc: 
 // ------------------------------------------------------------------ 
 
+int ex_hashmap_find ( const ex_hashmap_t *_hashmap, const void *_key ) {
+    size_t hash_next;
+    uint32 hash_idx = __hash_index ( _hashmap, _key ); 
+    __node_t *node;
+
+    // check if the key exists. if yes, don't do any thing.
+    hash_next = _hashmap->indices[hash_idx];
+    while ( hash_next != -1 ) {
+        node = __getnode(_hashmap,hash_next);
+
+        // compare the key
+        if ( _hashmap->keycmp(_key, __getkey( node ) ) == 0 ) {
+            return hash_next;
+        }
+
+        hash_next = node->next;
+    }
+
+    //
+    return -1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void *ex_hashmap_get ( const ex_hashmap_t *_hashmap, const void *_key ) {
     size_t hash_next;
     uint32 hash_idx = __hash_index ( _hashmap, _key ); 

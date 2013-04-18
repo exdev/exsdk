@@ -202,6 +202,8 @@ extern int ex_hashmap_add_new ( ex_hashmap_t *_hashmap, const void *_key, const 
 // Desc: 
 // ------------------------------------------------------------------ 
 
+extern int ex_hashmap_find ( const ex_hashmap_t *_hashmap, const void *_key );
+
 extern void *ex_hashmap_get ( const ex_hashmap_t *_hashmap, const void *_key );
 extern void *ex_hashmap_get_or_new ( ex_hashmap_t *_hashmap, const void *_key );
 extern void *ex_hashmap_get_by_idx ( const ex_hashmap_t *_hashmap, size_t _idx );
