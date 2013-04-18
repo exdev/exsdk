@@ -134,65 +134,64 @@ function render()
         -- ttf_font1.outline_type = 0
         -- -- ttf_font1.outline_thickness = 1.0
 
-        ttf_font1.size = 20
-        ttf_font1.outline_type = 1
-        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 10 ) 
+        -- ttf_font1.size = 20
+        -- ttf_font1.outline_type = 1
+        -- ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 10 ) 
 
-        ttf_font1.size = 20
-        ttf_font1.outline_type = 0
-        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 10 ) 
+        -- ttf_font1.size = 20
+        -- ttf_font1.outline_type = 0
+        -- ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 10 ) 
 
-        ttf_font1.size = 30
-        ttf_font1.outline_type = 2
-        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 50 ) 
+        -- ttf_font1.size = 30
+        -- ttf_font1.outline_type = 2
+        -- ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 50 ) 
 
-        ttf_font1.size = 30
-        ttf_font1.outline_type = 0
-        ex.canvas.color = ex.color4f( 0.0, 1.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 50 ) 
+        -- ttf_font1.size = 30
+        -- ttf_font1.outline_type = 0
+        -- ex.canvas.color = ex.color4f( 0.0, 1.0, 0.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 50 ) 
 
-        ttf_font1.size = 40
-        ttf_font1.outline_type = 1
-        ttf_font1.outline_thickness = 2
-        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 100 ) 
+        -- ttf_font1.size = 40
+        -- ttf_font1.outline_type = 1
+        -- ttf_font1.outline_thickness = 2
+        -- ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 100 ) 
 
-        ttf_font1.size = 40
-        ttf_font1.outline_type = 0
-        ex.canvas.color = ex.color4f( 1.0, 0.0, 0.0, 1.0 )
-        ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 100 ) 
+        -- ttf_font1.size = 40
+        -- ttf_font1.outline_type = 0
+        -- ex.canvas.color = ex.color4f( 1.0, 0.0, 0.0, 1.0 )
+        -- ex.canvas.draw_text( "abcdefghijklmnoprstuvwxyz", ttf_font1, 10, 100 ) 
 
         -- ======================================================== 
         -- 
         -- ======================================================== 
 
+        local lines = {}
         file = io.open( asset_db.fullpath("content.txt"), "r" )
-
-        ttf_font2.size = 20
-        ttf_font2.outline_type = 0
-        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
         for line in file:lines() do 
+            table.add( lines, line )
+        end
+        file:close()
+
+        ttf_font2.size = 15
+        ttf_font2.outline_type = 1
+        ttf_font2.outline_thickness = 1.5
+        ex.canvas.color = ex.color4f( 0.0, 0.0, 0.0, 1.0 )
+        for i=1,#lines do 
+            line = lines[i]
             ex.canvas.draw_text( line, ttf_font2, 10, 200 ) 
         end
 
-        ttf_font2.size = 20
+        ttf_font2.size = 15
         ttf_font2.outline_type = 0
-        ex.canvas.color = ex.color4f( 1.0, 0.0, 0.0, 1.0 )
-        for line in file:lines() do 
-            ex.canvas.draw_text( line, ttf_font2, 10, 250 ) 
+        ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
+        for i=1,#lines do 
+            line = lines[i]
+            ex.canvas.draw_text( line, ttf_font2, 10, 200 ) 
         end
-
-        ttf_font2.size = 20
-        ttf_font2.outline_type = 0
-        ex.canvas.color = ex.color4f( 0.0, 1.0, 0.0, 1.0 )
-        for line in file:lines() do 
-            ex.canvas.draw_text( line, ttf_font2, 10, 300 ) 
-        end
-
-        file:close()
 
     ex_c.canvas_flush()
 end

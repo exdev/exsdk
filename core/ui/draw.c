@@ -288,7 +288,6 @@ void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
 static int __draw_glyph ( ex_font_t *_font, uint _prev_ft_index, uint _ft_index, int _dx, int _dy ) {
    ex_glyph_t *glyph;
    int advance = 0;
-   void *last_texture = NULL;
 
    //
    glyph = ex_font_get_glyph ( _font, _ft_index );

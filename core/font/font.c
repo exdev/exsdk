@@ -512,11 +512,11 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, uint _ft_index ) {
         size_t idx = -1;
         __glyph_set_t new_set;
 
-        new_set.glyphs = ex_hashmap_alloc ( sizeof(int),
+        new_set.glyphs = ex_hashmap_alloc ( sizeof(uint),
                                             sizeof(ex_glyph_t),
                                             1024,
-                                            ex_hashkey_int,
-                                            ex_keycmp_int
+                                            ex_hashkey_uint64,
+                                            ex_keycmp_uint64
                                           );
         new_set.pages = ex_array_alloc ( sizeof(ALLEGRO_BITMAP *), 8 );
         new_set.cur_x = 0;
