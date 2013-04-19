@@ -98,6 +98,16 @@ function render()
         ex.canvas.draw_image( checkerboard, 
                               0, 0, size, size,
                               0, 0, checkerboard.width * 10, checkerboard.height * 10 )
+
+        -- ttf_font1.size = 16
+        -- ex.canvas.draw_outline_text( 
+        --     string.format("frame = %d", cnt),
+        --     ttf_font1, 
+        --     ex.color4f.black,
+        --     ex.color4f.white,
+        --     1.0,
+        --     ex.canvas.width - 100.0, 5 ) 
+
         -- ex.canvas.draw_image( logo, 
         --                       ex.canvas.width - 10 - logo.width * 0.5, 
         --                       ex.canvas.height - 10 - logo.height * 0.5,
