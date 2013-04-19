@@ -318,21 +318,30 @@ void ex_ui_draw_text ( const char *_text,
     int cur_x, cur_y;
     int advance = 0;
 
+    FT_Face face;
+    FT_Size_Metrics metrics;
+    int height, line_gap;
+
     utext = al_ustr_new(_text);
     ch_pos = 0;
     prev_ft_index = -1;
     cur_x = _dx;
     cur_y = _dy;
 
+    face = _font->face;
+    metrics = face->size->metrics;
+    height = metrics.height >> 6;
+    line_gap = height - (metrics.ascender >> 6) + (metrics.descender >> 6);
+
     while ( (ch = al_ustr_get_next(utext, &ch_pos)) >= 0 ) {
         advance = 0;
-        ft_index = FT_Get_Char_Index ( _font->face, ch );
+        ft_index = FT_Get_Char_Index ( face, ch );
 
         // if this is \n(10) or \r(13)
         if ( ch == 10 || ch == 13 ) {
-            cur_x = 0;
+            cur_x = _dx;
             prev_ft_index = -1;
-            // TODO: y += line_height;
+            cur_y += height - line_gap;
         }
         else {
             advance = __draw_glyph ( _font, prev_ft_index, ft_index, cur_x, cur_y );

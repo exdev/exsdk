@@ -143,55 +143,64 @@ function render()
         --                              0, 0, ex.canvas.width, ex.canvas.height,
         --                              16, 16, 27, 16 )
 
-        ttf_font1.size = 20
+        ttf_font1.size = 16
         ex.canvas.draw_outline_text( 
-            "abcdefghijklmnopqrstuvwxyz", 
-            ttf_font1, 
-            ex.color4f.black,
-            ex.color4f.yellow,
-            1.0,
-            10, 10 ) 
-
-        ttf_font1.size = 30
-        ex.canvas.draw_outline_text( 
-            "abcdefghijklmnopqrstuvwxyz", 
+            "Hello World\nThis is Johnny.\nWhat the Fuck!", 
             ttf_font1, 
             ex.color4f.green,
             ex.color4f.black,
             2.0,
-            10, 50 ) 
+            10, 10 ) 
 
-        ttf_font1.size = 40
-        ex.canvas.draw_outline_text( 
-            "abcdefghijklmnopqrstuvwxyz", 
-            ttf_font1, 
-            ex.color4f.white,
-            ex.color4f.red,
-            2.0,
-            10, 100 ) 
+        -- ttf_font1.size = 20
+        -- ex.canvas.draw_outline_text( 
+        --     "abcdefghijklmnopqrstuvwxyz", 
+        --     ttf_font1, 
+        --     ex.color4f.black,
+        --     ex.color4f.yellow,
+        --     1.0,
+        --     10, 10 ) 
 
-        -- ======================================================== 
-        -- 
-        -- ======================================================== 
+        -- ttf_font1.size = 30
+        -- ex.canvas.draw_outline_text( 
+        --     "abcdefghijklmnopqrstuvwxyz", 
+        --     ttf_font1, 
+        --     ex.color4f.green,
+        --     ex.color4f.black,
+        --     2.0,
+        --     10, 50 ) 
 
-        local lines = {}
-        file = io.open( asset_db.fullpath("content.txt"), "r" )
-        for line in file:lines() do 
-            table.add( lines, line )
-        end
-        file:close()
+        -- ttf_font1.size = 40
+        -- ex.canvas.draw_outline_text( 
+        --     "abcdefghijklmnopqrstuvwxyz", 
+        --     ttf_font1, 
+        --     ex.color4f.white,
+        --     ex.color4f.red,
+        --     2.0,
+        --     10, 100 ) 
 
-        ttf_font2.size = 40
-        for i=1,#lines do 
-            line = lines[i]
-            ex.canvas.draw_outline_text( 
-                line, 
-                ttf_font2, 
-                ex.color4f.white,
-                ex.color4f.black,
-                2.0,
-                10, 200 ) 
-        end
+        -- -- ======================================================== 
+        -- -- 
+        -- -- ======================================================== 
+
+        -- local lines = {}
+        -- file = io.open( asset_db.fullpath("content.txt"), "r" )
+        -- for line in file:lines() do 
+        --     table.add( lines, line )
+        -- end
+        -- file:close()
+
+        -- ttf_font2.size = 20
+        -- for i=1,#lines do 
+        --     line = lines[i]
+        --     ex.canvas.draw_outline_text( 
+        --         line, 
+        --         ttf_font2, 
+        --         ex.color4f.white,
+        --         ex.color4f.black,
+        --         1.0,
+        --         10, 200 ) 
+        -- end
 
     ex_c.canvas_flush()
 end
