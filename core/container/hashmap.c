@@ -429,8 +429,6 @@ void ex_hashmap_remove_by_idx ( ex_hashmap_t *_hashmap, size_t _idx ) {
         last_node->next = -1;
         last_node->prev = -1;
         last_node->hash = -1;
-
-        _hashmap->count -= 1;
     }
     else {
         last_node = __getnode(_hashmap,_hashmap->count-1);
@@ -444,8 +442,7 @@ void ex_hashmap_remove_by_idx ( ex_hashmap_t *_hashmap, size_t _idx ) {
             _hashmap->indices[node->hash] = _idx;
         else
             __getnode(_hashmap,node->prev)->next = _idx;
-
-        //
-        _hashmap->count -= 1;
     }
+
+    _hashmap->count -= 1;
 }

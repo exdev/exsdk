@@ -22,10 +22,10 @@ int main (void) {
     ex_sdk_init ();
 
     hashmap1 = ex_hashmap_alloc ( sizeof(int), sizeof(float),
-                                  4096,
+                                  128,
                                   ex_hashkey_int, ex_keycmp_int );
     hashmap2 = ex_hashmap_alloc ( sizeof(int), sizeof(float),
-                                  4096,
+                                  128,
                                   ex_hashkey_int, ex_keycmp_int );
 
     i = 0;

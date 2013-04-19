@@ -515,8 +515,8 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, uint _ft_index ) {
         new_set.glyphs = ex_hashmap_alloc ( sizeof(uint),
                                             sizeof(ex_glyph_t),
                                             1024,
-                                            ex_hashkey_uint64,
-                                            ex_keycmp_uint64
+                                            ex_hashkey_uint,
+                                            ex_keycmp_uint
                                           );
         new_set.pages = ex_array_alloc ( sizeof(ALLEGRO_BITMAP *), 8 );
         new_set.cur_x = 0;
@@ -548,6 +548,14 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, uint _ft_index ) {
 
         // init and cache the glyph data
         __init_glyph ( _font, set, glyph, _ft_index );
+
+        // DEBUG { 
+        // ex_log ( "new glyph size = %d, type = %d, thickness = %f, ft_index = %d",
+        //          _font->size,
+        //          _font->outline_type,
+        //          _font->outline_thickness,
+        //          _ft_index );
+        // } DEBUG end 
     }
 
     return glyph;
