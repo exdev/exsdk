@@ -23,6 +23,7 @@ typedef struct __node_t {
     // in memory, a node has:
     //   | prev index
     //   | next index
+    //   | hash index
     //   | key_data
     //   | value_data
 } __node_t;
@@ -165,7 +166,7 @@ size_t ex_hashmap_add_new ( ex_hashmap_t *_hashmap,
                             const void *_val, 
                             size_t _hash_idx ) {
     size_t cur_idx, next_idx;
-    uint8 *dptr;
+    char *dptr;
     __node_t *new_node;
     
     if ( _hashmap->count >= _hashmap->capacity ) {
@@ -416,33 +417,34 @@ void ex_hashmap_remove_by_idx ( ex_hashmap_t *_hashmap, size_t _idx ) {
         __getnode (_hashmap,next_idx)->prev = prev_idx;
     }
 
-    // if the erase node is the header, change the index
-    if ( prev_idx == -1 )
-        _hashmap->indices[hash_idx] = next_idx;
     // if not header
-    else 
+    if ( prev_idx != -1 ) {
         __getnode(_hashmap,prev_idx)->next = next_idx;
+    }
+    // if the erase node is the header, change the index
+    else {
+        _hashmap->indices[hash_idx] = next_idx;
+    }
 
     // now use fast remove technique, replace the erased node by last node in the nodes
-    if ( _idx == _hashmap->count-1 ) {
-        last_node = __getnode(_hashmap,_hashmap->count-1);
-        last_node->next = -1;
-        last_node->prev = -1;
-        last_node->hash = -1;
-    }
-    else {
-        last_node = __getnode(_hashmap,_hashmap->count-1);
-        memcpy ( node, last_node, _hashmap->node_bytes );
-        last_node->next = -1;
-        last_node->prev = -1;
-        last_node->hash = -1;
+    last_node = __getnode(_hashmap,_hashmap->count-1);
 
-        // adjust hash table
-        if ( node->prev == -1 ) 
-            _hashmap->indices[node->hash] = _idx;
+    // adjust hash table
+    if ( _idx != _hashmap->count-1 ) {
+        if ( last_node->prev != -1 ) 
+            __getnode(_hashmap,last_node->prev)->next = _idx;
         else
-            __getnode(_hashmap,node->prev)->next = _idx;
+            _hashmap->indices[last_node->hash] = _idx;
+
+        if ( last_node->next != -1 ) 
+            __getnode(_hashmap,last_node->next)->prev = _idx;
+
+        //
+        memcpy ( node, last_node, _hashmap->node_bytes );
     }
 
+    last_node->next = -1;
+    last_node->prev = -1;
+    last_node->hash = -1;
     _hashmap->count -= 1;
 }

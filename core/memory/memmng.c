@@ -224,17 +224,19 @@ static void __reclaim_au ( alloc_unit_t *_au ) {
 // ------------------------------------------------------------------ 
 
 //
-static inline int __push_au ( alloc_unit_t *_au ) { 
+static inline size_t __push_au ( alloc_unit_t *_au ) { 
     return ex_hashmap_add_unique ( &__au_map, &_au->org_addr, &_au ); 
 }
 
 //
 static inline alloc_unit_t *__get_au ( void *_ptr ) { 
-    return *((alloc_unit_t **)ex_hashmap_get ( &__au_map, &_ptr )); 
+    void *val = ex_hashmap_get ( &__au_map, &_ptr );
+    ex_assert ( val != NULL );
+    return *(alloc_unit_t **)val;
 }
 
 //
-static inline int __rearrange_au ( void *_ptr, alloc_unit_t *au ) {
+static inline size_t __rearrange_au ( void *_ptr, alloc_unit_t *au ) {
     if ( ex_hashmap_remove_at ( &__au_map, &_ptr ) == false )
         return -1;
     return __push_au ( au );
@@ -399,7 +401,7 @@ void *ex_malloc_mng( size_t _size, const char *_tag, const char *_file_name, con
     uint32 *pre, *post;
     uint i_pre, i_post;
     alloc_unit_t *au;
-    int push_result;
+    size_t push_result;
 
     al_lock_mutex(__access_mutex);
 
@@ -410,6 +412,13 @@ void *ex_malloc_mng( size_t _size, const char *_tag, const char *_file_name, con
     dbg_size = __calc_dbg_size(_size);
     dbg_ptr = dlmemalign( EX_MEM_ALIGN, dbg_size );
     org_ptr = (void *)( (int8 *)dbg_ptr + __prefix_size );
+
+    // out of memory
+    ex_assert (dbg_ptr != NULL);
+    if ( dbg_ptr == NULL ) {
+        al_unlock_mutex(__access_mutex);
+        return NULL;
+    }
 
     // get au, if not, create one
     au = __request_au();
@@ -479,7 +488,7 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
     void *dbg_ptr, *org_ptr;
     uint32 *pre, *post;
     uint i_pre, i_post;
-    int rearrange_result;
+    size_t rearrange_result;
 
     al_lock_mutex(__access_mutex);
 
@@ -518,6 +527,13 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
     dbg_size = __calc_dbg_size(_size);
     dbg_ptr = dlrealloc ( au->dbg_addr, dbg_size );
     org_ptr = (void *)( (int8 *)dbg_ptr + __prefix_size );
+
+    // out of memory
+    ex_assert (dbg_ptr != NULL);
+    if ( dbg_ptr == NULL ) {
+        al_unlock_mutex(__access_mutex);
+        return NULL;
+    }
 
     // write information
     au->org_size          = _size;

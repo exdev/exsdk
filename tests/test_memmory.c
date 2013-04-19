@@ -15,7 +15,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define BUF_SIZE 4096
+#define BUF_SIZE 1024
 
 int main (void) {
     int i = 0;
@@ -25,15 +25,15 @@ int main (void) {
 
     i = 0;
     while ( i < BUF_SIZE ) {
-        buffer[i] = ex_malloc( sizeof(int) * rand() );
+        buffer[i] = ex_malloc( EX_MB(1) );
         ++i;
     }
 
-    // i = 0;
-    // while ( i < BUF_SIZE ) {
-    //     buffer[i] = ex_realloc( buffer[i], sizeof(int) * rand() );
-    //     ++i;
-    // }
+    i = 0;
+    while ( i < BUF_SIZE ) {
+        buffer[i] = ex_realloc( buffer[i], EX_KB(1) * rand() % 2048  );
+        ++i;
+    }
 
     i = 0;
     while ( i < BUF_SIZE ) {
