@@ -133,6 +133,20 @@ local canvas = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
+        draw_shadow_text = function ( _text, _font, _color, _shadow_color, _offset, _dx, _dy, _dw, _dh ) 
+            _font.outline_type = 0
+
+            ex.canvas.color = _shadow_color
+            ex.canvas.draw_text( _text, _font, _dx + _offset.x, _dy + _offset.y, _dw, _dh ) 
+
+            ex.canvas.color = _color
+            ex.canvas.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
+        end,
+
+        -- ------------------------------------------------------------------ 
+        -- Desc: 
+        -- ------------------------------------------------------------------ 
+
         draw_bitmap_text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
             checkarg(_text,"string")
             checkarg(_font,"bitmapfont")

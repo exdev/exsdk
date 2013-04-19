@@ -152,6 +152,15 @@ function render()
             2.0,
             10, 10 ) 
 
+        ttf_font1.size = 20
+        ex.canvas.draw_shadow_text( 
+            "Hello World\nThis is Johnny.\nWhat the Fuck!", 
+            ttf_font1, 
+            ex.color4f.red,
+            ex.color4f.black,
+            ex.vec2f(2,2),
+            10, 100 ) 
+
         -- ttf_font1.size = 20
         -- ex.canvas.draw_outline_text( 
         --     "abcdefghijklmnopqrstuvwxyz", 
