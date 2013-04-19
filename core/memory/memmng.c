@@ -500,8 +500,9 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
 
     // realloc zero bytes free 
     if ( _size == 0 ) {
-        ex_free_mng( _ptr, _file_name, _func_name, _line_nr );
         al_unlock_mutex(__access_mutex);
+        ex_free_mng( _ptr, _file_name, _func_name, _line_nr );
+
         return NULL;
     }
 
