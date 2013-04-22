@@ -5,9 +5,18 @@
 -- Description  : 
 -- ======================================================================================
 
-local __SCRIPT_DIR = path.getdirectory(_SCRIPT) .. "/"
+--/////////////////////////////////////////////////////////////////////////////
+-- pre-defined variables
+--/////////////////////////////////////////////////////////////////////////////
+
+-- local __SCRIPT_DIR = path.getdirectory(_SCRIPT) .. "/"
 local __DEST_DIR = "_build/" .. _ACTION .. "/"
 local __PLATFORM = _ARGS[1] or "macosx"
+local __COMMAND  = _ARGS[2] or "build"
+
+--/////////////////////////////////////////////////////////////////////////////
+-- pre-defined functions
+--/////////////////////////////////////////////////////////////////////////////
 
 local copy_builtin_files = function ( _destdir )
     -- NOTE: don't add '/' at the end, this will make os.isdir() failed 
@@ -22,6 +31,13 @@ local copy_builtin_files = function ( _destdir )
     end
 
     os.copyfile( "examples/startup.lua", _destdir.."/startup.lua" )
+end
+
+--
+if __COMMAND == "update" then
+    copy_builtin_files ( __DEST_DIR.."ex/debug/bin/" )
+    copy_builtin_files ( __DEST_DIR.."ex/release/bin/" )
+    return
 end
 
 --/////////////////////////////////////////////////////////////////////////////
