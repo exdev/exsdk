@@ -35,8 +35,13 @@ end
 
 --
 if __COMMAND == "update" then
-    copy_builtin_files ( __DEST_DIR.."ex/debug/bin/" )
-    copy_builtin_files ( __DEST_DIR.."ex/release/bin/" )
+    -- if __PLATFORM == "macosx" then
+    --     copy_builtin_files ( __DEST_DIR.."ex/debug/bin/ex_player.app/" )
+    --     copy_builtin_files ( __DEST_DIR.."ex/release/bin/ex_player.app/" )
+    -- elseif __PLATFORM == "win32" then
+        copy_builtin_files ( __DEST_DIR.."ex/debug/bin/" )
+        copy_builtin_files ( __DEST_DIR.."ex/release/bin/" )
+    -- end
     return
 end
 
@@ -335,6 +340,9 @@ solution "exSDK"
             }
         end
 
+        -- flags
+        flags { "StaticRuntime" }
+
         -- configurations
         configuration "Debug"
             objdir ( __DEST_DIR .. "ex/debug/objs/" )
@@ -352,8 +360,13 @@ solution "exSDK"
             defines { "NDEBUG" }
             flags { "Optimize" }
 
-        copy_builtin_files ( __DEST_DIR.."ex/debug/bin/" )
-        copy_builtin_files ( __DEST_DIR.."ex/release/bin/" )
+        -- if __PLATFORM == "macosx" then
+        --     copy_builtin_files ( __DEST_DIR.."ex/debug/bin/ex_player.app/" )
+        --     copy_builtin_files ( __DEST_DIR.."ex/release/bin/ex_player.app/" )
+        -- elseif __PLATFORM == "win32" then
+            copy_builtin_files ( __DEST_DIR.."ex/debug/bin/" )
+            copy_builtin_files ( __DEST_DIR.."ex/release/bin/" )
+        -- end
 
     -- ======================================================== 
     -- TEST
