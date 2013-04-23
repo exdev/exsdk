@@ -30,6 +30,11 @@ function init()
     print ( "=======================" )
     print ( "" )
 
+    print("arguments = " .. #app.arguments)
+    for i=1,#app.arguments do
+        print(app.arguments[i])
+    end
+
     checkerboard = asset_db.load("Checkerboard_64x64.png")
     -- logo = asset_db.load("ex2d_logo.png")
     -- box = asset_db.load("box.png")
@@ -145,7 +150,8 @@ function render()
 
         ttf_font1.size = 16
         ex.canvas.draw_outline_text( 
-            "Hello World\nThis is Johnny.\nWhat the Fuck!", 
+            -- "Hello World\nThis is Johnny.\nWhat the Fuck!", 
+            app.project_path,
             ttf_font1, 
             ex.color4f.green,
             ex.color4f.black,
@@ -158,8 +164,8 @@ function render()
             ttf_font1, 
             ex.color4f.red,
             ex.color4f.black,
-            ex.vec2f(2,2),
-            10, 100 ) 
+            ex.vec2f(1,1),
+            10, 30 ) 
 
         -- ttf_font1.size = 20
         -- ex.canvas.draw_outline_text( 

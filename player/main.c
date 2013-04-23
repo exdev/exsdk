@@ -26,7 +26,6 @@ extern void main_loop ();
 // ------------------------------------------------------------------ 
 
 int main ( int _argc, char **_argv ) {
-    int i = 0;
 
     // init exsdk ( including allegro ) 
     if ( ex_sdk_init() != 0 ) {
@@ -34,13 +33,12 @@ int main ( int _argc, char **_argv ) {
         return 1;
     }
 
-    // TODO { 
-    // parse arguments
-    while ( i < _argc ) {
-        ex_log( "argument[%d] = %s", i, _argv[i] );
-        ++i;
-    }
-    // } TODO end 
+    // load builtin modules
+    ex_log ( "[exSDK] Loading builtin modules" );
+    ex_lua_dofile ( ex_lua_main_state(), "builtin/modules/init.lua" );
+
+    // push arguments to app.arguments in lua
+    ex_lua_push_arguments ( ex_lua_main_state(), _argc, _argv );
 
     // load init 
     ex_lua_dofile ( ex_lua_main_state(), "startup.lua" );
