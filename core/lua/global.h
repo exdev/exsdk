@@ -67,8 +67,14 @@ extern int ex_lua_totoal_memory ( struct lua_State *_l );
 // app.lua
 ///////////////////////////////////////////////////////////////////////////////
 
-extern int ex_lua_push_arguments ( struct lua_State *_l, int _argc, char **_argv );
+extern int ex_lua_app_init ( struct lua_State *_l, int _argc, char **_argv );
 
+extern int ex_lua_app_on_init ( struct lua_State *_l );
+extern int ex_lua_app_on_exit ( struct lua_State *_l );
+extern int ex_lua_app_on_update ( struct lua_State *_l );
+extern int ex_lua_app_on_draw ( struct lua_State *_l );
+
+#if 0
 ///////////////////////////////////////////////////////////////////////////////
 // main.lua ( the main.lua interface )
 ///////////////////////////////////////////////////////////////////////////////
@@ -78,6 +84,7 @@ extern void ex_lua_main_init ( struct lua_State *_l );
 extern void ex_lua_main_deinit ( struct lua_State *_l );
 extern void ex_lua_main_update ( struct lua_State *_l );
 extern void ex_lua_main_render ( struct lua_State *_l );
+#endif
 
 // ######################### 
 #ifdef __cplusplus

@@ -7,6 +7,8 @@
 
 local asset_db = editor.asset_db
 
+-- ------------------------------------------------------------------ 
+-- Desc: 
 local windowActive
 local logo
 local checkerboard
@@ -18,12 +20,9 @@ local btfont2
 
 local ttf_font1
 local ttf_font2
-
--- ------------------------------------------------------------------ 
--- Desc: 
 -- ------------------------------------------------------------------ 
 
-function init() 
+app.on_init = function () 
     print ( "" )
     print ( "=======================" )
     print ( "start" )
@@ -35,17 +34,17 @@ function init()
         print(app.arguments[i])
     end
 
-    checkerboard = asset_db.load("Checkerboard_64x64.png")
-    -- logo = asset_db.load("ex2d_logo.png")
-    -- box = asset_db.load("box.png")
-    -- windowActive = asset_db.load("windowActive.png")
+    checkerboard = asset_db.load("assets/Checkerboard_64x64.png")
+    -- logo = asset_db.load("assets/ex2d_logo.png")
+    -- box = asset_db.load("assets/box.png")
+    -- windowActive = asset_db.load("assets/windowActive.png")
 
-    -- grossini_dance = asset_db.load("grossini_dance_09.png")
-    -- btfont1 = asset_db.load("BerlinSansFB_MonoOutline.bft")
-    -- btfont2 = asset_db.load("MolotShadow.bft")
+    -- grossini_dance = asset_db.load("assets/grossini_dance_09.png")
+    -- btfont1 = asset_db.load("assets/BerlinSansFB_MonoOutline.bft")
+    -- btfont2 = asset_db.load("assets/MolotShadow.bft")
 
-    ttf_font1 = asset_db.load("VeraMono.ttf")
-    ttf_font2 = asset_db.load("yahei.ttf")
+    ttf_font1 = asset_db.load("assets/VeraMono.ttf")
+    ttf_font2 = asset_db.load("assets/yahei.ttf")
 
     -- grossini_dance:lock( grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
     -- for x=0,10 do
@@ -61,8 +60,8 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function deinit() 
-    ex_c.close_project()
+app.on_exit = function () 
+    app:close_project()
 
     print ( "" )
     print ( "=======================" )
@@ -75,17 +74,17 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function update()
+app.on_update = function ()
     -- TODO
     -- print ( "Hello World!" )
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
+local cnt = 0
 -- ------------------------------------------------------------------ 
 
-local cnt = 0
-function render()
+app.on_draw = function ()
     if cnt >= 1 then
         return
     end
@@ -199,7 +198,7 @@ function render()
         -- -- ======================================================== 
 
         -- local lines = {}
-        -- file = io.open( asset_db.fullpath("content.txt"), "r" )
+        -- file = io.open( asset_db.fullpath("assets/content.txt"), "r" )
         -- for line in file:lines() do 
         --     table.add( lines, line )
         -- end

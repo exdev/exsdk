@@ -27,6 +27,10 @@ extern void main_loop ();
 
 int main ( int _argc, char **_argv ) {
 
+    // ======================================================== 
+    // init 
+    // ======================================================== 
+
     // init exsdk ( including allegro ) 
     if ( ex_sdk_init() != 0 ) {
         ex_log ( "Could not init exsdk!" );
@@ -38,14 +42,11 @@ int main ( int _argc, char **_argv ) {
     ex_lua_dofile ( ex_lua_main_state(), "builtin/modules/init.lua" );
 
     // push arguments to app.arguments in lua
-    ex_lua_push_arguments ( ex_lua_main_state(), _argc, _argv );
+    ex_lua_app_init ( ex_lua_main_state(), _argc, _argv );
 
-    // load init 
-    ex_lua_dofile ( ex_lua_main_state(), "startup.lua" );
-
-    // parsing main.lua
-    // ex_lua_run_interpretor ( ex_lua_main_state() );
-    ex_lua_parse_main ( ex_lua_main_state() );
+    // execute main.lua if exists  
+    if ( ex_fsys_exists ("main.lua") )
+        ex_lua_dofile ( ex_lua_main_state(), "main.lua" );
 
     // ======================================================== 
     // main-loop 

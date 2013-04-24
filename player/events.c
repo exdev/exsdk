@@ -70,16 +70,16 @@ void main_loop () {
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
 
-    // call init() in __project__/main.lua
-    ex_lua_main_init ( ex_lua_main_state() );
+    // call app.on_init()
+    ex_lua_app_on_init ( ex_lua_main_state() );
 
     // NOTE: there is two ways for update, using Timer or using Event-Poll, 
     // the timer is suitable for GUI tool, and Event-Poll is better for game
 
     // start main-loop
     while (1) {
-        // call update() in __project__/main.lua
-        ex_lua_main_update ( ex_lua_main_state() );
+        // call app.on_update()
+        ex_lua_app_on_update ( ex_lua_main_state() );
 
         // handle events
         if ( !al_is_event_queue_empty(queue) ) {
@@ -91,15 +91,16 @@ void main_loop () {
         }
         else {
             // draw one frame
-            // call render() in __project__/main.lua
-            ex_lua_main_render ( ex_lua_main_state() );
+            // call app.on_draw()
+            ex_lua_app_on_draw ( ex_lua_main_state() );
         }
     }
 
     // finish
 done:
-    // call deinit() in __project__/main.lua
-    ex_lua_main_deinit ( ex_lua_main_state() );
+    // call app.on_exit()
+    ex_lua_app_on_exit ( ex_lua_main_state() );
+
     al_destroy_event_queue(queue);  
     al_destroy_display(display);
 }

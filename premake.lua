@@ -29,6 +29,9 @@ local copy_builtin_files = function ( _destdir )
         os.mkdir( _destdir.."/"..path.getdirectory(matches[i]) )
         os.copyfile( matches[i], _destdir..matches[i] )
     end
+
+    -- for unit-test
+    os.copyfile( "examples/main.lua", _destdir.."/main.lua" )
 end
 
 --
