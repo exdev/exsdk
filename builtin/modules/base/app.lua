@@ -50,6 +50,10 @@ local open_project = function ( _self, _path )
     if editor.asset_db.exists("init.lua") then
         ex_c.lua_dofile ( editor.asset_db.fsys_path("init.lua") )
     end
+
+    if _self.on_init ~= nil then
+        _self.on_init()
+    end
 end
 __M.open_project = open_project
 

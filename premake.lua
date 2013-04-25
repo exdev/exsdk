@@ -293,6 +293,7 @@ solution "exSDK"
         -- include
         includedirs {
             "ext/allegro-5.0.8/include/",
+            "ext/lua-5.2.1/",
             "core/"
         } 
 
