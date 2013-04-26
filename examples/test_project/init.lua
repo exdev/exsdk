@@ -34,7 +34,7 @@ app.on_init = function ()
         print(app.arguments[i])
     end
 
-    ex_c.create_window ( 640, 480 )
+    editor.window( 640, 480 )
 
     checkerboard = asset_db.load("assets/Checkerboard_64x64.png")
     -- logo = asset_db.load("assets/ex2d_logo.png")

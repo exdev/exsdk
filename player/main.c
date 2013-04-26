@@ -67,6 +67,17 @@ ALLEGRO_DISPLAY *create_window ( int _w, int _h ) {
 
 void destroy_window ( ALLEGRO_DISPLAY *_display ) {
     int i = 0;
+    lua_State *l;
+
+    // call editor.window.on_destroy(_display)
+    l = ex_lua_main_state();
+    lua_getglobal ( l, "editor" );
+    lua_getfield ( l, -1, "window" );
+    lua_getfield ( l, -1, "on_destroy" );
+    lua_pushlightuserdata ( l, _display );
+    lua_pcall ( l, 1, 0, 0 );
+
+    //
     while ( i < ex_array_count(__display_list) ) {
         if ( *(ALLEGRO_DISPLAY **)ex_array_get(__display_list, i) == _display ) {
             ex_array_remove_at_fast ( __display_list, i );
@@ -81,7 +92,7 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int process_event ( ALLEGRO_EVENT _event ) {
+int process_event ( ALLEGRO_EVENT _event ) {
     switch ( _event.type ) {
     case ALLEGRO_EVENT_DISPLAY_RESIZE:
         al_acknowledge_resize(_event.display.source);
@@ -105,8 +116,9 @@ static int process_event ( ALLEGRO_EVENT _event ) {
         break;
 
     case ALLEGRO_EVENT_KEY_DOWN:
-        if ( _event.keyboard.keycode == ALLEGRO_KEY_ESCAPE )
-            return 1;
+        break;
+
+    case ALLEGRO_EVENT_KEY_UP:
         break;
     }
 

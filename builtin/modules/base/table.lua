@@ -29,11 +29,11 @@ __M.contains = contains
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function copy ( _to, _from )
+local function copy ( _t, _from )
     for k,v in pairs(_from) do
-        _to[k] = v
+        _t[k] = v
     end
-    return _to
+    return _t
 end
 __M.copy = copy
 
@@ -41,9 +41,9 @@ __M.copy = copy
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function add ( _to, _el )
-    _to[#_to+1] = _el
-    return _to
+local function add ( _t, _el )
+    _t[#_t+1] = _el
+    return _t
 end
 __M.add = add
 
@@ -51,15 +51,56 @@ __M.add = add
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function add_range ( _to, _list )
+local function add_range ( _t, _list )
     assert ( type(_list) == "table" and #_list > 0, "Invalid _list" )
     for i=1,#_list do
-        _to[#_to+1] = _list[i]
+        _t[#_t+1] = _list[i]
     end
 
-    return _to
+    return _t
 end
 __M.add_range = add_range
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function remove_el ( _t, _el )
+    for i=1,#_t do
+        if _t[i] == _el then
+            table.remove(_t,i)
+            break
+        end
+    end
+end
+__M.remove_el = remove_el
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function fast_remove_el ( _t, _el )
+    for i=1,#_t do
+        if _t[i] == _el then
+            table.fast_remove_at(_t,i)
+            break
+        end
+    end
+end
+__M.fast_remove_el = fast_remove_el
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function fast_remove_at ( _t, _idx )
+    assert ( type(_idx) == "number" )
+    if _idx > #_t then return end
+
+    _t[_idx] = _t[#_t]
+    _t[#_t] = nil
+end
+__M.fast_remove_at = fast_remove_at
 
 --/////////////////////////////////////////////////////////////////////////////
 -- 

@@ -5,6 +5,10 @@
 -- Description  : 
 -- ======================================================================================
 
+-- internal module
+module_add( "internal/event.lua", "event" )
+module_add( "internal/window.lua" )
+
 -- basic module
 module_add( "asset_db.lua", "asset_db" )
 module_add( "importer.lua" )
