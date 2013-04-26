@@ -34,7 +34,6 @@ app.on_init = function ()
         print(app.arguments[i])
     end
 
-    ex_c.create_window ( 200, 200 )
     ex_c.create_window ( 640, 480 )
 
     checkerboard = asset_db.load("assets/Checkerboard_64x64.png")
@@ -153,16 +152,17 @@ app.on_draw = function ()
         ttf_font1.size = 16
         ex.canvas.draw_outline_text( 
             -- "Hello World\nThis is Johnny.\nWhat the Fuck!", 
-            app.project_path,
+            project.cwd,
             ttf_font1, 
             ex.color4f.green,
             ex.color4f.black,
             2.0,
             10, 10 ) 
 
-        ttf_font1.size = 20
+        ttf_font1.size = 18
         ex.canvas.draw_shadow_text( 
-            "Hello World\nThis is Johnny.\nWhat the Fuck!", 
+            -- "Hello World\nThis is Johnny.\nWhat the Fuck!", 
+            app.cwd,
             ttf_font1, 
             ex.color4f.red,
             ex.color4f.black,

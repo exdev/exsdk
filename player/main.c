@@ -221,7 +221,6 @@ int main ( int _argc, char **_argv ) {
 
     // enter the event-loop if we create display(window) 
     if ( ex_array_count (__display_list) > 0 ) {
-        // call app.on_init()
         event_loop ();
     }
 

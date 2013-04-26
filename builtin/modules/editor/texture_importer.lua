@@ -40,7 +40,7 @@ local texture_importer = editor.importer.extend ({
 
     exec = function (_self)
         local tex = ex.texture.new()
-        local cptr = ex_c.texture_load ( editor.asset_db.fullpath(_self.path) )
+        local cptr = ex_c.texture_load ( project.sys_path(_self.path) )
         tex._cptr = cptr
 
         return tex

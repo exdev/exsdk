@@ -28,7 +28,10 @@ __M.error = error
 
 local builtin_assert = assert
 local function assert ( _exp, ... )
-    if _exp == false then print(debug.traceback()) end
+    if _exp == false then 
+        print(...) 
+        print(debug.traceback()) 
+    end
     builtin_assert(_exp, ...)
 end
 __M.assert = assert
