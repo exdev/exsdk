@@ -24,6 +24,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+ALLEGRO_DISPLAY *primary_display = NULL;
 static ex_array_t *__display_list = NULL;
 ALLEGRO_EVENT_QUEUE *queue = NULL;
 
@@ -53,6 +54,7 @@ ALLEGRO_DISPLAY *create_window ( int _w, int _h ) {
     // if this is the first window, create queue
     if ( ex_array_count(__display_list) == 0 ) {
         queue = al_create_event_queue();
+        primary_display = display;
     }
     ex_array_add ( __display_list, &display );
 
@@ -93,6 +95,7 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 // ------------------------------------------------------------------ 
 
 int process_event ( ALLEGRO_EVENT _event ) {
+
     switch ( _event.type ) {
     case ALLEGRO_EVENT_DISPLAY_RESIZE:
         al_acknowledge_resize(_event.display.source);
@@ -102,7 +105,12 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
 
     case ALLEGRO_EVENT_DISPLAY_CLOSE:
+        // if we are close the primary display, quit the app
+        if ( _event.display.source == primary_display )
+            return 1;
+
         destroy_window (_event.display.source);
+
         if ( ex_array_count (__display_list) == 0 )
             return 1;
         break;
@@ -132,6 +140,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
 void event_loop () {
     ALLEGRO_EVENT event;
     lua_State *l;
+    ALLEGRO_BITMAP *target;
 
     l = ex_lua_main_state();
 
@@ -148,18 +157,23 @@ void event_loop () {
         ex_lua_app_on_update (l);
 
         // handle events
-        if ( !al_is_event_queue_empty(queue) ) {
-            while ( al_get_next_event(queue, &event) ) {
-                if ( process_event(event) ) {
-                    goto done;
-                }
+        while ( !al_is_event_queue_empty(queue) ) {
+            al_get_next_event(queue, &event);
+            if ( process_event(event) ) {
+                goto done;
             }
         }
-        else {
-            // draw one frame
+
+        // draw one frame
+        ex_array_each ( __display_list, ALLEGRO_DISPLAY *, display )
+            target = al_get_backbuffer(display);
+            al_set_target_bitmap(target);
+
             // call app.on_draw()
             ex_lua_app_on_draw (l);
-        }
+        ex_array_each_end
+
+        al_rest(0.001);
     }
 
     // finish

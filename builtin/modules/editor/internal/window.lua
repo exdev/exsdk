@@ -34,7 +34,7 @@ local window = class ({
     -- functions
     --/////////////////////////////////////////////////////////////////////////////
 
-    process_event = function ( _event )
+    dispatch_event = function ( _event )
         -- TODO
     end,
 
@@ -45,17 +45,17 @@ local window = class ({
     __static = {
         window_list = {},
 
-        dispatch_events  = function ( _event )
+        on_event = function ( _event )
             for i=1,#editor.window.window_list do
                 local win = editor.window.window_list[i]
 
                 if win._cptr == _event.window_cptr then
-                    win:process_event (_event)
+                    win:dispatch_event (_event)
                 end
             end
         end,
 
-        on_destroy  = function ( _cptr )
+        on_destroy = function ( _cptr )
             for i=1,#editor.window.window_list do
                 local win = editor.window.window_list[i]
                 if win._cptr == _cptr then

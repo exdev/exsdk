@@ -19,6 +19,9 @@ local event_type = {
     none = -1,
     mouse_down = 0,
     mouse_up = 1,
+    mouse_move = 2,
+    key_up = 3,
+    key_down = 4,
 }
 __M.event_type = event_type
 

@@ -26,3 +26,4 @@ module_add ( "re.lua", "re" ) -- lpeg re module
 module_add ( "app.lua", "app" )
 module_add ( "project.lua", "project" )
 module_add ( "path.lua", "path" )
+module_add ( "keycode.lua", "keycode" )
