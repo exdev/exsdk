@@ -15,21 +15,26 @@ local __M = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local event_type = {
-    none = -1,
-    mouse_down = 0,
-    mouse_up = 1,
-    mouse_move = 2,
-    key_up = 3,
-    key_down = 4,
-}
-__M.event_type = event_type
+__M.type = event_type.none
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local type = ""
-__M.type = type
+__M.keycode = -1 -- we use in keycode table
+__M.shift = false
+__M.ctrl = false
+__M.alt = false
+__M.command = false
+__M.capslock = false
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+__M.mouse_pos = ex.vec2f.zero
+__M.mouse_delta = ex.vec2f.zero
+__M.mouse_button = -1 -- -1:None, 0:left, 1:right, 2:middle
+__M.mouse_click_count = 0
 
 return __M

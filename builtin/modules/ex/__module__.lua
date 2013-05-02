@@ -23,4 +23,5 @@ module_add( "classes/component.lua" )
 
 --
 module_add( "scene.lua", "scene" )
+module_add( "event.lua", "event" )
 module_add( "gui.lua", "gui" )

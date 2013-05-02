@@ -6,7 +6,7 @@
 -- ======================================================================================
 
 -- internal module
-module_add( "internal/event.lua", "event" )
+module_add( "internal/sys_event.lua", "sys_event" )
 module_add( "internal/window.lua" )
 
 -- basic module

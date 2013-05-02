@@ -34,8 +34,12 @@ local window = class ({
     -- functions
     --/////////////////////////////////////////////////////////////////////////////
 
-    dispatch_event = function ( _event )
-        -- TODO
+    dispatch_event = function ( _self, _sys_event )
+        if _sys_event.type == event_type.key_down then
+            print( "key down " .. _sys_event.keycode )
+        elseif _sys_event.type == event_type.key_up then
+            print( "key up " .. _sys_event.keycode )
+        end
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -45,12 +49,12 @@ local window = class ({
     __static = {
         window_list = {},
 
-        on_event = function ( _event )
+        on_event = function ( _sys_event )
             for i=1,#editor.window.window_list do
                 local win = editor.window.window_list[i]
-
-                if win._cptr == _event.window_cptr then
-                    win:dispatch_event (_event)
+                if win._cptr == _sys_event.display then
+                    win:dispatch_event (_sys_event)
+                    break
                 end
             end
         end,

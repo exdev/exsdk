@@ -71,13 +71,15 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
     int i = 0;
     lua_State *l;
 
-    // call editor.window.on_destroy(_display)
     l = ex_lua_main_state();
+
+    // call editor.window.on_destroy(_display)
     lua_getglobal ( l, "editor" );
     lua_getfield ( l, -1, "window" );
     lua_getfield ( l, -1, "on_destroy" );
     lua_pushlightuserdata ( l, _display );
     lua_pcall ( l, 1, 0, 0 );
+    lua_pop ( l, 2 );
 
     //
     while ( i < ex_array_count(__display_list) ) {
@@ -95,7 +97,22 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 // ------------------------------------------------------------------ 
 
 int process_event ( ALLEGRO_EVENT _event ) {
+    lua_State *l;
+    bool do_broadcast;
 
+    l = ex_lua_main_state();
+    do_broadcast = false;
+
+    // clean the event type
+    // editor.sys_event.type = event_type.none
+    lua_getglobal( l, "editor" );
+    lua_getfield( l, -1, "sys_event" );
+    lua_getglobal( l, "event_type" );
+    lua_getfield( l, -1, "none" );
+    lua_setfield( l, -3, "type" );
+    lua_pop (l,3);
+
+    //
     switch ( _event.type ) {
     case ALLEGRO_EVENT_DISPLAY_RESIZE:
         al_acknowledge_resize(_event.display.source);
@@ -124,10 +141,60 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
 
     case ALLEGRO_EVENT_KEY_DOWN:
+        lua_getglobal( l, "editor" );
+        lua_getfield( l, -1, "sys_event" );
+
+            // set event_type.type
+            lua_getglobal( l, "event_type" );
+            lua_getfield( l, -1, "key_down" );
+            lua_setfield( l, -3, "type" );
+            lua_pop (l,1);
+
+            // set event_type.display
+            lua_pushlightuserdata( l, _event.keyboard.display );
+            lua_setfield( l, -2, "display" );
+
+            // set event_type.keycode
+            lua_pushinteger( l, _event.keyboard.keycode );
+            lua_setfield( l, -2, "keycode" );
+
+        lua_pop (l,2);
+
+        do_broadcast = true;
         break;
 
     case ALLEGRO_EVENT_KEY_UP:
+        lua_getglobal( l, "editor" );
+        lua_getfield( l, -1, "sys_event" );
+
+            // set event_type.type
+            lua_getglobal( l, "event_type" );
+            lua_getfield( l, -1, "key_up" );
+            lua_setfield( l, -3, "type" );
+            lua_pop (l,1);
+
+            // set event_type.display
+            lua_pushlightuserdata( l, _event.keyboard.display );
+            lua_setfield( l, -2, "display" );
+
+            // set event_type.keycode
+            lua_pushinteger( l, _event.keyboard.keycode );
+            lua_setfield( l, -2, "keycode" );
+
+        lua_pop (l,2);
+
+        do_broadcast = true;
         break;
+    }
+
+    // call editor.window.on_event(editor.sys_event)
+    if ( do_broadcast ) {
+        lua_getglobal ( l, "editor" );
+        lua_getfield ( l, -1, "window" );
+        lua_getfield ( l, -1, "on_event" );
+        lua_getfield ( l, -3, "sys_event" );
+        lua_pcall ( l, 1, 0, 0 );
+        lua_pop ( l, 2 );
     }
 
     return 0;
