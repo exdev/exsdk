@@ -96,6 +96,30 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+void update_windows ( lua_State *_l ) {
+    lua_getglobal ( _l, "editor" );
+    lua_getfield ( _l, -1, "window" );
+    lua_getfield ( _l, -1, "on_update" );
+    lua_pcall ( _l, 0, 0, 0 );
+    lua_pop ( _l, 2 );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void draw_windows ( lua_State *_l ) {
+    lua_getglobal ( _l, "editor" );
+    lua_getfield ( _l, -1, "window" );
+    lua_getfield ( _l, -1, "on_draw" );
+    lua_pcall ( _l, 0, 0, 0 );
+    lua_pop ( _l, 2 );
+} 
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 int process_event ( ALLEGRO_EVENT _event ) {
     lua_State *l;
     bool do_broadcast;
@@ -220,8 +244,8 @@ void event_loop () {
 
     // start main-loop
     while (1) {
-        // call app.on_update()
-        ex_lua_app_on_update (l);
+        // call editor.window.dispatch_event () [update] 
+        update_windows (l);
 
         // handle events
         while ( !al_is_event_queue_empty(queue) ) {
@@ -236,8 +260,9 @@ void event_loop () {
             target = al_get_backbuffer(display);
             al_set_target_bitmap(target);
 
-            // call app.on_draw()
-            ex_lua_app_on_draw (l);
+            // call editor.window.dispatch_event () [repaint] 
+            draw_windows (l);
+
         ex_array_each_end
 
         al_rest(0.001);

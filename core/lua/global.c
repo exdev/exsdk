@@ -608,44 +608,6 @@ int ex_lua_app_init ( struct lua_State *_l, int _argc, char **_argv ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_lua_app_on_update ( struct lua_State *_l ) {
-    // get app table
-    lua_getglobal( _l, "app" );
-
-    // get app.on_update
-    lua_getfield( _l, -1, "on_update" );
-
-    if ( lua_isnil(_l,-1) == false && lua_isfunction(_l,-1) ) {
-        lua_pcall(_l, 0, 0, 0);
-    }
-
-    lua_pop(_l,1);
-    return 0;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-int ex_lua_app_on_draw ( struct lua_State *_l ) {
-    // get app table
-    lua_getglobal( _l, "app" );
-
-    // get app.on_draw
-    lua_getfield( _l, -1, "on_draw" );
-
-    if ( lua_isnil(_l,-1) == false && lua_isfunction(_l,-1) ) {
-        lua_pcall(_l, 0, 0, 0);
-    }
-
-    lua_pop(_l,1);
-    return 0;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
 int ex_lua_app_on_exit ( struct lua_State *_l ) {
     // get app table
     lua_getglobal( _l, "app" );

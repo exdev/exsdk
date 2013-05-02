@@ -21,7 +21,10 @@ module_add( "classes/font.lua" )
 module_add( "classes/node.lua" )
 module_add( "classes/component.lua" )
 
+-- ui classes
+module_add( "classes/ui_element.lua" )
+module_add( "classes/ui_window.lua" )
+
 --
 module_add( "scene.lua", "scene" )
 module_add( "event.lua", "event" )
-module_add( "gui.lua", "gui" )
