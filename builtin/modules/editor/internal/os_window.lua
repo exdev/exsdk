@@ -29,11 +29,15 @@ local os_window = class ({
     --/////////////////////////////////////////////////////////////////////////////
 
     _cptr = ex_c.null,
-    elements = {}, -- root gui elements
+    element = ui.element.null,
 
     --/////////////////////////////////////////////////////////////////////////////
     -- functions
     --/////////////////////////////////////////////////////////////////////////////
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
 
     dispatch_event = function ( _self, _os_event )
         local event = ui.event
@@ -51,18 +55,17 @@ local os_window = class ({
         -- TODO: dispatch on_event on active element 
     end,
 
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
     draw = function ( _self )
-        -- repaint the window if it is dirty
-        if dirty then
-            dirty = false
-            for i=1,#elements do
-                local el = elements[i]
-                if el.on_repaint ~= nil then
-                    elements[i]:on_repaint()
-                end
-            end
-        end
+        _self:_draw_recursively (element)
     end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
 
     update = function ( _self )
         -- TODO: I think a time event will be better
@@ -72,6 +75,32 @@ local os_window = class ({
         --         elements[i]:on_update()
         --     end
         -- end
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    _draw_recursively = function ( _self, _el )
+        for i=1,#_el.children do
+            local child_el = _el.children[i]
+            if child_el._dirty then 
+                _self:_repaint_all(child_el) 
+            else
+                _self:_draw_recursively(child_el)
+            end
+        end
+    end,
+
+    _repaint_all = function ( _self, _el )
+        _el._dirty = false
+        _el:on_repaint()
+
+        for i=1,#_el.children do
+            local child_el = _el.children[i]
+            child_el:on_repaint()
+            child_el._dirty = false
+        end
     end,
 
     --/////////////////////////////////////////////////////////////////////////////

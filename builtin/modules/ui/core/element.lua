@@ -20,6 +20,7 @@ local element = class ({
 
     _dirty = false,
 
+    rect = ex.rect ( 0, 0, 0, 0 ),
     parent = nil, -- element
     children = {}, -- element list
 
