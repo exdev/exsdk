@@ -1,7 +1,7 @@
 -- ======================================================================================
 -- File         : element.lua
 -- Author       : Wu Jie 
--- Last Change  : 05/02/2013 | 17:00:32 PM | Thursday,May
+-- Last Change  : 05/03/2013 | 16:47:17 PM | Friday,May
 -- Description  : 
 -- ======================================================================================
 
@@ -11,15 +11,17 @@ local __M = {}
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
 
-local ui_element = class ({
-    __typename = "ui_element",
+local element = class ({
+    __typename = "element",
 
     --/////////////////////////////////////////////////////////////////////////////
     -- properties
     --/////////////////////////////////////////////////////////////////////////////
 
-    parent = ex.ui_element.null,
-    children = {}, -- ui_element list
+    _dirty = false,
+
+    parent = nil, -- element
+    children = {}, -- element list
 
     --/////////////////////////////////////////////////////////////////////////////
     -- functions
@@ -29,10 +31,15 @@ local ui_element = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    on_draw = function ( _self ) 
-        for i=1,#children do
-            children[i]:on_draw()
-        end
+    set_dirty = function ( _self )
+        _dirty = true
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    on_repaint = function ( _self ) 
     end,
 
     -- ------------------------------------------------------------------ 
@@ -40,12 +47,9 @@ local ui_element = class ({
     -- ------------------------------------------------------------------ 
 
     on_update = function ( _self ) 
-        for i=1,#children do
-            children[i]:on_update()
-        end
     end,
 }) 
-__M.ui_element = ui_element
+__M.element = element
 
 --/////////////////////////////////////////////////////////////////////////////
 --

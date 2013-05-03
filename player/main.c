@@ -73,9 +73,9 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 
     l = ex_lua_main_state();
 
-    // call editor.window.on_destroy(_display)
+    // call editor.os_window.on_destroy(_display)
     lua_getglobal ( l, "editor" );
-    lua_getfield ( l, -1, "window" );
+    lua_getfield ( l, -1, "os_window" );
     lua_getfield ( l, -1, "on_destroy" );
     lua_pushlightuserdata ( l, _display );
     lua_pcall ( l, 1, 0, 0 );
@@ -98,7 +98,7 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 
 void update_windows ( lua_State *_l ) {
     lua_getglobal ( _l, "editor" );
-    lua_getfield ( _l, -1, "window" );
+    lua_getfield ( _l, -1, "os_window" );
     lua_getfield ( _l, -1, "on_update" );
     lua_pcall ( _l, 0, 0, 0 );
     lua_pop ( _l, 2 );
@@ -110,7 +110,7 @@ void update_windows ( lua_State *_l ) {
 
 void draw_windows ( lua_State *_l ) {
     lua_getglobal ( _l, "editor" );
-    lua_getfield ( _l, -1, "window" );
+    lua_getfield ( _l, -1, "os_window" );
     lua_getfield ( _l, -1, "on_draw" );
     lua_pcall ( _l, 0, 0, 0 );
     lua_pop ( _l, 2 );
@@ -128,9 +128,9 @@ int process_event ( ALLEGRO_EVENT _event ) {
     do_broadcast = false;
 
     // clean the event type
-    // editor.sys_event.type = event_type.none
+    // editor.os_event.type = event_type.none
     lua_getglobal( l, "editor" );
-    lua_getfield( l, -1, "sys_event" );
+    lua_getfield( l, -1, "os_event" );
     lua_getglobal( l, "event_type" );
     lua_getfield( l, -1, "none" );
     lua_setfield( l, -3, "type" );
@@ -166,7 +166,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
 
     case ALLEGRO_EVENT_KEY_DOWN:
         lua_getglobal( l, "editor" );
-        lua_getfield( l, -1, "sys_event" );
+        lua_getfield( l, -1, "os_event" );
 
             // set event_type.type
             lua_getglobal( l, "event_type" );
@@ -189,7 +189,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
 
     case ALLEGRO_EVENT_KEY_UP:
         lua_getglobal( l, "editor" );
-        lua_getfield( l, -1, "sys_event" );
+        lua_getfield( l, -1, "os_event" );
 
             // set event_type.type
             lua_getglobal( l, "event_type" );
@@ -211,12 +211,12 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
     }
 
-    // call editor.window.on_event(editor.sys_event)
+    // call editor.os_window.on_event(editor.os_event)
     if ( do_broadcast ) {
         lua_getglobal ( l, "editor" );
-        lua_getfield ( l, -1, "window" );
+        lua_getfield ( l, -1, "os_window" );
         lua_getfield ( l, -1, "on_event" );
-        lua_getfield ( l, -3, "sys_event" );
+        lua_getfield ( l, -3, "os_event" );
         lua_pcall ( l, 1, 0, 0 );
         lua_pop ( l, 2 );
     }
@@ -244,7 +244,7 @@ void event_loop () {
 
     // start main-loop
     while (1) {
-        // call editor.window.dispatch_event () [update] 
+        // call editor.os_window.dispatch_event () [update] 
         update_windows (l);
 
         // handle events
@@ -260,7 +260,7 @@ void event_loop () {
             target = al_get_backbuffer(display);
             al_set_target_bitmap(target);
 
-            // call editor.window.dispatch_event () [repaint] 
+            // call editor.os_window.dispatch_event () [repaint] 
             draw_windows (l);
 
         ex_array_each_end

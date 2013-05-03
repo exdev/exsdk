@@ -443,6 +443,8 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
 // ------------------------------------------------------------------ 
 
 void ex_font_destroy ( ex_font_t *_font ) {
+    ex_assert ( _font != NULL );
+
     // free glyph sets
     ex_hashmap_each ( _font->glyph_sets, __glyph_set_t, set )
 

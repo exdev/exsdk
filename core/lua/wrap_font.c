@@ -53,7 +53,9 @@ static int __lua_font_destroy ( lua_State *_l ) {
     font = lua_touserdata(_l,1);
 
     //
-    ex_font_destroy(font);
+    if ( font != NULL )
+        ex_font_destroy(font);
+
     return 0;
 }
 

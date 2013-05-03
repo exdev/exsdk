@@ -6,8 +6,8 @@
 -- ======================================================================================
 
 -- internal module
-module_add( "internal/sys_event.lua", "sys_event" )
-module_add( "internal/window.lua" )
+module_add( "internal/os_event.lua", "os_event" )
+module_add( "internal/os_window.lua" )
 
 -- basic module
 module_add( "asset_db.lua", "asset_db" )

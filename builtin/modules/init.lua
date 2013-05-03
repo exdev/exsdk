@@ -65,6 +65,7 @@ lpeg.locale(lpeg) -- adds locale entries into 'lpeg' table
 -- load the builtin modules
 module_load( "builtin/modules/", "base", true )
 module_load( "builtin/modules/", "ex" )
+module_load( "builtin/modules/", "ui" )
 module_load( "builtin/modules/", "editor" )
 
 -- nil the internal value
