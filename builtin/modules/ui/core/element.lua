@@ -21,6 +21,7 @@ local element = class ({
     _dirty = false,
 
     rect = ex.rect ( 0, 0, 0, 0 ),
+    -- style = style.default,
     parent = nil, -- element
     children = {}, -- element list
 
@@ -33,7 +34,7 @@ local element = class ({
     -- ------------------------------------------------------------------ 
 
     set_dirty = function ( _self )
-        _dirty = true
+        _self._dirty = true
     end,
 
     -- ------------------------------------------------------------------ 
@@ -41,13 +42,6 @@ local element = class ({
     -- ------------------------------------------------------------------ 
 
     on_repaint = function ( _self ) 
-    end,
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
-    on_update = function ( _self ) 
     end,
 }) 
 __M.element = element

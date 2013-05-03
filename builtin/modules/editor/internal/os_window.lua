@@ -30,6 +30,7 @@ local os_window = class ({
 
     _cptr = ex_c.null,
     element = ui.element.null,
+    need_repaint = true,
 
     --/////////////////////////////////////////////////////////////////////////////
     -- functions
@@ -60,7 +61,13 @@ local os_window = class ({
     -- ------------------------------------------------------------------ 
 
     draw = function ( _self )
-        _self:_draw_recursively (element)
+        if _self.need_repaint then
+            _self:_repaint_all(_self.element) 
+            _self.need_repaint = false
+            return
+        end
+
+        _self:_draw_recursively (_self.element)
     end,
 
     -- ------------------------------------------------------------------ 
@@ -82,6 +89,11 @@ local os_window = class ({
     -- ------------------------------------------------------------------ 
 
     _draw_recursively = function ( _self, _el )
+        if _el._dirty then
+            _self:_repaint_all(_el) 
+            return
+        end
+
         for i=1,#_el.children do
             local child_el = _el.children[i]
             if child_el._dirty then 
@@ -93,8 +105,9 @@ local os_window = class ({
     end,
 
     _repaint_all = function ( _self, _el )
-        _el._dirty = false
+        -- repaint by parent first
         _el:on_repaint()
+        _el._dirty = false
 
         for i=1,#_el.children do
             local child_el = _el.children[i]
@@ -117,6 +130,13 @@ local os_window = class ({
                     win:dispatch_event (_os_event)
                     break
                 end
+            end
+        end,
+        
+        on_repaint = function ( _os_event )
+            for i=1,#editor.os_window.window_list do
+                local win = editor.os_window.window_list[i]
+                win.need_repaint = true
             end
         end,
 

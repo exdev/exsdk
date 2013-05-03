@@ -96,6 +96,24 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+void repaint_window ( ALLEGRO_DISPLAY *_display ) {
+    lua_State *l;
+
+    l = ex_lua_main_state();
+
+    // call editor.os_window.on_destroy(_display)
+    lua_getglobal ( l, "editor" );
+    lua_getfield ( l, -1, "os_window" );
+    lua_getfield ( l, -1, "on_repaint" );
+    lua_pushlightuserdata ( l, _display );
+    lua_pcall ( l, 1, 0, 0 );
+    lua_pop ( l, 2 );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void update_windows ( lua_State *_l ) {
     lua_getglobal ( _l, "editor" );
     lua_getfield ( _l, -1, "os_window" );
@@ -140,6 +158,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
     switch ( _event.type ) {
     case ALLEGRO_EVENT_DISPLAY_RESIZE:
         al_acknowledge_resize(_event.display.source);
+        repaint_window (_event.display.source);
         break;
 
     case ALLEGRO_EVENT_DISPLAY_EXPOSE:

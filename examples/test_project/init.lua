@@ -20,6 +20,8 @@ local btfont2
 
 local ttf_font1
 local ttf_font2
+
+local view = ui.element()
 -- ------------------------------------------------------------------ 
 
 app.on_init = function () 
@@ -34,7 +36,9 @@ app.on_init = function ()
         print(app.arguments[i])
     end
 
-    editor.os_window( 640, 480 )
+    local window = editor.os_window( 640, 480 )
+    window.element = view
+    window.element:set_dirty()
 
     checkerboard = asset_db.load("assets/Checkerboard_64x64.png")
     -- logo = asset_db.load("assets/ex2d_logo.png")
@@ -76,22 +80,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-app.on_update = function ()
-    -- TODO
-    -- print ( "Hello World!" )
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
-local cnt = 0
--- ------------------------------------------------------------------ 
-
-app.on_draw = function ()
-    if cnt >= 1 then
-        return
-    end
-    cnt = cnt + 1 
-
+view.on_repaint = function ( _self )
     local screen_center = ex.vec2f( ex.canvas.width * 0.5,
                                     ex.canvas.height * 0.5 )
 
