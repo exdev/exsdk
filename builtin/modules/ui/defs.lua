@@ -26,6 +26,31 @@ __M.font_style = font_style
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+local font_decoration = {
+    none = 0,
+    underline = 1,
+    overline = 2,
+    through = 3, 
+    outline = 4
+}
+__M.font_decoration = font_decoration
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local font_outline_style = {
+    none = 0,
+    line = 1,
+    inner = 2,
+    outer = 3, 
+}
+__M.font_outline_style = font_outline_style
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local event = {
     type = event_type.none,
 

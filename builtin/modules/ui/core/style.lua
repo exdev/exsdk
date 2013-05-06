@@ -16,14 +16,30 @@ local __M = {}
 -- ------------------------------------------------------------------ 
 
 local default = {
+    -- font
     font_family = { "Bitstream Vera Sans Mono", "Times New Roman" },
-    font_style = "normal",
+    font_style = ui.font_style.normal,
+    font_decoration = ui.font_decoration.none,
     font_size = 16,
+    font_outline_style = ui.font_outline_style.none,
+    font_outline_thickness = 1,
+
+    -- box
+    border  = { 0, 0, 0, 0 }, -- top, right, bottom, left. NOTE: -1 means the element is not defined
     margin  = { 0, 0, 0, 0 }, -- top, right, bottom, left. NOTE: -1 means the element is not defined
     padding = { 0, 0, 0, 0 }, -- top, right, bottom, left. NOTE: -1 means the element is not defined
+
     color   = { 0, 0, 0, 0 }, -- red, gree, blue, alpha.   NOTE: -1 means the element is not defined
 }
 __M.default = default
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local apply = function ( _elment )
+end
+__M.apply = apply
 
 -- ------------------------------------------------------------------ 
 -- Desc: 

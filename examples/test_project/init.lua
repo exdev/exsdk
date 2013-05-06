@@ -6,6 +6,7 @@
 -- ======================================================================================
 
 local asset_db = editor.asset_db
+local fonts = {}
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -17,11 +18,6 @@ local grossini_dance
 
 local btfont1
 local btfont2
-
-local ttf_font1
-local ttf_font2
-
-local view = ui.element()
 -- ------------------------------------------------------------------ 
 
 app.on_init = function () 
@@ -36,9 +32,15 @@ app.on_init = function ()
         print(app.arguments[i])
     end
 
+    -- load fonts
+    table.add ( fonts, asset_db.load("assets/VeraMono.ttf") ) 
+    table.add ( fonts, asset_db.load("assets/yahei.ttf") ) 
+
+    -- create window
     local window = editor.os_window( 640, 480 )
-    window.element = view
+    window.element = ui.element()
     window.element:set_dirty()
+    window.element.on_repaint = on_repaint
 
     checkerboard = asset_db.load("assets/Checkerboard_64x64.png")
     -- logo = asset_db.load("assets/ex2d_logo.png")
@@ -48,15 +50,6 @@ app.on_init = function ()
     -- grossini_dance = asset_db.load("assets/grossini_dance_09.png")
     -- btfont1 = asset_db.load("assets/BerlinSansFB_MonoOutline.bft")
     -- btfont2 = asset_db.load("assets/MolotShadow.bft")
-
-    ttf_font1 = asset_db.load("assets/VeraMono.ttf")
-    ttf_font2 = asset_db.load("assets/yahei.ttf")
-
-    print ( "ttf_font1.family_name = " .. ttf_font1.family )
-    print ( "ttf_font2.family_name = " .. ttf_font2.family )
-
-    print ( "ttf_font1.style_name = " .. ttf_font1.style )
-    print ( "ttf_font2.style_name = " .. ttf_font2.style )
 
     -- grossini_dance:lock( grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
     -- for x=0,10 do
@@ -86,7 +79,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-view.on_repaint = function ( _self )
+on_repaint = function ( _self )
     local screen_center = ex.vec2f( ex.canvas.width * 0.5,
                                     ex.canvas.height * 0.5 )
 
@@ -100,6 +93,7 @@ view.on_repaint = function ( _self )
                               0, 0, size, size,
                               0, 0, checkerboard.width * 10, checkerboard.height * 10 )
 
+        local ttf_font1 = fonts[1]
         -- ttf_font1.size = 16
         -- ex.canvas.draw_outline_text( 
         --     string.format("frame = %d", cnt),
