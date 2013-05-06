@@ -165,6 +165,40 @@ static int __lua_font_get_outline_thickness ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_font_get_family_name ( lua_State *_l ) {
+    ex_font_t *font;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    font = lua_touserdata(_l,1);
+
+    //
+    lua_pushstring( _l, ex_font_get_family_name (font) );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_font_get_style_name ( lua_State *_l ) {
+    ex_font_t *font;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    font = lua_touserdata(_l,1);
+
+    //
+    lua_pushstring( _l, ex_font_get_style_name (font) );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg lib[] = {
     { "font_load",                      __lua_font_load },
     { "font_destroy",                   __lua_font_destroy },
@@ -174,6 +208,8 @@ static const luaL_Reg lib[] = {
     { "font_get_outline_type",          __lua_font_get_outline_type },
     { "font_set_outline_thickness",     __lua_font_set_outline_thickness },
     { "font_get_outline_thickness",     __lua_font_get_outline_thickness },
+    { "font_get_family_name",           __lua_font_get_family_name },
+    { "font_get_style_name",            __lua_font_get_style_name },
     { NULL, NULL }
 };
 

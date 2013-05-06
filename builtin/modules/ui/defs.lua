@@ -1,7 +1,7 @@
 -- ======================================================================================
--- File         : event.lua
+-- File         : defs.lua
 -- Author       : Wu Jie 
--- Last Change  : 04/26/2013 | 19:07:20 PM | Friday,April
+-- Last Change  : 05/06/2013 | 10:40:22 AM | Monday,May
 -- Description  : 
 -- ======================================================================================
 
@@ -15,26 +15,36 @@ local __M = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-__M.type = event_type.none
+local font_style = {
+    normal = 0,
+    italic = 1,
+    oblique = 2,
+}
+__M.font_style = font_style
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-__M.keycode = -1 -- we use in keycode table
-__M.shift = false
-__M.ctrl = false
-__M.alt = false
-__M.command = false
-__M.capslock = false
+local event = {
+    type = event_type.none,
 
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
+    keycode = keycode.None, -- we use in keycode table
+    shift = false,
+    ctrl = false,
+    alt = false,
+    command = false,
+    capslock = false,
 
-__M.mouse_pos = ex.vec2f.zero
-__M.mouse_delta = ex.vec2f.zero
-__M.mouse_button = -1 -- -1:None, 0:left, 1:right, 2:middle
-__M.mouse_click_count = 0
+    mouse_pos = {0,0},
+    mouse_delta = {0,0},
+    mouse_button = -1, -- -1:None, 0:left, 1:right, 2:middle
+    mouse_click_count = 0
+}
+__M.event = event
+
+--/////////////////////////////////////////////////////////////////////////////
+--
+--/////////////////////////////////////////////////////////////////////////////
 
 return __M

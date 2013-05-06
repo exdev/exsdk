@@ -5,10 +5,12 @@
 -- Description  : 
 -- ======================================================================================
 
+-- general
+module_add( "defs.lua" )
+
 -- core
-module_add( "core/event.lua", "event" )
+module_add( "core/style.lua", "style" )
 module_add( "core/element.lua" )
-module_add( "core/style.lua" )
 
 -- interactions
 module_add( "interactions/draggable.lua" )

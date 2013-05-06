@@ -562,3 +562,25 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, uint _ft_index ) {
 
     return glyph;
 }
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+const char *ex_font_get_family_name ( ex_font_t *_font ) {
+    FT_Face face;
+
+    face = _font->face;
+    return face->family_name;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+const char *ex_font_get_style_name ( ex_font_t *_font ) {
+    FT_Face face;
+
+    face = _font->face;
+    return face->style_name;
+}

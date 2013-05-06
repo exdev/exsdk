@@ -11,24 +11,28 @@ local __M = {}
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
 
-local style = class ({
-    __typename = "style",
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
 
-    --/////////////////////////////////////////////////////////////////////////////
-    -- properties
-    --/////////////////////////////////////////////////////////////////////////////
+local default = {
+    font_family = { "Bitstream Vera Sans Mono", "Times New Roman" },
+    font_style = "normal",
+    font_size = 16,
+    margin  = { 0, 0, 0, 0 }, -- top, right, bottom, left. NOTE: -1 means the element is not defined
+    padding = { 0, 0, 0, 0 }, -- top, right, bottom, left. NOTE: -1 means the element is not defined
+    color   = { 0, 0, 0, 0 }, -- red, gree, blue, alpha.   NOTE: -1 means the element is not defined
+}
+__M.default = default
 
-    margin = ex.rect ( 0, 0, 0, 0 ),
-    padding = ex.rect ( 0, 0, 0, 0 ),
-    color = ex.color4f.white,
-    font = ex.font.null,
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
 
-    --/////////////////////////////////////////////////////////////////////////////
-    -- functions
-    --/////////////////////////////////////////////////////////////////////////////
-
-}) 
-__M.style = style
+local parse = function ( _context )
+    -- TODO: parse from the context (json or css)? and return a style table.
+end
+__M.parse = parse
 
 --/////////////////////////////////////////////////////////////////////////////
 --

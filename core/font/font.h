@@ -65,7 +65,13 @@ extern int ex_font_get_kerning ( ex_font_t *_font, uint _first, uint _second );
 // ------------------------------------------------------------------ 
 
 extern ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, uint _ft_index );
-extern void ex_font_cache_glyph ( ex_font_t *_font, ex_glyph_t *_glyph, uint _ft_index );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern const char *ex_font_get_family_name ( ex_font_t *_font );
+extern const char *ex_font_get_style_name ( ex_font_t *_font );
 
 // #################################################################################
 #endif // END FONT_H_1365409519

@@ -40,6 +40,14 @@ local font = class ({
         set = function (_self,_v) ex_c.font_set_outline_thickness(_self._cptr,_v) end
     },
 
+    family = property {
+        get = function (_self) return ex_c.font_get_family_name (_self._cptr) end,
+    },
+
+    style = property {
+        get = function (_self) return ex_c.font_get_style_name (_self._cptr) end,
+    },
+
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
     --/////////////////////////////////////////////////////////////////////////////

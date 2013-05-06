@@ -5,8 +5,8 @@
 -- Description  : 
 -- ======================================================================================
 
--- generic
-module_add( "enums.lua" )
+-- general
+module_add( "defs.lua" )
 
 -- basic classes
 module_add( "classes/canvas.lua" )

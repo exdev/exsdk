@@ -52,6 +52,12 @@ app.on_init = function ()
     ttf_font1 = asset_db.load("assets/VeraMono.ttf")
     ttf_font2 = asset_db.load("assets/yahei.ttf")
 
+    print ( "ttf_font1.family_name = " .. ttf_font1.family )
+    print ( "ttf_font2.family_name = " .. ttf_font2.family )
+
+    print ( "ttf_font1.style_name = " .. ttf_font1.style )
+    print ( "ttf_font2.style_name = " .. ttf_font2.style )
+
     -- grossini_dance:lock( grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
     -- for x=0,10 do
     --     for y=0,10 do

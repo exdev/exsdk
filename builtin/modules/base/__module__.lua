@@ -12,6 +12,7 @@
 -- global extension
 module_add ( "global.lua" )
 module_add ( "class.lua" )
+module_add ( "defs.lua" )
 
 -- lua internal extension
 module_add ( "debug.lua", "debug" )
@@ -26,5 +27,3 @@ module_add ( "re.lua", "re" ) -- lpeg re module
 module_add ( "app.lua", "app" )
 module_add ( "project.lua", "project" )
 module_add ( "path.lua", "path" )
-module_add ( "keycode.lua", "keycode" )
-module_add ( "event_type.lua", "event_type" )
