@@ -5,7 +5,7 @@
 -- Description  : 
 -- ======================================================================================
 
-local asset_db = editor.asset_db
+local asset_db = wiz.asset_db
 local fonts = {}
 
 -- ------------------------------------------------------------------ 
@@ -20,16 +20,16 @@ local btfont1
 local btfont2
 -- ------------------------------------------------------------------ 
 
-app.on_init = function () 
+wiz.on_init = function () 
     print ( "" )
     print ( "=======================" )
     print ( "start" )
     print ( "=======================" )
     print ( "" )
 
-    print("arguments = " .. #app.arguments)
-    for i=1,#app.arguments do
-        print(app.arguments[i])
+    print("arguments = " .. #wiz.arguments)
+    for i=1,#wiz.arguments do
+        print(wiz.arguments[i])
     end
 
     -- load fonts
@@ -65,8 +65,8 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-app.on_exit = function () 
-    app:close_project()
+wiz.on_exit = function () 
+    wiz:close_project()
 
     print ( "" )
     print ( "=======================" )
@@ -151,7 +151,7 @@ on_repaint = function ( _self )
         ttf_font1.size = 18
         ex.canvas.draw_shadow_text( 
             -- "Hello World\nThis is Johnny.\nWhat the Fuck!", 
-            app.cwd,
+            wiz.cwd,
             ttf_font1, 
             ex.color4f.red,
             ex.color4f.black,

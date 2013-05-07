@@ -63,13 +63,6 @@ extern void ex_lua_alert ( struct lua_State *_l );
 extern int ex_lua_dump_stack ( struct lua_State *_l );
 extern int ex_lua_totoal_memory ( struct lua_State *_l );
 
-///////////////////////////////////////////////////////////////////////////////
-// app.lua
-///////////////////////////////////////////////////////////////////////////////
-
-extern int ex_lua_app_init ( struct lua_State *_l, int _argc, char **_argv );
-extern int ex_lua_app_on_exit ( struct lua_State *_l );
-
 #if 0
 ///////////////////////////////////////////////////////////////////////////////
 // main.lua ( the main.lua interface )

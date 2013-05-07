@@ -5,6 +5,9 @@
 -- Description  : 
 -- ======================================================================================
 
+--
+module_add( "wiz.lua" )
+
 -- basic module
 module_add( "asset_db.lua", "asset_db" )
 module_add( "importer.lua" )

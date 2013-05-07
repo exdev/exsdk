@@ -43,7 +43,7 @@ end
 -- 
 --/////////////////////////////////////////////////////////////////////////////
 
-local bitmapfont_importer = editor.importer.extend ({
+local bitmapfont_importer = wiz.importer.extend ({
     __typename = "bitmapfont_importer",
 
     -- constructor & destructor
@@ -74,7 +74,7 @@ local bitmapfont_importer = editor.importer.extend ({
     -- ------------------------------------------------------------------ 
 
     exec = function (_self)
-        local asset_db = editor.asset_db
+        local asset_db = wiz.asset_db
         local files = asset_db.files_in(_self.path)
         local file = nil
 
@@ -92,7 +92,7 @@ local bitmapfont_importer = editor.importer.extend ({
         local btfont = ex.bitmapfont.new()
 
         -- parse the bitmapfont txt file
-        local pattern = editor.bitmapfont_importer._pattern
+        local pattern = wiz.bitmapfont_importer._pattern
         for line in file:lines() do 
             local t = pattern:match(line)
 

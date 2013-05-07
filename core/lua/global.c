@@ -574,55 +574,6 @@ int ex_lua_totoal_memory ( struct lua_State *_l ) {
     return lua_gc(_l, LUA_GCCOUNT, 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// app.lua
-///////////////////////////////////////////////////////////////////////////////
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-int ex_lua_app_init ( struct lua_State *_l, int _argc, char **_argv ) {
-    int i = 1;
-
-    // get app table
-    lua_getglobal( _l, "app" );
-
-        // get app.arguments
-        lua_getfield( _l, -1, "arguments" );
-            // push arguments
-            // NOTE: the 0 argument is the fullpath of the app
-            while ( i < _argc ) {
-                lua_pushnumber(_l, i);
-                lua_pushstring(_l, _argv[i]);
-                lua_settable(_l, -3);
-                ++i;
-            }
-        lua_pop(_l, 1); // pop app.arguments
-
-    lua_pop(_l, 1); // pop app table
-    return 0;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-int ex_lua_app_on_exit ( struct lua_State *_l ) {
-    // get app table
-    lua_getglobal( _l, "app" );
-
-    // get app.on_draw
-    lua_getfield( _l, -1, "on_exit" );
-
-    if ( lua_isnil(_l,-1) == false && lua_isfunction(_l,-1) ) {
-        lua_pcall(_l, 0, 0, 0);
-    }
-
-    lua_pop(_l,1);
-    return 0;
-}
-
 #if 0
 ///////////////////////////////////////////////////////////////////////////////
 // main.lua

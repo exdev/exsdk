@@ -23,11 +23,11 @@ local function get_importer ( _path )
     end
 
     if path.is ( _path, {".bmp", ".jpg", ".png", ".tga"} ) then
-        return editor.texture_importer(_path)
+        return wiz.texture_importer(_path)
     elseif path.is( _path, {".bft"} ) then
-        return editor.bitmapfont_importer(_path)
+        return wiz.bitmapfont_importer(_path)
     elseif path.is( _path, {".ttf"} ) then
-        return editor.font_importer(_path)
+        return wiz.font_importer(_path)
     end
 end
 __M.get_importer = get_importer

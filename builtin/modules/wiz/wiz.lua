@@ -1,7 +1,7 @@
 -- ======================================================================================
--- File         : app.lua
+-- File         : wiz.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/18/2013 | 11:22:52 AM | Monday,February
+-- Last Change  : 05/07/2013 | 16:56:37 PM | Tuesday,May
 -- Description  : 
 -- ======================================================================================
 
@@ -39,7 +39,7 @@ __M.arguments = arguments
 local open_project = function ( _self, _path )
     -- if we have project open, close it first
     if project.cwd ~= nil and project.cwd ~= "" then
-        app:close_project ( project.cwd )
+        wiz:close_project ( project.cwd )
     end
 
     ex_c.open_project(_path)

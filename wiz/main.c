@@ -36,6 +36,97 @@ ALLEGRO_EVENT_QUEUE *queue = NULL;
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_wiz_init ( lua_State *_l, int _argc, char **_argv ) {
+    int i = 1;
+
+    // get wiz table
+    lua_getglobal( _l, "wiz" );
+
+        // get wiz.arguments
+        lua_getfield( _l, -1, "arguments" );
+            // push arguments
+            // NOTE: the 0 argument is the fullpath of the wiz
+            while ( i < _argc ) {
+                lua_pushnumber(_l, i);
+                lua_pushstring(_l, _argv[i]);
+                lua_settable(_l, -3);
+                ++i;
+            }
+        lua_pop(_l, 1); // pop wiz.arguments
+
+    lua_pop(_l, 1); // pop wiz table
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_wiz_on_exit ( lua_State *_l ) {
+    // get wiz table
+    lua_getglobal( _l, "wiz" );
+
+    // get wiz.on_draw
+    lua_getfield( _l, -1, "on_exit" );
+
+    if ( lua_isnil(_l,-1) == false && lua_isfunction(_l,-1) ) {
+        lua_pcall(_l, 0, 0, 0);
+    }
+
+    lua_pop(_l,1);
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static void __lua_repaint_window ( ALLEGRO_DISPLAY *_display ) {
+    lua_State *l;
+
+    l = ex_lua_main_state();
+
+    // call os.window.on_destroy(_display)
+    lua_getglobal ( l, "os" );
+    lua_getfield ( l, -1, "window" );
+    lua_getfield ( l, -1, "on_repaint" );
+    lua_pushlightuserdata ( l, _display );
+    lua_pcall ( l, 1, 0, 0 );
+    lua_pop ( l, 2 );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static void __lua_update_windows ( lua_State *_l ) {
+    lua_getglobal ( _l, "os" );
+    lua_getfield ( _l, -1, "window" );
+    lua_getfield ( _l, -1, "on_update" );
+    lua_pcall ( _l, 0, 0, 0 );
+    lua_pop ( _l, 2 );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static void __lua_draw_windows ( lua_State *_l ) {
+    lua_getglobal ( _l, "os" );
+    lua_getfield ( _l, -1, "window" );
+    lua_getfield ( _l, -1, "on_draw" );
+    lua_pcall ( _l, 0, 0, 0 );
+    lua_pop ( _l, 2 );
+} 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 ALLEGRO_DISPLAY *create_window ( int _w, int _h ) {
     ALLEGRO_DISPLAY *display;
 
@@ -96,48 +187,6 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void repaint_window ( ALLEGRO_DISPLAY *_display ) {
-    lua_State *l;
-
-    l = ex_lua_main_state();
-
-    // call os.window.on_destroy(_display)
-    lua_getglobal ( l, "os" );
-    lua_getfield ( l, -1, "window" );
-    lua_getfield ( l, -1, "on_repaint" );
-    lua_pushlightuserdata ( l, _display );
-    lua_pcall ( l, 1, 0, 0 );
-    lua_pop ( l, 2 );
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void update_windows ( lua_State *_l ) {
-    lua_getglobal ( _l, "os" );
-    lua_getfield ( _l, -1, "window" );
-    lua_getfield ( _l, -1, "on_update" );
-    lua_pcall ( _l, 0, 0, 0 );
-    lua_pop ( _l, 2 );
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void draw_windows ( lua_State *_l ) {
-    lua_getglobal ( _l, "os" );
-    lua_getfield ( _l, -1, "window" );
-    lua_getfield ( _l, -1, "on_draw" );
-    lua_pcall ( _l, 0, 0, 0 );
-    lua_pop ( _l, 2 );
-} 
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
 int process_event ( ALLEGRO_EVENT _event ) {
     lua_State *l;
     bool do_broadcast;
@@ -158,14 +207,14 @@ int process_event ( ALLEGRO_EVENT _event ) {
     switch ( _event.type ) {
     case ALLEGRO_EVENT_DISPLAY_RESIZE:
         al_acknowledge_resize(_event.display.source);
-        repaint_window (_event.display.source);
+        __lua_repaint_window (_event.display.source);
         break;
 
     case ALLEGRO_EVENT_DISPLAY_EXPOSE:
         break;
 
     case ALLEGRO_EVENT_DISPLAY_CLOSE:
-        // if we are close the primary display, quit the app
+        // if we are close the primary display, quit the wiz
         if ( _event.display.source == primary_display )
             return 1;
 
@@ -264,7 +313,7 @@ void event_loop () {
     // start main-loop
     while (1) {
         // call os.window.dispatch_event () [update] 
-        update_windows (l);
+        __lua_update_windows (l);
 
         // handle events
         while ( !al_is_event_queue_empty(queue) ) {
@@ -280,7 +329,7 @@ void event_loop () {
             al_set_target_bitmap(target);
 
             // call os.window.dispatch_event () [repaint] 
-            draw_windows (l);
+            __lua_draw_windows (l);
 
         ex_array_each_end
 
@@ -289,8 +338,8 @@ void event_loop () {
 
     // finish
 done:
-    // call app.on_exit()
-    ex_lua_app_on_exit (l);
+    // call wiz.on_exit()
+    __lua_wiz_on_exit (l);
     al_destroy_event_queue(queue);  
 }
 
@@ -299,11 +348,11 @@ done:
 extern int __ex_lua_add_window ( lua_State * );
 // ------------------------------------------------------------------ 
 
-static void __app_init ( int _argc, char **_argv ) {
+static void __wiz_init ( int _argc, char **_argv ) {
     lua_State *l = ex_lua_main_state();
 
-    // push arguments to app.arguments in lua
-    ex_lua_app_init ( l, _argc, _argv );
+    // push arguments to wiz.arguments in lua
+    __lua_wiz_init ( l, _argc, _argv );
 
     //
     __display_list = ex_array_alloc ( sizeof(ALLEGRO_DISPLAY *), 8 );
@@ -322,7 +371,7 @@ static void __app_init ( int _argc, char **_argv ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static void __app_deinit () {
+static void __wiz_deinit () {
     ex_array_free ( __display_list );
 }
 
@@ -349,8 +398,8 @@ int main ( int _argc, char **_argv ) {
     ex_log ( "[exSDK] Loading builtin modules" );
     ex_lua_dofile ( l, "builtin/modules/init.lua" );
 
-    // init app
-    __app_init ( _argc, _argv );
+    // init wiz
+    __wiz_init ( _argc, _argv );
 
     // ======================================================== 
     // loop 
@@ -365,8 +414,8 @@ int main ( int _argc, char **_argv ) {
     // de-init 
     // ======================================================== 
 
-    // deinit app 
-    __app_deinit();
+    // deinit wiz 
+    __wiz_deinit();
 
     // deinit exsdk 
     ex_sdk_deinit ();
