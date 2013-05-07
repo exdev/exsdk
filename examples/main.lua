@@ -21,7 +21,7 @@ parse_args ( wiz.arguments, {
 } )
 
 if wiz.platform == "windows" then
-    wiz:open_app( "d:/dev/exdev/exsdk/examples/test_project/" )
+    wiz:open_app( "d:/dev/exdev/exsdk/examples/test_app/" )
 elseif wiz.platform == "macosx" then
-    wiz:open_app( "/Users/Johnny/exdev/exsdk/examples/test_project/" )
+    wiz:open_app( "/Users/Johnny/exdev/exsdk/examples/test_app/" )
 end
