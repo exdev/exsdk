@@ -37,10 +37,10 @@ app.on_init = function ()
     table.add ( fonts, asset_db.load("assets/yahei.ttf") ) 
 
     -- create window
-    local window = editor.os_window( 640, 480 )
-    window.element = ui.element()
-    window.element:set_dirty()
-    window.element.on_repaint = on_repaint
+    local window = os.window( 640, 480 )
+    window.view = ui.element()
+    window.view:set_dirty()
+    window.view.on_repaint = on_repaint
 
     checkerboard = asset_db.load("assets/Checkerboard_64x64.png")
     -- logo = asset_db.load("assets/ex2d_logo.png")

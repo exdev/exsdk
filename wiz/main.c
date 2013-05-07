@@ -73,9 +73,9 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 
     l = ex_lua_main_state();
 
-    // call editor.os_window.on_destroy(_display)
-    lua_getglobal ( l, "editor" );
-    lua_getfield ( l, -1, "os_window" );
+    // call os.window.on_destroy(_display)
+    lua_getglobal ( l, "os" );
+    lua_getfield ( l, -1, "window" );
     lua_getfield ( l, -1, "on_destroy" );
     lua_pushlightuserdata ( l, _display );
     lua_pcall ( l, 1, 0, 0 );
@@ -101,9 +101,9 @@ void repaint_window ( ALLEGRO_DISPLAY *_display ) {
 
     l = ex_lua_main_state();
 
-    // call editor.os_window.on_destroy(_display)
-    lua_getglobal ( l, "editor" );
-    lua_getfield ( l, -1, "os_window" );
+    // call os.window.on_destroy(_display)
+    lua_getglobal ( l, "os" );
+    lua_getfield ( l, -1, "window" );
     lua_getfield ( l, -1, "on_repaint" );
     lua_pushlightuserdata ( l, _display );
     lua_pcall ( l, 1, 0, 0 );
@@ -115,8 +115,8 @@ void repaint_window ( ALLEGRO_DISPLAY *_display ) {
 // ------------------------------------------------------------------ 
 
 void update_windows ( lua_State *_l ) {
-    lua_getglobal ( _l, "editor" );
-    lua_getfield ( _l, -1, "os_window" );
+    lua_getglobal ( _l, "os" );
+    lua_getfield ( _l, -1, "window" );
     lua_getfield ( _l, -1, "on_update" );
     lua_pcall ( _l, 0, 0, 0 );
     lua_pop ( _l, 2 );
@@ -127,8 +127,8 @@ void update_windows ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 void draw_windows ( lua_State *_l ) {
-    lua_getglobal ( _l, "editor" );
-    lua_getfield ( _l, -1, "os_window" );
+    lua_getglobal ( _l, "os" );
+    lua_getfield ( _l, -1, "window" );
     lua_getfield ( _l, -1, "on_draw" );
     lua_pcall ( _l, 0, 0, 0 );
     lua_pop ( _l, 2 );
@@ -146,9 +146,9 @@ int process_event ( ALLEGRO_EVENT _event ) {
     do_broadcast = false;
 
     // clean the event type
-    // editor.os_event.type = event_type.none
-    lua_getglobal( l, "editor" );
-    lua_getfield( l, -1, "os_event" );
+    // os.event.type = event_type.none
+    lua_getglobal( l, "os" );
+    lua_getfield( l, -1, "event" );
     lua_getglobal( l, "event_type" );
     lua_getfield( l, -1, "none" );
     lua_setfield( l, -3, "type" );
@@ -184,8 +184,8 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
 
     case ALLEGRO_EVENT_KEY_DOWN:
-        lua_getglobal( l, "editor" );
-        lua_getfield( l, -1, "os_event" );
+        lua_getglobal( l, "os" );
+        lua_getfield( l, -1, "event" );
 
             // set event_type.type
             lua_getglobal( l, "event_type" );
@@ -207,8 +207,8 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
 
     case ALLEGRO_EVENT_KEY_UP:
-        lua_getglobal( l, "editor" );
-        lua_getfield( l, -1, "os_event" );
+        lua_getglobal( l, "os" );
+        lua_getfield( l, -1, "event" );
 
             // set event_type.type
             lua_getglobal( l, "event_type" );
@@ -230,12 +230,12 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
     }
 
-    // call editor.os_window.on_event(editor.os_event)
+    // call os.window.on_event(os.event)
     if ( do_broadcast ) {
-        lua_getglobal ( l, "editor" );
-        lua_getfield ( l, -1, "os_window" );
+        lua_getglobal ( l, "os" );
+        lua_getfield ( l, -1, "window" );
         lua_getfield ( l, -1, "on_event" );
-        lua_getfield ( l, -3, "os_event" );
+        lua_getfield ( l, -3, "event" );
         lua_pcall ( l, 1, 0, 0 );
         lua_pop ( l, 2 );
     }
@@ -263,7 +263,7 @@ void event_loop () {
 
     // start main-loop
     while (1) {
-        // call editor.os_window.dispatch_event () [update] 
+        // call os.window.dispatch_event () [update] 
         update_windows (l);
 
         // handle events
@@ -279,7 +279,7 @@ void event_loop () {
             target = al_get_backbuffer(display);
             al_set_target_bitmap(target);
 
-            // call editor.os_window.dispatch_event () [repaint] 
+            // call os.window.dispatch_event () [repaint] 
             draw_windows (l);
 
         ex_array_each_end

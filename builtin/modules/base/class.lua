@@ -272,7 +272,8 @@ local function instance_newindex ( _t, _k, _v )
     end
 
     -- 
-    error( "Can't find the key " .. _k )
+    -- error( "Can't find the key " .. _k )
+    rawset(_t,_k,_v)
     return
 end
 
