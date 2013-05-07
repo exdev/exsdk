@@ -1,7 +1,7 @@
 // ======================================================================================
-// File         : wrap_player.c
+// File         : wrap_window.c
 // Author       : Wu Jie 
-// Last Change  : 04/25/2013 | 15:48:39 PM | Thursday,April
+// Last Change  : 05/07/2013 | 14:48:33 PM | Tuesday,May
 // Description  : 
 // ======================================================================================
 
@@ -65,7 +65,7 @@ static const luaL_Reg lib[] = {
     { NULL, NULL }
 };
 
-int __ex_lua_add_player ( lua_State *_l ) {
+int __ex_lua_add_window ( lua_State *_l ) {
     luaL_setfuncs( _l, lib, 0 );
     return 0;
 }

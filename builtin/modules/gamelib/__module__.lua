@@ -5,14 +5,9 @@
 -- Description  : 
 -- ======================================================================================
 
--- general
-module_add( "defs.lua" )
+-- classes
+module_add( "classes/node.lua" )
+module_add( "classes/component.lua" )
 
--- basic classes
-module_add( "classes/canvas.lua" )
-module_add( "classes/vec2f.lua" )
-module_add( "classes/rect.lua" )
-module_add( "classes/color4f.lua" )
-module_add( "classes/texture.lua" )
-module_add( "classes/bitmapfont.lua" )
-module_add( "classes/font.lua" )
+--
+module_add( "scene.lua", "scene" )

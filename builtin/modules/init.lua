@@ -67,6 +67,7 @@ module_load( "builtin/modules/", "base", true )
 module_load( "builtin/modules/", "ex" )
 module_load( "builtin/modules/", "ui" )
 module_load( "builtin/modules/", "editor" )
+-- module_load( "builtin/modules/", "gamelib" )
 
 -- nil the internal value
 cur_module_path = nil

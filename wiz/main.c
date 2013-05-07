@@ -1,7 +1,7 @@
 // ======================================================================================
 // File         : main.c
 // Author       : Wu Jie 
-// Last Change  : 01/05/2013 | 17:44:08 PM | Saturday,January
+// Last Change  : 05/07/2013 | 14:48:30 PM | Tuesday,May
 // Description  : 
 // ======================================================================================
 
@@ -296,7 +296,7 @@ done:
 
 // ------------------------------------------------------------------ 
 // Desc: 
-extern int __ex_lua_add_player ( lua_State * );
+extern int __ex_lua_add_window ( lua_State * );
 // ------------------------------------------------------------------ 
 
 static void __app_init ( int _argc, char **_argv ) {
@@ -308,9 +308,9 @@ static void __app_init ( int _argc, char **_argv ) {
     //
     __display_list = ex_array_alloc ( sizeof(ALLEGRO_DISPLAY *), 8 );
 
-    // add player builtin libs to ex_c
+    // add window builtin libs to ex_c
     lua_getglobal(l, "ex_c"); /* get ex_c table */
-        __ex_lua_add_player (l);
+        __ex_lua_add_window (l);
     lua_pop(l, 1);  /* remove ex_c table */
 
     // execute main.lua if exists  

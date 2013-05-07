@@ -37,11 +37,11 @@ end
 --
 if __COMMAND == "update" then
     -- if __PLATFORM == "macosx" then
-    --     copy_builtin_files ( __DEST_DIR.."ex/debug/bin/ex_player.app/" )
-    --     copy_builtin_files ( __DEST_DIR.."ex/release/bin/ex_player.app/" )
+    --     copy_builtin_files ( __DEST_DIR.."ex_wiz/debug/bin/ex_wiz.app/" )
+    --     copy_builtin_files ( __DEST_DIR.."ex_wiz/release/bin/ex_wiz.app/" )
     -- elseif __PLATFORM == "win32" then
-        copy_builtin_files ( __DEST_DIR.."ex/debug/bin/" )
-        copy_builtin_files ( __DEST_DIR.."ex/release/bin/" )
+        copy_builtin_files ( __DEST_DIR.."ex_wiz/debug/bin/" )
+        copy_builtin_files ( __DEST_DIR.."ex_wiz/release/bin/" )
     -- end
     return
 end
@@ -235,13 +235,13 @@ solution "exSDK"
             flags { "Optimize" }    
  
     -- ======================================================== 
-    -- Project: exCore
+    -- Project: ex_core
     -- ======================================================== 
 
-    project "exCore"
+    project "ex_core"
         kind "StaticLib"
         language "C"
-        targetname "exsdk"
+        targetname "ex_core"
 
         -- include
         includedirs {
@@ -268,27 +268,27 @@ solution "exSDK"
 
         -- configurations
         configuration "Debug"
-            objdir ( __DEST_DIR .. "exCore/debug/objs/" )
-            targetdir ( __DEST_DIR .. "exCore/debug/bin/" )
+            objdir ( __DEST_DIR .. "ex_core/debug/objs/" )
+            targetdir ( __DEST_DIR .. "ex_core/debug/bin/" )
 
             defines { "DEBUG" }
             flags { "Symbols" }
 
         configuration "Release"
-            objdir ( __DEST_DIR .. "exCore/release/objs/" )
-            targetdir ( __DEST_DIR .. "exCore/release/bin/" )
+            objdir ( __DEST_DIR .. "ex_core/release/objs/" )
+            targetdir ( __DEST_DIR .. "ex_core/release/bin/" )
 
             defines { "NDEBUG" }
             flags { "Optimize" }    
 
     -- ======================================================== 
-    -- Project: exPlayer
+    -- Project: ex_wiz
     -- ======================================================== 
 
-    project "exPlayer"
+    project "ex_wiz"
         kind "ConsoleApp"
         language "C"
-        targetname "ex_player"
+        targetname "ex_wiz"
 
         -- include
         includedirs {
@@ -299,7 +299,7 @@ solution "exSDK"
 
         -- source
         files { 
-            "player/**.c",
+            "wiz/**.c",
         }
 
         -- library path ( for link to search ) 
@@ -312,7 +312,7 @@ solution "exSDK"
             "freetype",
             "Deps",
             "Allegro",
-            "exCore",
+            "ex_core",
         }
         if __PLATFORM == "macosx" then
             links {
@@ -347,27 +347,27 @@ solution "exSDK"
 
         -- configurations
         configuration "Debug"
-            objdir ( __DEST_DIR .. "ex/debug/objs/" )
-            targetdir ( __DEST_DIR .. "ex/debug/bin/" )
-            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex/debug/bin/" )
+            objdir ( __DEST_DIR .. "ex_wiz/debug/objs/" )
+            targetdir ( __DEST_DIR .. "ex_wiz/debug/bin/" )
+            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex_wiz/debug/bin/" )
 
             defines { "DEBUG" }
             flags { "Symbols" }
 
         configuration "Release"
-            objdir ( __DEST_DIR .. "ex/release/objs/" )
-            targetdir ( __DEST_DIR .. "ex/release/bin/" )
-            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex/release/bin/" )
+            objdir ( __DEST_DIR .. "ex_wiz/release/objs/" )
+            targetdir ( __DEST_DIR .. "ex_wiz/release/bin/" )
+            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex_wiz/release/bin/" )
 
             defines { "NDEBUG" }
             flags { "Optimize" }
 
         -- if __PLATFORM == "macosx" then
-        --     copy_builtin_files ( __DEST_DIR.."ex/debug/bin/ex_player.app/" )
-        --     copy_builtin_files ( __DEST_DIR.."ex/release/bin/ex_player.app/" )
+        --     copy_builtin_files ( __DEST_DIR.."ex_wiz/debug/bin/ex_wiz.app/" )
+        --     copy_builtin_files ( __DEST_DIR.."ex_wiz/release/bin/ex_wiz.app/" )
         -- elseif __PLATFORM == "win32" then
-            copy_builtin_files ( __DEST_DIR.."ex/debug/bin/" )
-            copy_builtin_files ( __DEST_DIR.."ex/release/bin/" )
+            copy_builtin_files ( __DEST_DIR.."ex_wiz/debug/bin/" )
+            copy_builtin_files ( __DEST_DIR.."ex_wiz/release/bin/" )
         -- end
 
     -- ======================================================== 
@@ -416,7 +416,7 @@ solution "exSDK"
                 "freetype",
                 "Deps",
                 "Allegro",
-                "exCore",
+                "ex_core",
             }
             if __PLATFORM == "macosx" then
                 links {
