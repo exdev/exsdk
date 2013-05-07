@@ -37,7 +37,7 @@ wiz.on_init = function ()
     table.add ( fonts, asset_db.load("assets/yahei.ttf") ) 
 
     -- create window
-    local window = os.window( 640, 480 )
+    local window = wiz.window( 640, 480 )
     window.view = ui.element()
     window.view:set_dirty()
     window.view.on_repaint = on_repaint

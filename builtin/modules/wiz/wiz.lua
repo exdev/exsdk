@@ -42,7 +42,7 @@ local open_app = function ( _self, _path )
         wiz:close_app ()
     end
 
-    ex_c.open_app(_path)
+    wiz_c.open_app(_path)
     wiz.app.cwd = ex_c.fsys_writedir()
 
     if wiz.app.exists("init.lua") then
@@ -63,7 +63,7 @@ local close_app = function ( _self )
     if _self.on_close ~= nil then
         _self.on_close()
     end
-    ex_c.close_app()
+    wiz_c.close_app()
     wiz.app.cwd = ""
 end
 __M.close_app = close_app

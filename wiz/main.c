@@ -86,8 +86,8 @@ static void __lua_repaint_window ( ALLEGRO_DISPLAY *_display ) {
 
     l = ex_lua_main_state();
 
-    // call os.window.on_destroy(_display)
-    lua_getglobal ( l, "os" );
+    // call wiz.window.on_destroy(_display)
+    lua_getglobal ( l, "wiz" );
     lua_getfield ( l, -1, "window" );
     lua_getfield ( l, -1, "on_repaint" );
     lua_pushlightuserdata ( l, _display );
@@ -100,7 +100,7 @@ static void __lua_repaint_window ( ALLEGRO_DISPLAY *_display ) {
 // ------------------------------------------------------------------ 
 
 static void __lua_update_windows ( lua_State *_l ) {
-    lua_getglobal ( _l, "os" );
+    lua_getglobal ( _l, "wiz" );
     lua_getfield ( _l, -1, "window" );
     lua_getfield ( _l, -1, "on_update" );
     lua_pcall ( _l, 0, 0, 0 );
@@ -112,7 +112,7 @@ static void __lua_update_windows ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static void __lua_draw_windows ( lua_State *_l ) {
-    lua_getglobal ( _l, "os" );
+    lua_getglobal ( _l, "wiz" );
     lua_getfield ( _l, -1, "window" );
     lua_getfield ( _l, -1, "on_draw" );
     lua_pcall ( _l, 0, 0, 0 );
@@ -164,8 +164,8 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
 
     l = ex_lua_main_state();
 
-    // call os.window.on_destroy(_display)
-    lua_getglobal ( l, "os" );
+    // call wiz.window.on_destroy(_display)
+    lua_getglobal ( l, "wiz" );
     lua_getfield ( l, -1, "window" );
     lua_getfield ( l, -1, "on_destroy" );
     lua_pushlightuserdata ( l, _display );
@@ -195,8 +195,8 @@ int process_event ( ALLEGRO_EVENT _event ) {
     do_broadcast = false;
 
     // clean the event type
-    // os.event.type = event_type.none
-    lua_getglobal( l, "os" );
+    // wiz.event.type = event_type.none
+    lua_getglobal( l, "wiz" );
     lua_getfield( l, -1, "event" );
     lua_getglobal( l, "event_type" );
     lua_getfield( l, -1, "none" );
@@ -233,7 +233,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
 
     case ALLEGRO_EVENT_KEY_DOWN:
-        lua_getglobal( l, "os" );
+        lua_getglobal( l, "wiz" );
         lua_getfield( l, -1, "event" );
 
             // set event_type.type
@@ -256,7 +256,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
 
     case ALLEGRO_EVENT_KEY_UP:
-        lua_getglobal( l, "os" );
+        lua_getglobal( l, "wiz" );
         lua_getfield( l, -1, "event" );
 
             // set event_type.type
@@ -279,9 +279,9 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
     }
 
-    // call os.window.on_event(os.event)
+    // call wiz.window.on_event(wiz.event)
     if ( do_broadcast ) {
-        lua_getglobal ( l, "os" );
+        lua_getglobal ( l, "wiz" );
         lua_getfield ( l, -1, "window" );
         lua_getfield ( l, -1, "on_event" );
         lua_getfield ( l, -3, "event" );
@@ -312,7 +312,7 @@ void event_loop () {
 
     // start main-loop
     while (1) {
-        // call os.window.dispatch_event () [update] 
+        // call wiz.window.dispatch_event () [update] 
         __lua_update_windows (l);
 
         // handle events
@@ -328,7 +328,7 @@ void event_loop () {
             target = al_get_backbuffer(display);
             al_set_target_bitmap(target);
 
-            // call os.window.dispatch_event () [repaint] 
+            // call wiz.window.dispatch_event () [repaint] 
             __lua_draw_windows (l);
 
         ex_array_each_end
@@ -358,11 +358,15 @@ static void __wiz_init ( int _argc, char **_argv ) {
     //
     __display_list = ex_array_alloc ( sizeof(ALLEGRO_DISPLAY *), 8 );
 
-    // add window builtin libs to ex_c
-    lua_getglobal(l, "ex_c"); /* get ex_c table */
+    // create wiz_c table
+    lua_newtable(l);
+
         __ex_lua_add_app (l);
         __ex_lua_add_window (l);
-    lua_pop(l, 1);  /* remove ex_c table */
+
+        ex_lua_add_module ( l, "wiz_c" );
+
+    lua_pop(l, 1);  /* remove wiz_c table */
 
     // execute main.lua if exists  
     if ( ex_fsys_exists ("main.lua") )

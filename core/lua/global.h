@@ -40,6 +40,9 @@ extern int ex_lua_clear_cpath ( struct lua_State *_l );
 extern int ex_lua_set_cpath ( struct lua_State *_l, const char *_path );
 extern int ex_lua_add_cpath ( struct lua_State *_l, const char *_path );
 
+// module
+extern void ex_lua_add_module ( struct lua_State *_l, const char *_modname );
+
 ///////////////////////////////////////////////////////////////////////////////
 // lua interpreter op
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,18 +65,6 @@ extern void ex_lua_run_interpretor ( struct lua_State *_l );
 extern void ex_lua_alert ( struct lua_State *_l );
 extern int ex_lua_dump_stack ( struct lua_State *_l );
 extern int ex_lua_totoal_memory ( struct lua_State *_l );
-
-#if 0
-///////////////////////////////////////////////////////////////////////////////
-// main.lua ( the main.lua interface )
-///////////////////////////////////////////////////////////////////////////////
-
-extern void ex_lua_parse_main ( struct lua_State *_l );
-extern void ex_lua_main_init ( struct lua_State *_l );
-extern void ex_lua_main_deinit ( struct lua_State *_l );
-extern void ex_lua_main_update ( struct lua_State *_l );
-extern void ex_lua_main_render ( struct lua_State *_l );
-#endif
 
 // ######################### 
 #ifdef __cplusplus

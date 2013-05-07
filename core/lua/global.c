@@ -149,16 +149,6 @@ static const lua_CFunction loadedlibs[] = {
 };
 // ------------------------------------------------------------------ 
 
-static void __ex_lua_add_module ( lua_State *_l, const char *_modname ) {
-    luaL_getsubtable(_l, LUA_REGISTRYINDEX, "_LOADED");
-    lua_pushvalue(_l, -2);  /* make copy of module (call result) */
-    lua_setfield(_l, -2, _modname);  /* _LOADED[modname] = module */
-    lua_pop(_l, 1);  /* remove _LOADED table */
-
-    lua_pushvalue(_l, -1);  /* copy of 'mod' */
-    lua_setglobal(_l, _modname);  /* _G[modname] = module */
-}
-
 static void __ex_lua_openlibs ( lua_State *_l ) {
     const lua_CFunction *pfunc;
 
@@ -170,15 +160,19 @@ static void __ex_lua_openlibs ( lua_State *_l ) {
             (*pfunc) (_l); // add functions to the table
         }
 
-        __ex_lua_add_module ( _l, "ex_c" );
+        ex_lua_add_module ( _l, "ex_c" );
 
     lua_pop(_l, 1);  /* remove module table */
 }
 
+// ------------------------------------------------------------------ 
+// Desc: 
 extern int luaopen_lpeg ( lua_State * );
+// ------------------------------------------------------------------ 
+
 static void __ex_lua_openlpeg ( lua_State *_l ) {
     luaopen_lpeg (__L); // new lpeg table
-    __ex_lua_add_module ( _l, "lpeg" );
+    ex_lua_add_module ( _l, "lpeg" );
     lua_pop(_l, 1);  /* remove module table */
 }
 
@@ -402,6 +396,20 @@ int ex_lua_add_cpath ( struct lua_State *_l, const char *_path ) {
     al_ustr_free (ustr);
 
     return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_lua_add_module ( lua_State *_l, const char *_modname ) {
+    luaL_getsubtable(_l, LUA_REGISTRYINDEX, "_LOADED");
+    lua_pushvalue(_l, -2);  /* make copy of module (call result) */
+    lua_setfield(_l, -2, _modname);  /* _LOADED[modname] = module */
+    lua_pop(_l, 1);  /* remove _LOADED table */
+
+    lua_pushvalue(_l, -1);  /* copy of 'mod' */
+    lua_setglobal(_l, _modname);  /* _G[modname] = module */
 }
 
 ///////////////////////////////////////////////////////////////////////////////

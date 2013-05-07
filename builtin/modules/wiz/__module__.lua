@@ -5,11 +5,12 @@
 -- Description  : 
 -- ======================================================================================
 
---
+-- wiz
 module_add( "wiz.lua" )
+module_add( "window.lua" )
 module_add( "app.lua", "app" )
 
--- basic module
+-- basic
 module_add( "asset_db.lua", "asset_db" )
 module_add( "importer.lua" )
 module_add( "texture_importer.lua" )
