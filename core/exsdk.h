@@ -43,9 +43,6 @@ extern int ex_sdk_init ();
 extern void ex_sdk_deinit ();
 extern bool ex_sdk_initialized ();
 
-extern int ex_sdk_open_project ( const char *_path );
-extern void ex_sdk_close_project ();
-
 // #################################################################################
 #endif // END EXSDK_H_1277557232
 // #################################################################################

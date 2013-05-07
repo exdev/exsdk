@@ -66,7 +66,7 @@ end
 -- ------------------------------------------------------------------ 
 
 wiz.on_exit = function () 
-    wiz:close_project()
+    wiz:close()
 
     print ( "" )
     print ( "=======================" )
@@ -141,7 +141,7 @@ on_repaint = function ( _self )
         ttf_font1.size = 16
         ex.canvas.draw_outline_text( 
             -- "Hello World\nThis is Johnny.\nWhat the Fuck!", 
-            project.cwd,
+            wiz.app.cwd,
             ttf_font1, 
             ex.color4f.green,
             ex.color4f.black,

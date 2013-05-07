@@ -24,5 +24,4 @@ module_add ( "math/ease.lua", "math" )
 
 -- ex internal extension
 module_add ( "re.lua", "re" ) -- lpeg re module
-module_add ( "project.lua", "project" )
 module_add ( "path.lua", "path" )

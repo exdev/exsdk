@@ -321,38 +321,3 @@ bool ex_sdk_initialized () {
     return __initialized;
 }
 
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-int ex_sdk_open_project ( const char *_path ) {
-    ex_assert ( _path != NULL );
-
-    // if the media_path exists, use it. if not, try to search it in the app/ directory
-    if ( ex_os_exists (_path) == false ) {
-        ex_log ( "[exSDK] Error: Can't load project at %s", _path );
-        return -1;
-    }
-
-    ex_log ( "[exSDK] Open project: %s", _path  );
-
-    // set write dir
-    if ( ex_fsys_set_write_dir(_path) != 0 )
-        return -1;
-
-    // mount the write dir. NOTE: set write dir doesn't means you mount it.
-    if ( ex_fsys_mount( _path, "__project__", true ) != 0 )
-        return -1;
-
-    return 0;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_sdk_close_project () {
-    // TODO: set_write_dir to default.
-    // TODO: unmount project dir
-}
-

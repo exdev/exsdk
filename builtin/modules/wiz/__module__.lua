@@ -7,6 +7,7 @@
 
 --
 module_add( "wiz.lua" )
+module_add( "app.lua", "app" )
 
 -- basic module
 module_add( "asset_db.lua", "asset_db" )

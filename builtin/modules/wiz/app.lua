@@ -1,7 +1,7 @@
 -- ======================================================================================
--- File         : project.lua
+-- File         : app.lua
 -- Author       : Wu Jie 
--- Last Change  : 04/26/2013 | 09:44:12 AM | Friday,April
+-- Last Change  : 05/07/2013 | 17:07:34 PM | Tuesday,May
 -- Description  : 
 -- ======================================================================================
 
@@ -12,7 +12,7 @@ local __M = {}
 --/////////////////////////////////////////////////////////////////////////////
 
 -- ------------------------------------------------------------------ 
--- Desc: the current directory of the project, it will be set when user calls app.open_project(...)
+-- Desc: the current directory of the project, it will be set when user calls wiz.open_app(...)
 -- ------------------------------------------------------------------ 
 
 local cwd = ""
@@ -24,7 +24,7 @@ __M.cwd = cwd
 -- ------------------------------------------------------------------ 
 
 local function fsys_path (_path)
-    return path.join("__project__",_path)
+    return path.join("__app__",_path)
 end
 __M.fsys_path = fsys_path
 

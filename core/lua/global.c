@@ -585,7 +585,7 @@ static int __refID_init, __refID_deinit, __refID_update, __refID_render;
 // ------------------------------------------------------------------ 
 
 void ex_lua_parse_main ( struct lua_State *_l ) {
-    ex_lua_dofile ( _l, "__project__/main.lua" );
+    ex_lua_dofile ( _l, "__app__/main.lua" );
 
     lua_getglobal( _l, "init" );
     __refID_init = luaL_ref( _l, LUA_REGISTRYINDEX );

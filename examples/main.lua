@@ -17,11 +17,11 @@ end
 --/////////////////////////////////////////////////////////////////////////////
 
 parse_args ( wiz.arguments, {
-    -- { "project" },
+    -- { "app" },
 } )
 
 if wiz.platform == "windows" then
-    wiz:open_project( "d:/dev/exdev/exsdk/examples/test_project/" )
+    wiz:open_app( "d:/dev/exdev/exsdk/examples/test_project/" )
 elseif wiz.platform == "macosx" then
-    wiz:open_project( "/Users/Johnny/exdev/exsdk/examples/test_project/" )
+    wiz:open_app( "/Users/Johnny/exdev/exsdk/examples/test_project/" )
 end

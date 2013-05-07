@@ -18,7 +18,7 @@ local path_to_asset = {}
 -- ------------------------------------------------------------------ 
 
 local function get_importer ( _path )
-    if project.exists (_path) == false then
+    if wiz.app.exists (_path) == false then
         error ( "Can't find file at " .. _path )
     end
 

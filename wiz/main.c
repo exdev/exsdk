@@ -345,6 +345,7 @@ done:
 
 // ------------------------------------------------------------------ 
 // Desc: 
+extern int __ex_lua_add_app ( lua_State * );
 extern int __ex_lua_add_window ( lua_State * );
 // ------------------------------------------------------------------ 
 
@@ -359,6 +360,7 @@ static void __wiz_init ( int _argc, char **_argv ) {
 
     // add window builtin libs to ex_c
     lua_getglobal(l, "ex_c"); /* get ex_c table */
+        __ex_lua_add_app (l);
         __ex_lua_add_window (l);
     lua_pop(l, 1);  /* remove ex_c table */
 

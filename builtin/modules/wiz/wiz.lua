@@ -26,7 +26,7 @@ local cwd = ex_c.fsys_app_dir()
 __M.cwd = cwd
 
 -- ------------------------------------------------------------------ 
--- Desc: the arguments will be set by exsdk through ex_lua_init_app_table()
+-- Desc: the arguments will be set by exsdk through __lua_wiz_init()
 -- ------------------------------------------------------------------ 
 
 local arguments = {}
@@ -36,37 +36,37 @@ __M.arguments = arguments
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local open_project = function ( _self, _path )
-    -- if we have project open, close it first
-    if project.cwd ~= nil and project.cwd ~= "" then
-        wiz:close_project ( project.cwd )
+local open_app = function ( _self, _path )
+    -- if we have app open, close it first
+    if wiz.app.cwd ~= nil and wiz.app.cwd ~= "" then
+        wiz:close_app ()
     end
 
-    ex_c.open_project(_path)
-    project.cwd = ex_c.fsys_writedir()
+    ex_c.open_app(_path)
+    wiz.app.cwd = ex_c.fsys_writedir()
 
-    if project.exists("init.lua") then
-        ex_c.lua_dofile ( project.fsys_path("init.lua") )
+    if wiz.app.exists("init.lua") then
+        ex_c.lua_dofile ( wiz.app.fsys_path("init.lua") )
     end
 
     if _self.on_init ~= nil then
         _self.on_init()
     end
 end
-__M.open_project = open_project
+__M.open_app = open_app
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local close_project = function ( _self )
+local close_app = function ( _self )
     if _self.on_close ~= nil then
         _self.on_close()
     end
-    ex_c.close_project()
-    project.cwd = ""
+    ex_c.close_app()
+    wiz.app.cwd = ""
 end
-__M.close_project = close_project
+__M.close_app = close_app
 
 --/////////////////////////////////////////////////////////////////////////////
 -- 
