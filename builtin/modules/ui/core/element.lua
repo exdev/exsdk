@@ -21,7 +21,7 @@ local element = class ({
     _dirty = false,
 
     id = "__unknown__",
-    rect = ex.rect ( 0, 0, 0, 0 ),
+    rect = { 0, 0, 0, 0 },
     style = ui.style.default,
     parent = nil, -- element
     children = {}, -- element list
@@ -50,7 +50,11 @@ local element = class ({
     -- ------------------------------------------------------------------ 
 
     debug_draw = function ( _self )
-        -- TODO:
+        ex.canvas.color = ex.color4f ( 0.0, 0.5, 1.0, 0.8 )
+        ex.canvas.draw_filled_rect ( _self.rect[1], _self.rect[2], _self.rect[3], _self.rect[4] )
+
+        ex.canvas.color = ex.color4f.black
+        ex.canvas.draw_rect ( _self.rect[1], _self.rect[2], _self.rect[3], _self.rect[4], 1 )
     end,
 }) 
 __M.element = element

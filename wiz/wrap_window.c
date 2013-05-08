@@ -59,9 +59,45 @@ static int __lua_destroy_window ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_get_window_width ( lua_State *_l ) {
+    ALLEGRO_DISPLAY *display;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    display = lua_touserdata(_l,1);
+
+    //
+    lua_pushinteger( _l, al_get_display_width(display) );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_get_window_height ( lua_State *_l ) {
+    ALLEGRO_DISPLAY *display;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    display = lua_touserdata(_l,1);
+
+    //
+    lua_pushinteger( _l, al_get_display_height(display) );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg lib[] = {
     { "create_window",     __lua_create_window },
     { "destroy_window",    __lua_destroy_window },
+    { "get_window_width",    __lua_get_window_width },
+    { "get_window_height",   __lua_get_window_height },
     { NULL, NULL }
 };
 

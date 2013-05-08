@@ -44,8 +44,27 @@ local window = class ({
     --/////////////////////////////////////////////////////////////////////////////
 
     _cptr = ex_c.null,
-    view = ui.element.null,
+    _view = ui.element.null,
+
     need_repaint = true,
+    need_layout = true,
+    width = property {
+        get = function ( _self ) return wiz_c.get_window_width(_self._cptr) end
+    },
+    height = property {
+        get = function ( _self ) return wiz_c.get_window_height(_self._cptr) end
+    },
+    view = property {
+        get = function ( _self ) return _self._view end,
+        set = function ( _self, _v )
+            checkarg ( _v, "element" )
+            _self._view = _v
+            _self._view.style.min_width = _self.width
+            _self._view.style.min_height = _self.height
+            _self.need_repaint = true
+            _self.need_layout = true
+        end,
+    },
 
     --/////////////////////////////////////////////////////////////////////////////
     -- functions

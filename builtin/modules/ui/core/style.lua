@@ -30,6 +30,10 @@ local default = {
     padding = { 0, 0, 0, 0 }, -- top, right, bottom, left. NOTE: -1 means the element is not defined
 
     color   = { 0, 0, 0, 0 }, -- red, gree, blue, alpha.   NOTE: -1 means the element is not defined
+
+    -- size
+    min_width = 1,
+    min_height = 1,
 }
 __M.default = default
 

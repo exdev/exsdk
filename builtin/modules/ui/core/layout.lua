@@ -1,54 +1,38 @@
 -- ======================================================================================
--- File         : global.lua
+-- File         : layout.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/18/2013 | 17:16:22 PM | Monday,February
+-- Last Change  : 05/09/2013 | 01:29:00 AM | Thursday,May
 -- Description  : 
 -- ======================================================================================
 
 local __M = {}
 
+local cur_pos = { 0, 0 }
+
 --/////////////////////////////////////////////////////////////////////////////
--- base functions
+-- public functions
 --/////////////////////////////////////////////////////////////////////////////
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local builtin_error = error
-local function error ( _msg, ... )
-    print ( _msg, ... ) 
-    print(debug.traceback())
-    builtin_error(_msg, ...)
+local do_layout = function ( _element )
+    _element.rect = { cur_pos[1], cur_pos[2], _element.style.min_width, _element.style.min_height }
 end
-__M.error = error
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local builtin_assert = assert
-local function assert ( _exp, ... )
-    if _exp == nil or _exp == false then 
-        print(...) 
-        print(debug.traceback()) 
-    end
-    builtin_assert(_exp, ...)
+local layout = function ( _element )
+    cur_pos = { 0, 0 }
+    do_layout (_element)
 end
-__M.assert = assert
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local function checkarg ( _arg, _typename )
-    assert ( typename(_arg) == _typename, 
-             string.format("Type error: must be %s", _typename ) )
-end
-__M.checkarg = checkarg
+__M.layout = layout
 
 --/////////////////////////////////////////////////////////////////////////////
--- 
+--
 --/////////////////////////////////////////////////////////////////////////////
 
 return __M

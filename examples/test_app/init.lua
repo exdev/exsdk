@@ -83,6 +83,7 @@ on_repaint = function ( _self )
     local screen_center = ex.vec2f( ex.canvas.width * 0.5,
                                     ex.canvas.height * 0.5 )
 
+    ex_c.canvas_set_blending ( ex.blend_op.add, ex.blend_mode.alpha, ex.blend_mode.inverse_alpha )
     ex_c.canvas_clear( 0.5, 0.5, 0.5 )
     -- ex_c.canvas_clear( 0.0, 0.0, 0.0 )
 
@@ -214,6 +215,9 @@ on_repaint = function ( _self )
         --         1.0,
         --         10, 200 ) 
         -- end
+
+        ui.layout(_self)
+        _self:debug_draw()
 
     ex_c.canvas_flush()
 end

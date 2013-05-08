@@ -10,6 +10,7 @@ module_add( "defs.lua" )
 
 -- core
 module_add( "core/style.lua", "style" )
+module_add( "core/layout.lua" )
 module_add( "core/element.lua" )
 
 -- interactions
