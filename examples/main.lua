@@ -20,8 +20,14 @@ parse_args ( wiz.arguments, {
     -- { "app" },
 } )
 
+-- test_app
+local app_name = "test_json"
+local app_path = ""
+
 if wiz.platform == "windows" then
-    wiz:open_app( "d:/dev/exdev/exsdk/examples/test_app/" )
+    app_path = string.format( "d:/dev/exdev/exsdk/examples/%s/", app_name ) 
 elseif wiz.platform == "macosx" then
-    wiz:open_app( "/Users/Johnny/exdev/exsdk/examples/test_app/" )
+    app_path = string.format( "/Users/Johnny/exdev/exsdk/examples/%s/", app_name ) 
 end
+
+wiz:open_app(app_path)

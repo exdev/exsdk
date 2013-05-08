@@ -168,11 +168,16 @@ static void __ex_lua_openlibs ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 // Desc: 
 extern int luaopen_lpeg ( lua_State * );
+extern int luaopen_yajl ( lua_State * );
 // ------------------------------------------------------------------ 
 
-static void __ex_lua_openlpeg ( lua_State *_l ) {
+static void __ex_lua_openlibs_ext ( lua_State *_l ) {
     luaopen_lpeg (__L); // new lpeg table
     ex_lua_add_module ( _l, "lpeg" );
+    lua_pop(_l, 1);  /* remove module table */
+
+    luaopen_yajl (__L); // new yajl-json table
+    ex_lua_add_module ( _l, "json" );
     lua_pop(_l, 1);  /* remove module table */
 }
 
@@ -218,7 +223,7 @@ int ex_lua_init () {
     // open lpeg
     ex_log ( "[lua] Loading lpeg library..." );
     lua_settop ( __L, 0 ); // clear the stack
-    __ex_lua_openlpeg (__L);
+    __ex_lua_openlibs_ext (__L);
 
     // open luagl
 #if ( EX_PLATFORM != EX_IOS )

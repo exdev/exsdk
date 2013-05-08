@@ -105,6 +105,7 @@ solution "exSDK"
             "ext/lpng1514/",
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.1/",
+            "ext/yajl-2.0.1/include/",
         } 
 
         -- source
@@ -114,6 +115,7 @@ solution "exSDK"
             "ext/physfs-2.0.3/**.c",
             "ext/lua-5.2.1/**.c",
             "ext/luagl-1.8/**.c",
+            "ext/lua_yajl/**.c",
             "ext/lpeg-0.10.2/**.c",
         }
 
@@ -310,6 +312,7 @@ solution "exSDK"
         -- link
         links {
             "freetype",
+            "yajl_s",
             "Deps",
             "Allegro",
             "ex_core",
@@ -414,6 +417,7 @@ solution "exSDK"
             -- link
             links {
                 "freetype",
+                "yajl_s",
                 "Deps",
                 "Allegro",
                 "ex_core",

@@ -66,9 +66,19 @@ static int __lua_close_app ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_test ( lua_State *_l ) {
+    ex_log ( "The up value is = %s", lua_getupvalue(_l,1,1) );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg lib[] = {
     { "open_app",       __lua_open_app },
     { "close_app",      __lua_close_app },
+    { "test",      __lua_test },
     { NULL, NULL }
 };
 

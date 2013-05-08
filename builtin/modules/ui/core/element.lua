@@ -20,6 +20,7 @@ local element = class ({
 
     _dirty = false,
 
+    id = "__unknown__",
     rect = ex.rect ( 0, 0, 0, 0 ),
     style = ui.style.default,
     parent = nil, -- element
