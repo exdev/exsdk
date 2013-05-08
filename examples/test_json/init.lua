@@ -1,5 +1,31 @@
-local counter = 0
+-- ======================================================================================
+-- File         : init.lua
+-- Author       : Wu Jie 
+-- Last Change  : 05/08/2013 | 17:01:36 PM | Wednesday,May
+-- Description  : 
+-- ======================================================================================
 
+function main()
+    -- test_simple()           -- 1
+    -- null_at_end_of_array()  -- 2
+    -- null_object_value()     -- 3
+    -- weird_numbers()         -- 4
+    -- number_in_string()      -- 5
+    -- test_generator()        -- 6
+    -- test_to_value()         -- 7
+
+    my_test ()
+end
+
+--/////////////////////////////////////////////////////////////////////////////
+--
+--/////////////////////////////////////////////////////////////////////////////
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local counter = 0
 function ok(assert_true, desc)
    local msg = ( assert_true and "ok " or "not ok " ) .. counter
    if ( desc ) then
@@ -9,39 +35,11 @@ function ok(assert_true, desc)
    counter = counter + 1
 end
 
-function my_test ()  
-    local text  = [[
-    {
-        "float": 1.5,
-        "hello": "what",
-        "world": "johnny wu",
-        "array": [ 1, 2, 3, 4 ],
-        "table": {
-            "player1": "johnny",  
-            "player2": "ada"  
-        }
-    }
-    ]]
-    local obj = json.to_value(text)
-    debug.dump(obj)
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
 
-    local obj2 = to_value(text) 
-    debug.dump(obj2)
-
-    print ( "obj = " .. json.to_string (obj) )
-end
-
-function main()
-    test_simple()           -- 1
-    null_at_end_of_array()  -- 2
-    null_object_value()     -- 3
-    weird_numbers()         -- 4
-    number_in_string()      -- 5
-    test_generator()        -- 6
-    test_to_value()         -- 7
-end
-
-function to_value(string)
+function tovalue(string)
    local result
    local stack = {
       function(val) result = val end
@@ -79,14 +77,51 @@ function to_value(string)
    return result
 end
 
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+function my_test ()  
+    local text  = [[
+    {
+        "float": 1.5,
+        "hello": "what",
+        "world": "johnny wu",
+        "array": [ 1, 2, 3, 4 ],
+        "table": {
+            "player1": "johnny",  
+            "player2": "ada"  
+        }
+    }
+    ]]
+    local obj = json.tovalue(text)
+    debug.dump(obj)
+
+    local obj2 = tovalue(text) 
+    debug.dump(obj2)
+
+    print ( "obj = " .. json.tostring (obj) )
+    print ( "obj2 = " .. json.tostring (obj, {
+        indent = "\t"
+    }) )
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 function test_to_value()
    local text = '[["float",1.5,"integer",5,"string","hello","empty",[],"false",false,"custom","custom json serializer","ostr_key",{"key":"value"},"obool_key",{"true":true},"onull_key",{"null":null}],10,10.3,10.3,"a string",null,false,true]'
-   local val = json.to_value(text)
-   local got = json.to_string(val);
+   local val = json.tovalue(text)
+   local got = json.tostring(val);
 
    ok(got == text,
-      "json.to_value(" .. text .. ") -> " .. got)
+      "json.tovalue(" .. text .. ") -> " .. got)
 end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
 
 function test_generator()
    local strings = {}
@@ -129,10 +164,14 @@ function test_generator()
    ok(expect == got, expect .. " == " .. got)
 end
 
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 function test_simple()
     -- Thanks to fab13n@github for this bug report:
     -- https://github.com/brimworks/lua-yajl/issues/8
-    assert ( json.to_value(json.to_string(0)) == 0 )
+    assert ( json.tovalue(json.tostring(0)) == 0 )
 
    local expect =
       '['..
@@ -146,39 +185,59 @@ function test_simple()
       '"object",{"key":"value"}'..
       ']'
 
-   -- Input to to_value matches the output of to_string:
-   local got = json.to_string(to_value(expect))
+   -- Input to tovalue matches the output of tostring:
+   local got = json.tostring(tovalue(expect))
    ok(expect == got, expect .. " == " .. tostring(got))
 end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
 
 function null_at_end_of_array()
    local expect = '["something",null]'
-   local got = json.to_string(to_value(expect))
+   local got = json.tostring(tovalue(expect))
    ok(expect == got, expect .. " == " .. tostring(got))
 end
 
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 function null_object_value()
    local expect = '{"something":null}'
-   local got = json.to_string(to_value(expect))
+   local got = json.tostring(tovalue(expect))
    ok(expect == got, expect .. " == " .. tostring(got))
 end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
 
 function weird_numbers()
    -- See note in README about how we are broken when it comes to big numbers.
    local expect = '[1e+666,-1e+666,-0]'
-   local got = json.to_string(to_value(expect))
+   local got = json.tostring(tovalue(expect))
    ok(expect == got, expect .. " == " .. tostring(got))
 
    local nan = 0/0
-   got = json.to_string { nan };
+   got = json.tostring { nan };
    ok("[-0]" == got, "NaN converts to -0 (got: " .. got .. ")")
 end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
 
 function number_in_string()
    -- Thanks to agentzh for this bug report!
    local expect = '{"2":"two"}'
-   local got = json.to_string {["2"]="two"}
+   local got = json.tostring {["2"]="two"}
    ok(expect == got, expect .. " == " .. tostring(got))
 end
+
+--/////////////////////////////////////////////////////////////////////////////
+--
+--/////////////////////////////////////////////////////////////////////////////
 
 main()

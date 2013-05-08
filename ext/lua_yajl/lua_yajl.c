@@ -897,10 +897,8 @@ static int js_generator(lua_State *L) {
     if ( ! lua_isnil(L, -1) ) {
         yajl_gen_config(*handle, yajl_gen_beautify, 1);
         yajl_gen_config(*handle, yajl_gen_indent_string, lua_tostring(L, -1));
-        lua_setfield(L, -2, "indent");
-    } else {
-        lua_pop(L, 1);
     }
+    lua_pop(L, 1);
     /* {args}, ?, tbl */
 
     /* {args}, ?, tbl, ud, meta */
@@ -1000,10 +998,10 @@ LUALIB_API int luaopen_yajl(lua_State *L) {
     lua_createtable(L, 0, 4);
 
     lua_pushcfunction(L, js_to_string);
-    lua_setfield(L, -2, "to_string");
+    lua_setfield(L, -2, "tostring");
 
     lua_pushcfunction(L, js_to_value);
-    lua_setfield(L, -2, "to_value");
+    lua_setfield(L, -2, "tovalue");
 
     lua_pushcfunction(L, js_parser);
     lua_setfield(L, -2, "parser");
