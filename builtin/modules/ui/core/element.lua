@@ -44,6 +44,14 @@ local element = class ({
 
     on_repaint = function ( _self ) 
     end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    debug_draw = function ( _self )
+        -- TODO:
+    end,
 }) 
 __M.element = element
 

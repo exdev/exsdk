@@ -94,6 +94,13 @@ on_repaint = function ( _self )
                               0, 0, checkerboard.width * 10, checkerboard.height * 10 )
 
         local ttf_font1 = fonts[1]
+
+        ex.canvas.color = ex.color4f.black
+        ex.canvas.draw_rect ( 100, 100, 180, 30, 1 )
+
+        ex.canvas.color = ex.color4f ( 1.0, 0.0, 1.0, 0.6 )
+        ex.canvas.draw_filled_rect ( 200, 100, 180, 30 )
+
         -- ttf_font1.size = 16
         -- ex.canvas.draw_outline_text( 
         --     string.format("frame = %d", cnt),

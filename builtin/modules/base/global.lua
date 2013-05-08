@@ -28,7 +28,7 @@ __M.error = error
 
 local builtin_assert = assert
 local function assert ( _exp, ... )
-    if _exp == false then 
+    if _exp == nil or _exp == false then 
         print(...) 
         print(debug.traceback()) 
     end

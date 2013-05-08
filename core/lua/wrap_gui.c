@@ -151,6 +151,37 @@ static int __lua_gui_draw_text ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_gui_draw_rect ( lua_State *_l ) {
+    ex_lua_check_nargs(_l,5);
+
+    ex_ui_draw_rect ( luaL_checkint(_l,1 ),
+                      luaL_checkint(_l,2 ),
+                      luaL_checkint(_l,3 ),
+                      luaL_checkint(_l,4 ),
+                      luaL_checkint(_l,5 )
+                    );
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_gui_draw_filled_rect ( lua_State *_l ) {
+    ex_lua_check_nargs(_l,4);
+
+    ex_ui_draw_filled_rect ( luaL_checkint(_l,1 ),
+                             luaL_checkint(_l,2 ),
+                             luaL_checkint(_l,3 ),
+                             luaL_checkint(_l,4 )
+                           );
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static int __lua_gui_flush ( lua_State *_l ) {
     ex_lua_check_nargs(_l,0);
     ex_ui_flush();
@@ -169,6 +200,8 @@ static const luaL_Reg lib[] = {
     { "gui_draw_texture",           __lua_gui_draw_texture },
     { "gui_draw_border_texture",    __lua_gui_draw_border_texture },
     { "gui_draw_text",              __lua_gui_draw_text },
+    { "gui_draw_rect",              __lua_gui_draw_rect },
+    { "gui_draw_filled_rect",       __lua_gui_draw_filled_rect },
     { "gui_flush",                  __lua_gui_flush },
     { NULL, NULL }
 };

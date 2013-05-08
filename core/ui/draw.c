@@ -12,6 +12,7 @@
 #include "allegro5/allegro.h"
 #include "allegro5/allegro_opengl.h"
 #include "allegro5/internal/aintern_opengl.h"
+#include "allegro5/allegro_primitives.h"
 
 #include "exsdk.h"
 // #include "gl/gl_inc.h"
@@ -351,6 +352,34 @@ void ex_ui_draw_text ( const char *_text,
     }
 
     al_ustr_free(utext);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_ui_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness ) {
+    ex_ui_state_t *state;
+    ALLEGRO_COLOR al_color;
+
+    state = ex_ui_state();
+    al_color = al_map_rgba_f ( state->color.r, state->color.g, state->color.b, state->color.a );
+
+    al_draw_rectangle ( _dx, _dy, _dx + _dw, _dy + _dh, al_color, _thickness );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_ui_draw_filled_rect ( int _dx, int _dy, int _dw, int _dh ) {
+    ex_ui_state_t *state;
+    ALLEGRO_COLOR al_color;
+
+    state = ex_ui_state();
+    al_color = al_map_rgba_f ( state->color.r, state->color.g, state->color.b, state->color.a );
+
+    al_draw_filled_rectangle ( _dx, _dy, _dx + _dw, _dy + _dh, al_color );
 }
 
 // ------------------------------------------------------------------ 
