@@ -17,7 +17,7 @@ local __M = {}
 
 local builtin_error = error
 local function error ( _msg, ... )
-    print ( _msg, ... ) 
+    print( _msg, ... ) 
     print(debug.traceback())
     builtin_error(_msg, ...)
 end

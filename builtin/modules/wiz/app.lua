@@ -66,6 +66,20 @@ local function files_in (_path)
 end
 __M.files_in = files_in
 
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function dofile (_path)
+    local fpath = fsys_path(_path)
+    if ex_c.fsys_exists(fpath) == false then
+        error ( "File not found %s", _path )
+    end
+
+    return ex_c.lua_dofile (fpath)
+end
+__M.dofile = dofile
+
 --/////////////////////////////////////////////////////////////////////////////
 --
 --/////////////////////////////////////////////////////////////////////////////

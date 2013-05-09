@@ -70,7 +70,7 @@ static int __lua_wiz_on_exit ( lua_State *_l ) {
     lua_getfield( _l, -1, "on_exit" );
 
     if ( lua_isnil(_l,-1) == false && lua_isfunction(_l,-1) ) {
-        lua_pcall(_l, 0, 0, 0);
+        ex_lua_pcall(_l, 0, 0, 0);
     }
 
     lua_pop(_l,1);
@@ -81,18 +81,15 @@ static int __lua_wiz_on_exit ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static void __lua_repaint_window ( ALLEGRO_DISPLAY *_display ) {
-    lua_State *l;
-
-    l = ex_lua_main_state();
+static void __lua_repaint_window ( lua_State *_l, ALLEGRO_DISPLAY *_display ) {
 
     // call wiz.window.on_destroy(_display)
-    lua_getglobal ( l, "wiz" );
-    lua_getfield ( l, -1, "window" );
-    lua_getfield ( l, -1, "on_repaint" );
-    lua_pushlightuserdata ( l, _display );
-    lua_pcall ( l, 1, 0, 0 );
-    lua_pop ( l, 2 );
+    lua_getglobal ( _l, "wiz" );
+    lua_getfield ( _l, -1, "window" );
+    lua_getfield ( _l, -1, "on_repaint" );
+    lua_pushlightuserdata ( _l, _display );
+    ex_lua_pcall ( _l, 1, 0, 0 );
+    lua_pop ( _l, 2 );
 }
 
 // ------------------------------------------------------------------ 
@@ -103,7 +100,7 @@ static void __lua_update_windows ( lua_State *_l ) {
     lua_getglobal ( _l, "wiz" );
     lua_getfield ( _l, -1, "window" );
     lua_getfield ( _l, -1, "on_update" );
-    lua_pcall ( _l, 0, 0, 0 );
+    ex_lua_pcall ( _l, 0, 0, 0 );
     lua_pop ( _l, 2 );
 }
 
@@ -115,7 +112,7 @@ static void __lua_draw_windows ( lua_State *_l ) {
     lua_getglobal ( _l, "wiz" );
     lua_getfield ( _l, -1, "window" );
     lua_getfield ( _l, -1, "on_draw" );
-    lua_pcall ( _l, 0, 0, 0 );
+    ex_lua_pcall ( _l, 0, 0, 0 );
     lua_pop ( _l, 2 );
 } 
 
@@ -169,7 +166,7 @@ void destroy_window ( ALLEGRO_DISPLAY *_display ) {
     lua_getfield ( l, -1, "window" );
     lua_getfield ( l, -1, "on_destroy" );
     lua_pushlightuserdata ( l, _display );
-    lua_pcall ( l, 1, 0, 0 );
+    ex_lua_pcall ( l, 1, 0, 0 );
     lua_pop ( l, 2 );
 
     //
@@ -207,7 +204,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
     switch ( _event.type ) {
     case ALLEGRO_EVENT_DISPLAY_RESIZE:
         al_acknowledge_resize(_event.display.source);
-        __lua_repaint_window (_event.display.source);
+        __lua_repaint_window ( l, _event.display.source );
         break;
 
     case ALLEGRO_EVENT_DISPLAY_EXPOSE:
@@ -285,7 +282,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
         lua_getfield ( l, -1, "window" );
         lua_getfield ( l, -1, "on_event" );
         lua_getfield ( l, -3, "event" );
-        lua_pcall ( l, 1, 0, 0 );
+        ex_lua_pcall ( l, 1, 0, 0 );
         lua_pop ( l, 2 );
     }
 
@@ -338,8 +335,6 @@ void event_loop () {
 
     // finish
 done:
-    // call wiz.on_exit()
-    __lua_wiz_on_exit (l);
     al_destroy_event_queue(queue);  
 }
 
@@ -415,6 +410,9 @@ int main ( int _argc, char **_argv ) {
     if ( ex_array_count (__display_list) > 0 ) {
         event_loop ();
     }
+
+    // call wiz.on_exit()
+    __lua_wiz_on_exit (l);
 
     // ======================================================== 
     // de-init 

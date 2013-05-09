@@ -425,6 +425,22 @@ void ex_lua_add_module ( lua_State *_l, const char *_modname ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+int ex_lua_pcall ( struct lua_State *_l, int _nargs, int _nresults, int _errfunc ) {
+    int status;
+
+    status = lua_pcall ( _l, _nargs, _nresults, _errfunc );
+    if ( status ) {
+        ex_lua_alert(_l);
+        return -1;
+    }
+
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 int ex_lua_dofile ( lua_State *_l, const char *_filepath ) {
     int status;
     ex_file_t *file;
@@ -452,9 +468,7 @@ int ex_lua_dofile ( lua_State *_l, const char *_filepath ) {
     }
 
     // call the script 
-    status = lua_pcall(_l, 0, LUA_MULTRET, 0);
-    if ( status ) {
-        ex_lua_alert(_l);
+    if ( ex_lua_pcall (_l, 0, LUA_MULTRET, 0) ) {
         goto PARSE_FAILED;
     }
 
@@ -513,9 +527,8 @@ void ex_lua_run_interpretor ( lua_State *_l ) {
     int error;
 
     while ( fgets(buff, sizeof(buff), stdin) != NULL ) {
-        error = luaL_loadbuffer ( _l, buff, strlen(buff), "line" ) ||
-            lua_pcall(_l, 0, 0, 0);
-        if (error) {
+        error = luaL_loadbuffer ( _l, buff, strlen(buff), "line" ) || lua_pcall(_l, 0, 0, 0);
+        if ( error ) {
             fprintf(stderr, "%s", lua_tostring(_l, -1));
             lua_pop(_l, 1); /* pop error message from the stack */
         }
@@ -538,7 +551,7 @@ void ex_lua_alert ( lua_State *_l ) {
     }
     else {  /* no _ALERT function; print it on stderr */
         // luaL_error( _l, "%s\n", lua_tostring(_l, -2) ); // don't do this in unprotected scene
-        ex_log( "Lua Error: %s\n", lua_tostring(_l, -2) );
+        ex_log( "Lua Error: %s", lua_tostring(_l, -2) );
         lua_pop(_l, 2);  /* remove error message and _ALERT */
     }
 }
@@ -625,9 +638,7 @@ void ex_lua_main_init ( struct lua_State *_l ) {
     lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_init );
     if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
         lua_pushvalue(_l,-2);
-        if ( lua_pcall( _l, 1, 0, 0 ) ) {
-            ex_lua_alert(_l);
-        }
+        ex_lua_pcall( _l, 1, 0, 0 );
     }
 }
 
@@ -639,9 +650,7 @@ void ex_lua_main_deinit ( struct lua_State *_l ) {
     lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_deinit );
     if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
         lua_pushvalue(_l,-2);
-        if ( lua_pcall( _l, 1, 0, 0 ) ) {
-            ex_lua_alert(_l);
-        }
+        ex_lua_pcall( _l, 1, 0, 0 ) 
     }
 
     luaL_unref( _l, LUA_REGISTRYINDEX, __refID_init );
@@ -658,9 +667,7 @@ void ex_lua_main_update ( struct lua_State *_l ) {
     lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_update );
     if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
         lua_pushvalue(_l,-2);
-        if ( lua_pcall( _l, 1, 0, 0 ) ) {
-            ex_lua_alert(_l);
-        }
+        ex_lua_pcall( _l, 1, 0, 0 ) 
     }
 }
 
@@ -672,9 +679,7 @@ void ex_lua_main_render ( struct lua_State *_l ) {
     lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_render );
     if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
         lua_pushvalue(_l,-2);
-        if ( lua_pcall( _l, 1, 0, 0 ) ) {
-            ex_lua_alert(_l);
-        }
+        ex_lua_pcall( _l, 1, 0, 0 ) 
     }
 }
 #endif

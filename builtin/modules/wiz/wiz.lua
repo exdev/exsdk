@@ -45,9 +45,7 @@ local open_app = function ( _self, _path )
     wiz_c.open_app(_path)
     wiz.app.cwd = ex_c.fsys_writedir()
 
-    if wiz.app.exists("init.lua") then
-        ex_c.lua_dofile ( wiz.app.fsys_path("init.lua") )
-    end
+    wiz.app.dofile("init.lua")
 
     if _self.on_init ~= nil then
         _self.on_init()

@@ -47,6 +47,7 @@ extern void ex_lua_add_module ( struct lua_State *_l, const char *_modname );
 // lua interpreter op
 ///////////////////////////////////////////////////////////////////////////////
 
+extern int ex_lua_pcall ( struct lua_State *_l, int _nargs, int _nresults, int _errfunc );
 extern int ex_lua_dofile ( struct lua_State *_l, const char *_filepath );
 extern int ex_lua_dostring ( struct lua_State *_l, const char *_fmt, ... );
 extern void ex_lua_run_interpretor ( struct lua_State *_l );

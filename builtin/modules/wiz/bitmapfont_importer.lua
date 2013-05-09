@@ -75,14 +75,14 @@ local bitmapfont_importer = wiz.importer.extend ({
 
     exec = function (_self)
         local asset_db = wiz.asset_db
-        local files = asset_db.files_in(_self.path)
+        local files = wiz.app.files_in(_self.path)
         local file = nil
 
         -- get the first txt/fnt file
         for i=1,#files do
             local filename = files[i]
             if path.is( filename, {".txt",".fnt"} ) then
-                file = io.open( asset_db.fullpath(path.join(_self.path,filename)), "r" )
+                file = io.open( wiz.app.sys_path(path.join(_self.path,filename)), "r" )
                 break
             end
         end
@@ -152,7 +152,7 @@ local bitmapfont_importer = wiz.importer.extend ({
                          pageinfo.file ~= "", 
                          "Can't find image file in pageinfo" )
                 imagefile = path.join(_self.path,pageinfo.file)
-                if asset_db.exists( imagefile ) then
+                if wiz.app.exists( imagefile ) then
                     btfont.pageInfos[pageinfo.id] = asset_db.load(imagefile)
                 end
 

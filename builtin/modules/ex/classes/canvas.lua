@@ -38,7 +38,7 @@ local canvas = class ({
         -- ------------------------------------------------------------------ 
 
         draw_rect = function ( _dx, _dy, _dw, _dh, _thickness )
-            ex_c.gui_draw_rect ( _dx, _dy, _dw, _dh, _thickness )
+            ex_c.gui_draw_rect ( _dx, _dy, _dw, _dh, _thickness or 0 )
         end,
 
         -- ------------------------------------------------------------------ 
