@@ -54,7 +54,7 @@ local element = class ({
         ex.canvas.draw_filled_rect ( _self.rect[1], _self.rect[2], _self.rect[3], _self.rect[4] )
 
         ex.canvas.color = ex.color4f.black
-        ex.canvas.draw_rect ( _self.rect[1], _self.rect[2], _self.rect[3], _self.rect[4], 1 )
+        ex.canvas.draw_rect ( _self.rect[1], _self.rect[2], _self.rect[3], _self.rect[4], 2 )
     end,
 }) 
 __M.element = element

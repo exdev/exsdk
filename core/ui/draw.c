@@ -365,7 +365,8 @@ void ex_ui_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness ) {
     state = ex_ui_state();
     al_color = al_map_rgba_f ( state->color.r, state->color.g, state->color.b, state->color.a );
 
-    al_draw_rectangle ( _dx, _dy, _dx + _dw, _dy + _dh, al_color, _thickness );
+    // NOTE: we don't use 0 thickness rectangle
+    al_draw_rectangle ( _dx, _dy, _dx + _dw, _dy + _dh, al_color, (_thickness == 0) ? 1 : _thickness );
 }
 
 // ------------------------------------------------------------------ 

@@ -347,18 +347,34 @@ void al_draw_rectangle(float x1, float y1, float x2, float y2,
    int ii;
 
    if (thickness > 0) {
-      float t = thickness / 2;
+      // jwu DISABLE { 
+      // float t = thickness / 2;
+      // ALLEGRO_VERTEX vtx[10];
+      //          
+      // vtx[0].x = x1 - t; vtx[0].y = y1 - t;
+      // vtx[1].x = x1 + t; vtx[1].y = y1 + t;
+      // vtx[2].x = x2 + t; vtx[2].y = y1 - t;
+      // vtx[3].x = x2 - t; vtx[3].y = y1 + t;
+      // vtx[4].x = x2 + t; vtx[4].y = y2 + t;
+      // vtx[5].x = x2 - t; vtx[5].y = y2 - t;
+      // vtx[6].x = x1 - t; vtx[6].y = y2 + t;
+      // vtx[7].x = x1 + t; vtx[7].y = y2 - t;
+      // vtx[8].x = x1 - t; vtx[8].y = y1 - t;
+      // vtx[9].x = x1 + t; vtx[9].y = y1 + t;
+      // } jwu DISABLE end 
+
+      float t = thickness;
       ALLEGRO_VERTEX vtx[10];
                
-      vtx[0].x = x1 - t; vtx[0].y = y1 - t;
+      vtx[0].x = x1    ; vtx[0].y = y1    ;
       vtx[1].x = x1 + t; vtx[1].y = y1 + t;
-      vtx[2].x = x2 + t; vtx[2].y = y1 - t;
+      vtx[2].x = x2    ; vtx[2].y = y1    ;
       vtx[3].x = x2 - t; vtx[3].y = y1 + t;
-      vtx[4].x = x2 + t; vtx[4].y = y2 + t;
+      vtx[4].x = x2    ; vtx[4].y = y2    ;
       vtx[5].x = x2 - t; vtx[5].y = y2 - t;
-      vtx[6].x = x1 - t; vtx[6].y = y2 + t;
+      vtx[6].x = x1    ; vtx[6].y = y2    ;
       vtx[7].x = x1 + t; vtx[7].y = y2 - t;
-      vtx[8].x = x1 - t; vtx[8].y = y1 - t;
+      vtx[8].x = x1    ; vtx[8].y = y1    ;
       vtx[9].x = x1 + t; vtx[9].y = y1 + t;
       
       for (ii = 0; ii < 10; ii++) {

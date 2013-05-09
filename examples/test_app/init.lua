@@ -74,7 +74,7 @@ on_repaint = function ( _element )
             local size = math.max( ex.canvas.width, ex.canvas.height )
             ex.canvas.draw_image( checkerboard, 
                                   0, 0, size, size,
-                                  0, 0, checkerboard.width * 10, checkerboard.height * 10 )
+                                  0, 0, size, size )
         end
 
 
