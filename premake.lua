@@ -345,6 +345,14 @@ solution "exSDK"
             }
         end
 
+        -- linkoptions
+        if _ACTION:match("vs.*") ~= nil then
+            linkoptions  { 
+                "/nodefaultlib:libcmt.lib", 
+                "/nodefaultlib:libcmtd.lib", 
+            }
+        end
+
         -- flags
         flags { "StaticRuntime" }
 
@@ -444,6 +452,14 @@ solution "exSDK"
                     "glew32",
                     "glu32",
                     "glut32",
+                }
+            end
+
+            -- linkoptions
+            if _ACTION:match("vs.*") ~= nil then
+                linkoptions  { 
+                    "/nodefaultlib:libcmt.lib", 
+                    "/nodefaultlib:libcmtd.lib" 
                 }
             end
 

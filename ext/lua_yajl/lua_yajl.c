@@ -613,6 +613,7 @@ static int js_generator_double(lua_State *L) {
     return 0;
 }
 
+#define IS_NAN(_v) ((_v)!=(_v))
 static int js_generator_number(lua_State *L) {
 
     /* It would be better to make it so an arbitrary string can be
@@ -634,7 +635,7 @@ static int js_generator_number(lua_State *L) {
     } else if ( num == -HUGE_VAL ) {
         str = "-1e+666";
         len = 7;
-    } else if ( isnan(num) ) {
+    } else if ( IS_NAN(num) ) {
         str = "-0"; 
         len = 2;
    } else {
@@ -748,7 +749,7 @@ static int js_generator_value(lua_State *L) {
             if ( lua_type(L, -2) == LUA_TNUMBER ) {
                 double num = lua_tonumber(L, -2);
                 if ( num == floor(num) ) {
-                    if ( num > max ) max = num;
+                    if ( (int)num > max ) max = (int)num;
                 } else {
                     lua_pop(L, 2);
                     is_array = 0;

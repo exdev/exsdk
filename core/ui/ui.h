@@ -87,6 +87,7 @@ extern void ex_ui_draw_text ( const char *_text,
 // ------------------------------------------------------------------ 
 
 extern void ex_ui_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness );
+extern void ex_ui_draw_filled_rect ( int _dx, int _dy, int _dw, int _dh );
 
 // ------------------------------------------------------------------ 
 // Desc: 

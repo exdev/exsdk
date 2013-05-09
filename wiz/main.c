@@ -159,7 +159,7 @@ ALLEGRO_DISPLAY *create_window ( int _w, int _h ) {
 // ------------------------------------------------------------------ 
 
 void destroy_window ( ALLEGRO_DISPLAY *_display ) {
-    int i = 0;
+    size_t i = 0;
     lua_State *l;
 
     l = ex_lua_main_state();
