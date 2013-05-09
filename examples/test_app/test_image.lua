@@ -20,7 +20,7 @@ return {
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    init = function () 
+    init = function ( _root_el ) 
         -- load image
         logo = asset_db.load("assets/ex2d_logo.png")
         grossini_dance = asset_db.load("assets/grossini_dance_09.png")

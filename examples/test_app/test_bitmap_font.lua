@@ -20,7 +20,7 @@ return {
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    init = function () 
+    init = function ( _root_el ) 
         -- load bitmap fonts
         btfont1 = asset_db.load("assets/BerlinSansFB_MonoOutline.bft")
         btfont2 = asset_db.load("assets/MolotShadow.bft")

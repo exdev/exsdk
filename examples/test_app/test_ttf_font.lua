@@ -17,7 +17,7 @@ return {
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    init = function () 
+    init = function ( _root_el ) 
         -- load fonts
         ttf_VeraMono = asset_db.load("assets/VeraMono.ttf")
         ttf_yahei = asset_db.load("assets/yahei.ttf")

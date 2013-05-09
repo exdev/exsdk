@@ -96,6 +96,9 @@ local window = class ({
 
     draw = function ( _self )
         if _self.need_repaint then
+            _self._view.style.min_width = _self.width
+            _self._view.style.min_height = _self.height
+
             _self:_repaint_all(_self.view) 
             _self.need_repaint = false
             return

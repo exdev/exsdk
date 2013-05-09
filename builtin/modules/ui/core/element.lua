@@ -19,9 +19,9 @@ local element = class ({
     --/////////////////////////////////////////////////////////////////////////////
 
     _dirty = false,
+    _rect = { 0, 0, 0, 0 },
 
     id = "__unknown__",
-    rect = { 0, 0, 0, 0 },
     style = ui.style.default,
     parent = nil, -- element
     children = {}, -- element list
@@ -29,6 +29,23 @@ local element = class ({
     --/////////////////////////////////////////////////////////////////////////////
     -- functions
     --/////////////////////////////////////////////////////////////////////////////
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    add = function ( _self, ... )
+        local list = {...}
+        for i=1,#list do
+            local item = list[i] 
+            if typename(item) == "element" then
+                table.add ( _self.children, item )
+            elseif type(item) == "table" then
+                table.add ( _self.children, ui.element(item) )
+            end
+        end
+        return _self 
+    end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -50,11 +67,16 @@ local element = class ({
     -- ------------------------------------------------------------------ 
 
     debug_draw = function ( _self )
-        ex.canvas.color = ex.color4f ( 0.0, 0.5, 1.0, 0.8 )
-        ex.canvas.draw_filled_rect ( _self.rect[1], _self.rect[2], _self.rect[3], _self.rect[4] )
+        ex.canvas.color = ex.color4f ( 0.0, 0.5, 1.0, 0.2 )
+        ex.canvas.draw_filled_rect ( _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4] )
 
         ex.canvas.color = ex.color4f.black
-        ex.canvas.draw_rect ( _self.rect[1], _self.rect[2], _self.rect[3], _self.rect[4], 2 )
+        ex.canvas.draw_rect ( _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4], 2 )
+
+        for i=1,#_self.children do
+            local child = _self.children[i]
+            child:debug_draw()
+        end
     end,
 }) 
 __M.element = element

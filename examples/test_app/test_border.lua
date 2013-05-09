@@ -20,7 +20,7 @@ return {
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    init = function () 
+    init = function ( _root_el ) 
         -- load image
         box = asset_db.load("assets/box.png")
         windowActive = asset_db.load("assets/windowActive.png")
