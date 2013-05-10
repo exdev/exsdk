@@ -114,10 +114,6 @@ local canvas = class ({
             checkarg(_font,"font")
             checkarg(_dx,"number")
             checkarg(_dy,"number")
-            -- TODO: auto calc size
-            -- checkarg(_dw,"number")
-            -- checkarg(_dh,"number")
-
             _dw = _dw or -1
             _dh = _dh or -1
 

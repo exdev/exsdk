@@ -19,19 +19,20 @@ return {
 
     init = function ( _root_el ) 
         ttf_VeraMono = wiz.asset_db.load("assets/VeraMono.ttf")
-        _root_el:add( {
-            style = {
-                min_width = 100,
-                min_height = 100,
-            }
-        },
+        _root_el:add( 
+            {
+                style = {
+                    min_width = 100,
+                    min_height = 100,
+                }
+            },
 
-        {
-            style = {
-                min_width = 200,
-                min_height = 100,
+            {
+                style = {
+                    min_width = 200,
+                    min_height = 100,
+                }
             }
-        }
         
         )
     end,

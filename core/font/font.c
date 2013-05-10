@@ -584,3 +584,71 @@ const char *ex_font_get_style_name ( ex_font_t *_font ) {
     face = _font->face;
     return face->style_name;
 }
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_font_get_height ( ex_font_t *_font ) {
+    FT_Face face;
+    FT_Size_Metrics metrics;
+
+    face = _font->face;
+    metrics = face->size->metrics;
+    return (metrics.height) >> 6;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_font_calc_size ( ex_font_t *_font, const char *_text, int *_w, int *_h ) {
+    ALLEGRO_USTR *utext;
+    int ch;
+    int ch_pos;
+    uint ft_index, prev_ft_index;
+    int cur_x, cur_y;
+    int advance = 0;
+    int max_x = 0;
+
+    FT_Face face;
+    FT_Size_Metrics metrics;
+    int height, line_gap;
+
+    utext = al_ustr_new(_text);
+    ch_pos = 0;
+    prev_ft_index = -1;
+    cur_x = 0;
+    cur_y = 0;
+
+    face = _font->face;
+    metrics = face->size->metrics;
+    height = metrics.height >> 6;
+    line_gap = (metrics.ascender >> 6) - (metrics.descender >> 6) - height;
+
+    while ( (ch = al_ustr_get_next(utext, &ch_pos)) >= 0 ) {
+        advance = 0;
+        ft_index = FT_Get_Char_Index ( face, ch );
+
+        // if this is \n(10) or \r(13)
+        if ( ch == 10 || ch == 13 ) {
+            if ( max_x < cur_x ) 
+                max_x = cur_x;
+
+            cur_x = 0;
+            prev_ft_index = -1;
+            cur_y = cur_y + height + line_gap;
+        }
+        else {
+            advance += ex_font_get_kerning( _font, prev_ft_index, ft_index );
+            advance += face->glyph->advance.x >> 6;
+            cur_x += advance;
+            prev_ft_index = ft_index;
+        }
+    }
+
+    *_w = max_x;
+    *_h = cur_y + height + line_gap;
+
+    al_ustr_free(utext);
+}

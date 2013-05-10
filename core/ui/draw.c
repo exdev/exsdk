@@ -332,7 +332,7 @@ void ex_ui_draw_text ( const char *_text,
     face = _font->face;
     metrics = face->size->metrics;
     height = metrics.height >> 6;
-    line_gap = height - (metrics.ascender >> 6) + (metrics.descender >> 6);
+    line_gap = (metrics.ascender >> 6) - (metrics.descender >> 6) - height;
 
     while ( (ch = al_ustr_get_next(utext, &ch_pos)) >= 0 ) {
         advance = 0;
@@ -342,7 +342,7 @@ void ex_ui_draw_text ( const char *_text,
         if ( ch == 10 || ch == 13 ) {
             cur_x = _dx;
             prev_ft_index = -1;
-            cur_y += height - line_gap;
+            cur_y = cur_y + height + line_gap;
         }
         else {
             advance = __draw_glyph ( _font, prev_ft_index, ft_index, cur_x, cur_y );

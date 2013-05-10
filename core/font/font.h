@@ -73,6 +73,13 @@ extern ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, uint _ft_index );
 extern const char *ex_font_get_family_name ( ex_font_t *_font );
 extern const char *ex_font_get_style_name ( ex_font_t *_font );
 
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern int ex_font_get_height ( ex_font_t *_font );
+extern void ex_font_calc_size ( ex_font_t *_font, const char *_text, int *_w, int *_h );
+
 // #################################################################################
 #endif // END FONT_H_1365409519
 // #################################################################################
