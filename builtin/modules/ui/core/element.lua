@@ -22,6 +22,7 @@ local element = class ({
     _rect = { 0, 0, 0, 0 },
 
     id = "__unknown__",
+    content = "", -- can be text, image, video, audio and ..., but only one of them can be set to content 
     style = ui.style.default,
     parent = nil, -- element
     children = {}, -- element list
@@ -59,13 +60,6 @@ local element = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    on_repaint = function ( _self ) 
-    end,
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
     debug_draw = function ( _self )
         ex.canvas.color = ex.color4f ( 0.0, 0.5, 1.0, 0.2 )
         ex.canvas.draw_filled_rect ( _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4] )
@@ -77,6 +71,25 @@ local element = class ({
             local child = _self.children[i]
             child:debug_draw()
         end
+    end,
+
+    --/////////////////////////////////////////////////////////////////////////////
+    -- events
+    --/////////////////////////////////////////////////////////////////////////////
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    on_repaint = function ( _self ) 
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- TODO
+    -- ------------------------------------------------------------------ 
+
+    on_click = function ( _self )
     end,
 }) 
 __M.element = element
