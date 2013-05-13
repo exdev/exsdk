@@ -46,6 +46,7 @@ local window = class ({
     _cptr = ex_c.null,
     _view = ui.element.null,
 
+    background = { 1, 1, 1 },
     need_repaint = true,
     need_layout = true,
     width = property {
@@ -59,8 +60,8 @@ local window = class ({
         set = function ( _self, _v )
             checkarg ( _v, "element" )
             _self._view = _v
-            _self._view.style.min_width = _self.width
-            _self._view.style.min_height = _self.height
+            _self._view.style.width = _self.width
+            _self._view.style.height = _self.height
             _self.need_repaint = true
             _self.need_layout = true
         end,
@@ -69,6 +70,20 @@ local window = class ({
     --/////////////////////////////////////////////////////////////////////////////
     -- functions
     --/////////////////////////////////////////////////////////////////////////////
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    update = function ( _self )
+        -- TODO: I think a time event will be better
+        -- for i=1,#elements do
+        --     local el = elements[i]
+        --     if el.on_update ~= nil then
+        --         elements[i]:on_update()
+        --     end
+        -- end
+    end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -96,60 +111,55 @@ local window = class ({
 
     draw = function ( _self )
         if _self.need_repaint then
-            _self._view.style.min_width = _self.width
-            _self._view.style.min_height = _self.height
+            ex_c.canvas_set_blending ( ex.blend_op.add, ex.blend_mode.alpha, ex.blend_mode.inverse_alpha )
+            if typename(_self.background) == "texture" then
+                ex_c.canvas_clear( 1, 1, 1 )
 
-            _self:_repaint_all(_self.view) 
-            _self.need_repaint = false
+                local size = math.max( ex.canvas.width, ex.canvas.height )
+                ex.canvas.color = ex.color4f.white
+                ex.canvas.draw_image( _self.background, 
+                                      0, 0, size, size,
+                                      0, 0, size, size )
+            else
+                ex_c.canvas_clear( _self.background[1], _self.background[2], _self.background[3] )
+            end
+
+                _self._view.style.min_width = _self.width
+                _self._view.style.min_height = _self.height
+                _self:_do_draw(_self.view) 
+                _self.need_repaint = false
+
+            ex_c.canvas_flush()
             return
         end
 
         _self:_draw_recursively (_self.view)
     end,
 
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
-    update = function ( _self )
-        -- TODO: I think a time event will be better
-        -- for i=1,#elements do
-        --     local el = elements[i]
-        --     if el.on_update ~= nil then
-        --         elements[i]:on_update()
-        --     end
-        -- end
-    end,
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
     _draw_recursively = function ( _self, _el )
         if _el._dirty then
-            _self:_repaint_all(_el) 
+            _self:_do_draw(_el) 
             return
         end
 
         for i=1,#_el.children do
             local child_el = _el.children[i]
             if child_el._dirty then 
-                _self:_repaint_all(child_el) 
+                _self:_do_draw(child_el) 
             else
                 _self:_draw_recursively(child_el)
             end
         end
     end,
 
-    _repaint_all = function ( _self, _el )
+    _do_draw = function ( _self, _el )
         -- repaint by parent first
-        _el:on_repaint()
+        _el:draw()
         _el._dirty = false
 
         for i=1,#_el.children do
             local child_el = _el.children[i]
-            child_el:on_repaint()
-            child_el._dirty = false
+            _self:_do_draw (child_el)
         end
     end,
 

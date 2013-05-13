@@ -35,17 +35,15 @@ local element = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    add = function ( _self, ... )
-        local list = {...}
-        for i=1,#list do
-            local item = list[i] 
-            if typename(item) == "element" then
-                table.add ( _self.children, item )
-            elseif type(item) == "table" then
-                table.add ( _self.children, ui.element(item) )
-            end
-        end
-        return _self 
+    add = function ( _self, _id, _content, _style )
+        local new_style = {}
+        table.copy( new_style, _self.style )
+        table.copy( new_style, _style )
+
+        local new_element = ui.element( { parent = _self, id = _id, content = _content, style = new_style } )
+        table.add ( _self.children, new_element )
+
+        return _self
     end,
 
     -- ------------------------------------------------------------------ 
@@ -65,7 +63,7 @@ local element = class ({
         ex.canvas.draw_filled_rect ( _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4] )
 
         ex.canvas.color = ex.color4f.black
-        ex.canvas.draw_rect ( _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4], 2 )
+        ex.canvas.draw_rect ( _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4], 1 )
 
         for i=1,#_self.children do
             local child = _self.children[i]
@@ -73,16 +71,40 @@ local element = class ({
         end
     end,
 
-    --/////////////////////////////////////////////////////////////////////////////
-    -- events
-    --/////////////////////////////////////////////////////////////////////////////
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    draw = function ( _self ) 
+        ui.style.draw( _self.style,  _self._rect, _self.content  )
+    end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    on_repaint = function ( _self ) 
+    content_height = function ( _self )
+        local tname = typename (_self.content)
+        if tname == "string" then 
+
+            local font = nil
+            for i=1,#_self.style.font_family do
+                font = ui.style.fonts[_self.style.font_family[i]]
+                if font ~= nil then 
+                    break 
+                end
+            end
+            assert ( font ~= nil )
+
+            font.size = _self.style.font_size
+            return font.height
+        elseif tname == "texture" then
+        end
     end,
+
+    --/////////////////////////////////////////////////////////////////////////////
+    -- events
+    --/////////////////////////////////////////////////////////////////////////////
 
     -- ------------------------------------------------------------------ 
     -- Desc: 

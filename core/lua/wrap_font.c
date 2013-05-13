@@ -63,6 +63,23 @@ static int __lua_font_destroy ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_font_get_height ( lua_State *_l ) {
+    ex_font_t *font;
+
+    ex_lua_check_nargs(_l,1);
+
+    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
+    font = lua_touserdata(_l,1);
+
+    //
+    lua_pushinteger( _l, ex_font_get_height (font) );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static int __lua_font_set_size ( lua_State *_l ) {
     ex_font_t *font;
 
@@ -202,6 +219,7 @@ static int __lua_font_get_style_name ( lua_State *_l ) {
 static const luaL_Reg lib[] = {
     { "font_load",                      __lua_font_load },
     { "font_destroy",                   __lua_font_destroy },
+    { "font_get_height",                __lua_font_get_height },
     { "font_set_size",                  __lua_font_set_size },
     { "font_get_size",                  __lua_font_get_size },
     { "font_set_outline_type",          __lua_font_set_outline_type },

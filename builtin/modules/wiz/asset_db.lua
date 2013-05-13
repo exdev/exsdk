@@ -57,9 +57,19 @@ __M.import = import
 
 local function load ( _path )
     local asset = path_to_asset[_path]
-    if asset == nil then
-        print ( "[asset_db] load file: " .. _path )
-        return import(_path)
+    if asset ~= nil then
+        return asset
+    end
+
+    --
+    print ( "[asset_db] load file: " .. _path )
+    asset = import(_path)
+
+    --
+    if asset ~= nil then 
+        if typename(asset) == "font" then 
+            ui.style.fonts[asset.family] = asset
+        end
     end
     return asset
 end

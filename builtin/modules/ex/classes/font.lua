@@ -48,6 +48,10 @@ local font = class ({
         get = function (_self) return ex_c.font_get_style_name (_self._cptr) end,
     },
 
+    height = property {
+        get = function (_self) return ex_c.font_get_height (_self._cptr) end,
+    },
+
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
     --/////////////////////////////////////////////////////////////////////////////

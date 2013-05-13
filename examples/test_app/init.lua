@@ -14,8 +14,7 @@ test = wiz.app.dofile("test_layout.lua")
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
-local checkerboard = nil
-local bg_color = { 0.5, 0.5, 0.5 }
+local old_draw
 -- ------------------------------------------------------------------ 
 
 wiz.on_init = function () 
@@ -34,13 +33,21 @@ wiz.on_init = function ()
     local window = wiz.window( test.width or 640, test.height or 480 )
     window.view = ui.element()
     window.view:set_dirty()
-    window.view.on_repaint = on_repaint
+
+    local draw = window.view.draw
+    window.view.draw = function ( _view )
+        draw(_view)
+        test.repaint(_view)
+
+        -- ui.layout(_view)
+        -- _view:debug_draw()
+    end
 
     if test.background ~= nil then 
         if test.background == "checkerboard" then 
-            checkerboard = wiz.asset_db.load("assets/Checkerboard_64x64.png")
+            window.background = wiz.asset_db.load("assets/Checkerboard_64x64.png")
         elseif type(test.background) == "table" then
-            bg_color = test.background
+            window.background = test.background
         end
     end
 
@@ -60,31 +67,4 @@ wiz.on_exit = function ()
     print ( "end" )
     print ( "=======================" )
     print ( "" )
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-on_repaint = function ( _element )
-    ex_c.canvas_set_blending ( ex.blend_op.add, ex.blend_mode.alpha, ex.blend_mode.inverse_alpha )
-    ex_c.canvas_clear( bg_color[1], bg_color[2], bg_color[3] )
-
-        -- background
-        if checkerboard ~= nil then
-            ex.canvas.color = ex.color4f.white
-            local size = math.max( ex.canvas.width, ex.canvas.height )
-            ex.canvas.draw_image( checkerboard, 
-                                  0, 0, size, size,
-                                  0, 0, size, size )
-        end
-
-
-        --
-        test.repaint(_element)
-
-        -- ui.layout(_element)
-        -- _element:debug_draw()
-
-    ex_c.canvas_flush()
 end
