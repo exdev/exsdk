@@ -27,6 +27,7 @@ __M.contains = contains
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
+-- copy will not create new table and copy table-refrence
 -- ------------------------------------------------------------------ 
 
 local function copy ( _t, _from )
@@ -36,6 +37,24 @@ local function copy ( _t, _from )
     return _t
 end
 __M.copy = copy
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- deepcopy will create new table and copy the value in the table to the new table
+-- ------------------------------------------------------------------ 
+
+local function deepcopy ( _t, _from )
+    for k,v in pairs(_from) do
+        if type(v) == "table" then
+            local tt = {}
+            _t[k] = deepcopy ( tt, v )
+        else
+            _t[k] = v
+        end
+    end
+    return _t
+end
+__M.deepcopy = deepcopy
 
 -- ------------------------------------------------------------------ 
 -- Desc: 

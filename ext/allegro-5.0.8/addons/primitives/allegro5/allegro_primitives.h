@@ -136,6 +136,12 @@ ALLEGRO_PRIM_FUNC(void, al_draw_triangle, (float x1, float y1, float x2, float y
 ALLEGRO_PRIM_FUNC(void, al_draw_rectangle, (float x1, float y1, float x2, float y2, ALLEGRO_COLOR color, float thickness));
 ALLEGRO_PRIM_FUNC(void, al_draw_rounded_rectangle, (float x1, float y1, float x2, float y2, float rx, float ry, ALLEGRO_COLOR color, float thickness));
 
+// jwu ADD { 
+ALLEGRO_PRIM_FUNC(void, al_draw_rectangle_4, (float x1, float y1, float x2, float y2, 
+                                              ALLEGRO_COLOR color, 
+                                              float t_top, float t_right, float t_bottom, float t_left ));
+// } jwu ADD end 
+
 ALLEGRO_PRIM_FUNC(void, al_calculate_arc, (float* dest, int stride, float cx, float cy, float rx, float ry, float start_theta, float delta_theta, float thickness, int num_segments));
 ALLEGRO_PRIM_FUNC(void, al_draw_circle, (float cx, float cy, float r, ALLEGRO_COLOR color, float thickness));
 ALLEGRO_PRIM_FUNC(void, al_draw_ellipse, (float cx, float cy, float rx, float ry, ALLEGRO_COLOR color, float thickness));

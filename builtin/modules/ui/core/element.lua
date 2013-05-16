@@ -37,8 +37,8 @@ local element = class ({
 
     add = function ( _self, _id, _content, _style )
         local new_style = {}
-        table.copy( new_style, _self.style )
-        table.copy( new_style, _style )
+        table.deepcopy( new_style, _self.style )
+        table.deepcopy( new_style, _style )
 
         local new_element = ui.element( { parent = _self, id = _id, content = _content, style = new_style } )
         table.add ( _self.children, new_element )
@@ -59,11 +59,36 @@ local element = class ({
     -- ------------------------------------------------------------------ 
 
     debug_draw = function ( _self )
-        ex.canvas.color = ex.color4f ( 0.0, 0.5, 1.0, 0.2 )
-        ex.canvas.draw_filled_rect ( _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4] )
+        -- draw margin + border
+        local style = _self.style
+        local x, y, w, h = _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4]
+        local l, r, t, b = ui.style.left, ui.style.right, ui.style.top, ui.style.bottom
+        local alpha = 200
 
-        ex.canvas.color = ex.color4f.black
-        ex.canvas.draw_rect ( _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4], 1 )
+        ex.canvas.color = ex.color4f.from_rgba_8888 ( { 249, 204, 157, alpha } )
+        ex.canvas.draw_rect_4 ( x, y, w, h,
+                                style.margin[1] + style.border[1], 
+                                style.margin[2] + style.border[2], 
+                                style.margin[3] + style.border[3], 
+                                style.margin[4] + style.border[4] )
+
+        -- draw padding 
+        x, y, w, h = x + style.margin[l] + style.border[l], 
+                     y + style.margin[t] + style.border[t],
+                     w - ( style.margin[l] + style.margin[r] + style.border[l] + style.border[r] ), 
+                     h - ( style.margin[t] + style.margin[b] + style.border[t] + style.border[b] )
+
+        ex.canvas.color = ex.color4f.from_rgba_8888 ( { 195, 222, 183, alpha } )
+        ex.canvas.draw_rect_4 ( x, y, w, h,
+                                style.padding[1], style.padding[2], style.padding[3], style.padding[4] )
+
+        -- draw content 
+        x, y, w, h = x + style.padding[l],
+                     y + style.padding[t],
+                     w - ( style.padding[l] + style.padding[r] ), 
+                     h - ( style.padding[t] + style.padding[b] )
+        ex.canvas.color = ex.color4f.from_rgba_8888( { 155, 192, 227, alpha } )
+        ex.canvas.draw_filled_rect ( x, y, w, h )
 
         for i=1,#_self.children do
             local child = _self.children[i]
@@ -76,30 +101,7 @@ local element = class ({
     -- ------------------------------------------------------------------ 
 
     draw = function ( _self ) 
-        ui.style.draw( _self.style,  _self._rect, _self.content  )
-    end,
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
-    content_height = function ( _self )
-        local tname = typename (_self.content)
-        if tname == "string" then 
-
-            local font = nil
-            for i=1,#_self.style.font_family do
-                font = ui.style.fonts[_self.style.font_family[i]]
-                if font ~= nil then 
-                    break 
-                end
-            end
-            assert ( font ~= nil )
-
-            font.size = _self.style.font_size
-            return font.height
-        elseif tname == "texture" then
-        end
+        _self.style:draw( _self._rect, _self.content  )
     end,
 
     --/////////////////////////////////////////////////////////////////////////////

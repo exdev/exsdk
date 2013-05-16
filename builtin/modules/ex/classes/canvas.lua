@@ -45,6 +45,14 @@ local canvas = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
+        draw_rect_4 = function ( _dx, _dy, _dw, _dh, _t_top, _t_right, _t_bottom, _t_left )
+            ex_c.gui_draw_rect_4 ( _dx, _dy, _dw, _dh, _t_top, _t_right, _t_bottom, _t_left )
+        end,
+
+        -- ------------------------------------------------------------------ 
+        -- Desc: 
+        -- ------------------------------------------------------------------ 
+
         draw_filled_rect = function ( _dx, _dy, _dw, _dh )
             ex_c.gui_draw_filled_rect ( _dx, _dy, _dw, _dh )
         end,

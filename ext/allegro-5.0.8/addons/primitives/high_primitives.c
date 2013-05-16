@@ -400,6 +400,35 @@ void al_draw_rectangle(float x1, float y1, float x2, float y2,
    }
 }
 
+
+/* Function: al_draw_rectangle_4
+ */
+void al_draw_rectangle_4(float x1, float y1, float x2, float y2, 
+                         ALLEGRO_COLOR color, 
+                         float t_top, float t_right, float t_bottom, float t_left )
+{
+    int ii;
+    ALLEGRO_VERTEX vtx[10];
+
+    vtx[0].x = x1           ; vtx[0].y = y1             ;
+    vtx[1].x = x1 + t_left  ; vtx[1].y = y1 + t_top     ;
+    vtx[2].x = x2           ; vtx[2].y = y1             ;
+    vtx[3].x = x2 - t_right ; vtx[3].y = y1 + t_top     ;
+    vtx[4].x = x2           ; vtx[4].y = y2             ;
+    vtx[5].x = x2 - t_right ; vtx[5].y = y2 - t_bottom  ;
+    vtx[6].x = x1           ; vtx[6].y = y2             ;
+    vtx[7].x = x1 + t_left  ; vtx[7].y = y2 - t_bottom  ;
+    vtx[8].x = x1           ; vtx[8].y = y1             ;
+    vtx[9].x = x1 + t_left  ; vtx[9].y = y1 + t_top     ;
+
+    for (ii = 0; ii < 10; ii++) {
+        vtx[ii].color = color;
+        vtx[ii].z = 0;
+    }
+
+    al_draw_prim(vtx, 0, 0, 0, 10, ALLEGRO_PRIM_TRIANGLE_STRIP);
+}
+
 /* Function: al_draw_filled_rectangle
  */
 void al_draw_filled_rectangle(float x1, float y1, float x2, float y2,

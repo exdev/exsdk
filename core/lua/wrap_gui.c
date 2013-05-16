@@ -167,6 +167,25 @@ static int __lua_gui_draw_rect ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_gui_draw_rect_4 ( lua_State *_l ) {
+    ex_lua_check_nargs(_l,8);
+
+    ex_ui_draw_rect_4 ( luaL_checkint(_l,1 ),
+                        luaL_checkint(_l,2 ),
+                        luaL_checkint(_l,3 ),
+                        luaL_checkint(_l,4 ),
+                        luaL_checkint(_l,5 ),
+                        luaL_checkint(_l,6 ),
+                        luaL_checkint(_l,7 ),
+                        luaL_checkint(_l,8 )
+                      );
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static int __lua_gui_draw_filled_rect ( lua_State *_l ) {
     ex_lua_check_nargs(_l,4);
 
@@ -201,6 +220,7 @@ static const luaL_Reg lib[] = {
     { "gui_draw_border_texture",    __lua_gui_draw_border_texture },
     { "gui_draw_text",              __lua_gui_draw_text },
     { "gui_draw_rect",              __lua_gui_draw_rect },
+    { "gui_draw_rect_4",            __lua_gui_draw_rect_4 },
     { "gui_draw_filled_rect",       __lua_gui_draw_filled_rect },
     { "gui_flush",                  __lua_gui_flush },
     { NULL, NULL }

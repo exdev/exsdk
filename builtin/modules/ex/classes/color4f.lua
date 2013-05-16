@@ -127,7 +127,13 @@ local color4f = class ({
             local r = ex.color4f.black
             ex_c.vec4f_lerp( r._handle, _from._handle, _to._handle, _t )
             return r
-        end
+        end,
+        from_rgba_8888 = function ( _array )
+            return ex.color4f( _array[1]/255, 
+                               _array[2]/255, 
+                               _array[3]/255, 
+                               (_array[4] or 255)/255 )
+        end,
     },
 
     --/////////////////////////////////////////////////////////////////////////////

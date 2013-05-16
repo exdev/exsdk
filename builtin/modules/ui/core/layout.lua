@@ -25,16 +25,24 @@ local do_layout = function ( _root )
         local next_el = _root.children[i+1]
         local style = el.style
 
+        local padding_width  = style.padding[ui.style.left] + style.padding[ui.style.right]
+        local padding_height = style.padding[ui.style.top]  + style.padding[ui.style.bottom]
+        local margin_width   = style.margin[ui.style.left]  + style.margin[ui.style.right]
+        local margin_height  = style.margin[ui.style.top]   + style.margin[ui.style.bottom]
+        local border_width   = style.border[ui.style.left]  + style.border[ui.style.right]
+        local border_height  = style.border[ui.style.top]   + style.border[ui.style.bottom]
+
         -- TODO: you can't doing it like this { 
-        style.height = el:content_height()
-        el._rect = { cur_x, cur_y, style.width, style.height }
+        local height = style:content_height( el.content ) + padding_height + margin_height + border_height 
+        local width = style.width
+        el._rect = { cur_x, cur_y, width, height }
         -- } TODO end 
 
         -- TODO: should recursively get parent style { 
         -- margin_bottom = style.margin[3]
         -- next_margin_top = next_el ? 0 : next_el.style.margin[3]
         -- } TODO end 
-        cur_y = cur_y + style.height
+        cur_y = cur_y + height
     end
 end
 

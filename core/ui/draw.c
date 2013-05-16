@@ -373,6 +373,22 @@ void ex_ui_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+void ex_ui_draw_rect_4 ( int _dx, int _dy, int _dw, int _dh, 
+                         int _t_top, int _t_right, int _t_bottom, int _t_left ) {
+    ex_ui_state_t *state;
+    ALLEGRO_COLOR al_color;
+
+    state = ex_ui_state();
+    al_color = al_map_rgba_f ( state->color.r, state->color.g, state->color.b, state->color.a );
+
+    al_draw_rectangle_4 ( _dx, _dy, _dx + _dw, _dy + _dh, al_color, 
+                          _t_top, _t_right, _t_bottom, _t_left );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void ex_ui_draw_filled_rect ( int _dx, int _dy, int _dw, int _dh ) {
     ex_ui_state_t *state;
     ALLEGRO_COLOR al_color;
