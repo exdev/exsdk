@@ -32,17 +32,18 @@ local do_layout = function ( _root )
         local border_width   = style.border[ui.style.left]  + style.border[ui.style.right]
         local border_height  = style.border[ui.style.top]   + style.border[ui.style.bottom]
 
-        -- TODO: you can't doing it like this { 
         local height = style:content_height( el.content ) + padding_height + margin_height + border_height 
         local width = style.width
         el._rect = { cur_x, cur_y, width, height }
-        -- } TODO end 
 
-        -- TODO: should recursively get parent style { 
-        -- margin_bottom = style.margin[3]
-        -- next_margin_top = next_el ? 0 : next_el.style.margin[3]
-        -- } TODO end 
-        cur_y = cur_y + height
+        -- 
+        if style.display == "block" then 
+            cur_y = cur_y + height
+        elseif style.display == "inline-block" then
+            cur_x = cur_x + width
+        elseif style.display == "inline" then 
+            -- TODO
+        end
     end
 end
 

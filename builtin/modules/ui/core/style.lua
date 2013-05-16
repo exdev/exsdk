@@ -50,6 +50,9 @@ local default = {
     font_outline_thickness = 1,
     font_shadow_offset = {1,1},
 
+    --
+    display = "block", -- block, inline-block, inline
+
     -- box { top, right, bottom, left } NOTE: -1 means the element is not defined
     border  = { 0, 0, 0, 0 },
     margin  = { 0, 0, 0, 0 },
