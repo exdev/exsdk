@@ -60,8 +60,6 @@ local window = class ({
         set = function ( _self, _v )
             checkarg ( _v, "element" )
             _self._view = _v
-            _self._view.style.width = _self.width
-            _self._view.style.height = _self.height
             _self.need_repaint = true
             _self.need_layout = true
         end,
@@ -111,7 +109,12 @@ local window = class ({
 
     draw = function ( _self )
         if _self.need_repaint then
+            _self.need_repaint = false
+
+            -- setup blending mode
             ex_c.canvas_set_blending ( ex.blend_op.add, ex.blend_mode.alpha, ex.blend_mode.inverse_alpha )
+
+            -- draw background
             if typename(_self.background) == "texture" then
                 ex_c.canvas_clear( 1, 1, 1 )
 
@@ -124,42 +127,30 @@ local window = class ({
                 ex_c.canvas_clear( _self.background[1], _self.background[2], _self.background[3] )
             end
 
-                _self._view.style.min_width = _self.width
-                _self._view.style.min_height = _self.height
-                _self:_do_draw(_self.view) 
-                _self.need_repaint = false
+            -- draw view element
+            _self.view:draw() 
 
+            -- flush
             ex_c.canvas_flush()
             return
         end
 
-        _self:_draw_recursively (_self.view)
+        _self:_do_dirty_draw_recursively (_self.view)
     end,
 
-    _draw_recursively = function ( _self, _el )
+    _do_dirty_draw_recursively = function ( _self, _el )
         if _el._dirty then
-            _self:_do_draw(_el) 
+            _el:draw()
             return
         end
 
         for i=1,#_el.children do
             local child_el = _el.children[i]
             if child_el._dirty then 
-                _self:_do_draw(child_el) 
+                child_el:draw() 
             else
-                _self:_draw_recursively(child_el)
+                _self:_do_dirty_draw_recursively(child_el)
             end
-        end
-    end,
-
-    _do_draw = function ( _self, _el )
-        -- repaint by parent first
-        _el:draw()
-        _el._dirty = false
-
-        for i=1,#_el.children do
-            local child_el = _el.children[i]
-            _self:_do_draw (child_el)
         end
     end,
 

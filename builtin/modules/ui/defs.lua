@@ -11,30 +11,8 @@ local __M = {}
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
 
--- TODO: useful when we optimize style to C { 
--- local font = {
-
---     style = {
---         normal = 0,
---         italic = 1,
---         oblique = 2,
---     },
-
---     decoration = {
---         none = 0,
---         underline = 1,
---         overline = 2,
---         through = 3, 
---     },
-
---     extra_style = {
---         none = 0,
---         outline = 1,
---         shadow = 2,
---     },
--- }
--- __M.font = font
--- } TODO end 
+local fonts = {}
+__M.fonts = fonts
 
 -- ------------------------------------------------------------------ 
 -- Desc: 

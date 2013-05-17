@@ -68,7 +68,7 @@ local function load ( _path )
     --
     if asset ~= nil then 
         if typename(asset) == "font" then 
-            ui.style.fonts[asset.family] = asset
+            ui.fonts[asset.family] = asset
         end
     end
     return asset

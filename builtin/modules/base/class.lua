@@ -331,7 +331,7 @@ local function instance_index ( _t, _k )
     end
 
     -- return
-    error( "Can't find the key " .. _k )
+    -- error( "Can't find the key " .. _k )
     return nil
 end
 

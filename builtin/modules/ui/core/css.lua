@@ -1,7 +1,7 @@
 -- ======================================================================================
--- File         : style.lua
+-- File         : css.lua
 -- Author       : Wu Jie 
--- Last Change  : 05/03/2013 | 16:47:26 PM | Friday,May
+-- Last Change  : 05/17/2013 | 11:43:30 AM | Friday,May
 -- Description  : 
 -- ======================================================================================
 
@@ -10,12 +10,6 @@ local __M = {}
 --/////////////////////////////////////////////////////////////////////////////
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-__M.fonts = {} -- font family -> font
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -31,15 +25,6 @@ __M.left = 4
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local parse = function ( _context )
-    -- TODO: parse from the context (json or css)? and return a style table.
-end
-__M.parse = parse
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
 local default = {
     -- font
     font_family = { "Bitstream Vera Sans Mono", "Times New Roman" },
@@ -50,25 +35,28 @@ local default = {
     font_outline_thickness = 1,
     font_shadow_offset = {1,1},
 
-    --
-    display = "block", -- block, inline-block, inline
-
-    -- box { top, right, bottom, left } NOTE: -1 means the element is not defined
+    -- box { top, right, bottom, left } -- can be number, "auto", "inherit" and nil.
     border  = { 0, 0, 0, 0 },
     margin  = { 0, 0, 0, 0 },
     padding = { 0, 0, 0, 0 },
 
-    -- colors { red, gree, blue, alpha } NOTE: -1 means the element is not defined
+    -- colors { red, gree, blue, alpha }
     color               = { 0, 0, 0, 255 }, 
     border_color        = { 0, 0, 0, 255 },
     background_color    = { 255, 255, 255, 0 },
     font_extra_color    = { 0, 0, 0, 255 }, -- color of font's extra style (outline color or shadow color) 
 
     -- size
-    width = -1, -- NOTE: -1 means auto
-    height = -1, -- NOTE: -1 means auto
-    min_width = 1,
-    min_height = 1,
+    width = "auto",
+    height = "auto",
+    min_width = "auto",
+    min_height = "auto",
+    max_width = "auto",
+    max_height = "auto",
+
+    --
+    display = "block", -- block, inline-block, inline
+
 
     -- functions
 
@@ -79,16 +67,15 @@ local default = {
     setup_font = function ( _self )
         local font = nil
         for i=1,#_self.font_family do
-            font = ui.style.fonts[_self.font_family[i]]
+            font = ui.fonts[_self.font_family[i]]
             if font ~= nil then 
                 break 
             end
         end
         assert ( font ~= nil )
 
+        -- TODO: _self.font_style
         font.size = _self.font_size
-        -- _self.font_style ???
-        -- _self.font_decoration ???
 
         return font
     end,
@@ -102,10 +89,10 @@ local default = {
 
         local x, y, w, h = _rect[1], _rect[2], _rect[3], _rect[4]
 
-        x = x + _self.margin[ui.style.left] 
-        y = y + _self.margin[ui.style.top] 
-        w = w - _self.margin[ui.style.left] - _self.margin[ui.style.right]
-        h = h - _self.margin[ui.style.top] - _self.margin[ui.style.bottom] 
+        x = x + _self.margin[ui.css.left] 
+        y = y + _self.margin[ui.css.top] 
+        w = w - _self.margin[ui.css.left] - _self.margin[ui.css.right]
+        h = h - _self.margin[ui.css.top] - _self.margin[ui.css.bottom] 
 
         -- draw border
         local color = ex.color4f.from_rgba_8888(_self.border_color)
@@ -113,10 +100,10 @@ local default = {
         ex.canvas.draw_rect_4( x, y, w, h,
                                _self.border[1], _self.border[2], _self.border[3], _self.border[4] ) 
 
-        x = x + _self.border[ui.style.left] + _self.padding[ui.style.left] 
-        y = y + _self.border[ui.style.top] + _self.padding[ui.style.top] 
-        w = w - _self.border[ui.style.left] - _self.border[ui.style.right] - _self.padding[ui.style.left] - _self.padding[ui.style.right]
-        h = h - _self.border[ui.style.top] - _self.border[ui.style.bottom] - _self.padding[ui.style.top] - _self.padding[ui.style.bottom] 
+        x = x + _self.border[ui.css.left] + _self.padding[ui.css.left] 
+        y = y + _self.border[ui.css.top] + _self.padding[ui.css.top] 
+        w = w - _self.border[ui.css.left] - _self.border[ui.css.right] - _self.padding[ui.css.left] - _self.padding[ui.css.right]
+        h = h - _self.border[ui.css.top] - _self.border[ui.css.bottom] - _self.padding[ui.css.top] - _self.padding[ui.css.bottom] 
 
         if tname == "string" then 
             if _content == "" then 
