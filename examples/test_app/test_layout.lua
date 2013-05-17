@@ -31,9 +31,8 @@ return {
         _root_el
         :add( "label", "Hello World!", { 
             font_size = 20, 
-            font_extra_style = "outline", 
+            text_outline = { 1, { 0, 0, 0, 255 } },
             color = { 0, 255, 0 }, 
-            font_extra_color = { 0, 0, 0 },
             margin = { 0, 0, 0, 10 },
         } )
         :add( "label", "I'm Johnny", { 

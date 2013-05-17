@@ -100,12 +100,6 @@ local element = class ({
     -- ------------------------------------------------------------------ 
 
     add = function ( _self, _id, _content, _css )
-        -- TODO { 
-        -- local new_style = {}
-        -- table.deepcopy( new_style, _self.css )
-        -- table.deepcopy( new_style, _style )
-        -- } TODO end 
-
         local new_element = ui.element( { 
             parent = _self, 
             id = _id or "__unknown__", 

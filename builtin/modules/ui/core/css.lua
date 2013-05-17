@@ -29,11 +29,14 @@ local default = {
     -- font
     font_family = { "Bitstream Vera Sans Mono", "Times New Roman" },
     font_size = 16,
-    font_style = "normal", -- ui.font.style { normal, italic, oblique }
-    font_decoration = "none", -- ui.font.decoration { none, underline, overline, through }
-    font_extra_style = "none", -- ui.font.extra_style { none, outline, shadow }
-    font_outline_thickness = 1,
-    font_shadow_offset = {1,1},
+    font_style = "normal", -- "normal", "italic", "oblique"
+
+    -- text
+    text_decoration = "none", -- "none", "underline", "overline", "through"
+    text_outline = { 0, { 0, 0, 0, 255 } }, -- { thickness, color }
+    text_shadow = { { 0, 0 }, { 0, 0, 0, 255 } }, -- { offset, color }
+    white_space = "normal", -- "normal", "nowrap"
+    text_overflow = "clip", -- "clip", "ellipsis" (...)
 
     -- box { top, right, bottom, left } -- can be number, "auto", "inherit" and nil.
     border  = { 0, 0, 0, 0 },
@@ -44,7 +47,6 @@ local default = {
     color               = { 0, 0, 0, 255 }, 
     border_color        = { 0, 0, 0, 255 },
     background_color    = { 255, 255, 255, 0 },
-    font_extra_color    = { 0, 0, 0, 255 }, -- color of font's extra style (outline color or shadow color) 
 
     -- size
     width = "auto",
@@ -54,9 +56,9 @@ local default = {
     max_width = "auto",
     max_height = "auto",
 
-    --
+    -- display
     display = "block", -- block, inline-block, inline
-
+    overflow = { "visible", "visible" }, -- "visible", "hidden", "scroll", "auto" 
 
     -- functions
 
@@ -114,17 +116,26 @@ local default = {
             ex.canvas.color = color
 
             local font = _self:setup_font()
-            if _self.font_extra_style == "none" then 
+            local text_done = false
+
+            -- draw outline text
+            if _self.text_outline[1] > 0 then 
+                local color2 = ex.color4f.from_rgba_8888( _self.text_outline[2] )
+                ex.canvas.draw_outline_text( _content, font, color, color2, _self.text_outline[1], x, y ) 
+                text_done = true
+            end
+
+            -- draw shadow text
+            local shadow_x, shadow_y = _self.text_shadow[1][1], _self.text_shadow[1][2] 
+            if shadow_x > 0 or shadow_y > 0 then 
+                local color2 = ex.color4f.from_rgba_8888( _self.text_shadow[2] )
+                ex.canvas.draw_shadow_text( _content, font, color, color2, ex.vec2f(shadow_x, shadow_y), x, y ) 
+                text_done = true
+            end
+
+            -- draw normal text
+            if text_done == false then
                 ex.canvas.draw_text( _content, font, x, y ) 
-
-            elseif _self.font_extra_style == "outline" then 
-                local color2 = ex.color4f.from_rgba_8888( _self.font_extra_color )
-                ex.canvas.draw_outline_text( _content, font, color, color2, _self.font_outline_thickness, x, y ) 
-
-            elseif _self.font_extra_style == "shadow" then 
-                local color2 = ex.color4f.from_rgba_8888( _self.font_extra_color )
-                ex.canvas.draw_shadow_text( _content, font, color, color2, ex.vec2f(_self.font_shadow_offset[1], _self.font_shadow_offset[2]), x, y ) 
-
             end
         end
     end,
