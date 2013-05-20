@@ -22,7 +22,7 @@ return {
         ttf_VeraMono = wiz.asset_db.load("assets/VeraMono.ttf")
 
         -- root el
-        table.deepcopy ( _root_el.css, { 
+        table.deepcopy ( _root_el.style, { 
             margin = { 10, 10, 10, 10 },
             border = { 2, 2, 2, 2 }
         } )

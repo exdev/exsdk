@@ -1,7 +1,7 @@
 -- ======================================================================================
--- File         : css.lua
+-- File         : style.lua
 -- Author       : Wu Jie 
--- Last Change  : 05/17/2013 | 11:43:30 AM | Friday,May
+-- Last Change  : 05/20/2013 | 09:38:01 AM | Monday,May
 -- Description  : 
 -- ======================================================================================
 
@@ -91,10 +91,10 @@ local default = {
 
         local x, y, w, h = _rect[1], _rect[2], _rect[3], _rect[4]
 
-        x = x + _self.margin[ui.css.left] 
-        y = y + _self.margin[ui.css.top] 
-        w = w - _self.margin[ui.css.left] - _self.margin[ui.css.right]
-        h = h - _self.margin[ui.css.top] - _self.margin[ui.css.bottom] 
+        x = x + _self.margin[ui.style.left] 
+        y = y + _self.margin[ui.style.top] 
+        w = w - _self.margin[ui.style.left] - _self.margin[ui.style.right]
+        h = h - _self.margin[ui.style.top] - _self.margin[ui.style.bottom] 
 
         -- draw border
         local color = ex.color4f.from_rgba_8888(_self.border_color)
@@ -102,10 +102,10 @@ local default = {
         ex.canvas.draw_rect_4( x, y, w, h,
                                _self.border[1], _self.border[2], _self.border[3], _self.border[4] ) 
 
-        x = x + _self.border[ui.css.left] + _self.padding[ui.css.left] 
-        y = y + _self.border[ui.css.top] + _self.padding[ui.css.top] 
-        w = w - _self.border[ui.css.left] - _self.border[ui.css.right] - _self.padding[ui.css.left] - _self.padding[ui.css.right]
-        h = h - _self.border[ui.css.top] - _self.border[ui.css.bottom] - _self.padding[ui.css.top] - _self.padding[ui.css.bottom] 
+        x = x + _self.border[ui.style.left] + _self.padding[ui.style.left] 
+        y = y + _self.border[ui.style.top] + _self.padding[ui.style.top] 
+        w = w - _self.border[ui.style.left] - _self.border[ui.style.right] - _self.padding[ui.style.left] - _self.padding[ui.style.right]
+        h = h - _self.border[ui.style.top] - _self.border[ui.style.bottom] - _self.padding[ui.style.top] - _self.padding[ui.style.bottom] 
 
         if tname == "string" then 
             if _content == "" then 
