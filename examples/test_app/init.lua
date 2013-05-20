@@ -10,7 +10,8 @@
 -- test = wiz.app.dofile("test_image.lua") 
 -- test = wiz.app.dofile("test_border.lua") 
 -- test = wiz.app.dofile("test_rect.lua") 
-test = wiz.app.dofile("test_layout.lua") 
+-- test = wiz.app.dofile("test_layout.lua") 
+test = wiz.app.dofile("test_css.lua") 
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -53,6 +54,7 @@ wiz.on_init = function ()
 
     --
     test.init( window.view )
+    ui.layout(window.view)
 end
 
 -- ------------------------------------------------------------------ 

@@ -134,7 +134,7 @@ local element = class ({
 
     draw = function ( _self ) 
         _self._dirty = false;
-        _self._computed_style:draw( _self._rect, _self.content  )
+        ui.style.draw ( _self._computed_style, _self._rect, _self.content )
 
         for i=1,#_self.children do
             local child_el = _self.children[i]

@@ -22,29 +22,33 @@ return {
         ttf_VeraMono = wiz.asset_db.load("assets/VeraMono.ttf")
 
         -- root el
-        table.deepcopy ( _root_el.style, { 
-            margin = { 10, 10, 10, 10 },
-            border = { 2, 2, 2, 2 }
-        } )
+        table.deepcopy ( _root_el.style, ui.css.build() 
+            .margin( "10px 10px 10px 10px" )
+            .border( "2px 2px 2px 2px" )
+            .done()
+        )
 
         -- first class children
         _root_el
-        :add( "label", "Hello World!", { 
-            font_size = 20, 
-            text_outline = { 1, { 0, 0, 0, 255 } },
-            color = { 0, 255, 0 }, 
-            margin = { 0, 0, 0, 10 },
-        } )
-        :add( "label", "I'm Johnny", { 
-            color = { 255, 0, 0 } 
-        } )
-        :add( "label", "Test Padding", { 
-            color = { 255, 0, 0 }, 
-            margin = { 10, 100, 0, 0 },
-            padding = { 10, 10, 1, 10 },
-            border = { 1, 1, 1, 5 },
-            border_color = { 0, 0, 0 }
-        } )
+        :add( "label", "Hello World!", ui.css.build()
+            .font_size("20px")
+            .text_outline("1px #000")
+            .color("#0f0")
+            .margin("0px 0px 0px 10px")
+            .done()
+        )
+        :add( "label", "I'm Johnny", ui.css.build()
+            .color("#f00")
+            .done()
+        )
+        :add( "label", "Test Padding", ui.css.build()
+            .color("#f00")
+            .margin("10px 100px 0px 0px")
+            .padding("10px 10px 1px 10px")
+            .border("1px 1px 1px 5px")
+            .border_color("#000")
+            .done()
+        )
 
         -- do layout
         ui.layout(_root_el)

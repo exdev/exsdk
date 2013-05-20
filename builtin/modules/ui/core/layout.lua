@@ -68,7 +68,7 @@ do_layout = function ( _el, _x, _y )
         local padding_width  = style.padding[ui.style.left] + style.padding[ui.style.right]
         local padding_height = style.padding[ui.style.top]  + style.padding[ui.style.bottom]
 
-        local height = style:content_height( _el.content ) + padding_height + margin_height + border_height 
+        local height = ui.style.content_height( style, _el.content ) + padding_height + margin_height + border_height 
         local width = _el.parent._rect[3] 
                       - p_style.margin[ui.style.left] - p_style.margin[ui.style.right]
                       - p_style.border[ui.style.left] - p_style.border[ui.style.right]
