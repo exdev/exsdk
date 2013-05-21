@@ -231,7 +231,7 @@ local parse_border = function ( _style, _prop_name, _text, _options )
     if #list == 0 then return end
     local i = 1
 
-    if parse_offset_rect( _style, "border_size", list[i], nil ) then
+    if parse_offset_rect( _style, "border_size", list[i] ) then
         i = i + 1
     end
 
@@ -239,7 +239,25 @@ local parse_border = function ( _style, _prop_name, _text, _options )
         i = i + 1
     end
 
-    if parse_color( _style, "border_color", list[i], nil ) then
+    if parse_color( _style, "border_color", list[i] ) then
+        i = i + 1
+    end
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local parse_text_outline = function ( _style, _prop_name, _text, _options )
+    local list = string.split( _text, " " )
+    if #list == 0 then return end
+    local i = 1
+
+    if parse_size( _style, "text_outline_thickness", list[i] ) then
+        i = i + 1
+    end
+
+    if parse_color( _style, "text_outline_color", list[i] ) then
         i = i + 1
     end
 end
@@ -276,6 +294,7 @@ __M.done = done
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+-- font
 def ( "font",  parse_font ) -- group
 def ( "font_style",  parse_option, { "normal", "italic", "oblique", "inherit" } )
 -- def ( "font_variant",  parse_option, { "normal", "small-cap", "inherit" } ) -- TODO? I don't think we need this
@@ -283,18 +302,21 @@ def ( "font_style",  parse_option, { "normal", "italic", "oblique", "inherit" } 
 def ( "font_size",  parse_size )
 def ( "font_family",  parse_font_family )
 
+-- margin
 def ( "margin",  parse_offset_rect ) -- group
 def ( "margin_top",     parse_size )
 def ( "margin_right",   parse_size )
 def ( "margin_bottom",  parse_size )
 def ( "margin_left",    parse_size )
 
+-- padding
 def ( "padding",  parse_offset_rect ) -- group
 def ( "padding_top",     parse_size )
 def ( "padding_right",   parse_size )
 def ( "padding_bottom",  parse_size )
 def ( "padding_left",    parse_size )
 
+-- border
 def ( "border",  parse_border ) -- group
 def ( "border_size",  parse_offset_rect ) -- group
 def ( "border_size_top",     parse_size )
@@ -304,7 +326,40 @@ def ( "border_size_left",    parse_size )
 def ( "border_style",  parse_option, { "none", "solid", "image_path" } ) -- can be solid, image_icon_path
 def ( "border_color",  parse_color )
 
+-- text
+def ( "text_decoration",  parse_option, { "none", "underline", "overline", "through", "inherit" } )
+def ( "text_outline", parse_text_outline ) -- group
+-- TODO { 
+-- def_group ( "text_outline", { 
+--     "text_outline_thickness",
+--     "text_outline_color",
+-- } )
+-- } TODO end 
+def ( "text_outline_thickness", parse_size )
+def ( "text_outline_color", parse_color )
+def ( "text_shadow", parse_text_shadow ) -- group
+def ( "text_shadow_offset_x", parse_size )
+def ( "text_shadow_offset_y", parse_size )
+def ( "text_shadow_color", parse_color )
+def ( "text_overflow", parse_option, { "clip", "ellipsis" } )
+
+-- size
+def ( "width",  parse_size )
+def ( "height",  parse_size )
+def ( "min_width",  parse_size )
+def ( "min_height",  parse_size )
+def ( "max_width",  parse_size )
+def ( "max_height",  parse_size )
+
+-- misc
+def ( "white_space",  parse_option, { "normal", "nowrap", "inherit" } )
 def ( "color",  parse_color )
+def ( "display",  parse_option, { "block", "inline-block", "inline", "inherit" } )
+-- TODO { 
+-- def ( "overflow",  parse_option, { "visible", "hidden", "scroll", "auto", "inherit" } )
+-- def ( "overflow_x",  parse_option, { "visible", "hidden", "scroll", "auto", "inherit" } )
+-- def ( "overflow_y",  parse_option, { "visible", "hidden", "scroll", "auto", "inherit" } )
+-- } TODO end 
 
 --/////////////////////////////////////////////////////////////////////////////
 --
