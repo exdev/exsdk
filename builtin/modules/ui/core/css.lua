@@ -173,6 +173,10 @@ end
 local parse_font_family = function ( _style, _prop_name, _text, _options )
     local list = string.split( _text, "," )
     if #list == 0 then return end
+    for i,v in ipairs(list) do 
+        list[i] = string.trim(v)
+    end
+
     _style[_prop_name] = list
 end
 
@@ -216,6 +220,28 @@ local parse_offset_rect = function ( _style, _prop_name, _text, _options )
     parse_size( _style, _prop_name .. "_right", right, _options )
     parse_size( _style, _prop_name .. "_bottom", bottom, _options )
     parse_size( _style, _prop_name .. "_left", left, _options )
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local parse_border = function ( _style, _prop_name, _text, _options )
+    local list = string.split( _text, " " )
+    if #list == 0 then return end
+    local i = 1
+
+    if parse_offset_rect( _style, "border_size", list[i], nil ) then
+        i = i + 1
+    end
+
+    if parse_option( _style, "border_style", list[i], { "none", "solid", "image_path" } ) then
+        i = i + 1
+    end
+
+    if parse_color( _style, "border_color", list[i], nil ) then
+        i = i + 1
+    end
 end
 
 --/////////////////////////////////////////////////////////////////////////////
@@ -269,7 +295,7 @@ def ( "padding_right",   parse_size )
 def ( "padding_bottom",  parse_size )
 def ( "padding_left",    parse_size )
 
--- def ( "border",  parse_border ) -- group
+def ( "border",  parse_border ) -- group
 def ( "border_size",  parse_offset_rect ) -- group
 def ( "border_size_top",     parse_size )
 def ( "border_size_right",   parse_size )
