@@ -44,21 +44,52 @@ local def = function ( _prop_name, _parse_func, _options )
     end
 end
 
+--/////////////////////////////////////////////////////////////////////////////
+-- parse atomic
+--/////////////////////////////////////////////////////////////////////////////
+
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
 local parse_option = function ( _style, _prop_name, _text, _options )
-    local valid_option = false
-    for i=1,#_options do 
-        if _options[i] == _text then
-            valid_option = true
-            break
+    if _options ~= nil then
+        local valid_option = false
+        local has_image_path = false
+        local has_size = false
+
+        --
+        for i=1,#_options do 
+            local opt = _options[i] 
+            if opt == _text then
+                valid_option = true
+                break
+            elseif opt == "image_path" then 
+                has_image_path = true
+            elseif opt == "size" then 
+                has_size = true
+            end
+        end
+
+        --
+        if valid_option == false then
+            if has_image_path then
+                if path.is ( _text, {".bmp", ".jpg", ".png", ".tga"} ) then
+                    valid_option = true
+                end
+            elseif has_size then
+                -- TODO:
+            end
+        end
+
+        --
+        if valid_option == false then 
+            return false
         end
     end
 
-    assert ( valid_option, "Can't find the option " .. _text )
     _style[_prop_name] = _text
+    return true
 end
 
 -- ------------------------------------------------------------------ 
@@ -66,20 +97,27 @@ end
 -- ------------------------------------------------------------------ 
 
 local parse_size = function ( _style, _prop_name, _text, _options )
+    -- inherit or auto
     if _text == "inherit" then
         _style[_prop_name] = { "inherit" }
-        return
+        return true
     elseif _text == "auto" then
         _style[_prop_name] = { "auto" }
-        return
+        return true
     end
 
+    -- px or %
     local len = _text:len()
     if _text:ncmp("px", len-2, 2) then
         _style[_prop_name] = { "px", tonumber( _text:sub( 1, len-2 ) )  }
+        return true
     elseif _text:ncmp("%", len-1, 1) then
         _style[_prop_name] = { "%", tonumber( _text:sub( 1, len-1 ) )  }
+        return true
     end
+
+    -- not a size
+    return false
 end
 
 -- ------------------------------------------------------------------ 
@@ -95,13 +133,16 @@ local parse_color = function ( _style, _prop_name, _text, _options )
             local g = _text:sub(3,3)
             local b = _text:sub(4,4)
             _style[_prop_name] = { tonumber(r..r,16), tonumber(g..g,16), tonumber(b..b,16), 255 }
+            return true
         elseif #v == 6 then
             local r = _text:sub(2,3)
             local g = _text:sub(4,5)
             local b = _text:sub(6,7)
             _style[_prop_name] = { tonumber(r,16), tonumber(g,16), tonumber(b,16), 255 }
+            return true
         else
-            error ( "invalid color value " .. _text )
+            return false
+            -- error ( "invalid color value " .. _text )
         end
 
     -- rgb or rgba
@@ -115,7 +156,31 @@ local parse_color = function ( _style, _prop_name, _text, _options )
         local b = list[3] or 255
         local a = list[4] or 255
         _style[_prop_name] = { r, g, b, a }
+        return true
     end
+
+    return false
+end
+
+--/////////////////////////////////////////////////////////////////////////////
+-- parse group
+--/////////////////////////////////////////////////////////////////////////////
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local parse_font = function ( _style, _prop_name, _text, _options )
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local parse_font_family = function ( _style, _prop_name, _text, _options )
+    local list = string.split( _text, "," )
+    if #list == 0 then return end
+    _style[_prop_name] = list
 end
 
 -- ------------------------------------------------------------------ 
@@ -123,10 +188,7 @@ end
 -- ------------------------------------------------------------------ 
 
 local parse_offset_rect = function ( _style, _prop_name, _text, _options )
-    local list = {}
-    for w in string.gmatch(_text, "%S+") do
-        table.add ( list, w )
-    end
+    local list = string.split( _text, " " )
     if #list == 0 then return end
 
     local top = list[1]
@@ -140,21 +202,8 @@ local parse_offset_rect = function ( _style, _prop_name, _text, _options )
     parse_size( _style, _prop_name .. "_left", left, _options )
 end
 
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local parse_font_family = function ( _style, _prop_name, _text, _options )
-    local list = {}
-    for w in string.gmatch(_text, "[^,]+") do
-        table.add ( list, w )
-    end
-    if #list == 0 then return end
-    _style[_prop_name] = list
-end
-
 --/////////////////////////////////////////////////////////////////////////////
--- functions
+-- build and done
 --/////////////////////////////////////////////////////////////////////////////
 
 -- ------------------------------------------------------------------ 
@@ -185,28 +234,32 @@ __M.done = done
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
--- def ( "font",  parse_font )
-def ( "font_family",  parse_font_family )
-def ( "font_size",  parse_size )
+def ( "font",  parse_font )
 def ( "font_style",  parse_option, { "normal", "italic", "oblique", "inherit" } )
+-- def ( "font_variant",  parse_option, { "normal", "small-cap", "inherit" } ) -- TODO? I don't think we need this
+-- def ( "font_weight",  parse_font_weight ) -- TODO? must know how to setup bold or other font in FreeType
+def ( "font_size",  parse_size )
+def ( "font_family",  parse_font_family )
 
 def ( "margin",  parse_offset_rect )
-def ( "margin_left",    parse_size )
-def ( "margin_right",   parse_size )
 def ( "margin_top",     parse_size )
+def ( "margin_right",   parse_size )
 def ( "margin_bottom",  parse_size )
+def ( "margin_left",    parse_size )
 
 def ( "padding",  parse_offset_rect )
-def ( "padding_left",    parse_size )
-def ( "padding_right",   parse_size )
 def ( "padding_top",     parse_size )
+def ( "padding_right",   parse_size )
 def ( "padding_bottom",  parse_size )
+def ( "padding_left",    parse_size )
 
-def ( "border",  parse_offset_rect )
-def ( "border_left",    parse_size )
-def ( "border_right",   parse_size )
-def ( "border_top",     parse_size )
-def ( "border_bottom",  parse_size )
+-- def ( "border",  parse_border )
+def ( "border_width",  parse_offset_rect )
+def ( "border_width_top",     parse_size )
+def ( "border_width_right",   parse_size )
+def ( "border_width_bottom",  parse_size )
+def ( "border_width_left",    parse_size )
+def ( "border_style",  parse_option, { "none", "solid", "image_path" } ) -- can be solid, image_icon_path
 def ( "border_color",  parse_color )
 
 def ( "color",  parse_color )
