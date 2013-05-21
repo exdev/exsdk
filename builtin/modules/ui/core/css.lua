@@ -170,17 +170,33 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local parse_font = function ( _style, _prop_name, _text, _options )
+local parse_font_family = function ( _style, _prop_name, _text, _options )
+    local list = string.split( _text, "," )
+    if #list == 0 then return end
+    _style[_prop_name] = list
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local parse_font_family = function ( _style, _prop_name, _text, _options )
-    local list = string.split( _text, "," )
-    if #list == 0 then return end
-    _style[_prop_name] = list
+local parse_font = function ( _style, _prop_name, _text, _options )
+    local r1 = 1
+    local r2 = _text:find( " " )
+    local v = _text:sub( r1, r2-1 )
+
+    if parse_option( _style, "font_style", v, { "normal", "italic", "oblique", "inherit" } ) then
+        r1 = r2+1
+        r2 = _text:find( " ", r1 )
+    end
+
+    v = _text:sub( r1, r2-1 )
+    if parse_size( _style, "font_size", v ) then
+        r1 = r2+1
+    end
+
+    v = _text:sub( r1 )
+    parse_font_family( _style, "font_family", v )
 end
 
 -- ------------------------------------------------------------------ 
@@ -234,31 +250,31 @@ __M.done = done
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-def ( "font",  parse_font )
+def ( "font",  parse_font ) -- group
 def ( "font_style",  parse_option, { "normal", "italic", "oblique", "inherit" } )
 -- def ( "font_variant",  parse_option, { "normal", "small-cap", "inherit" } ) -- TODO? I don't think we need this
 -- def ( "font_weight",  parse_font_weight ) -- TODO? must know how to setup bold or other font in FreeType
 def ( "font_size",  parse_size )
 def ( "font_family",  parse_font_family )
 
-def ( "margin",  parse_offset_rect )
+def ( "margin",  parse_offset_rect ) -- group
 def ( "margin_top",     parse_size )
 def ( "margin_right",   parse_size )
 def ( "margin_bottom",  parse_size )
 def ( "margin_left",    parse_size )
 
-def ( "padding",  parse_offset_rect )
+def ( "padding",  parse_offset_rect ) -- group
 def ( "padding_top",     parse_size )
 def ( "padding_right",   parse_size )
 def ( "padding_bottom",  parse_size )
 def ( "padding_left",    parse_size )
 
--- def ( "border",  parse_border )
-def ( "border_width",  parse_offset_rect )
-def ( "border_width_top",     parse_size )
-def ( "border_width_right",   parse_size )
-def ( "border_width_bottom",  parse_size )
-def ( "border_width_left",    parse_size )
+-- def ( "border",  parse_border ) -- group
+def ( "border_size",  parse_offset_rect ) -- group
+def ( "border_size_top",     parse_size )
+def ( "border_size_right",   parse_size )
+def ( "border_size_bottom",  parse_size )
+def ( "border_size_left",    parse_size )
 def ( "border_style",  parse_option, { "none", "solid", "image_path" } ) -- can be solid, image_icon_path
 def ( "border_color",  parse_color )
 
