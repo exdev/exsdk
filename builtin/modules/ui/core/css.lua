@@ -44,6 +44,32 @@ local def = function ( _prop_name, _parse_func, _options )
     end
 end
 
+local def_group = function ( _prop_name, _group )
+    __M[_prop_name] = function ( _text )
+        local r1 = 1
+        local r2 = _text:find( " " )
+        local text_el = ""
+
+        for i=1,#_group do
+            local p = _group[i]
+
+            if i ~= #_group then 
+                text_el = _text:sub( r1, r2-1 )
+            else
+                text_el = _text:sub( r1 )
+            end
+
+            local parse_func = __M[p]
+            if parse_func and parse_func (text_el) then
+                r1 = r2+1
+                r2 = _text:find( " ", r1 )
+            end
+        end
+
+        return __M
+    end
+end
+
 --/////////////////////////////////////////////////////////////////////////////
 -- parse atomic
 --/////////////////////////////////////////////////////////////////////////////
@@ -162,10 +188,6 @@ local parse_color = function ( _style, _prop_name, _text, _options )
     return false
 end
 
---/////////////////////////////////////////////////////////////////////////////
--- parse group
---/////////////////////////////////////////////////////////////////////////////
-
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
@@ -178,29 +200,6 @@ local parse_font_family = function ( _style, _prop_name, _text, _options )
     end
 
     _style[_prop_name] = list
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local parse_font = function ( _style, _prop_name, _text, _options )
-    local r1 = 1
-    local r2 = _text:find( " " )
-    local v = _text:sub( r1, r2-1 )
-
-    if parse_option( _style, "font_style", v, { "normal", "italic", "oblique", "inherit" } ) then
-        r1 = r2+1
-        r2 = _text:find( " ", r1 )
-    end
-
-    v = _text:sub( r1, r2-1 )
-    if parse_size( _style, "font_size", v ) then
-        r1 = r2+1
-    end
-
-    v = _text:sub( r1 )
-    parse_font_family( _style, "font_family", v )
 end
 
 -- ------------------------------------------------------------------ 
@@ -220,46 +219,6 @@ local parse_offset_rect = function ( _style, _prop_name, _text, _options )
     parse_size( _style, _prop_name .. "_right", right, _options )
     parse_size( _style, _prop_name .. "_bottom", bottom, _options )
     parse_size( _style, _prop_name .. "_left", left, _options )
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local parse_border = function ( _style, _prop_name, _text, _options )
-    local list = string.split( _text, " " )
-    if #list == 0 then return end
-    local i = 1
-
-    if parse_offset_rect( _style, "border_size", list[i] ) then
-        i = i + 1
-    end
-
-    if parse_option( _style, "border_style", list[i], { "none", "solid", "image_path" } ) then
-        i = i + 1
-    end
-
-    if parse_color( _style, "border_color", list[i] ) then
-        i = i + 1
-    end
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local parse_text_outline = function ( _style, _prop_name, _text, _options )
-    local list = string.split( _text, " " )
-    if #list == 0 then return end
-    local i = 1
-
-    if parse_size( _style, "text_outline_thickness", list[i] ) then
-        i = i + 1
-    end
-
-    if parse_color( _style, "text_outline_color", list[i] ) then
-        i = i + 1
-    end
 end
 
 --/////////////////////////////////////////////////////////////////////////////
@@ -295,7 +254,11 @@ __M.done = done
 -- ------------------------------------------------------------------ 
 
 -- font
-def ( "font",  parse_font ) -- group
+def_group ( "font", {
+    "font_style",
+    "font_size",
+    "font_family",
+} )
 def ( "font_style",  parse_option, { "normal", "italic", "oblique", "inherit" } )
 -- def ( "font_variant",  parse_option, { "normal", "small-cap", "inherit" } ) -- TODO? I don't think we need this
 -- def ( "font_weight",  parse_font_weight ) -- TODO? must know how to setup bold or other font in FreeType
@@ -303,22 +266,26 @@ def ( "font_size",  parse_size )
 def ( "font_family",  parse_font_family )
 
 -- margin
-def ( "margin",  parse_offset_rect ) -- group
+def ( "margin",  parse_offset_rect )
 def ( "margin_top",     parse_size )
 def ( "margin_right",   parse_size )
 def ( "margin_bottom",  parse_size )
 def ( "margin_left",    parse_size )
 
 -- padding
-def ( "padding",  parse_offset_rect ) -- group
+def ( "padding",  parse_offset_rect )
 def ( "padding_top",     parse_size )
 def ( "padding_right",   parse_size )
 def ( "padding_bottom",  parse_size )
 def ( "padding_left",    parse_size )
 
 -- border
-def ( "border",  parse_border ) -- group
-def ( "border_size",  parse_offset_rect ) -- group
+def_group ( "border", {
+    "border_size",
+    "border_style",
+    "border_color",
+} )
+def ( "border_size",  parse_offset_rect )
 def ( "border_size_top",     parse_size )
 def ( "border_size_right",   parse_size )
 def ( "border_size_bottom",  parse_size )
@@ -328,20 +295,23 @@ def ( "border_color",  parse_color )
 
 -- text
 def ( "text_decoration",  parse_option, { "none", "underline", "overline", "through", "inherit" } )
-def ( "text_outline", parse_text_outline ) -- group
--- TODO { 
--- def_group ( "text_outline", { 
---     "text_outline_thickness",
---     "text_outline_color",
--- } )
--- } TODO end 
+def ( "text_overflow", parse_option, { "clip", "ellipsis" } )
+
+def_group ( "text_outline", {
+    "text_outline_thickness",
+    "text_outline_color",
+} )
 def ( "text_outline_thickness", parse_size )
 def ( "text_outline_color", parse_color )
-def ( "text_shadow", parse_text_shadow ) -- group
+
+def_group ( "text_shadow", {
+    "text_shadow_offset_x",
+    "text_shadow_offset_y",
+    "text_shadow_color",
+} )
 def ( "text_shadow_offset_x", parse_size )
 def ( "text_shadow_offset_y", parse_size )
 def ( "text_shadow_color", parse_color )
-def ( "text_overflow", parse_option, { "clip", "ellipsis" } )
 
 -- size
 def ( "width",  parse_size )
@@ -351,15 +321,20 @@ def ( "min_height",  parse_size )
 def ( "max_width",  parse_size )
 def ( "max_height",  parse_size )
 
--- misc
-def ( "white_space",  parse_option, { "normal", "nowrap", "inherit" } )
-def ( "color",  parse_color )
-def ( "display",  parse_option, { "block", "inline-block", "inline", "inherit" } )
+-- 
 -- TODO { 
 -- def ( "overflow",  parse_option, { "visible", "hidden", "scroll", "auto", "inherit" } )
 -- def ( "overflow_x",  parse_option, { "visible", "hidden", "scroll", "auto", "inherit" } )
 -- def ( "overflow_y",  parse_option, { "visible", "hidden", "scroll", "auto", "inherit" } )
 -- } TODO end 
+
+-- background
+def ( "background_color",  parse_color )
+
+-- misc
+def ( "white_space",  parse_option, { "normal", "nowrap", "inherit" } )
+def ( "color",  parse_color )
+def ( "display",  parse_option, { "block", "inline-block", "inline", "inherit" } )
 
 --/////////////////////////////////////////////////////////////////////////////
 --

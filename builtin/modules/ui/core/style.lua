@@ -11,7 +11,6 @@ local __M = {}
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
 
--- TEMP { 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
@@ -31,17 +30,6 @@ local setup_font = function ( _style )
 
     return font
 end
--- } TEMP end 
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
--- rect filed
-__M.top = 1
-__M.right = 2
-__M.bottom = 3
-__M.left = 4
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -49,45 +37,60 @@ __M.left = 4
 
 local default = {
     -- font
+    font_style = "normal",
+    font_size = { "px", 16 },
     font_family = { "Bitstream Vera Sans Mono", "Times New Roman" },
-    font_size = 16,
-    font_style = "normal", -- "normal", "italic", "oblique"
+
+    -- margin
+    margin_top = { "px", 0 },
+    margin_right = { "px", 0 },
+    margin_bottom = { "px", 0 },
+    margin_left = { "px", 0 },
+
+    -- padding
+    padding_top = { "px", 0 },
+    padding_right = { "px", 0 },
+    padding_bottom = { "px", 0 },
+    padding_left = { "px", 0 },
+
+    -- border
+    border_style = "none",
+    border_size_top = { "px", 0 },
+    border_size_right = { "px", 0 },
+    border_size_bottom = { "px", 0 },
+    border_size_left = { "px", 0 },
+    border_color = { 0, 0, 0, 255 },
 
     -- text
-    text_decoration = "none", -- "none", "underline", "overline", "through"
-    text_outline = { 0, { 0, 0, 0, 255 } }, -- { thickness, color }
-    text_shadow = { { 0, 0 }, { 0, 0, 0, 255 } }, -- { offset, color }
-    white_space = "normal", -- "normal", "nowrap"
-    text_overflow = "clip", -- "clip", "ellipsis" (...)
-
-    -- box { top, right, bottom, left } -- can be number, "auto", "inherit" and nil.
-    border  = { 0, 0, 0, 0 },
-    margin  = { 0, 0, 0, 0 },
-    padding = { 0, 0, 0, 0 },
-
-    -- colors { red, gree, blue, alpha }
-    color               = { 0, 0, 0, 255 }, 
-    border_color        = { 0, 0, 0, 255 },
-    background_color    = { 255, 255, 255, 0 },
+    text_decoration = "none",
+    text_overflow = "clip",
+    text_outline_thickness = { "px", 0 },
+    text_outline_color = { 0, 0, 0, 255 },
+    text_shadow_offset_x = { "px", 0 },
+    text_shadow_offset_y = { "px", 0 },
+    text_shadow_color = { 0, 0, 0, 255 },
 
     -- size
-    width = "auto",
-    height = "auto",
-    min_width = "auto",
-    min_height = "auto",
-    max_width = "auto",
-    max_height = "auto",
+    width = { "auto" },
+    height = { "auto" },
+    min_width = { "auto" },
+    min_height = { "auto" },
+    max_width = { "auto" },
+    max_height = { "auto" },
 
-    -- display
-    display = "block", -- block, inline-block, inline
-    overflow = { "visible", "visible" }, -- "visible", "hidden", "scroll", "auto" 
+    -- background
+    background_color = { 255, 255, 255, 0 },
+
+    -- misc
+    white_space = "normal",
+    color = { 0, 0, 0, 255 },
+    display = "block",
 }
 __M.default = default
 
 --/////////////////////////////////////////////////////////////////////////////
 -- public functions
 --/////////////////////////////////////////////////////////////////////////////
-
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -96,23 +99,34 @@ __M.default = default
 local draw = function ( _style, _rect, _content )
     local tname = typename (_content)
 
-    local x, y, w, h = _rect[1], _rect[2], _rect[3], _rect[4]
+    local x, y, w, h 
+        = _rect[1], _rect[2], _rect[3], _rect[4]
 
-    x = x + _style.margin[ui.style.left] 
-    y = y + _style.margin[ui.style.top] 
-    w = w - _style.margin[ui.style.left] - _style.margin[ui.style.right]
-    h = h - _style.margin[ui.style.top] - _style.margin[ui.style.bottom] 
+    local margin_R, margin_T, margin_B, margin_L 
+        = _style.margin_right, _style.margin_top, _style.margin_bottom, _style.margin_left
+
+    local border_R, border_T, border_B, border_L 
+        = _style.border_size_right, _style.border_size_top, _style.border_size_bottom, _style.border_size_left
+
+    local padding_R, padding_T, padding_B, padding_L 
+        = _style.padding_right, _style.padding_top, _style.padding_bottom, _style.padding_left
+
+
+    x = x + margin_L
+    y = y + margin_T
+    w = w - margin_L - margin_R
+    h = h - margin_T - margin_B
 
     -- draw border
     local color = ex.color4f.from_rgba_8888(_style.border_color)
     ex.canvas.color = color
     ex.canvas.draw_rect_4( x, y, w, h,
-                           _style.border[1], _style.border[2], _style.border[3], _style.border[4] ) 
+                           border_T, border_R, border_B, border_L ) 
 
-    x = x + _style.border[ui.style.left] + _style.padding[ui.style.left] 
-    y = y + _style.border[ui.style.top] + _style.padding[ui.style.top] 
-    w = w - _style.border[ui.style.left] - _style.border[ui.style.right] - _style.padding[ui.style.left] - _style.padding[ui.style.right]
-    h = h - _style.border[ui.style.top] - _style.border[ui.style.bottom] - _style.padding[ui.style.top] - _style.padding[ui.style.bottom] 
+    x = x + border_L + padding_L
+    y = y + border_T + padding_T
+    w = w - border_L - border_R - padding_L - padding_R
+    h = h - border_T - border_B - padding_T - padding_B
 
     if tname == "string" then 
         if _content == "" then 
