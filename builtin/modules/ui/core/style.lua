@@ -13,26 +13,6 @@ local __M = {}
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
--- ------------------------------------------------------------------ 
-
-local setup_font = function ( _style )
-    local font = nil
-    for i=1,#_style.font_family do
-        font = ui.fonts[_style.font_family[i]]
-        if font ~= nil then 
-            break 
-        end
-    end
-    assert ( font ~= nil )
-
-    -- TODO: _style.font_style
-    font.size = _style.font_size
-
-    return font
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
 -- default computed style
 -- NOTE: this is not the table for element.style, it is for element.computed_style
 -- ------------------------------------------------------------------ 
@@ -93,6 +73,27 @@ __M.default = default
 --/////////////////////////////////////////////////////////////////////////////
 -- public functions
 --/////////////////////////////////////////////////////////////////////////////
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local setup_font = function ( _style )
+    local font = nil
+    for i=1,#_style.font_family do
+        font = ui.fonts[_style.font_family[i]]
+        if font ~= nil then 
+            break 
+        end
+    end
+    assert ( font ~= nil )
+
+    -- TODO: _style.font_style
+    font.size = _style.font_size
+
+    return font
+end
+__M.setup_font = setup_font
 
 -- ------------------------------------------------------------------ 
 -- Desc: 

@@ -15,22 +15,21 @@ local __M = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local inherit_style = function ( _style, _parent_computed_style )
+local inherit_style = function ( _css, _parent_style )
     -- copy from parent
-    local new_style = table.deepcopy( {}, _parent_computed_style )
+    local new_style = table.deepcopy( {}, _parent_style )
 
     -- default those not inherit properties
-    new_style.display = "block"
-    new_style.width = "auto"
-    new_style.height = "auto"
-    new_style.min_width = "auto"
-    new_style.min_height = "auto"
-    new_style.max_width = "auto"
-    new_style.max_height = "auto"
+    new_style.display = nil
+    new_style.width = nil
+    new_style.height = nil
+    new_style.min_width = nil
+    new_style.min_height = nil
+    new_style.max_width = nil
+    new_style.max_height = nil
 
     -- copy from myself
-    new_style = table.deepcopy( new_style, _style )
-
+    new_style = table.deepcopy( new_style, _css )
     return new_style
 end
 
@@ -38,20 +37,10 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local process_style = function ( _el )
-    _el._computed_style = inherit_style( _el.style, (_el.parent ~= nil) and _el.parent._computed_style or ui.style.default )
-    for i=1,#_el.children do
-        ui.process_style (_el.children[i])
-    end
-end
-__M.process_style = process_style
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
 local do_layout = nil
 do_layout = function ( _el, _x, _y )
+    _el._computed_style = inherit_style( _el.css, (_el.parent ~= nil) and _el.parent._computed_style or ui.style.default )
+
     local rect = { 0, 0, 0, 0 }
     local x,y = _x,_y
     local style = _el._computed_style
@@ -108,7 +97,6 @@ end
 -- ------------------------------------------------------------------ 
 
 local layout = function ( _el )
-    ui.process_style (_el)
     do_layout ( _el, 0, 0 )
 end
 __M.layout = layout

@@ -22,11 +22,11 @@ local element = class ({
     _rect = { 0, 0, 0, 0 },
     _enable_debug = false,
     _debug_level = 1,
-    _computed_style = {}, -- computed style
+    _computed_style = {}, -- computed style from element.css
 
     id = "__unknown__",
     content = "", -- can be text, image, video, audio and ..., but only one of them can be set to content 
-    style = {}, -- the style we parsed from css
+    css = {}, -- the css table we parsed from ui.css.build()...done()
     parent = nil, -- element
     children = {}, -- element list
 
@@ -40,10 +40,7 @@ local element = class ({
 
     _do_draw () function ( _self )
         local style = _self._computed_style
-        local p_style = _self.parent and _self.parent._computed_style or ui.style.default 
         local rect = _self._rect
-
-        local p_rect = _self.parent and _self.parent._rect or { 0, 0, ex.canvas.width, ex.canvas.height } 
 
         local content = _self.content
         local x, y, w, h = rect[1], rect[2], rect[3], rect[4]
@@ -97,7 +94,7 @@ local element = class ({
             local color = ex.color4f.from_rgba_8888(style.color)
             ex.canvas.color = color
 
-            local font = setup_font(style)
+            local font = ui.style.setup_font(style)
             local text_done = false
 
             -- draw outline text
@@ -187,12 +184,12 @@ local element = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    add = function ( _self, _id, _content, _style )
+    add = function ( _self, _id, _content, _css )
         local new_element = ui.element( { 
             parent = _self, 
             id = _id or "__unknown__", 
             content = _content or "", 
-            style = _style or {} 
+            css = _css or {} 
         } )
         table.add ( _self.children, new_element )
 
