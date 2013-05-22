@@ -26,13 +26,101 @@ local element = class ({
 
     id = "__unknown__",
     content = "", -- can be text, image, video, audio and ..., but only one of them can be set to content 
-    style = ui.style.default, -- the style we define at the beginning
+    style = {}, -- the style we parsed from css
     parent = nil, -- element
     children = {}, -- element list
 
     --/////////////////////////////////////////////////////////////////////////////
     -- private functions
     --/////////////////////////////////////////////////////////////////////////////
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    _do_draw () function ( _self )
+        local style = _self._computed_style
+        local p_style = _self.parent and _self.parent._computed_style or ui.style.default 
+        local rect = _self._rect
+
+        local p_rect = _self.parent and _self.parent._rect or { 0, 0, ex.canvas.width, ex.canvas.height } 
+
+        local content = _self.content
+        local x, y, w, h = rect[1], rect[2], rect[3], rect[4]
+
+        local margin_R, margin_T, margin_B, margin_L 
+            = style.margin_right, style.margin_top, style.margin_bottom, style.margin_left
+
+        local border_R, border_T, border_B, border_L 
+            = style.border_size_right, style.border_size_top, style.border_size_bottom, style.border_size_left
+
+        local padding_R, padding_T, padding_B, padding_L 
+            = style.padding_right, style.padding_top, style.padding_bottom, style.padding_left
+
+        -- margin step in
+        x = x + margin_L
+        y = y + margin_T
+        w = w - margin_L - margin_R
+        h = h - margin_T - margin_B
+
+        -- draw border
+        local color = ex.color4f.from_rgba_8888(style.border_color)
+        ex.canvas.color = color
+        ex.canvas.draw_rect_4( x, y, w, h, border_T, border_R, border_B, border_L ) 
+
+        -- border step in
+        x = x + border_L
+        y = y + border_T
+        w = w - border_L - border_R
+        h = h - border_T - border_B
+
+        -- draw background rect
+        if style.background_color[4] ~= 0 then
+            local color = ex.color4f.from_rgba_8888(style.background_color)
+            ex.canvas.color = color
+            ex.canvas.draw_filled_rect( x, y, w, h ) 
+        end
+
+        -- padding step in
+        x = x + padding_L
+        y = y + padding_T
+        w = w - padding_L - padding_R
+        h = h - padding_T - padding_B
+
+        -- draw content 
+        local tname = typename (content)
+        if tname == "string" then 
+            if content == "" then 
+                return
+            end
+
+            local color = ex.color4f.from_rgba_8888(style.color)
+            ex.canvas.color = color
+
+            local font = setup_font(style)
+            local text_done = false
+
+            -- draw outline text
+            if style.text_outline[1] > 0 then 
+                local color2 = ex.color4f.from_rgba_8888( style.text_outline[2] )
+                ex.canvas.draw_outline_text( content, font, color, color2, style.text_outline[1], x, y ) 
+                text_done = true
+            end
+
+            -- draw shadow text
+            local shadow_x, shadow_y = style.text_shadow[1][1], style.text_shadow[1][2] 
+            if shadow_x > 0 or shadow_y > 0 then 
+                local color2 = ex.color4f.from_rgba_8888( style.text_shadow[2] )
+                ex.canvas.draw_shadow_text( content, font, color, color2, ex.vec2f(shadow_x, shadow_y), x, y ) 
+                text_done = true
+            end
+
+            -- draw normal text
+            if text_done == false then
+                ex.canvas.draw_text( content, font, x, y ) 
+            end
+        end
+    end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -134,7 +222,7 @@ local element = class ({
 
     draw = function ( _self ) 
         _self._dirty = false;
-        ui.style.draw ( _self._computed_style, _self._rect, _self.content )
+        _self._do_draw()
 
         for i=1,#_self.children do
             local child_el = _self.children[i]
