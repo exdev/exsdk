@@ -22,7 +22,7 @@ local element = class ({
     _rect = { 0, 0, 0, 0 },
     _enable_debug = false,
     _debug_level = 1,
-    _computed_style = {}, -- computed style from element.css
+    _style = {}, -- computed style from element.css
 
     id = "__unknown__",
     content = "", -- can be text, image, video, audio and ..., but only one of them can be set to content 
@@ -39,20 +39,20 @@ local element = class ({
     -- ------------------------------------------------------------------ 
 
     _do_draw () function ( _self )
-        local style = _self._computed_style
+        local style = _self._style
         local rect = _self._rect
 
         local content = _self.content
         local x, y, w, h = rect[1], rect[2], rect[3], rect[4]
 
-        local margin_R, margin_T, margin_B, margin_L 
-            = style.margin_right, style.margin_top, style.margin_bottom, style.margin_left
+        local margin_T, margin_R, margin_B, margin_L 
+            = style.margin_top, style.margin_right, style.margin_bottom, style.margin_left
 
-        local border_R, border_T, border_B, border_L 
-            = style.border_size_right, style.border_size_top, style.border_size_bottom, style.border_size_left
+        local border_T, border_R, border_B, border_L 
+            = style.border_size_top, style.border_size_right, style.border_size_bottom, style.border_size_left
 
-        local padding_R, padding_T, padding_B, padding_L 
-            = style.padding_right, style.padding_top, style.padding_bottom, style.padding_left
+        local padding_T, padding_R, padding_B, padding_L 
+            = style.padding_top, style.padding_right, style.padding_bottom, style.padding_left
 
         -- margin step in
         x = x + margin_L
@@ -132,41 +132,52 @@ local element = class ({
             return
         end
 
-        -- draw margin
-        local style = _self.style
-        local x, y, w, h = _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4]
-        local l, r, t, b = ui.style.left, ui.style.right, ui.style.top, ui.style.bottom
         local alpha = 200
+        local style = _self._style
+        local x, y, w, h = _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4]
+        local margin_T, margin_R, margin_B, margin_L 
+            = style.margin_top, style.margin_right, style.margin_bottom, style.margin_left
 
+        local border_T, border_R, border_B, border_L 
+            = style.border_size_top, style.border_size_right, style.border_size_bottom, style.border_size_left
+
+        local padding_T, padding_R, padding_B, padding_L 
+            = style.padding_top, style.padding_right, style.padding_bottom, style.padding_left
+
+        -- draw margin
         ex.canvas.color = ex.color4f.from_rgba_8888 ( { 249, 204, 157, alpha } )
         ex.canvas.draw_rect_4 ( x, y, w, h,
-                                style.margin[1], style.margin[2], style.margin[3], style.margin[4] )
+                                margin_T, margin_R, margin_B, margin_L )
+
+        -- margin step in
+        x, y, w, h = x + margin_L,
+                     y + margin_T,
+                     w - ( margin_L + margin_R ), 
+                     h - ( margin_T + margin_B )
 
         -- draw border
-        x, y, w, h = x + style.margin[l],
-                     y + style.margin[t],
-                     w - ( style.margin[l] + style.margin[r] ), 
-                     h - ( style.margin[t] + style.margin[b] )
-
         ex.canvas.color = ex.color4f.from_rgba_8888 ( { 128, 128, 128, alpha } )
         ex.canvas.draw_rect_4 ( x, y, w, h,
-                                style.border[1], style.border[2], style.border[3], style.border[4] )
+                                border_T, border_R, border_B, border_L )
+
+        -- border step in
+        x, y, w, h = x + border_L, 
+                     y + border_T,
+                     w - ( border_L + border_R ), 
+                     h - ( border_T + border_B )
 
         -- draw padding 
-        x, y, w, h = x + style.border[l], 
-                     y + style.border[t],
-                     w - ( style.border[l] + style.border[r] ), 
-                     h - ( style.border[t] + style.border[b] )
-
         ex.canvas.color = ex.color4f.from_rgba_8888 ( { 195, 222, 183, alpha } )
         ex.canvas.draw_rect_4 ( x, y, w, h,
-                                style.padding[1], style.padding[2], style.padding[3], style.padding[4] )
+                                padding_T, padding_R, padding_B, padding_L )
+
+        -- padding step in 
+        x, y, w, h = x + padding_L,
+                     y + padding_T,
+                     w - ( padding_L + padding_R ), 
+                     h - ( padding_T + padding_B )
 
         -- draw content 
-        x, y, w, h = x + style.padding[l],
-                     y + style.padding[t],
-                     w - ( style.padding[l] + style.padding[r] ), 
-                     h - ( style.padding[t] + style.padding[b] )
         ex.canvas.color = ex.color4f.from_rgba_8888( { 155, 192, 227, alpha } )
         ex.canvas.draw_filled_rect ( x, y, w, h )
 
