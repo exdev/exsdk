@@ -24,6 +24,8 @@ local calc_size = function ( _size, _parent_size, _default )
         return "auto"
     elseif _size[1] == "inherit" then
         return _parent_size
+    elseif _size[1] == "none" then
+        return "none"
     elseif _size[1] == "px" then
         return _size[2]
     elseif _size[1] == "%" then
@@ -119,16 +121,35 @@ local layout = function ( _el )
     local css = _el.css
     local style = inherit_style( css, ui.style.default )
 
-    style.width         = calc_size ( css.width, block_w, "auto" )
-    style.margin_left   = calc_size ( css.margin_left, block_w, "auto" )
-    style.margin_right  = calc_size ( css.margin_right, block_w, "auto" )
-    style.margin_top    = calc_size ( css.margin_top, block_w, "auto" )
+    style.width         = calc_size ( css.width,  block_w, "auto" )
+    style.min_width     = calc_size ( css.min_width,  block_w, 0 )
+    style.max_width     = calc_size ( css.max_width,  block_w, "none" )
+    style.height        = calc_size ( css.height, block_h, "auto" )
+    style.min_height    = calc_size ( css.min_height, block_h, 0 )
+    style.max_height    = calc_size ( css.max_height, block_h, "none" )
+
+    style.margin_left   = calc_size ( css.margin_left,   block_w, "auto" )
+    style.margin_right  = calc_size ( css.margin_right,  block_w, "auto" )
+    style.margin_top    = calc_size ( css.margin_top,    block_w, "auto" )
     style.margin_bottom = calc_size ( css.margin_bottom, block_w, "auto" )
 
-    if style.width == "auto" then
-        if style.margin_left == "auto" then style.margin_left = 0 end
-        if style.margin_right == "auto" then style.margin_right = 0 end
-    else
+    style.padding_left   = calc_size ( css.padding_left,   block_w, 0 )
+    style.padding_right  = calc_size ( css.padding_right,  block_w, 0 )
+    style.padding_top    = calc_size ( css.padding_top,    block_w, 0 )
+    style.padding_bottom = calc_size ( css.padding_bottom, block_w, 0 )
+
+    style.border_size_left   = calc_size ( css.border_size_left,   block_w, 0 )
+    style.border_size_right  = calc_size ( css.border_size_right,  block_w, 0 )
+    style.border_size_top    = calc_size ( css.border_size_top,    block_w, 0 )
+    style.border_size_bottom = calc_size ( css.border_size_bottom, block_w, 0 )
+
+    if style.display == "block" then
+        if style.width == "auto" then
+            if style.margin_left == "auto" then style.margin_left = 0 end
+            if style.margin_right == "auto" then style.margin_right = 0 end
+        else
+            -- TODO
+        end
     end
 
     local x = block_x + style.margin_left + style.border_left + style.padding_left

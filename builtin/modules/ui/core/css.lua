@@ -130,6 +130,9 @@ local parse_size = function ( _style, _prop_name, _text, _options )
     elseif _text == "auto" then
         _style[_prop_name] = { "auto" }
         return true
+    elseif _text == "none" then
+        _style[_prop_name] = { "none" }
+        return true
     end
 
     -- px or %
