@@ -37,16 +37,48 @@ end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
+-- http://www.w3.org/TR/CSS21/
 -- ------------------------------------------------------------------ 
 
-local inherit_style = function ( _css, _parent_style )
-    -- copy from parent
-    local new_style = table.deepcopy( {}, _parent_style )
+local finalize_style = function ( _el, _block_x, _block_y, _block_w, _block_h )
+    local css = _el.css
+    local p_style = (_el.parent ~= nil) and _el.parent._style or ui.style.default
+    local style = table.deepcopy( {}, p_style ) -- copy from parent
+    style = table.deepcopy( new_style, _css ) -- copy from css
 
-    -- copy from css
-    new_style = table.deepcopy( new_style, _css )
+    style.width         = calc_size ( css.width,      _block_w, "auto" )
+    style.min_width     = calc_size ( css.min_width,  _block_w, 0      )
+    style.max_width     = calc_size ( css.max_width,  _block_w, "none" )
+    style.height        = calc_size ( css.height,     _block_h, "auto" )
+    style.min_height    = calc_size ( css.min_height, _block_h, 0      )
+    style.max_height    = calc_size ( css.max_height, _block_h, "none" )
 
-    return new_style
+    style.margin_left   = calc_size ( css.margin_left,   _block_w, "auto" )
+    style.margin_right  = calc_size ( css.margin_right,  _block_w, "auto" )
+    style.margin_top    = calc_size ( css.margin_top,    _block_w, "auto" )
+    style.margin_bottom = calc_size ( css.margin_bottom, _block_w, "auto" )
+
+    style.padding_left   = calc_size ( css.padding_left,   _block_w, 0 )
+    style.padding_right  = calc_size ( css.padding_right,  _block_w, 0 )
+    style.padding_top    = calc_size ( css.padding_top,    _block_w, 0 )
+    style.padding_bottom = calc_size ( css.padding_bottom, _block_w, 0 )
+
+    style.border_size_left   = calc_size ( css.border_size_left,   _block_w, 0 )
+    style.border_size_right  = calc_size ( css.border_size_right,  _block_w, 0 )
+    style.border_size_top    = calc_size ( css.border_size_top,    _block_w, 0 )
+    style.border_size_bottom = calc_size ( css.border_size_bottom, _block_w, 0 )
+
+    if style.display == "block" then
+        if style.width == "auto" then
+            if style.margin_left == "auto" then style.margin_left = 0 end
+            if style.margin_right == "auto" then style.margin_right = 0 end
+        else
+            -- style.width = math.clamp( style.width, style.min_width, style.max_width )
+            -- TODO
+        end
+    end
+
+    _el.style = style
 end
 
 -- ------------------------------------------------------------------ 
@@ -110,7 +142,6 @@ end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
--- http://www.w3.org/TR/CSS21/
 -- ------------------------------------------------------------------ 
 
 local layout = function ( _el )
@@ -118,40 +149,7 @@ local layout = function ( _el )
     local block_y = 0
     local block_w = ex.canvas.width
     local block_h = ex.canvas.height
-    local css = _el.css
-    local style = inherit_style( css, ui.style.default )
-
-    style.width         = calc_size ( css.width,  block_w, "auto" )
-    style.min_width     = calc_size ( css.min_width,  block_w, 0 )
-    style.max_width     = calc_size ( css.max_width,  block_w, "none" )
-    style.height        = calc_size ( css.height, block_h, "auto" )
-    style.min_height    = calc_size ( css.min_height, block_h, 0 )
-    style.max_height    = calc_size ( css.max_height, block_h, "none" )
-
-    style.margin_left   = calc_size ( css.margin_left,   block_w, "auto" )
-    style.margin_right  = calc_size ( css.margin_right,  block_w, "auto" )
-    style.margin_top    = calc_size ( css.margin_top,    block_w, "auto" )
-    style.margin_bottom = calc_size ( css.margin_bottom, block_w, "auto" )
-
-    style.padding_left   = calc_size ( css.padding_left,   block_w, 0 )
-    style.padding_right  = calc_size ( css.padding_right,  block_w, 0 )
-    style.padding_top    = calc_size ( css.padding_top,    block_w, 0 )
-    style.padding_bottom = calc_size ( css.padding_bottom, block_w, 0 )
-
-    style.border_size_left   = calc_size ( css.border_size_left,   block_w, 0 )
-    style.border_size_right  = calc_size ( css.border_size_right,  block_w, 0 )
-    style.border_size_top    = calc_size ( css.border_size_top,    block_w, 0 )
-    style.border_size_bottom = calc_size ( css.border_size_bottom, block_w, 0 )
-
-    if style.display == "block" then
-        if style.width == "auto" then
-            if style.margin_left == "auto" then style.margin_left = 0 end
-            if style.margin_right == "auto" then style.margin_right = 0 end
-        else
-            -- style.width = math.clamp( style.width, style.min_width, style.max_width )
-            -- TODO
-        end
-    end
+    local style = finalize_style(_el, block_x, block_y, block_w, block_h )  
 
     local x = block_x + style.margin_left + style.border_left + style.padding_left
     local y = block_y + style.margin_top + style.border_top + style.padding_top
