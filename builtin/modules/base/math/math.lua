@@ -27,7 +27,18 @@ __M.half_pi = half_pi
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function lerp ( _src, _dest, _ratio )
+local clamp = function ( _val, _min, _max ) 
+    if _val > _max then return _max end 
+    if _val < _min then return _min end 
+    return _val
+end
+__M.clamp = clamp
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local lerp = function ( _src, _dest, _ratio )
     assert ( type(_ratio) == "number", "Type error: _ratio is not a number" )
     return _src * (1.0 - _ratio) + _dest * _ratio 
 end
@@ -41,7 +52,7 @@ __M.lerp = lerp
 -- drop_item = item[gen_idx()]
 -- ------------------------------------------------------------------ 
 
-local function probability( _weights )
+local probability = function ( _weights )
     local sum = 0.0
     local cdf = {}
 

@@ -148,6 +148,7 @@ local layout = function ( _el )
             if style.margin_left == "auto" then style.margin_left = 0 end
             if style.margin_right == "auto" then style.margin_right = 0 end
         else
+            -- style.width = math.clamp( style.width, style.min_width, style.max_width )
             -- TODO
         end
     end
