@@ -123,24 +123,47 @@ end
 -- ------------------------------------------------------------------ 
 
 local parse_size = function ( _style, _prop_name, _text, _options )
+    local has_inherit = false
+    local has_auto = false
+    local has_none = false
+    local has_percent = false
+    local has_px = false
+
+    --
+    for i=1,#_options do
+        local opt = _options[i]
+
+        if opt == "inherit" then
+            has_inherit = true
+        elseif opt == "auto" then
+            has_auto = true
+        elseif opt == "none" then
+            has_none = true
+        elseif opt == "%" then
+            has_percent = true
+        elseif opt == "px" then
+            has_px = true
+        end
+    end
+
     -- inherit or auto
-    if _text == "inherit" then
+    if has_inherit and _text == "inherit" then
         _style[_prop_name] = { "inherit" }
         return true
-    elseif _text == "auto" then
+    elseif has_auto and _text == "auto" then
         _style[_prop_name] = { "auto" }
         return true
-    elseif _text == "none" then
+    elseif has_none and _text == "none" then
         _style[_prop_name] = { "none" }
         return true
     end
 
     -- px or %
     local len = _text:len()
-    if _text:ncmp("px", len-2, 2) then
+    if has_px and _text:ncmp("px", len-2, 2) then
         _style[_prop_name] = { "px", tonumber( _text:sub( 1, len-2 ) )  }
         return true
-    elseif _text:ncmp("%", len-1, 1) then
+    elseif has_percent and _text:ncmp("%", len-1, 1) then
         _style[_prop_name] = { "%", tonumber( _text:sub( 1, len-1 ) )  }
         return true
     end
@@ -265,22 +288,22 @@ def_group ( "font", {
 def ( "font_style",  parse_option, { "normal", "italic", "oblique", "inherit" } )
 -- def ( "font_variant",  parse_option, { "normal", "small-cap", "inherit" } ) -- TODO? I don't think we need this
 -- def ( "font_weight",  parse_font_weight ) -- TODO? must know how to setup bold or other font in FreeType
-def ( "font_size",  parse_size )
+def ( "font_size",  parse_size, { "inherit", "px", "%" } )
 def ( "font_family",  parse_font_family )
 
 -- margin
-def ( "margin",  parse_offset_rect )
-def ( "margin_top",     parse_size )
-def ( "margin_right",   parse_size )
-def ( "margin_bottom",  parse_size )
-def ( "margin_left",    parse_size )
+def ( "margin",  parse_offset_rect, { "inherit", "auto", "px", "%" } )
+def ( "margin_top",     parse_size, { "inherit", "auto", "px", "%" } )
+def ( "margin_right",   parse_size, { "inherit", "auto", "px", "%" } )
+def ( "margin_bottom",  parse_size, { "inherit", "auto", "px", "%" } )
+def ( "margin_left",    parse_size, { "inherit", "auto", "px", "%" } )
 
 -- padding
-def ( "padding",  parse_offset_rect )
-def ( "padding_top",     parse_size )
-def ( "padding_right",   parse_size )
-def ( "padding_bottom",  parse_size )
-def ( "padding_left",    parse_size )
+def ( "padding",  parse_offset_rect, { "inherit", "px", "%" } )
+def ( "padding_top",     parse_size, { "inherit", "px", "%" } )
+def ( "padding_right",   parse_size, { "inherit", "px", "%" } )
+def ( "padding_bottom",  parse_size, { "inherit", "px", "%" } )
+def ( "padding_left",    parse_size, { "inherit", "px", "%" } )
 
 -- border
 def_group ( "border", {
@@ -288,11 +311,11 @@ def_group ( "border", {
     "border_style",
     "border_color",
 } )
-def ( "border_size",  parse_offset_rect )
-def ( "border_size_top",     parse_size )
-def ( "border_size_right",   parse_size )
-def ( "border_size_bottom",  parse_size )
-def ( "border_size_left",    parse_size )
+def ( "border_size",  parse_offset_rect, { "inherit", "px", "%" } )
+def ( "border_size_top",     parse_size, { "inherit", "px", "%" } )
+def ( "border_size_right",   parse_size, { "inherit", "px", "%" } )
+def ( "border_size_bottom",  parse_size, { "inherit", "px", "%" } )
+def ( "border_size_left",    parse_size, { "inherit", "px", "%" } )
 def ( "border_style",  parse_option, { "none", "solid", "image_path" } ) -- can be solid, image_icon_path
 def ( "border_color",  parse_color )
 
@@ -304,7 +327,7 @@ def_group ( "text_outline", {
     "text_outline_thickness",
     "text_outline_color",
 } )
-def ( "text_outline_thickness", parse_size )
+def ( "text_outline_thickness", parse_size, { "inherit", "px", "%" } )
 def ( "text_outline_color", parse_color )
 
 def_group ( "text_shadow", {
@@ -312,17 +335,17 @@ def_group ( "text_shadow", {
     "text_shadow_offset_y",
     "text_shadow_color",
 } )
-def ( "text_shadow_offset_x", parse_size )
-def ( "text_shadow_offset_y", parse_size )
+def ( "text_shadow_offset_x", parse_size, { "inherit", "px", "%" } )
+def ( "text_shadow_offset_y", parse_size, { "inherit", "px", "%" } )
 def ( "text_shadow_color", parse_color )
 
 -- size
-def ( "width",  parse_size )
-def ( "height",  parse_size )
-def ( "min_width",  parse_size )
-def ( "min_height",  parse_size )
-def ( "max_width",  parse_size )
-def ( "max_height",  parse_size )
+def ( "width",      parse_size, { "inherit", "auto", "px", "%" } )
+def ( "height",     parse_size, { "inherit", "auto", "px", "%" } )
+def ( "min_width",  parse_size, { "inherit", "px", "%" } )
+def ( "min_height", parse_size, { "inherit", "px", "%" } )
+def ( "max_width",  parse_size, { "inherit", "none", "px", "%" } )
+def ( "max_height", parse_size, { "inherit", "none", "px", "%" } )
 
 -- 
 -- TODO { 

@@ -51,7 +51,7 @@ return {
         )
 
         -- do layout
-        ui.layout(_root_el)
+        ui.layout(_root_el, 0, 0, ex.canvas.width, ex.canvas.height)
 
         -- setup debug draw
         _root_el.children[3]:debug_draw()
@@ -63,7 +63,7 @@ return {
     -- ------------------------------------------------------------------ 
 
     repaint = function ( _root_el )
-        ui.layout(_root_el)
+        ui.layout(_root_el, 0, 0, ex.canvas.width, ex.canvas.height)
     end
 }
 

@@ -68,64 +68,54 @@ local finalize_style = function ( _el, _block_x, _block_y, _block_w, _block_h )
     style.border_size_top    = calc_size ( css.border_size_top,    _block_w, 0 )
     style.border_size_bottom = calc_size ( css.border_size_bottom, _block_w, 0 )
 
+    -- based on http://www.w3.org/TR/CSS21/visudet.html#the-width-property  
     if style.display == "block" then
         if style.width == "auto" then
             if style.margin_left == "auto" then style.margin_left = 0 end
             if style.margin_right == "auto" then style.margin_right = 0 end
         else
+            local w = style.width 
+                    + style.padding_left + style.padding_right 
+                    + style.border_size_left + style.border_size_right
+
+            if w >= _block_w then
+                if style.margin_left == "auto" then style.margin_left = 0 end
+                if style.margin_right == "auto" then style.margin_right = 0 end
+            else
+                local remain = _block_w - w
+
+                if style.margin_left == "auto" then 
+                    style.margin_left = remain/2
+                    style.margin_right = remain/2
+                elseif style.margin_left >= remain then 
+                    style.margin_right = 0 
+                end
+            end
+
+            -- TODO, max_width can be "none"
             -- style.width = math.clamp( style.width, style.min_width, style.max_width )
-            -- TODO
         end
     end
-
-    _el.style = style
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local do_layout = nil
-do_layout = function ( _el, _block_x, _block_y, _block_w, _block_h )
-    local p_style = (_el.parent ~= nil) and _el.parent._style or ui.style.default
-    local rect = { 0, 0, 0, 0 }
-    local style = inherit_style( _el.css, p_style )
-    local x,y = _x,_y
-
-    -- calculate current element's css to computed_style
-
-    if _el.parent == nil then
-        rect = { 0, 0, ex.canvas.width, ex.canvas.height }
-    else 
-        local margin_width   = style.margin_left  + style.margin_right
-        local margin_height  = style.margin_top   + style.margin_bottom
-        local border_width   = style.border_left  + style.border_right
-        local border_height  = style.border_top   + style.border_bottom
-        local padding_width  = style.padding_left + style.padding_right
-        local padding_height = style.padding_top  + style.padding_bottom
-
-        local height = ui.style.content_height( style, _el.content ) + padding_height + margin_height + border_height 
-        local width = _el.parent._rect[3] 
-                      - p_style.margin_left  - p_style.margin_right
-                      - p_style.border_left  - p_style.border_right
-                      - p_style.padding_left - p_style.padding_right
-
-        rect = { x, y, width, height }
-    end
-
-    -- first time assign the rect, will be re-calculate after all children layout
-    _el._rect = rect
+local layout = function ( _el, _block_x, _block_y, _block_w, _block_h )
+    -- layout current element
+    local style = finalize_style(_el, _block_x, _block_y, _block_w, _block_h )  
     _el._style = style
+    _el._rect = { _block_x, _block_y, _block_w, _block_h }
 
-    --
-    x = x + style.margin_left + style.border_left + style.padding_left
-    y = y + style.margin_top + style.border_top + style.padding_top
+    -- layout the child
+    local x = _block_x + style.margin_left + style.border_left + style.padding_left
+    local y = _block_y + style.margin_top + style.border_top + style.padding_top
 
-    --
     for i=1,#_el.children do
         local child_el = _el.children[i]
-        local child_style = child_el._style 
-        local last_rect = do_layout ( child_el, x, y )
+        ui.layout ( child_el, x, y, style.width, style.height )
+
         -- 
         if child_style.display == "block" then 
             y = y + last_rect[4]
@@ -136,25 +126,6 @@ do_layout = function ( _el, _block_x, _block_y, _block_w, _block_h )
         end
 
     end
-
-    return rect
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local layout = function ( _el )
-    local block_x = 0
-    local block_y = 0
-    local block_w = ex.canvas.width
-    local block_h = ex.canvas.height
-    local style = finalize_style(_el, block_x, block_y, block_w, block_h )  
-
-    local x = block_x + style.margin_left + style.border_left + style.padding_left
-    local y = block_y + style.margin_top + style.border_top + style.padding_top
-
-    do_layout ( _el, x, y, style.width, style.height )
 end
 __M.layout = layout
 

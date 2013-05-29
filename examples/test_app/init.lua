@@ -40,7 +40,7 @@ wiz.on_init = function ()
         draw(_view)
         test.repaint(_view)
 
-        -- ui.layout(_view)
+        -- ui.layout( _view, 0, 0, ex.canvas.width, ex.canvas.height )
         -- _view:debug_draw()
     end
 
@@ -54,7 +54,7 @@ wiz.on_init = function ()
 
     --
     test.init( window.view )
-    ui.layout(window.view)
+    ui.layout(window.view, 0, 0, ex.canvas.width, ex.canvas.height)
 end
 
 -- ------------------------------------------------------------------ 
