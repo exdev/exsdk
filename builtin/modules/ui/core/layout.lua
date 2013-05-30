@@ -40,7 +40,7 @@ end
 -- http://www.w3.org/TR/CSS21/
 -- ------------------------------------------------------------------ 
 
-local finalize_style = function ( _el, _block_x, _block_y, _block_w, _block_h )
+local finalize_style = function ( _el, _block_w, _block_h )
     local css = _el.css
     local p_style = (_el.parent ~= nil) and _el.parent._style or ui.style.default
     local style = table.deepcopy( {}, p_style ) -- copy from parent
@@ -95,6 +95,11 @@ local finalize_style = function ( _el, _block_x, _block_y, _block_w, _block_h )
             -- TODO, max_width can be "none"
             -- style.width = math.clamp( style.width, style.min_width, style.max_width )
         end
+
+    -- TODO { 
+    -- elseif style.display == "inline-block" then
+    -- } TODO end 
+
     end
 end
 
@@ -102,30 +107,38 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local layout = function ( _el, _block_x, _block_y, _block_w, _block_h )
+local layout = function ( _el, _x, _y, _width, _height )
     -- layout current element
-    local style = finalize_style(_el, _block_x, _block_y, _block_w, _block_h )  
+    local style = finalize_style(_el, _width, _height )  
     _el._style = style
-    _el._rect = { _block_x, _block_y, _block_w, _block_h }
+    _el._rect = { _x, _y, _width, _height }
+
+    local x = _x + style.margin_left + style.border_size_left + style.padding_left
+    local y = _y + style.margin_top + style.border_size_top + style.padding_top
+
+    -- TODO: calculate content height
+    -- y = y + content_height
+    -- y = y + style.margin_bottom + style.border_size_bottom + style.padding_bottom
 
     -- layout the child
-    local x = _block_x + style.margin_left + style.border_left + style.padding_left
-    local y = _block_y + style.margin_top + style.border_top + style.padding_top
-
     for i=1,#_el.children do
         local child_el = _el.children[i]
-        ui.layout ( child_el, x, y, style.width, style.height )
+        local last_x,last_y = ui.layout ( child_el, x, y, style.width, style.height )
 
         -- 
         if child_style.display == "block" then 
-            y = y + last_rect[4]
-        elseif child_style.display == "inline-block" then
-            x = x + last_rect[3]
-        elseif child_style.display == "inline" then 
-            -- TODO
-        end
+            y = y + last_y
 
+        -- TODO { 
+        -- elseif child_style.display == "inline-block" then
+        --     x = x + last_x
+        -- } TODO end 
+
+        end
     end
+
+    -- TODO
+    return x,y
 end
 __M.layout = layout
 
