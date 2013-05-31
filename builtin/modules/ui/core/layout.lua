@@ -73,6 +73,10 @@ local finalize_style = function ( _el, _block_w, _block_h )
         if style.width == "auto" then
             if style.margin_left == "auto" then style.margin_left = 0 end
             if style.margin_right == "auto" then style.margin_right = 0 end
+            style.width = _block_w 
+                        - style.margin_left - style.margin_right 
+                        - style.padding_left - style.padding_right
+                        - style.border_size_left - style.border_size_right
         else
             local w = style.width 
                     + style.padding_left + style.padding_right 
@@ -105,16 +109,16 @@ end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
+-- the _height can be px or auto
 -- ------------------------------------------------------------------ 
 
 local layout = function ( _el, _x, _y, _width, _height )
     -- layout current element
     local style = finalize_style(_el, _width, _height )  
     _el._style = style
-    _el._rect = { _x, _y, _width, _height }
 
-    local x = _x + style.margin_left + style.border_size_left + style.padding_left
-    local y = _y + style.margin_top + style.border_size_top + style.padding_top
+    local cx = _x + style.margin_left + style.border_size_left + style.padding_left
+    local cy = _y + style.margin_top + style.border_size_top + style.padding_top
 
     -- TODO: calculate content height
     -- y = y + content_height
@@ -123,22 +127,26 @@ local layout = function ( _el, _x, _y, _width, _height )
     -- layout the child
     for i=1,#_el.children do
         local child_el = _el.children[i]
-        local last_x,last_y = ui.layout ( child_el, x, y, style.width, style.height )
+        local last_x,last_y = ui.layout ( child_el, cx, cy, style.width, style.height )
 
         -- 
         if child_style.display == "block" then 
-            y = y + last_y
+            cy = cy + last_y
 
         -- TODO { 
         -- elseif child_style.display == "inline-block" then
-        --     x = x + last_x
+        --     cx = cx + last_x
         -- } TODO end 
 
         end
     end
 
+    -- NOTE: if the style.width and style.height is "auto", it can only be decided here after all children layouted
+    -- TODO: style.width, style.height
+    -- TODO: _el._rect = { _x, _y, style.width, style.height }
+
     -- TODO
-    return x,y
+    return cx,cy
 end
 __M.layout = layout
 
