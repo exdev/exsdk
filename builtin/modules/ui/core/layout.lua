@@ -15,11 +15,9 @@ local __M = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local calc_size = function ( _size, _parent_size, _default )
-    local default = _default or _parent_size
-
+local calc_size = function ( _size, _parent_size, _container_size, _default )
     if _size == nil then 
-        return default 
+        return _default 
     elseif _size[1] == "auto" then
         return "auto"
     elseif _size[1] == "inherit" then
@@ -29,10 +27,10 @@ local calc_size = function ( _size, _parent_size, _default )
     elseif _size[1] == "px" then
         return _size[2]
     elseif _size[1] == "%" then
-        return _size[2] * _parent_size
+        return _size[2] * _container_size
     end
 
-    return default
+    return _default
 end
 
 -- ------------------------------------------------------------------ 
@@ -46,30 +44,31 @@ local finalize_style = function ( _el, _block_w, _block_h )
     local style = table.deepcopy( {}, p_style ) -- copy from parent
     style = table.deepcopy( new_style, _css ) -- copy from css
 
-    style.width         = calc_size ( css.width,      _block_w, "auto" )
-    style.min_width     = calc_size ( css.min_width,  _block_w, 0      )
-    style.max_width     = calc_size ( css.max_width,  _block_w, "none" )
-    style.height        = calc_size ( css.height,     _block_h, "auto" )
-    style.min_height    = calc_size ( css.min_height, _block_h, 0      )
-    style.max_height    = calc_size ( css.max_height, _block_h, "none" )
+    style.width         = calc_size ( css.width,      p_style.width,      _block_w, "auto" )
+    style.min_width     = calc_size ( css.min_width,  p_style.min_width,  _block_w, 0      )
+    style.max_width     = calc_size ( css.max_width,  p_style.max_width,  _block_w, "none" )
+    style.height        = calc_size ( css.height,     p_style.height,     _block_h, "auto" )
+    style.min_height    = calc_size ( css.min_height, p_style.min_height, _block_h, 0      )
+    style.max_height    = calc_size ( css.max_height, p_style.max_height, _block_h, "none" )
 
-    style.margin_left   = calc_size ( css.margin_left,   _block_w, "auto" )
-    style.margin_right  = calc_size ( css.margin_right,  _block_w, "auto" )
-    style.margin_top    = calc_size ( css.margin_top,    _block_w, "auto" )
-    style.margin_bottom = calc_size ( css.margin_bottom, _block_w, "auto" )
+    style.margin_left   = calc_size ( css.margin_left,   p_style.margin_left,   _block_w, "auto" )
+    style.margin_right  = calc_size ( css.margin_right,  p_style.margin_right,  _block_w, "auto" )
+    style.margin_top    = calc_size ( css.margin_top,    p_style.margin_top,    _block_w, "auto" )
+    style.margin_bottom = calc_size ( css.margin_bottom, p_style.margin_bottom, _block_w, "auto" )
 
-    style.padding_left   = calc_size ( css.padding_left,   _block_w, 0 )
-    style.padding_right  = calc_size ( css.padding_right,  _block_w, 0 )
-    style.padding_top    = calc_size ( css.padding_top,    _block_w, 0 )
-    style.padding_bottom = calc_size ( css.padding_bottom, _block_w, 0 )
+    style.padding_left   = calc_size ( css.padding_left,   p_style.padding_left,   _block_w, 0 )
+    style.padding_right  = calc_size ( css.padding_right,  p_style.padding_right,  _block_w, 0 )
+    style.padding_top    = calc_size ( css.padding_top,    p_style.padding_top,    _block_w, 0 )
+    style.padding_bottom = calc_size ( css.padding_bottom, p_style.padding_bottom, _block_w, 0 )
 
-    style.border_size_left   = calc_size ( css.border_size_left,   _block_w, 0 )
-    style.border_size_right  = calc_size ( css.border_size_right,  _block_w, 0 )
-    style.border_size_top    = calc_size ( css.border_size_top,    _block_w, 0 )
-    style.border_size_bottom = calc_size ( css.border_size_bottom, _block_w, 0 )
+    style.border_size_left   = calc_size ( css.border_size_left,   p_style.border_size_left,   _block_w, 0 )
+    style.border_size_right  = calc_size ( css.border_size_right,  p_style.border_size_right,  _block_w, 0 )
+    style.border_size_top    = calc_size ( css.border_size_top,    p_style.border_size_top,    _block_w, 0 )
+    style.border_size_bottom = calc_size ( css.border_size_bottom, p_style.border_size_bottom, _block_w, 0 )
 
     -- based on http://www.w3.org/TR/CSS21/visudet.html#the-width-property  
     if style.display == "block" then
+        -- process width
         if style.width == "auto" then
             if style.margin_left == "auto" then style.margin_left = 0 end
             if style.margin_right == "auto" then style.margin_right = 0 end
@@ -100,6 +99,10 @@ local finalize_style = function ( _el, _block_w, _block_h )
             -- style.width = math.clamp( style.width, style.min_width, style.max_width )
         end
 
+        -- process height
+        if style.margin_top == "auto" then style.margin_top = 0 end
+        if style.margin_bottom == "auto" then style.margin_bottom = 0 end
+
     -- TODO { 
     -- elseif style.display == "inline-block" then
     -- } TODO end 
@@ -110,6 +113,7 @@ end
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- the _height can be px or auto
+-- the _x, _y are offsets 
 -- ------------------------------------------------------------------ 
 
 local layout = function ( _el, _x, _y, _width, _height )
@@ -117,28 +121,24 @@ local layout = function ( _el, _x, _y, _width, _height )
     local style = finalize_style(_el, _width, _height )  
     _el._style = style
 
-    local cx = _x + style.margin_left + style.border_size_left + style.padding_left
-    local cy = _y + style.margin_top + style.border_size_top + style.padding_top
+    -- confirm the cx, cy
+    local x, y = _x, _y
+
+    if style.display == "block" then
+        -- block item x start from 0
+        x = style.margin_left + style.border_size_left + style.padding_left
+        y = _y + style.margin_top + style.border_size_top + style.padding_top
+    end
 
     -- TODO: calculate content height
     -- y = y + content_height
     -- y = y + style.margin_bottom + style.border_size_bottom + style.padding_bottom
 
     -- layout the child
+    local cx,cy = 0,0
     for i=1,#_el.children do
         local child_el = _el.children[i]
-        local last_x,last_y = ui.layout ( child_el, cx, cy, style.width, style.height )
-
-        -- 
-        if child_style.display == "block" then 
-            cy = cy + last_y
-
-        -- TODO { 
-        -- elseif child_style.display == "inline-block" then
-        --     cx = cx + last_x
-        -- } TODO end 
-
-        end
+        cx,cy = ui.layout ( child_el, cx, cy, style.width, style.height )
     end
 
     -- NOTE: if the style.width and style.height is "auto", it can only be decided here after all children layouted
