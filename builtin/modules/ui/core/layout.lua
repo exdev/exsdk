@@ -136,7 +136,9 @@ local layout = function ( _el, _x, _y, _width, _height )
                 - style.padding_left - style.padding_right
         local _, content_height = calc_content_size( style, _el.content, 0, 0, w )
 
-        y = y + content_height + style.margin_bottom + style.border_size_bottom + style.padding_bottom
+        y = y 
+          + content_height 
+          + style.margin_bottom + style.border_size_bottom + style.padding_bottom
     end
 
     -- layout the child
