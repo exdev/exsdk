@@ -99,32 +99,17 @@ __M.setup_font = setup_font
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local content_height = function ( _style, _content )
-    local tname = typename (_content)
-    if tname == "string" then 
-        local font = setup_font(_style)
-        return font.height
-    elseif tname == "texture" then
-        TODO ( "please implement it" )
-    end
-end
-__M.content_height = content_height
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local content_size = function ( _style, _content )
+local calc_content_size = function ( _style, _content, _x, _y, _w )
     local tname = typename (_content)
     if tname == "string" then 
         local font = setup_font(_style)
 
-        TODO ( "please implement it" )
+        TODO ( "return the xoffset and height" )
     elseif tname == "texture" then
-        TODO ( "please implement it" )
+        TODO ( "return the xoffset and height" )
     end
 end
-__M.content_size = content_size
+__M.calc_content_size = calc_content_size
 
 --/////////////////////////////////////////////////////////////////////////////
 --

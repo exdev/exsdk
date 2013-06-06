@@ -128,14 +128,19 @@ local layout = function ( _el, _x, _y, _width, _height )
         -- block item x start from 0
         x = style.margin_left + style.border_size_left + style.padding_left
         y = _y + style.margin_top + style.border_size_top + style.padding_top
+
+        -- calculate content height
+        local w = _width 
+                - style.margin_left - style.margin_right
+                - style.border_size_left - style.border_size_right
+                - style.padding_left - style.padding_right
+        local _, content_height = calc_content_size( style, _el.content, 0, 0, w )
+
+        y = y + content_height + style.margin_bottom + style.border_size_bottom + style.padding_bottom
     end
 
-    -- TODO: calculate content height
-    -- y = y + content_height
-    -- y = y + style.margin_bottom + style.border_size_bottom + style.padding_bottom
-
     -- layout the child
-    local cx,cy = 0,0
+    local cx,cy = x,y
     for i=1,#_el.children do
         local child_el = _el.children[i]
         cx,cy = ui.layout ( child_el, cx, cy, style.width, style.height )
