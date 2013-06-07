@@ -130,15 +130,8 @@ local layout = function ( _el, _x, _y, _width, _height )
         y = _y + style.margin_top + style.border_size_top + style.padding_top
 
         -- calculate content height
-        local w = _width 
-                - style.margin_left - style.margin_right
-                - style.border_size_left - style.border_size_right
-                - style.padding_left - style.padding_right
-        local _, content_height = calc_content_size( style, _el.content, 0, 0, w )
-
-        y = y 
-          + content_height 
-          + style.margin_bottom + style.border_size_bottom + style.padding_bottom
+        local _,content_height = calc_content_size( style, _el.content, 0, 0, style.width )
+        y = y + content_height 
     end
 
     -- layout the child
@@ -148,11 +141,21 @@ local layout = function ( _el, _x, _y, _width, _height )
         cx,cy = ui.layout ( child_el, cx, cy, style.width, style.height )
     end
 
-    -- NOTE: if the style.width and style.height is "auto", it can only be decided here after all children layouted
-    -- TODO: style.width, style.height
-    -- TODO: _el._rect = { _x, _y, style.width, style.height }
+    cy = cy + style.margin_bottom + style.border_size_bottom + style.padding_bottom
 
-    -- TODO
+    -- NOTE: if the style.width and style.height is "auto", it can only be decided here after all children layouted
+    local h = cy - _y
+    local w = style.width 
+            + style.margin_left + style.margin_right
+            + style.border_size_left + style.border_size_right
+            + style.padding_left + style.padding_right
+    if style.height == "auto" then
+        style.height = h
+    end
+
+    _el._rect = { _x, _y, w, h }
+
+    --
     return cx,cy
 end
 __M.layout = layout

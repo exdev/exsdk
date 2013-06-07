@@ -105,6 +105,7 @@ local calc_content_size = function ( _style, _content, _x, _y, _w )
         local font = setup_font(_style)
 
         TODO ( "return the xoffset and height" )
+        return 0,font.height
     elseif tname == "texture" then
         TODO ( "return the xoffset and height" )
     end
