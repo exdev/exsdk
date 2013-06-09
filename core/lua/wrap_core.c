@@ -50,13 +50,14 @@ static int __lua_dofile ( lua_State *_l ) {
 
     // parse the buffer by lua interpreter & call the script
     status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, path ) || lua_pcall ( _l, 0, LUA_MULTRET, 0 );
+    ex_free(buffer);
+
     if ( status ) {
         ex_lua_alert(_l);
-        ex_free(buffer);
         return status;
     }
 
-    ex_free(buffer);
+    //
     return lua_gettop(_l) - 1;
 }
 

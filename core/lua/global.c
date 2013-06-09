@@ -467,20 +467,12 @@ int ex_lua_dofile ( lua_State *_l, const char *_filepath ) {
 
     // parse the buffer by lua interpreter & call the script
     status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, idx );
+    ex_free(buffer);
     if ( status ) {
         ex_lua_alert(_l);
-        goto PARSE_FAILED;
     }
 
-    // // parse the buffer by lua interpreter
-    // status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, 0 );
-    // if ( status ) {
-    //     ex_lua_alert(_l);
-    //     goto PARSE_FAILED;
-    // }
-
-PARSE_FAILED:
-    ex_free(buffer);
+    //
     return status;
 }
 
