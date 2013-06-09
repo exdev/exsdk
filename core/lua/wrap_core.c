@@ -21,15 +21,41 @@
 
 // ------------------------------------------------------------------ 
 // Desc: 
+// NOTE: don't call ex_lua_dofile here, because ex_lua_dofile will push an error func to trace debug stack.
+//       if lua script call ex_c.lua_dofile with this functon, it will recursively push the error func handle and lead to error. 
 // ------------------------------------------------------------------ 
 
 static int __lua_dofile ( lua_State *_l ) {
     const char *path;
+    int status;
+    ex_file_t *file;
+    size_t buf_size;
+    void *buffer;
 
     ex_lua_check_nargs(_l,1);
-
     path = luaL_checkstring(_l,1);
-    ex_lua_dofile( _l, path );
+
+    // open the file
+    file = ex_fsys_fopen_r(path);
+    if ( file == NULL ) {
+        ex_log ( "[lua] Can't find the file %s", path );
+        return 1;
+    }
+
+    // get the file to the buffer we allocated.
+    buf_size = ex_fsys_fsize (file);
+    buffer = ex_malloc (buf_size);
+    ex_fsys_fread (file, buffer, buf_size );
+    ex_fsys_fclose(file);
+
+    // parse the buffer by lua interpreter & call the script
+    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, path ) || lua_pcall ( _l, 0, LUA_MULTRET, 0 );
+    if ( status ) {
+        // TODO??
+        // ex_lua_alert(_l); // I need to Test this!!! write something wrong in a lua file and use ex_c.lua_dofile call him
+        return -1;
+    }
+    ex_free(buffer);
 
     return lua_gettop(_l) - 1;
 }

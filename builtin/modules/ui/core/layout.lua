@@ -42,7 +42,7 @@ local finalize_style = function ( _el, _block_w, _block_h )
     local css = _el.css
     local p_style = (_el.parent ~= nil) and _el.parent._style or ui.style.default
     local style = table.deepcopy( {}, p_style ) -- copy from parent
-    style = table.deepcopy( new_style, _css ) -- copy from css
+    style = table.deepcopy( style, css ) -- copy from css
 
     style.width         = calc_size ( css.width,      p_style.width,      _block_w, "auto" )
     style.min_width     = calc_size ( css.min_width,  p_style.min_width,  _block_w, 0      )
@@ -108,12 +108,14 @@ local finalize_style = function ( _el, _block_w, _block_h )
     -- } TODO end 
 
     end
+
+    return style
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- the _height can be px or auto
--- the _x, _y are offsets 
+-- the _x, _y are offsets of parent-contain-block
 -- ------------------------------------------------------------------ 
 
 local layout = function ( _el, _x, _y, _width, _height )
@@ -122,20 +124,27 @@ local layout = function ( _el, _x, _y, _width, _height )
     _el._style = style
 
     -- confirm the cx, cy
-    local x, y = _x, _y
+    local cx,cy = 0,0
 
     if style.display == "block" then
+        cx,cy = 0,_y
+
+        -- confirm the _pos here
+        _el._pos = (_el.parent == nil) and { 0, 0 } or { _el.parent._pos[0] + cx, _el.parent._pos[1] + cy }
+
         -- block item x start from 0
-        x = style.margin_left + style.border_size_left + style.padding_left
-        y = _y + style.margin_top + style.border_size_top + style.padding_top
+        cx = style.margin_left + style.border_size_left + style.padding_left
+        cy = cy + style.margin_top + style.border_size_top + style.padding_top
 
         -- calculate content height
-        local _,content_height = calc_content_size( style, _el.content, 0, 0, style.width )
-        y = y + content_height 
+        local _,content_height = ui.style.calc_content_size( style, _el.content, 0, 0, style.width )
+        cy = cy + content_height 
+
+    elseif style.display == "inline-block" then
+        -- TODO:
     end
 
     -- layout the child
-    local cx,cy = x,y
     for i=1,#_el.children do
         local child_el = _el.children[i]
         cx,cy = ui.layout ( child_el, cx, cy, style.width, style.height )
@@ -153,7 +162,7 @@ local layout = function ( _el, _x, _y, _width, _height )
         style.height = h
     end
 
-    _el._rect = { _x, _y, w, h }
+    _el._size = { w, h }
 
     --
     return cx,cy

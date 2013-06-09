@@ -425,7 +425,7 @@ void ex_lua_add_module ( lua_State *_l, const char *_modname ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_lua_pcall ( struct lua_State *_l, int _nargs, int _nresults, int _errfunc ) {
+int ex_lua_pcall ( lua_State *_l, int _nargs, int _nresults, int _errfunc ) {
     int status;
 
     status = lua_pcall ( _l, _nargs, _nresults, _errfunc );
@@ -446,6 +446,7 @@ int ex_lua_dofile ( lua_State *_l, const char *_filepath ) {
     ex_file_t *file;
     size_t buf_size;
     void *buffer;
+    int idx = -1;
 
     // open the file
     file = ex_fsys_fopen_r(_filepath);
@@ -460,17 +461,23 @@ int ex_lua_dofile ( lua_State *_l, const char *_filepath ) {
     ex_fsys_fread (file, buffer, buf_size );
     ex_fsys_fclose(file);
 
-    // parse the buffer by lua interpreter
-    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath );
+    // error func
+    lua_pushcfunction( _l, ex_lua_trace_back );
+    idx = lua_gettop(_l);
+
+    // parse the buffer by lua interpreter & call the script
+    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, idx );
     if ( status ) {
         ex_lua_alert(_l);
         goto PARSE_FAILED;
     }
 
-    // call the script 
-    if ( ex_lua_pcall (_l, 0, LUA_MULTRET, 0) ) {
-        goto PARSE_FAILED;
-    }
+    // // parse the buffer by lua interpreter
+    // status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, 0 );
+    // if ( status ) {
+    //     ex_lua_alert(_l);
+    //     goto PARSE_FAILED;
+    // }
 
 PARSE_FAILED:
     ex_free(buffer);
@@ -538,6 +545,19 @@ void ex_lua_run_interpretor ( lua_State *_l ) {
 ///////////////////////////////////////////////////////////////////////////////
 // lua debug op
 ///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_lua_trace_back ( lua_State *_l ) {
+    lua_getglobal ( _l, "debug" );
+    lua_getfield ( _l, -1, "traceback" );
+    lua_pushvalue ( _l, 1 );
+    lua_pushinteger ( _l, 2 );
+    lua_call ( _l, 2, 1 );
+    return 1;
+}
 
 // ------------------------------------------------------------------ 
 // Desc: 

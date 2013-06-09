@@ -11,31 +11,33 @@ local __M = {}
 -- base functions
 --/////////////////////////////////////////////////////////////////////////////
 
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
+-- DISABLE: we are using lua_pcall with traceback function, so no use for error and assert traceback { 
+-- -- ------------------------------------------------------------------ 
+-- -- Desc: 
+-- -- ------------------------------------------------------------------ 
 
-local builtin_error = error
-local function error ( _msg, ... )
-    print( _msg, ... ) 
-    print(debug.traceback())
-    builtin_error(_msg, ...)
-end
-__M.error = error
+-- local builtin_error = error
+-- local function error ( _msg, ... )
+--     print( _msg, ... ) 
+--     print(debug.traceback())
+--     builtin_error(_msg, ...)
+-- end
+-- __M.error = error
 
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
+-- -- ------------------------------------------------------------------ 
+-- -- Desc: 
+-- -- ------------------------------------------------------------------ 
 
-local builtin_assert = assert
-local function assert ( _exp, ... )
-    if _exp == nil or _exp == false then 
-        print(...) 
-        print(debug.traceback()) 
-    end
-    builtin_assert(_exp, ...)
-end
-__M.assert = assert
+-- local builtin_assert = assert
+-- local function assert ( _exp, ... )
+--     if _exp == nil or _exp == false then 
+--         print(...) 
+--         print(debug.traceback()) 
+--     end
+--     builtin_assert(_exp, ...)
+-- end
+-- __M.assert = assert
+-- } DISABLE end 
 
 -- ------------------------------------------------------------------ 
 -- Desc: 

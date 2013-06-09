@@ -63,6 +63,12 @@ static int __lua_wiz_init ( lua_State *_l, int _argc, char **_argv ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_wiz_on_exit ( lua_State *_l ) {
+    int idx = -1;
+
+    // error func
+    lua_pushcfunction( _l, ex_lua_trace_back );
+    idx = lua_gettop(_l);
+
     // get wiz table
     lua_getglobal( _l, "wiz" );
 
@@ -70,7 +76,7 @@ static int __lua_wiz_on_exit ( lua_State *_l ) {
     lua_getfield( _l, -1, "on_exit" );
 
     if ( lua_isnil(_l,-1) == false && lua_isfunction(_l,-1) ) {
-        ex_lua_pcall(_l, 0, 0, 0);
+        ex_lua_pcall(_l, 0, 0, idx);
     }
 
     lua_pop(_l,1);
@@ -82,13 +88,18 @@ static int __lua_wiz_on_exit ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static void __lua_repaint_window ( lua_State *_l, ALLEGRO_DISPLAY *_display ) {
+    int idx = -1;
+
+    // error func
+    lua_pushcfunction( _l, ex_lua_trace_back );
+    idx = lua_gettop(_l);
 
     // call wiz.window.on_destroy(_display)
     lua_getglobal ( _l, "wiz" );
     lua_getfield ( _l, -1, "window" );
     lua_getfield ( _l, -1, "on_repaint" );
     lua_pushlightuserdata ( _l, _display );
-    ex_lua_pcall ( _l, 1, 0, 0 );
+    ex_lua_pcall ( _l, 1, 0, idx );
     lua_pop ( _l, 2 );
 }
 
@@ -97,10 +108,19 @@ static void __lua_repaint_window ( lua_State *_l, ALLEGRO_DISPLAY *_display ) {
 // ------------------------------------------------------------------ 
 
 static void __lua_update_windows ( lua_State *_l ) {
+    int idx = -1;
+
+    // error func
+    lua_pushcfunction( _l, ex_lua_trace_back );
+    idx = lua_gettop(_l);
+
+    // error func
+    lua_pushcfunction( _l, ex_lua_trace_back );
+
     lua_getglobal ( _l, "wiz" );
     lua_getfield ( _l, -1, "window" );
     lua_getfield ( _l, -1, "on_update" );
-    ex_lua_pcall ( _l, 0, 0, 0 );
+    ex_lua_pcall ( _l, 0, 0, idx );
     lua_pop ( _l, 2 );
 }
 
@@ -109,10 +129,19 @@ static void __lua_update_windows ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static void __lua_draw_windows ( lua_State *_l ) {
+    int idx = -1;
+
+    // error func
+    lua_pushcfunction( _l, ex_lua_trace_back );
+    idx = lua_gettop(_l);
+
+    // error func
+    lua_pushcfunction( _l, ex_lua_trace_back );
+
     lua_getglobal ( _l, "wiz" );
     lua_getfield ( _l, -1, "window" );
     lua_getfield ( _l, -1, "on_draw" );
-    ex_lua_pcall ( _l, 0, 0, 0 );
+    ex_lua_pcall ( _l, 0, 0, idx );
     lua_pop ( _l, 2 );
 } 
 
@@ -156,17 +185,22 @@ ALLEGRO_DISPLAY *create_window ( int _w, int _h ) {
 // ------------------------------------------------------------------ 
 
 void destroy_window ( ALLEGRO_DISPLAY *_display ) {
+    int idx = -1;
     size_t i = 0;
     lua_State *l;
 
     l = ex_lua_main_state();
+
+    // error func
+    lua_pushcfunction( l, ex_lua_trace_back );
+    idx = lua_gettop(l);
 
     // call wiz.window.on_destroy(_display)
     lua_getglobal ( l, "wiz" );
     lua_getfield ( l, -1, "window" );
     lua_getfield ( l, -1, "on_destroy" );
     lua_pushlightuserdata ( l, _display );
-    ex_lua_pcall ( l, 1, 0, 0 );
+    ex_lua_pcall ( l, 1, 0, idx );
     lua_pop ( l, 2 );
 
     //
@@ -278,11 +312,17 @@ int process_event ( ALLEGRO_EVENT _event ) {
 
     // call wiz.window.on_event(wiz.event)
     if ( do_broadcast ) {
+        int idx = -1;
+
+        // error func
+        lua_pushcfunction( l, ex_lua_trace_back );
+        idx = lua_gettop(l);
+
         lua_getglobal ( l, "wiz" );
         lua_getfield ( l, -1, "window" );
         lua_getfield ( l, -1, "on_event" );
         lua_getfield ( l, -3, "event" );
-        ex_lua_pcall ( l, 1, 0, 0 );
+        ex_lua_pcall ( l, 1, 0, idx );
         lua_pop ( l, 2 );
     }
 

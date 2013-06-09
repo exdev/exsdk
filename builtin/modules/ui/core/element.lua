@@ -19,7 +19,8 @@ local element = class ({
     --/////////////////////////////////////////////////////////////////////////////
 
     _dirty = false,
-    _rect = { 0, 0, 0, 0 },
+    _pos = { 0, 0 }, -- the x,y in world space
+    _size = { 1, 1 }, -- the width and height
     _enable_debug = false,
     _debug_level = 1,
     _style = {}, -- computed style from element.css
@@ -38,12 +39,11 @@ local element = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    _do_draw () function ( _self )
+    _do_draw = function ( _self )
         local style = _self._style
-        local rect = _self._rect
 
         local content = _self.content
-        local x, y, w, h = rect[1], rect[2], rect[3], rect[4]
+        local x, y, w, h = _self._pos[0], _self._pos[1], _self._size[0], _self._size[1]
 
         local margin_T, margin_R, margin_B, margin_L 
             = style.margin_top, style.margin_right, style.margin_bottom, style.margin_left
@@ -132,9 +132,10 @@ local element = class ({
             return
         end
 
+        local x, y, w, h = _self._pos[0], _self._pos[1], _self._size[0], _self._size[1]
         local alpha = 200
         local style = _self._style
-        local x, y, w, h = _self._rect[1], _self._rect[2], _self._rect[3], _self._rect[4]
+
         local margin_T, margin_R, margin_B, margin_L 
             = style.margin_top, style.margin_right, style.margin_bottom, style.margin_left
 
@@ -230,7 +231,7 @@ local element = class ({
 
     draw = function ( _self ) 
         _self._dirty = false;
-        _self._do_draw()
+        _self:_do_draw()
 
         for i=1,#_self.children do
             local child_el = _self.children[i]
