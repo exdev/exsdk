@@ -33,6 +33,7 @@ return {
 
         local style = ui.css.build()
                             .font( "normal 20px MSYH, Bitstream Vera Sans Mono" )
+                            .text_outline("1px #000")
                             -- .margin("0px 0px 0px 10px")
                             -- .border("20px 10px")
                             -- .padding("auto")

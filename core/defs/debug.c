@@ -135,7 +135,6 @@ void __assert_failed ( const char *_file_name,
                        size_t _line_nr, 
                        const char *_expr )
 {
-    int     result = -1;
     char    short_name[64];
 
     // short the function name

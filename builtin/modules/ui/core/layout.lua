@@ -44,6 +44,11 @@ local finalize_style = function ( _el, _block_w, _block_h )
     local style = table.deepcopy( {}, p_style ) -- copy from parent
     style = table.deepcopy( style, css ) -- copy from css
 
+    style.font_size              = calc_size ( css.font_size, p_style.font_size, nil, 16 )
+    style.text_outline_thickness = calc_size ( css.text_outline_thickness, p_style.text_outline_thickness, nil, 0 )
+    style.text_shadow_offset_x   = calc_size ( css.text_shadow_offset_x, p_style.text_shadow_offset_x, nil, 0 )
+    style.text_shadow_offset_y   = calc_size ( css.text_shadow_offset_y, p_style.text_shadow_offset_y, nil, 0 )
+
     style.width         = calc_size ( css.width,      p_style.width,      _block_w, "auto" )
     style.min_width     = calc_size ( css.min_width,  p_style.min_width,  _block_w, 0      )
     style.max_width     = calc_size ( css.max_width,  p_style.max_width,  _block_w, "none" )
@@ -130,7 +135,7 @@ local layout = function ( _el, _x, _y, _width, _height )
         cx,cy = 0,_y
 
         -- confirm the _pos here
-        _el._pos = (_el.parent == nil) and { 0, 0 } or { _el.parent._pos[0] + cx, _el.parent._pos[1] + cy }
+        _el._pos = (_el.parent == nil) and { 0, 0 } or { _el.parent._pos[1] + cx, _el.parent._pos[2] + cy }
 
         -- block item x start from 0
         cx = style.margin_left + style.border_size_left + style.padding_left

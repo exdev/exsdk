@@ -10,12 +10,11 @@
 -- test = wiz.app.dofile("test_image.lua") 
 -- test = wiz.app.dofile("test_border.lua") 
 -- test = wiz.app.dofile("test_rect.lua") 
--- test = wiz.app.dofile("test_layout.lua") 
-test = wiz.app.dofile("test_css.lua") 
+test = wiz.app.dofile("test_layout.lua") 
+-- test = wiz.app.dofile("test_css.lua") 
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
-local old_draw
 -- ------------------------------------------------------------------ 
 
 wiz.on_init = function () 
@@ -51,6 +50,8 @@ wiz.on_init = function ()
             window.background = test.background
         end
     end
+
+    wiz.asset_db.load("assets/VeraMono.ttf")
 
     --
     test.init( window.view )

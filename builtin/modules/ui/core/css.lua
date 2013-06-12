@@ -61,8 +61,10 @@ local def_group = function ( _prop_name, _group )
 
             local parse_func = __M[p]
             if parse_func and parse_func (text_el) then
-                r1 = r2+1
-                r2 = _text:find( " ", r1 )
+                if i ~= #_group then 
+                    r1 = r2+1
+                    r2 = _text:find( " ", r1 )
+                end
             end
         end
 

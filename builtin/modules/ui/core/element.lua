@@ -43,7 +43,7 @@ local element = class ({
         local style = _self._style
 
         local content = _self.content
-        local x, y, w, h = _self._pos[0], _self._pos[1], _self._size[0], _self._size[1]
+        local x, y, w, h = _self._pos[1], _self._pos[2], _self._size[1], _self._size[2]
 
         local margin_T, margin_R, margin_B, margin_L 
             = style.margin_top, style.margin_right, style.margin_bottom, style.margin_left
@@ -98,16 +98,16 @@ local element = class ({
             local text_done = false
 
             -- draw outline text
-            if style.text_outline[1] > 0 then 
-                local color2 = ex.color4f.from_rgba_8888( style.text_outline[2] )
-                ex.canvas.draw_outline_text( content, font, color, color2, style.text_outline[1], x, y ) 
+            if style.text_outline_thickness > 0 then 
+                local color2 = ex.color4f.from_rgba_8888( style.text_outline_color )
+                ex.canvas.draw_outline_text( content, font, color, color2, style.text_outline_thickness, x, y ) 
                 text_done = true
             end
 
             -- draw shadow text
-            local shadow_x, shadow_y = style.text_shadow[1][1], style.text_shadow[1][2] 
+            local shadow_x, shadow_y = style.text_shadow_offset_x, style.text_shadow_offset_y
             if shadow_x > 0 or shadow_y > 0 then 
-                local color2 = ex.color4f.from_rgba_8888( style.text_shadow[2] )
+                local color2 = ex.color4f.from_rgba_8888( style.text_shadow_color )
                 ex.canvas.draw_shadow_text( content, font, color, color2, ex.vec2f(shadow_x, shadow_y), x, y ) 
                 text_done = true
             end
@@ -132,7 +132,7 @@ local element = class ({
             return
         end
 
-        local x, y, w, h = _self._pos[0], _self._pos[1], _self._size[0], _self._size[1]
+        local x, y, w, h = _self._pos[1], _self._pos[2], _self._size[1], _self._size[2]
         local alpha = 200
         local style = _self._style
 

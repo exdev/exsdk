@@ -19,10 +19,8 @@ return {
     -- ------------------------------------------------------------------ 
 
     init = function ( _root_el ) 
-        ttf_VeraMono = wiz.asset_db.load("assets/VeraMono.ttf")
-
         -- root el
-        table.deepcopy ( _root_el.style, ui.css.build() 
+        table.deepcopy ( _root_el.css, ui.css.build() 
             .margin( "10px 10px 10px 10px" )
             .border( "2px 2px 2px 2px" )
             .done()
