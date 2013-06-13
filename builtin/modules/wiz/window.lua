@@ -98,6 +98,12 @@ local window = class ({
             -- print( "key up " .. _os_event.keycode )
             event.type = _os_event.type 
             event.keycode = _os_event.keycode 
+        elseif _os_event.type == event_type.mouse_move then
+            event.type = _os_event.type 
+            event.mouse_pos_x = _os_event.mouse_pos_x 
+            event.mouse_pos_y = _os_event.mouse_pos_y 
+            event.mouse_delta_x = _os_event.mouse_delta_x 
+            event.mouse_delta_y = _os_event.mouse_delta_y 
         end
 
         -- TODO: dispatch on_event on active element 

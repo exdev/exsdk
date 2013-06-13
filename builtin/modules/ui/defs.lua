@@ -28,8 +28,10 @@ local event = {
     command = false,
     capslock = false,
 
-    mouse_pos = {0,0},
-    mouse_delta = {0,0},
+    mouse_pos_x = 0,
+    mouse_pos_y = 0,
+    mouse_delta_x = 0,
+    mouse_delta_y = 0,
     mouse_button = -1, -- -1:None, 0:left, 1:right, 2:middle
     mouse_click_count = 0
 }

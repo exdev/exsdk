@@ -308,6 +308,38 @@ int process_event ( ALLEGRO_EVENT _event ) {
 
         do_broadcast = true;
         break;
+
+    case ALLEGRO_EVENT_MOUSE_AXES:
+        lua_getglobal( l, "wiz" );
+        lua_getfield( l, -1, "event" );
+
+            // set event_type.type
+            lua_getglobal( l, "event_type" );
+            lua_getfield( l, -1, "mouse_move" );
+            lua_setfield( l, -3, "type" );
+            lua_pop (l,1);
+
+            // set event_type.display
+            lua_pushlightuserdata( l, _event.keyboard.display );
+            lua_setfield( l, -2, "display" );
+
+            // set event_type.mouse_pos_x,y
+            lua_pushinteger( l, _event.mouse.x );
+            lua_setfield( l, -2, "mouse_pos_x" );
+            lua_pushinteger( l, _event.mouse.y );
+            lua_setfield( l, -2, "mouse_pos_y" );
+
+            // set event_type.mouse_delta_x,y
+            lua_pushinteger( l, _event.mouse.dx );
+            lua_setfield( l, -2, "mouse_delta_x" );
+            lua_pushinteger( l, _event.mouse.dy );
+            lua_setfield( l, -2, "mouse_delta_y" );
+
+        lua_pop (l,2);
+
+        do_broadcast = true;
+
+        break;
     }
 
     // call wiz.window.on_event(wiz.event)

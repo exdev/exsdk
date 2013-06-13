@@ -53,7 +53,7 @@ local def_group = function ( _prop_name, _group )
         for i=1,#_group do
             local p = _group[i]
 
-            if i ~= #_group then 
+            if i ~= #_group and r2 ~= nil then 
                 text_el = _text:sub( r1, r2-1 )
             else
                 text_el = _text:sub( r1 )
@@ -61,7 +61,7 @@ local def_group = function ( _prop_name, _group )
 
             local parse_func = __M[p]
             if parse_func and parse_func (text_el) then
-                if i ~= #_group then 
+                if r2 ~= nil then 
                     r1 = r2+1
                     r2 = _text:find( " ", r1 )
                 end

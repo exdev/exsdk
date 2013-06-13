@@ -132,11 +132,6 @@ local layout = function ( _el, _x, _y, _width, _height )
     local cx,cy = 0,0
 
     if style.display == "block" then
-        cx,cy = 0,_y
-
-        -- confirm the _pos here
-        _el._pos = (_el.parent == nil) and { 0, 0 } or { _el.parent._pos[1] + cx, _el.parent._pos[2] + cy }
-
         -- block item x start from 0
         cx = style.margin_left + style.border_size_left + style.padding_left
         cy = cy + style.margin_top + style.border_size_top + style.padding_top
@@ -152,25 +147,39 @@ local layout = function ( _el, _x, _y, _width, _height )
     -- layout the child
     for i=1,#_el.children do
         local child_el = _el.children[i]
-        cx,cy = ui.layout ( child_el, cx, cy, style.width, style.height )
+
+        -- confirm the element._pos
+        child_el._pos = { _el._pos[1] + cx, _el._pos[2] + cy }
+
+        local advance_x,advance_y = ui.layout ( child_el, cx, cy, style.width, style.height )
+
+        cx = cx + advance_x
+        cy = cy + advance_y
     end
 
     cy = cy + style.margin_bottom + style.border_size_bottom + style.padding_bottom
 
     -- NOTE: if the style.width and style.height is "auto", it can only be decided here after all children layouted
-    local h = cy - _y
+    local h = cy
     local w = style.width 
             + style.margin_left + style.margin_right
             + style.border_size_left + style.border_size_right
             + style.padding_left + style.padding_right
     if style.height == "auto" then
-        style.height = h
+        style.height = h 
+            - style.margin_top - style.margin_bottom
+            - style.border_size_top - style.border_size_bottom
+            - style.padding_top - style.padding_bottom
     end
 
     _el._size = { w, h }
 
-    --
-    return cx,cy
+    -- return the advance of x and y
+    if style.display == "block" then
+        return 0,cy
+    elseif style.display == "inline-block" then
+        return cx,cy
+    end
 end
 __M.layout = layout
 
