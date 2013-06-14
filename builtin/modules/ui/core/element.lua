@@ -67,10 +67,10 @@ local element = class ({
             if style.border_style == "solid" then
                 ex.canvas.draw_rect_4( x, y, w, h, border_T, border_R, border_B, border_L ) 
             else
-                local border_image = asset_db.load(style.border_style)
+                local border_image = wiz.asset_db.load(style.border_style)
                 ex.canvas.draw_image_border( border_image, 
                                              x, y, w, h,
-                                             border_L, border_R, border_T, border_B )
+                                             border_T, border_R, border_B, border_L )
             end
         end
 

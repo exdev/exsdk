@@ -88,7 +88,7 @@ local canvas = class ({
 
         draw_image_border = function ( _image, 
                                        _dx, _dy, _dw, _dh,
-                                       _l, _r, _t, _b,
+                                       _t, _r, _b, _l,
                                        _sx, _sy, _sw, _sh )
             checkarg(_image,"texture")
             checkarg(_dx,"number")
@@ -107,7 +107,7 @@ local canvas = class ({
 
             ex_c.gui_set_texture(_image._cptr) 
             ex_c.gui_draw_border_texture( _dx, _dy, _dw, _dh, -- pos
-                                          _l, _r, _t, _b, -- border
+                                          _t, _r, _b, _l, -- border
                                           _sx, _sy, _sw, _sh -- rect
                                          )
             ex_c.gui_flush()

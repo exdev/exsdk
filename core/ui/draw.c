@@ -127,7 +127,7 @@ void ex_ui_draw_texture ( int _dx, int _dy, int _dw, int _dh,
 // ------------------------------------------------------------------ 
 
 void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
-                                 int _l, int _r, int _t, int _b, 
+                                 int _t, int _r, int _b, int _l, 
                                  int _sx, int _sy, int _sw, int _sh )
 {
     ex_ui_state_t *state;

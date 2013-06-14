@@ -46,7 +46,7 @@ return {
         ex.canvas.color = ex.color4f( 1.0, 1.0, 1.0, 1.0 )
         ex.canvas.draw_image_border( windowActive, 
                                      x, y, 400, 300,
-                                     16, 16, 27, 16 )
+                                     27, 16, 16, 16 )
     end
 }
 

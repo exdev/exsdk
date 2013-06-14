@@ -24,6 +24,7 @@ return {
         :add( "label", "Hello World", ui.css.build()
             .margin("10px")
             .border("2px solid #f00")
+            -- .border("3px assets/box.png #fff")
             .font_size("20px")
             .done()
         )
