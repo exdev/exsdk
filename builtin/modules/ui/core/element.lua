@@ -61,9 +61,18 @@ local element = class ({
         h = h - margin_T - margin_B
 
         -- draw border
-        local color = ex.color4f.from_rgba_8888(style.border_color)
-        ex.canvas.color = color
-        ex.canvas.draw_rect_4( x, y, w, h, border_T, border_R, border_B, border_L ) 
+        if style.border_style ~= "none" then
+            local color = ex.color4f.from_rgba_8888(style.border_color)
+            ex.canvas.color = color
+            if style.border_style == "solid" then
+                ex.canvas.draw_rect_4( x, y, w, h, border_T, border_R, border_B, border_L ) 
+            else
+                local border_image = asset_db.load(style.border_style)
+                ex.canvas.draw_image_border( border_image, 
+                                             x, y, w, h,
+                                             border_L, border_R, border_T, border_B )
+            end
+        end
 
         -- border step in
         x = x + border_L

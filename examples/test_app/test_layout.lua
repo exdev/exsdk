@@ -22,10 +22,10 @@ return {
         -- 
         _root_el
         :add( "label", "Hello World", ui.css.build()
-             .margin("10px")
-             .border("2px solid #f00")
-             .font_size("20px")
-             .done()
+            .margin("10px")
+            .border("2px solid #f00")
+            .font_size("20px")
+            .done()
         )
 
         --
