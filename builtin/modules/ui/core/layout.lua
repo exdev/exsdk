@@ -128,6 +128,9 @@ local layout = function ( _el, _x, _y, _width, _height )
     local style = finalize_style(_el, _width, _height )  
     _el._style = style
 
+    -- confirm the element._pos
+    _el._pos = _el.parent ~= nil and { _el.parent._pos[1] + _x, _el.parent._pos[2] + _y } or { 0, 0 }
+
     -- confirm the cx, cy
     local cx,cy = 0,0
 
@@ -146,12 +149,7 @@ local layout = function ( _el, _x, _y, _width, _height )
 
     -- layout the child
     for i=1,#_el.children do
-        local child_el = _el.children[i]
-
-        -- confirm the element._pos
-        child_el._pos = { _el._pos[1] + cx, _el._pos[2] + cy }
-
-        local advance_x,advance_y = ui.layout ( child_el, cx, cy, style.width, style.height )
+        local advance_x,advance_y = ui.layout ( _el.children[i], cx, cy, style.width, style.height )
 
         cx = cx + advance_x
         cy = cy + advance_y

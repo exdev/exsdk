@@ -31,16 +31,13 @@ wiz.on_init = function ()
 
     -- create window
     local window = wiz.window( test.width or 640, test.height or 480 )
-    window.view = ui.element()
-    window.view:set_dirty()
+    window.root:set_dirty()
 
-    local draw = window.view.draw
-    window.view.draw = function ( _view )
-        draw(_view)
-        test.repaint(_view)
-
-        -- ui.layout( _view, 0, 0, ex.canvas.width, ex.canvas.height )
-        -- _view:debug_draw()
+    local draw = window.root.draw
+    window.root.draw = function ( _el )
+        draw(_el)
+        test.repaint(_el)
+        -- _el:debug_draw()
     end
 
     if test.background ~= nil then 
@@ -54,8 +51,7 @@ wiz.on_init = function ()
     wiz.asset_db.load("assets/VeraMono.ttf")
 
     --
-    test.init( window.view )
-    ui.layout(window.view, 0, 0, ex.canvas.width, ex.canvas.height)
+    test.init( window.root )
 end
 
 -- ------------------------------------------------------------------ 

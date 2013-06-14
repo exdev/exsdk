@@ -35,6 +35,9 @@ local window = class ({
         checkarg(_h,"number")
 
         _self._cptr = wiz_c.create_window (_w,_h)
+        _self.need_repaint = true
+        _self.need_layout = true
+        _self.root._style = ui.style.default 
 
         table.add( wiz.window.window_list, _self )
     end,
@@ -44,25 +47,16 @@ local window = class ({
     --/////////////////////////////////////////////////////////////////////////////
 
     _cptr = ex_c.null,
-    _view = ui.element.null,
 
+    root = ui.element(),
     background = { 1, 1, 1 },
-    need_repaint = true,
-    need_layout = true,
+    need_repaint = false,
+    need_layout = false,
     width = property {
         get = function ( _self ) return wiz_c.get_window_width(_self._cptr) end
     },
     height = property {
         get = function ( _self ) return wiz_c.get_window_height(_self._cptr) end
-    },
-    view = property {
-        get = function ( _self ) return _self._view end,
-        set = function ( _self, _v )
-            checkarg ( _v, "element" )
-            _self._view = _v
-            _self.need_repaint = true
-            _self.need_layout = true
-        end,
     },
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -113,6 +107,33 @@ local window = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
+    layout = function ( _self )
+        if _self.need_layout then
+            _self.need_layout = false
+
+            _self.root._style.width = _self.width
+            _self.root._style.height = _self.height
+            _self.root._pos = { 0, 0 }
+            _self.root._size = { _self.width, _self.height }
+
+            local cx,cy = 0,0
+            for i=1,#_self.root.children do
+                local advance_x,advance_y = ui.layout ( _self.root.children[i], cx, cy, _self.width, _self.height )
+
+                cx = cx + advance_x
+                cy = cy + advance_y
+            end
+
+            return
+        end
+
+        -- TODO: dirty element need to check its parent and re-layout the affect elements
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
     draw = function ( _self )
         if _self.need_repaint then
             _self.need_repaint = false
@@ -133,15 +154,15 @@ local window = class ({
                 ex_c.canvas_clear( _self.background[1], _self.background[2], _self.background[3] )
             end
 
-            -- draw view element
-            _self.view:draw() 
+            -- draw root element
+            _self.root:draw() 
 
             -- flush
             ex_c.canvas_flush()
             return
         end
 
-        _self:_do_dirty_draw_recursively (_self.view)
+        _self:_do_dirty_draw_recursively (_self.root)
     end,
 
     _do_dirty_draw_recursively = function ( _self, _el )
@@ -177,16 +198,18 @@ local window = class ({
             end
         end,
         
-        on_repaint = function ( _os_event )
+        on_resize = function ( _os_event )
             for i=1,#wiz.window.window_list do
                 local win = wiz.window.window_list[i]
                 win.need_repaint = true
+                win.need_layout = true
             end
         end,
 
         on_draw = function ( _os_event )
             for i=1,#wiz.window.window_list do
                 local win = wiz.window.window_list[i]
+                win:layout()
                 win:draw()
             end
         end,

@@ -87,7 +87,7 @@ static int __lua_wiz_on_exit ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static void __lua_repaint_window ( lua_State *_l, ALLEGRO_DISPLAY *_display ) {
+static void __lua_resize_window ( lua_State *_l, ALLEGRO_DISPLAY *_display ) {
     int idx = -1;
 
     // error func
@@ -97,7 +97,7 @@ static void __lua_repaint_window ( lua_State *_l, ALLEGRO_DISPLAY *_display ) {
     // call wiz.window.on_destroy(_display)
     lua_getglobal ( _l, "wiz" );
     lua_getfield ( _l, -1, "window" );
-    lua_getfield ( _l, -1, "on_repaint" );
+    lua_getfield ( _l, -1, "on_resize" );
     lua_pushlightuserdata ( _l, _display );
     ex_lua_pcall ( _l, 1, 0, idx );
     lua_pop ( _l, 2 );
@@ -238,7 +238,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
     switch ( _event.type ) {
     case ALLEGRO_EVENT_DISPLAY_RESIZE:
         al_acknowledge_resize(_event.display.source);
-        __lua_repaint_window ( l, _event.display.source );
+        __lua_resize_window ( l, _event.display.source );
         break;
 
     case ALLEGRO_EVENT_DISPLAY_EXPOSE:

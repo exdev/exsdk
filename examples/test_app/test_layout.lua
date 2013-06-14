@@ -19,17 +19,17 @@ return {
     -- ------------------------------------------------------------------ 
 
     init = function ( _root_el ) 
-        -- root el
-        table.deepcopy ( _root_el.css, ui.css.build() 
+        -- 
+        _root_el
+        :add( "label", "Hello World", ui.css.build()
              .margin("10px")
              .border("2px solid #f00")
              .font_size("20px")
              .done()
         )
-        _root_el.content = "Root Element"
 
-        -- first class children
-        _root_el
+        --
+        _root_el.children[1]
         :add( "label", "1st Child", ui.css.build()
             .font_size("16px")
             .text_outline("1px #000")
@@ -59,11 +59,9 @@ return {
             .done()
         )
 
-        -- do layout
-        ui.layout(_root_el, 0, 0, ex.canvas.width, ex.canvas.height)
-
         -- setup debug draw
-        -- _root_el.children[2]:debug_draw()
+        -- _root_el.children[1]:debug_draw()
+        _root_el.children[1].children[3]:debug_draw()
         -- _root_el:debug_draw()
     end,
 
@@ -72,7 +70,6 @@ return {
     -- ------------------------------------------------------------------ 
 
     repaint = function ( _root_el )
-        ui.layout(_root_el, 0, 0, ex.canvas.width, ex.canvas.height)
     end
 }
 
