@@ -359,6 +359,13 @@ def ( "max_height", parse_size, { "inherit", "none", "px", "%" } )
 -- background
 def ( "background_color",  parse_color )
 
+-- position
+def ( "position",  parse_option, { "static", "absolute", "fixed", "relative", "inherit" } )
+def ( "left",   parse_size, { "inherit", "auto", "px", "%" } )
+def ( "right",  parse_size, { "inherit", "auto", "px", "%" } )
+def ( "top",    parse_size, { "inherit", "auto", "px", "%" } )
+def ( "bottom", parse_size, { "inherit", "auto", "px", "%" } )
+
 -- misc
 def ( "white_space",  parse_option, { "normal", "nowrap", "inherit" } )
 def ( "color",  parse_color )

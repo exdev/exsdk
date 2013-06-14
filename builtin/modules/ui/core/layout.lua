@@ -148,12 +148,21 @@ local layout = function ( _el, _x, _y, _width, _height )
     end
 
     -- layout the child
+    local max_content_width = 0 
     for i=1,#_el.children do
-        local advance_x,advance_y = ui.layout ( _el.children[i], cx, cy, style.width, style.height )
+        local child_el = _el.children[i]
+        local advance_x,advance_y = ui.layout ( child_el, cx, cy, style.width, style.height )
 
         cx = cx + advance_x
         cy = cy + advance_y
+
+        local child_size_w = child_el._size[1]
+        if max_content_width < child_size_w then
+            max_content_width = child_size_w
+        end
     end
+
+    -- TODO: check overflow property here and apply it
 
     cy = cy + style.margin_bottom + style.border_size_bottom + style.padding_bottom
 
