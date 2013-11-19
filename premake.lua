@@ -104,7 +104,7 @@ solution "exSDK"
             "ext/zlib-1.2.7/",
             "ext/lpng1514/",
             "ext/physfs-2.0.3/",
-            "ext/lua-5.2.1/",
+            "ext/lua-5.2.2/",
             "ext/yajl-2.0.1/include/",
         } 
 
@@ -113,7 +113,7 @@ solution "exSDK"
             "ext/zlib-1.2.7/**.c",
             "ext/lpng1514/**.c",
             "ext/physfs-2.0.3/**.c",
-            "ext/lua-5.2.1/**.c",
+            "ext/lua-5.2.2/**.c",
             "ext/luagl-1.8/**.c",
             "ext/lua_yajl/**.c",
             "ext/lpeg-0.10.2/**.c",
@@ -122,8 +122,8 @@ solution "exSDK"
         -- source exclude
         excludes {
             "ext/lpng1514/pngtest.c",
-            "ext/lua-5.2.1/lua.c",
-            "ext/lua-5.2.1/luac.c",
+            "ext/lua-5.2.2/lua.c",
+            "ext/lua-5.2.2/luac.c",
             "ext/physfs-2.0.3/lzma/**.c",
             "ext/physfs-2.0.3/zlib123/**.c",
         }
@@ -252,7 +252,7 @@ solution "exSDK"
             "ext/allegro-5.0.8/addons/primitives/",
             "ext/allegro-5.0.8/addons/image/",
             "ext/physfs-2.0.3/",
-            "ext/lua-5.2.1/",
+            "ext/lua-5.2.2/",
             "core/"
         } 
         if __PLATFORM == "macosx" then
@@ -295,7 +295,7 @@ solution "exSDK"
         -- include
         includedirs {
             "ext/allegro-5.0.8/include/",
-            "ext/lua-5.2.1/",
+            "ext/lua-5.2.2/",
             "core/"
         } 
 
@@ -401,7 +401,7 @@ solution "exSDK"
                 "ext/allegro-5.0.8/include/",
                 "ext/allegro-5.0.8/addons/primitives/",
                 "ext/allegro-5.0.8/addons/image/",
-                "ext/lua-5.2.1/",
+                "ext/lua-5.2.2/",
                 "core/"
             } 
             if __PLATFORM == "macosx" then

@@ -20,12 +20,18 @@
     #define main _al_mangled_main
 #endif
 
+typedef struct __window_info_t {
+    ALLEGRO_DISPLAY *display;
+    int refID; // NOTE: this is luaL_ref return value, must use luaL_unref to release it.
+} __window_info_t;
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 ALLEGRO_DISPLAY *primary_display = NULL;
 static ex_array_t *__display_list = NULL;
+static ex_array_t *__window_list = NULL;
 ALLEGRO_EVENT_QUEUE *queue = NULL;
 
 ///////////////////////////////////////////////////////////////////////////////
