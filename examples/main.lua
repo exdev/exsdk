@@ -21,7 +21,7 @@ parse_args ( wiz.arguments, {
 } )
 
 -- test_app
-local app_name = "test_app"
+local app_name = "test_graphics"
 local app_path = ""
 
 if wiz.platform == "windows" then

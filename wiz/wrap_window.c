@@ -22,50 +22,59 @@
 
 // ------------------------------------------------------------------ 
 // Desc: 
-extern ALLEGRO_DISPLAY *create_window ( int, int );
+extern void create_window ( int, int, int );
 // ------------------------------------------------------------------ 
 
 static int __lua_create_window ( lua_State *_l ) {
-    ALLEGRO_DISPLAY *display;
+    int refID;
 
-    ex_lua_check_nargs(_l,2);
+    ex_lua_check_nargs(_l,3);
 
-    display = create_window ( luaL_checkint(_l,1), luaL_checkint(_l,2) );
+    lua_pushvalue(_l,1);
+    refID = luaL_ref(_l,LUA_REGISTRYINDEX);
+    create_window ( refID, luaL_checkint(_l,2), luaL_checkint(_l,3) );
 
     //
-    lua_pushlightuserdata ( _l, display );
+    lua_pushinteger(_l,refID);
     return 1;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
-void destroy_window ( ALLEGRO_DISPLAY * );
+extern void destroy_window ( int );
 // ------------------------------------------------------------------ 
 
 static int __lua_destroy_window ( lua_State *_l ) {
-    ALLEGRO_DISPLAY *display;
-
     ex_lua_check_nargs(_l,1);
 
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    display = lua_touserdata(_l,1);
+    destroy_window (luaL_checkint(_l,1));
 
-    //
-    destroy_window (display);
     return 0;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
+extern void repaint_window ( int );
+// ------------------------------------------------------------------ 
+
+static int __lua_repaint_window ( lua_State *_l ) {
+    ex_lua_check_nargs(_l,1);
+
+    repaint_window (luaL_checkint(_l,1));
+
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+extern ALLEGRO_DISPLAY *get_display ( int );
 // ------------------------------------------------------------------ 
 
 static int __lua_get_window_width ( lua_State *_l ) {
     ALLEGRO_DISPLAY *display;
 
     ex_lua_check_nargs(_l,1);
-
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    display = lua_touserdata(_l,1);
+    display = get_display( luaL_checkint(_l,1) );
 
     //
     lua_pushinteger( _l, al_get_display_width(display) );
@@ -80,9 +89,7 @@ static int __lua_get_window_height ( lua_State *_l ) {
     ALLEGRO_DISPLAY *display;
 
     ex_lua_check_nargs(_l,1);
-
-    luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    display = lua_touserdata(_l,1);
+    display = get_display( luaL_checkint(_l,1) );
 
     //
     lua_pushinteger( _l, al_get_display_height(display) );
@@ -96,6 +103,7 @@ static int __lua_get_window_height ( lua_State *_l ) {
 static const luaL_Reg lib[] = {
     { "create_window",     __lua_create_window },
     { "destroy_window",    __lua_destroy_window },
+    { "repaint_window",    __lua_repaint_window },
     { "get_window_width",    __lua_get_window_width },
     { "get_window_height",   __lua_get_window_height },
     { NULL, NULL }
