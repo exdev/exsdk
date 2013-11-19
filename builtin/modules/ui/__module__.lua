@@ -8,14 +8,13 @@
 -- general
 module_add( "defs.lua" )
 
--- core
-module_add( "core/css.lua", "css" )
-module_add( "core/style.lua", "style" )
-module_add( "core/layout.lua" )
-module_add( "core/element.lua" )
-
--- interactions
-module_add( "interactions/draggable.lua" )
+-- -- layout
+-- module_add( "layout/css.lua", "css" )
+-- module_add( "layout/style.lua", "style" )
+-- module_add( "layout/layout.lua" )
+-- module_add( "layout/element.lua" )
 
 -- widgets
+module_add( "widgets/widget_mng.lua" )
 module_add( "widgets/widget.lua" )
+

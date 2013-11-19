@@ -8,6 +8,7 @@
 -- wiz
 module_add( "wiz.lua" )
 module_add( "window.lua" )
+module_add( "ui_window.lua" )
 
 -- basic
 module_add( "assets.lua", "assets" )

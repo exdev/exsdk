@@ -22,7 +22,7 @@ wiz.on_init = function ()
     end
 
     -- create window
-    local window = wiz.window( 640, 480 )
+    local window = wiz.ui_window( 640, 480 )
 
     -- load resource, NOTE: texture resource must be load after first window created
     local font1 = wiz.assets.load("assets/VeraMono.ttf")
@@ -31,12 +31,7 @@ wiz.on_init = function ()
     local logo = wiz.assets.load("assets/ex2d_logo.png")
 
     --
-    window.background = { 0.5, 0.5, 0.5 }
     window.on_repaint = function ( _self )
-        ex_c.canvas_set_blending ( ex.blend_op.add, ex.blend_mode.alpha, ex.blend_mode.inverse_alpha )
-        ex_c.canvas_clear( _self.background[1], _self.background[2], _self.background[3] )
-
-
         ex.canvas.color = ex.color4f.white
         ex.canvas.draw_bitmap_text( "Hello World", font2, 10, 10 )
 

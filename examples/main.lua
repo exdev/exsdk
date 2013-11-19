@@ -27,7 +27,7 @@ local app_path = ""
 if wiz.platform == "windows" then
     app_path = string.format( "d:/dev/exdev/exsdk/examples/%s/", app_name ) 
 elseif wiz.platform == "macosx" then
-    app_path = string.format( "/Users/jiewu/exdev/exsdk/examples/%s/", app_name ) 
+    app_path = string.format( "/Users/Johnny/exdev/exsdk/examples/%s/", app_name ) 
 end
 
 wiz:open_app(app_path)

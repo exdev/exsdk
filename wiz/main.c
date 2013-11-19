@@ -24,6 +24,7 @@ typedef struct __window_info_t {
     ALLEGRO_DISPLAY *display;
     int refID; // NOTE: this is luaL_ref return value, must use luaL_unref to release it.
     bool dirty;
+    ALLEGRO_COLOR bg_color;
 } __window_info_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -234,6 +235,25 @@ int get_window_ref_id ( ALLEGRO_DISPLAY * _display ) {
     }
 
     return LUA_REFNIL;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void set_window_background ( int _id, int _r, int _g, int _b ) {
+    size_t i = 0;
+    __window_info_t *win_info;
+
+    while ( i < ex_array_count(__window_list) ) {
+        win_info = *(__window_info_t **)ex_array_get(__window_list, i);
+        if ( win_info->refID == _id ) {
+            win_info->bg_color = al_map_rgb( _r, _g, _b );
+            win_info->dirty = true;
+            break;
+        }
+        ++i;
+    }
 }
 
 // ------------------------------------------------------------------ 
@@ -466,9 +486,15 @@ void event_loop () {
         // call window.on_repaint in lua
         ex_array_each ( __window_list, __window_info_t *, win_info )
             if ( win_info->dirty ) {
+                // set target bitmap
                 target = al_get_backbuffer(win_info->display);
                 al_set_target_bitmap(target);
 
+                // clear background
+                al_clear_to_color( win_info->bg_color );
+                al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+
+                // on_repaint
                 lua_rawgeti( l, LUA_REGISTRYINDEX, win_info->refID );
                 lua_getfield( l, -1, "on_repaint" );
                 if ( lua_isnil(l,-1) == 0 && lua_isfunction(l,-1) ) {
@@ -480,6 +506,7 @@ void event_loop () {
                     lua_pop ( l, 2 );
                 }
 
+                // flush
                 al_flip_display();
                 win_info->dirty = false;
             }

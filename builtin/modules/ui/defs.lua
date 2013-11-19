@@ -7,35 +7,18 @@
 
 local __M = {}
 
---/////////////////////////////////////////////////////////////////////////////
--- functions
---/////////////////////////////////////////////////////////////////////////////
-
-local fonts = {}
-__M.fonts = fonts
-
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local event = {
-    type = event_type.none,
-
-    keycode = keycode.None, -- we use in keycode table
-    shift = false,
-    ctrl = false,
-    alt = false,
-    command = false,
-    capslock = false,
-
-    mouse_pos_x = 0,
-    mouse_pos_y = 0,
-    mouse_delta_x = 0,
-    mouse_delta_y = 0,
-    mouse_button = -1, -- -1:None, 0:left, 1:right, 2:middle
-    mouse_click_count = 0
+local hotpoint = {
+    id = -1,
+    pos_x = 0,
+    pos_y = 0,
+    delta_x = 0,
+    delta_y = 0,
 }
-__M.event = event
+__M.hotpoint = hotpoint
 
 --/////////////////////////////////////////////////////////////////////////////
 --
