@@ -40,10 +40,6 @@ static int __lua_open_app ( lua_State *_l ) {
 
     ex_log ( "[exSDK] Open project: %s", path  );
 
-    // set write dir
-    if ( ex_fsys_set_write_dir(path) != 0 )
-        return luaL_error ( _l, "[fsys] Error: Can't set write dir %s", path );
-
     // mount the write dir. NOTE: set write dir doesn't means you mount it.
     if ( ex_fsys_mount( path, "__app__", true ) != 0 )
         return luaL_error ( _l, "[fsys] Error: Can't mount dir %s", path );
@@ -56,9 +52,7 @@ static int __lua_open_app ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_close_app ( lua_State *_l ) {
-    // TODO: set_write_dir to default.
     // TODO: unmount app dir
-
     return 0;
 }
 

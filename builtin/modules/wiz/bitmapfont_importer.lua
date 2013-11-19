@@ -74,22 +74,22 @@ local bitmapfont_importer = wiz.importer.extend ({
     -- ------------------------------------------------------------------ 
 
     exec = function (_self)
-        local asset_db = wiz.asset_db
-        local files = wiz.app.files_in(_self.path)
+        local assets = wiz.assets
+        local files = wiz.files_in(_self.path)
         local file = nil
 
         -- get the first txt/fnt file
         for i=1,#files do
             local filename = files[i]
             if path.is( filename, {".txt",".fnt"} ) then
-                file = io.open( wiz.app.sys_path(path.join(_self.path,filename)), "r" )
+                file = io.open( wiz.sys_path(path.join(_self.path,filename)), "r" )
                 break
             end
         end
         assert ( file, string.format("Can't find .txt/.fnt file at %s", _self.path) )
 
         -- instantiate a bitmapfont for parsing
-        local btfont = ex.bitmapfont.new()
+        local bpfont = ex.bitmapfont.new()
 
         -- parse the bitmapfont txt file
         local pattern = wiz.bitmapfont_importer._pattern
@@ -114,13 +114,13 @@ local bitmapfont_importer = wiz.importer.extend ({
                                      return _text
                                  end 
                              )
-                 btfont.faceName = info.face
-                 btfont.size = info.size
-                 btfont.isBold = info.bold
-                 btfont.isItalic = info.italic
-                 btfont.isUnicode = info.unicode
-                 btfont.isSmooth = info.smooth
-                 btfont.isAA = info.aa
+                 bpfont.faceName = info.face
+                 bpfont.size = info.size
+                 bpfont.isBold = info.bold
+                 bpfont.isItalic = info.italic
+                 bpfont.isUnicode = info.unicode
+                 bpfont.isSmooth = info.smooth
+                 bpfont.isAA = info.aa
 
             -- parse the common
             elseif t.command == "common" then
@@ -131,10 +131,10 @@ local bitmapfont_importer = wiz.importer.extend ({
                                      return tonumber(_text) 
                                  end 
                              )
-                 btfont.lineHeight = info.lineHeight
-                 btfont.pages = info.pages
-                 btfont.pageWidth = info.scaleW
-                 btfont.pageHeight = info.scaleH
+                 bpfont.lineHeight = info.lineHeight
+                 bpfont.pages = info.pages
+                 bpfont.pageWidth = info.scaleW
+                 bpfont.pageHeight = info.scaleH
 
             -- parse the page
             elseif t.command == "page" then
@@ -152,8 +152,8 @@ local bitmapfont_importer = wiz.importer.extend ({
                          pageinfo.file ~= "", 
                          "Can't find image file in pageinfo" )
                 imagefile = path.join(_self.path,pageinfo.file)
-                if wiz.app.exists( imagefile ) then
-                    btfont.pageInfos[pageinfo.id] = asset_db.load(imagefile)
+                if wiz.exists( imagefile ) then
+                    bpfont.pageInfos[pageinfo.id] = assets.load(imagefile)
                 end
 
             -- parse the char info
@@ -165,12 +165,12 @@ local bitmapfont_importer = wiz.importer.extend ({
                                          return tonumber(_text) 
                                      end 
                                  )
-                btfont.charInfos[charinfo.id] = charinfo
+                bpfont.charInfos[charinfo.id] = charinfo
 
             -- parse the kernings
             elseif t.command == "kernings" then
                 if tonumber(t.count) ~= 0 then 
-                    btfont.hasKerning = true
+                    bpfont.hasKerning = true
                 end
 
             -- parse the kerning info
@@ -182,14 +182,14 @@ local bitmapfont_importer = wiz.importer.extend ({
                                          return tonumber(_text) 
                                      end 
                                  )
-                table.add( btfont.kerningInfos, kerningInfo )
+                table.add( bpfont.kerningInfos, kerningInfo )
             end
         end
 
         file:close()
 
         --
-        return btfont
+        return bpfont
     end,
 })
 __M.bitmapfont_importer = bitmapfont_importer

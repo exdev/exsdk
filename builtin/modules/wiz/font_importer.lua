@@ -37,7 +37,7 @@ local font_importer = wiz.importer.extend ({
 
     exec = function (_self)
         local fnt = ex.font.new()
-        local cptr = ex_c.font_load ( wiz.app.fsys_path(_self.path), _self.size )
+        local cptr = ex_c.font_load ( wiz.fsys_path(_self.path), _self.size )
         fnt._cptr = cptr
 
         return fnt

@@ -1,7 +1,7 @@
 -- ======================================================================================
--- File         : asset_db.lua
+-- File         : assets.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/17/2013 | 16:35:52 PM | Sunday,February
+-- Last Change  : 11/19/2013 | 10:49:25 AM | Tuesday,November
 -- Description  : 
 -- ======================================================================================
 
@@ -18,7 +18,7 @@ local path_to_asset = {}
 -- ------------------------------------------------------------------ 
 
 local function get_importer ( _path )
-    if wiz.app.exists (_path) == false then
+    if wiz.exists (_path) == false then
         error ( "Can't find file at " .. _path )
     end
 
@@ -62,7 +62,7 @@ local function load ( _path )
     end
 
     --
-    print ( "[asset_db] load file: " .. _path )
+    print ( "[assets] load file: " .. _path )
     asset = import(_path)
 
     --

@@ -5,7 +5,7 @@
 -- Description  : 
 -- ======================================================================================
 
-local asset_db = wiz.asset_db
+local assets = wiz.assets
 
 local windowActive
 local box
@@ -22,8 +22,8 @@ return {
 
     init = function ( _root_el ) 
         -- load image
-        box = asset_db.load("assets/box.png")
-        windowActive = asset_db.load("assets/windowActive.png")
+        box = assets.load("assets/box.png")
+        windowActive = assets.load("assets/windowActive.png")
     end,
 
     -- ------------------------------------------------------------------ 

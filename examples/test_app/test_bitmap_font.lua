@@ -5,7 +5,7 @@
 -- Description  : 
 -- ======================================================================================
 
-local asset_db = wiz.asset_db
+local assets = wiz.assets
 local btfont1
 local btfont2
 
@@ -22,8 +22,8 @@ return {
 
     init = function ( _root_el ) 
         -- load bitmap fonts
-        btfont1 = asset_db.load("assets/BerlinSansFB_MonoOutline.bft")
-        btfont2 = asset_db.load("assets/MolotShadow.bft")
+        btfont1 = assets.load("assets/BerlinSansFB_MonoOutline.bft")
+        btfont2 = assets.load("assets/MolotShadow.bft")
     end,
 
     -- ------------------------------------------------------------------ 

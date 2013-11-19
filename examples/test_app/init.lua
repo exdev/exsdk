@@ -5,13 +5,13 @@
 -- Description  : 
 -- ======================================================================================
 
--- test = wiz.app.dofile("test_ttf_font.lua") 
--- test = wiz.app.dofile("test_bitmap_font.lua") 
--- test = wiz.app.dofile("test_image.lua") 
--- test = wiz.app.dofile("test_border.lua") 
--- test = wiz.app.dofile("test_rect.lua") 
-test = wiz.app.dofile("test_layout.lua") 
--- test = wiz.app.dofile("test_css.lua") 
+-- test = wiz.dofile("test_ttf_font.lua") 
+-- test = wiz.dofile("test_bitmap_font.lua") 
+-- test = wiz.dofile("test_image.lua") 
+-- test = wiz.dofile("test_border.lua") 
+-- test = wiz.dofile("test_rect.lua") 
+test = wiz.dofile("test_layout.lua") 
+-- test = wiz.dofile("test_css.lua") 
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -42,13 +42,13 @@ wiz.on_init = function ()
 
     if test.background ~= nil then 
         if test.background == "checkerboard" then 
-            window.background = wiz.asset_db.load("assets/Checkerboard_64x64.png")
+            window.background = wiz.assets.load("assets/Checkerboard_64x64.png")
         elseif type(test.background) == "table" then
             window.background = test.background
         end
     end
 
-    wiz.asset_db.load("assets/VeraMono.ttf")
+    wiz.assets.load("assets/VeraMono.ttf")
 
     --
     test.init( window.root )

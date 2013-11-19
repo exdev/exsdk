@@ -5,7 +5,7 @@
 -- Description  : 
 -- ======================================================================================
 
-local asset_db = wiz.asset_db
+local assets = wiz.assets
 
 local logo
 local grossini_dance
@@ -22,8 +22,8 @@ return {
 
     init = function ( _root_el ) 
         -- load image
-        logo = asset_db.load("assets/ex2d_logo.png")
-        grossini_dance = asset_db.load("assets/grossini_dance_09.png")
+        logo = assets.load("assets/ex2d_logo.png")
+        grossini_dance = assets.load("assets/grossini_dance_09.png")
 
         -- grossini_dance:lock( grossini_dance.width/2, grossini_dance.height/2, 10, 10 )
         -- for x=0,10 do

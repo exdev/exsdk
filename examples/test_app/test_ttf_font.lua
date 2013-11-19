@@ -5,7 +5,7 @@
 -- Description  : 
 -- ======================================================================================
 
-local asset_db = wiz.asset_db
+local assets = wiz.assets
 local ttf_VeraMono
 local ttf_yahei
 
@@ -21,8 +21,8 @@ return {
 
     init = function ( _root_el ) 
         -- load fonts
-        ttf_VeraMono = asset_db.load("assets/VeraMono.ttf")
-        ttf_yahei = asset_db.load("assets/yahei.ttf")
+        ttf_VeraMono = assets.load("assets/VeraMono.ttf")
+        ttf_yahei = assets.load("assets/yahei.ttf")
 
         file = io.open( wiz.app.sys_path("assets/content.txt"), "r" )
         for line in file:lines() do 
