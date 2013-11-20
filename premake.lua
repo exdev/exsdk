@@ -18,31 +18,28 @@ local __COMMAND  = _ARGS[2] or "build"
 -- pre-defined functions
 --/////////////////////////////////////////////////////////////////////////////
 
-local copy_builtin_files = function ( _destdir )
-    -- NOTE: don't add '/' at the end, this will make os.isdir() failed 
-    if os.isdir(_destdir.."/builtin") then os.rmdir(_destdir.."/builtin") end
-    os.mkdir(_destdir.."/builtin")
+local copy_files = function ( _src_dirname, _dest_dirpath )
+    local destpath =  _dest_dirpath.."/".._src_dirname
 
-    matches = os.matchfiles( "builtin/**")
+    -- NOTE: don't add '/' at the end of _src_dirname, this will make os.isdir() failed 
+    if os.isdir(destpath) then os.rmdir(destpath) end
+    os.mkdir(destpath)
+
+    matches = os.matchfiles( _src_dirname.."/**")
     for i=1,#matches do
         -- print ( "copy " .. matches[i] )
-        os.mkdir( _destdir.."/"..path.getdirectory(matches[i]) )
-        os.copyfile( matches[i], _destdir..matches[i] )
+        os.mkdir( _dest_dirpath.."/"..path.getdirectory(matches[i]) )
+        os.copyfile( matches[i], _dest_dirpath..matches[i] )
     end
 
-    -- for unit-test
-    os.copyfile( "examples/main.lua", _destdir.."/main.lua" )
+    -- TEST: for unit-test
+    os.copyfile( "examples/main.lua", _dest_dirpath.."/main.lua" )
 end
 
 --
 if __COMMAND == "update" then
-    -- if __PLATFORM == "macosx" then
-    --     copy_builtin_files ( __DEST_DIR.."ex_wiz/debug/bin/ex_wiz.app/" )
-    --     copy_builtin_files ( __DEST_DIR.."ex_wiz/release/bin/ex_wiz.app/" )
-    -- elseif __PLATFORM == "win32" then
-        copy_builtin_files ( __DEST_DIR.."ex_wiz/debug/bin/" )
-        copy_builtin_files ( __DEST_DIR.."ex_wiz/release/bin/" )
-    -- end
+    copy_files ( "builtin", __DEST_DIR.."ex_wiz/debug/bin/" )
+    copy_files ( "builtin", __DEST_DIR.."ex_wiz/release/bin/" )
     return
 end
 
@@ -373,13 +370,9 @@ solution "exSDK"
             defines { "NDEBUG" }
             flags { "Optimize" }
 
-        -- if __PLATFORM == "macosx" then
-        --     copy_builtin_files ( __DEST_DIR.."ex_wiz/debug/bin/ex_wiz.app/" )
-        --     copy_builtin_files ( __DEST_DIR.."ex_wiz/release/bin/ex_wiz.app/" )
-        -- elseif __PLATFORM == "win32" then
-            copy_builtin_files ( __DEST_DIR.."ex_wiz/debug/bin/" )
-            copy_builtin_files ( __DEST_DIR.."ex_wiz/release/bin/" )
-        -- end
+        -- post copies
+        copy_files ( "builtin", __DEST_DIR.."ex_wiz/debug/bin/" )
+        copy_files ( "builtin", __DEST_DIR.."ex_wiz/release/bin/" )
 
     -- ======================================================== 
     -- TEST
