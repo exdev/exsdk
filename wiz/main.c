@@ -403,6 +403,7 @@ int process_event ( ALLEGRO_EVENT _event ) {
         break;
 
     case ALLEGRO_EVENT_MOUSE_AXES:
+        // ex_log( "mouse.x = %d, mouse.y = %d", _event.mouse.x, _event.mouse.y );
         // lua_getglobal( l, "wiz" );
         // lua_getfield( l, -1, "event" );
 
@@ -451,16 +452,28 @@ void event_loop () {
     al_install_keyboard();
     al_register_event_source(queue, al_get_keyboard_event_source());
 
+    // init allegro mouse
+    al_install_mouse();
+    al_register_event_source(queue, al_get_mouse_event_source());
+
     // NOTE: there is two ways for update, using Timer or using Event-Poll, 
     // the timer is suitable for GUI tool, and Event-Poll is better for game
 
     // start main-loop
     while (1) {
-        // error func
+        // handle events
+        while ( !al_is_event_queue_empty(queue) ) {
+            al_get_next_event(queue, &event);
+            if ( process_event(event) ) {
+                goto done;
+            }
+        }
+
+        // push error func
         lua_pushcfunction( l, ex_lua_trace_back );
         idx = lua_gettop(l);
 
-        // call window.on_update in lua
+        // update windows [on_update]
         ex_array_each ( __window_list, __window_info_t *, win_info )
             lua_rawgeti( l, LUA_REGISTRYINDEX, win_info->refID );
             lua_getfield( l, -1, "on_update" );
@@ -474,16 +487,7 @@ void event_loop () {
             }
         ex_array_each_end
 
-        // handle events
-        while ( !al_is_event_queue_empty(queue) ) {
-            al_get_next_event(queue, &event);
-            if ( process_event(event) ) {
-                goto done;
-            }
-        }
-
-        // draw one frame
-        // call window.on_repaint in lua
+        // draw one frame [on_repaint]
         ex_array_each ( __window_list, __window_info_t *, win_info )
             if ( win_info->dirty ) {
                 // set target bitmap
