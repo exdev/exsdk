@@ -47,7 +47,13 @@ wiz.on_init = function ()
                               size.h )
     end
 
-    wiz.ui_window( 200, 200 )
+
+    -- create window 2
+    local window2 = wiz.ui_window( 400, 800 )
+    window2.on_repaint = function ( _self )
+        ex.canvas.color = ex.color4f.white
+        ex.canvas.draw_bitmap_text( "Hello World", font2, 10, 10 )
+    end
 end
 
 -- ------------------------------------------------------------------ 

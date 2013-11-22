@@ -16,8 +16,61 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SDL_Window *sdl_win;
-SDL_Renderer *sdl_renderer;
+SDL_Window *window_1st;
+SDL_Renderer *renderer_1st;
+
+SDL_Window *window_2nd;
+SDL_Renderer *renderer_2nd;
+
+SDL_Texture *texture;
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void LoadTexture ( const char *_file ) {
+    SDL_Surface *temp;
+
+    /* Load the sprite image */
+    temp = SDL_LoadBMP(_file);
+    if ( temp == NULL ) {
+        fprintf ( stderr, "Couldn't load %s: %s", _file, SDL_GetError() );
+        return;
+    }
+
+    /* Set transparent pixel as the pixel at (0,0) */
+    if (temp->format->palette) {
+        SDL_SetColorKey(temp, 1, *(Uint8 *) temp->pixels);
+    } else {
+        switch (temp->format->BitsPerPixel) {
+        case 15:
+            SDL_SetColorKey(temp, 1, (*(Uint16 *) temp->pixels) & 0x00007FFF);
+            break;
+        case 16:
+            SDL_SetColorKey(temp, 1, *(Uint16 *) temp->pixels);
+            break;
+        case 24:
+            SDL_SetColorKey(temp, 1, (*(Uint32 *) temp->pixels) & 0x00FFFFFF);
+            break;
+        case 32:
+            SDL_SetColorKey(temp, 1, *(Uint32 *) temp->pixels);
+            break;
+        }
+    }
+
+    /* Create textures from the image */
+    texture = SDL_CreateTextureFromSurface(renderer_1st, temp);
+    if ( !texture ) {
+        fprintf( stderr, "Couldn't create texture: %s\n", SDL_GetError() );
+        SDL_FreeSurface(temp);
+        return;
+    }
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    SDL_FreeSurface(temp);
+
+    /* We're ready to roll. :) */
+    return;
+}
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -26,6 +79,7 @@ SDL_Renderer *sdl_renderer;
 int main ( int argc, char* argv[] ) {
     int done;
     SDL_Event event;
+    SDL_Rect rect;
 
     // ======================================================== 
     // init 
@@ -38,21 +92,25 @@ int main ( int argc, char* argv[] ) {
         return 1;
     }
 
-    sdl_win = SDL_CreateWindow( "Test", 
+    window_1st = SDL_CreateWindow( "Test", 
                                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
                                 800, 600, 
                                 SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN /*| SDL_WINDOW_BORDERLESS*/ 
                                 );
-    if ( sdl_win == NULL ) {
+    if ( window_1st == NULL ) {
         fprintf ( stderr, "Couldn't create window: %s\n", SDL_GetError() );
         return 1;
     }
 
-    sdl_renderer = SDL_CreateRenderer( sdl_win, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-    if ( sdl_renderer == NULL ) {
-        fprintf ( stderr, "Couldn't create sdl_renderer: %s\n", SDL_GetError() );
+    renderer_1st = SDL_CreateRenderer( window_1st, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+    if ( renderer_1st == NULL ) {
+        fprintf ( stderr, "Couldn't create renderer_1st: %s\n", SDL_GetError() );
         return 1;
     }
+
+    SDL_CreateWindowAndRenderer( 200, 200, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN, &window_2nd, &renderer_2nd );
+
+    LoadTexture("../../../../../examples/test_graphics/assets/icon.bmp");
 
     // ======================================================== 
     // loop 
@@ -71,6 +129,10 @@ int main ( int argc, char* argv[] ) {
                         if (window) {
                             SDL_DestroyWindow(window);
                         }
+
+                        if (window == window_1st ) {
+                            done = 1;
+                        }
                     }
                     break;
                 }
@@ -82,22 +144,36 @@ int main ( int argc, char* argv[] ) {
             }
         }
 
-        // draw
-        SDL_SetRenderDrawColor(sdl_renderer, 0xA0, 0xA0, 0xA0, 0xFF);
-        SDL_RenderClear(sdl_renderer);
+        // draw 1st
+        SDL_SetRenderDrawColor(renderer_1st, 0xA0, 0xA0, 0xA0, 0xFF);
+        SDL_RenderClear(renderer_1st);
+        // DO DRAW HERE
+        rect.x = 1;
+        rect.y = 1;
+        rect.w = 100;
+        rect.h = 100;
+        SDL_RenderCopy(renderer_1st, texture, NULL, &rect);
+        SDL_RenderPresent(renderer_1st);
 
-        // DrawRects(sdl_renderer);
-        // DrawLines(sdl_renderer);
-        // DrawPoints(sdl_renderer);
-
-        SDL_RenderPresent(sdl_renderer);
+        // draw 2nd
+        SDL_SetRenderDrawColor(renderer_2nd, 0xA0, 0xA0, 0xA0, 0xFF);
+        SDL_RenderClear(renderer_2nd);
+        // DO DRAW HERE FIXME: SDL don't allow user in multi-window share the same texture...
+        rect.x = 1;
+        rect.y = 1;
+        rect.w = 100;
+        rect.h = 100;
+        SDL_RenderCopy(renderer_2nd, texture, NULL, &rect);
+        SDL_RenderPresent(renderer_2nd);
     }
 
     // ======================================================== 
     // deinit 
     // ======================================================== 
 
-    SDL_DestroyRenderer(sdl_renderer);
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer_1st);
+    SDL_DestroyRenderer(renderer_2nd);
     SDL_VideoQuit();
 
     return 0;
