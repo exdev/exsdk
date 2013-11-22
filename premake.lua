@@ -141,13 +141,88 @@ solution "exSDK"
             flags { "Optimize" }    
 
     -- ======================================================== 
+    -- Project: SDL (library) 
+    -- ======================================================== 
+
+    project "SDL"
+        kind "StaticLib"
+        language "C"
+        targetname "SDL"
+
+        -- include
+        includedirs {
+            "ext/SDL-2.0.1/include/",
+        } 
+
+        -- source
+        files { 
+            "ext/SDL-2.0.1/src/*.c",
+            "ext/SDL-2.0.1/src/atomic/*.c",
+            "ext/SDL-2.0.1/src/audio/*.c",
+            "ext/SDL-2.0.1/src/cpuinfo/*.c",
+            "ext/SDL-2.0.1/src/events/*.c",
+            "ext/SDL-2.0.1/src/file/*.c",
+            "ext/SDL-2.0.1/src/haptic/*.c",
+            "ext/SDL-2.0.1/src/input/**.c",
+            "ext/SDL-2.0.1/src/joystick/*.c",
+            "ext/SDL-2.0.1/src/libm/*.c",
+            "ext/SDL-2.0.1/src/power/*.c",
+            "ext/SDL-2.0.1/src/render/*.c",
+            "ext/SDL-2.0.1/src/stdlib/*.c",
+            "ext/SDL-2.0.1/src/thread/*.c",
+            "ext/SDL-2.0.1/src/timer/*.c",
+            "ext/SDL-2.0.1/src/video/*.c",
+        }
+        if __PLATFORM == "macosx" then
+            files { 
+                "ext/SDL-2.0.1/src/audio/coreaudio/*.c",
+                "ext/SDL-2.0.1/src/audio/dummy/*.c",
+                "ext/SDL-2.0.1/src/audio/disk/*.c",
+                "ext/SDL-2.0.1/src/file/cocoa/*.m",
+                "ext/SDL-2.0.1/src/filesystem/cocoa/*.m",
+                "ext/SDL-2.0.1/src/haptic/darwin/*.c",
+                "ext/SDL-2.0.1/src/joystick/darwin/*.c",
+                "ext/SDL-2.0.1/src/loadso/dlopen/*.c",
+                "ext/SDL-2.0.1/src/main/dummy/*.c",
+                "ext/SDL-2.0.1/src/power/macosx/*.c",
+                "ext/SDL-2.0.1/src/render/opengl/*.c",
+                "ext/SDL-2.0.1/src/render/opengles/*.c",
+                "ext/SDL-2.0.1/src/render/opengles2/*.c",
+                "ext/SDL-2.0.1/src/render/software/*.c",
+                "ext/SDL-2.0.1/src/thread/pthread/*.c",
+                "ext/SDL-2.0.1/src/timer/unix/*.c",
+                "ext/SDL-2.0.1/src/video/cocoa/*.m",
+                "ext/SDL-2.0.1/src/video/dummy/*.c",
+            }
+        elseif __PLATFORM == "win32" then
+            files { 
+                -- TODO
+            }
+        end
+
+        -- configurations
+        configuration "Debug"
+            objdir ( __DEST_DIR .. "SDL/debug/objs/" )
+            targetdir ( __DEST_DIR .. "SDL/debug/bin/" )
+
+            defines { "DEBUG" }
+            flags { "Symbols" }
+
+        configuration "Release"
+            objdir ( __DEST_DIR .. "SDL/release/objs/" )
+            targetdir ( __DEST_DIR .. "SDL/release/bin/" )
+
+            defines { "NDEBUG" }
+            flags { "Optimize" }    
+
+    -- ======================================================== 
     -- Project: Allegro (library) 
     -- ======================================================== 
 
     project "Allegro"
         kind "StaticLib"
         language "C"
-        targetname "allegro"
+        targetname "Allegro"
 
         -- build options
         if __PLATFORM == "macosx" then
@@ -248,6 +323,7 @@ solution "exSDK"
             "ext/allegro-5.0.8/include/",
             "ext/allegro-5.0.8/addons/primitives/",
             "ext/allegro-5.0.8/addons/image/",
+            "ext/SDL-2.0.1/include/",
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.2/",
             "core/"
@@ -292,6 +368,7 @@ solution "exSDK"
         -- include
         includedirs {
             "ext/allegro-5.0.8/include/",
+            "ext/SDL-2.0.1/include/",
             "ext/lua-5.2.2/",
             "core/"
         } 
@@ -311,6 +388,7 @@ solution "exSDK"
             "freetype",
             "yajl_s",
             "Deps",
+            "SDL",
             "Allegro",
             "ex_core",
         }
@@ -394,6 +472,7 @@ solution "exSDK"
                 "ext/allegro-5.0.8/include/",
                 "ext/allegro-5.0.8/addons/primitives/",
                 "ext/allegro-5.0.8/addons/image/",
+                "ext/SDL-2.0.1/include/",
                 "ext/lua-5.2.2/",
                 "core/"
             } 
@@ -420,6 +499,7 @@ solution "exSDK"
                 "freetype",
                 "yajl_s",
                 "Deps",
+                "SDL",
                 "Allegro",
                 "ex_core",
             }
@@ -427,6 +507,10 @@ solution "exSDK"
                 links {
                     "AppKit.framework/",
                     "AudioToolbox.framework/",
+                    "AudioUnit.framework/",
+                    "CoreAudio.framework/",
+                    "ForceFeedback.framework/",
+                    "Carbon.framework/",
                     "IOKit.framework/",
                     "OpenAL.framework/",
                     "OpenGL.framework/",
