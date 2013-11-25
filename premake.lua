@@ -58,6 +58,19 @@ solution "exSDK"
         "ALLEGRO_LIB_BUILD",
         "ALLEGRO_SRC",
 
+        -- SDL, SDL_image
+        "SDL_IMAGE_USE_COMMON_BACKEND",
+        "LOAD_PNG",
+        "SAVE_PNG",
+        "LOAD_BMP",
+        "SAVE_BMP",
+        "LOAD_JPG",
+        "SAVE_JPG",
+        -- "LOAD_TIF",
+        -- "SAVE_TIF",
+        -- "LOAD_WEBP",
+        -- "SAVE_WEBP",
+
         -- physfs
         "PHYSFS_SUPPORTS_ZIP",
 
@@ -166,7 +179,10 @@ solution "exSDK"
 
         -- include
         includedirs {
+            "ext/libpng-1.6.7/",
+            "ext/jpeg-9/",
             "ext/SDL-2.0.1/include/",
+            "ext/SDL_image-2.0.0/",
         } 
 
         -- source
@@ -187,6 +203,7 @@ solution "exSDK"
             "ext/SDL-2.0.1/src/thread/*.c",
             "ext/SDL-2.0.1/src/timer/*.c",
             "ext/SDL-2.0.1/src/video/*.c",
+            "ext/SDL_image-2.0.0/**.c",
         }
         if __PLATFORM == "macosx" then
             files { 
@@ -339,6 +356,7 @@ solution "exSDK"
             "ext/allegro-5.0.8/addons/primitives/",
             "ext/allegro-5.0.8/addons/image/",
             "ext/SDL-2.0.1/include/",
+            "ext/SDL_image-2.0.0/",
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.2/",
             "core/"
@@ -384,6 +402,7 @@ solution "exSDK"
         includedirs {
             "ext/allegro-5.0.8/include/",
             "ext/SDL-2.0.1/include/",
+            "ext/SDL_image-2.0.0/",
             "ext/lua-5.2.2/",
             "core/"
         } 
@@ -487,6 +506,7 @@ solution "exSDK"
                 "ext/allegro-5.0.8/addons/primitives/",
                 "ext/allegro-5.0.8/addons/image/",
                 "ext/SDL-2.0.1/include/",
+                "ext/SDL_image-2.0.0/",
                 "ext/lua-5.2.2/",
                 "core/"
             } 

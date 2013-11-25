@@ -10,6 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SDL.h"
+#include "SDL_image.h"
 #include "exsdk.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -32,7 +33,7 @@ void LoadTexture ( const char *_file ) {
     SDL_Surface *temp;
 
     /* Load the sprite image */
-    temp = SDL_LoadBMP(_file);
+    temp = IMG_Load(_file);
     if ( temp == NULL ) {
         fprintf ( stderr, "Couldn't load %s: %s", _file, SDL_GetError() );
         return;
@@ -110,7 +111,7 @@ int main ( int argc, char* argv[] ) {
 
     SDL_CreateWindowAndRenderer( 200, 200, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN, &window_2nd, &renderer_2nd );
 
-    LoadTexture("../../../../../examples/test_graphics/assets/icon.bmp");
+    LoadTexture("../../../../../examples/test_graphics/assets/grossini_dance_09.png");
 
     // ======================================================== 
     // loop 
@@ -150,8 +151,8 @@ int main ( int argc, char* argv[] ) {
         // DO DRAW HERE
         rect.x = 1;
         rect.y = 1;
-        rect.w = 100;
-        rect.h = 100;
+        rect.w = 85;
+        rect.h = 121;
         SDL_RenderCopy(renderer_1st, texture, NULL, &rect);
         SDL_RenderPresent(renderer_1st);
 
@@ -161,10 +162,10 @@ int main ( int argc, char* argv[] ) {
         // DO DRAW HERE FIXME: SDL don't allow user in multi-window share the same texture...
         rect.x = 1;
         rect.y = 1;
-        rect.w = 100;
-        rect.h = 100;
+        rect.w = 85;
+        rect.h = 121;
         if ( SDL_RenderCopy(renderer_2nd, texture, NULL, &rect) ) {
-            fprintf ( stderr, "Failed to render %s", SDL_GetError() );
+            // fprintf ( stderr, "Failed to render %s", SDL_GetError() );
         }
         SDL_RenderPresent(renderer_2nd);
     }
