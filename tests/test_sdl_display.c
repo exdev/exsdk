@@ -93,6 +93,7 @@ int main ( int argc, char* argv[] ) {
         return 1;
     }
 
+    SDL_GL_SetAttribute( SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1 );
     window_1st = SDL_CreateWindow( "Test", 
                                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
                                 800, 600, 
