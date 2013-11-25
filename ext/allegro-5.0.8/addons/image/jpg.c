@@ -17,6 +17,7 @@
 
 #include "iio.h"
 
+#define HAVE_BOOLEAN // jwu ADD
 #include <jpeglib.h>
 #include <jerror.h>
 

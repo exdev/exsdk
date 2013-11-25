@@ -61,7 +61,7 @@ solution "exSDK"
         -- SDL, SDL_image
         "SDL_IMAGE_USE_COMMON_BACKEND",
         "LOAD_PNG",
-        "SAVE_PNG",
+        -- "SAVE_PNG", -- NOTE: this is always defined in the source code
         "LOAD_BMP",
         "SAVE_BMP",
         "LOAD_JPG",
@@ -91,6 +91,7 @@ solution "exSDK"
             "WIN32",
             "_WINDOWS",
             "_CRT_SECURE_NO_DEPRECATE", -- msvc treat sprintf, strcpy, ... functions as no safe, we don't want the compile keep warning us
+            "HAVE_LIBC",
         }
     end
 
@@ -184,6 +185,11 @@ solution "exSDK"
             "ext/SDL-2.0.1/include/",
             "ext/SDL_image-2.0.0/",
         } 
+        if __PLATFORM == "win32" then
+            includedirs {
+                "C:/Program Files/Microsoft DirectX SDK (June 2010)/Include/",
+            } 
+        end
 
         -- source
         files { 
@@ -208,8 +214,8 @@ solution "exSDK"
         if __PLATFORM == "macosx" then
             files { 
                 "ext/SDL-2.0.1/src/audio/coreaudio/*.c",
-                "ext/SDL-2.0.1/src/audio/dummy/*.c",
                 "ext/SDL-2.0.1/src/audio/disk/*.c",
+                "ext/SDL-2.0.1/src/audio/dummy/*.c",
                 "ext/SDL-2.0.1/src/file/cocoa/*.m",
                 "ext/SDL-2.0.1/src/filesystem/cocoa/*.m",
                 "ext/SDL-2.0.1/src/haptic/darwin/*.c",
@@ -228,7 +234,25 @@ solution "exSDK"
             }
         elseif __PLATFORM == "win32" then
             files { 
-                -- TODO
+                "ext/SDL-2.0.1/src/audio/directsound/*.c",
+                "ext/SDL-2.0.1/src/audio/disk/*.c",
+                "ext/SDL-2.0.1/src/audio/dummy/*.c",
+                "ext/SDL-2.0.1/src/audio/winmm/*.c",
+                "ext/SDL-2.0.1/src/audio/xaudio2/*.c",
+                "ext/SDL-2.0.1/src/core/windows/*.c",
+                "ext/SDL-2.0.1/src/filesystem/windows/*.c",
+                "ext/SDL-2.0.1/src/haptic/windows/*.c",
+                "ext/SDL-2.0.1/src/joystick/windows/*.c",
+                "ext/SDL-2.0.1/src/loadso/windows/*.c",
+                "ext/SDL-2.0.1/src/power/windows/*.c",
+                "ext/SDL-2.0.1/src/render/direct3d/*.c",
+                "ext/SDL-2.0.1/src/render/opengl/*.c",
+                "ext/SDL-2.0.1/src/render/software/*.c",
+                "ext/SDL-2.0.1/src/thread/generic/*.c",
+                "ext/SDL-2.0.1/src/thread/windows/*.c",
+                "ext/SDL-2.0.1/src/timer/windows/*.c",
+                "ext/SDL-2.0.1/src/video/dummy/*.c",
+                "ext/SDL-2.0.1/src/video/windows/*.c",
             }
         end
 
@@ -444,6 +468,8 @@ solution "exSDK"
                 -- "dinput8",
                 -- "dsound",
                 "winmm",
+                "imm32",
+                "version",
                 "psapi",
                 "shlwapi",
                 "opengl32",
@@ -556,6 +582,8 @@ solution "exSDK"
             elseif __PLATFORM == "win32" then
                 links {
                     "winmm",
+                    "imm32",
+                    "version",
                     "psapi",
                     "shlwapi",
                     "opengl32",
@@ -569,7 +597,7 @@ solution "exSDK"
             if _ACTION:match("vs.*") ~= nil then
                 linkoptions  { 
                     "/nodefaultlib:libcmt.lib", 
-                    "/nodefaultlib:libcmtd.lib" 
+                    "/nodefaultlib:libcmtd.lib", 
                 }
             end
 
