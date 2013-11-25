@@ -163,7 +163,9 @@ int main ( int argc, char* argv[] ) {
         rect.y = 1;
         rect.w = 100;
         rect.h = 100;
-        SDL_RenderCopy(renderer_2nd, texture, NULL, &rect);
+        if ( SDL_RenderCopy(renderer_2nd, texture, NULL, &rect) ) {
+            fprintf ( stderr, "Failed to render %s", SDL_GetError() );
+        }
         SDL_RenderPresent(renderer_2nd);
     }
 
