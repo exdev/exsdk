@@ -37,6 +37,10 @@
 #include <sys/stat.h>
 #endif
 
+#ifndef PATH_MAX
+#define PATH_MAX 140
+#endif
+
 
 /* forward declaration */
 const struct ALLEGRO_FILE_INTERFACE _al_file_interface_stdio;

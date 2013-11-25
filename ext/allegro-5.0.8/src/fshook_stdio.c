@@ -41,6 +41,10 @@ ALLEGRO_DEBUG_CHANNEL("fshook")
    #define  SLASH _T("\\")
 #endif
 
+#ifndef PATH_MAX
+#define PATH_MAX 140
+#endif
+
 #include "allegro5/internal/aintern_file.h"
 #include "allegro5/internal/aintern_fshook.h"
 
