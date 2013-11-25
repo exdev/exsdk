@@ -98,7 +98,7 @@ solution "exSDK"
 
         -- include
         includedirs {
-            "ext/zlib-1.2.7/",
+            "ext/zlib-1.2.8/",
             "ext/lpng1514/",
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.2/",
@@ -107,7 +107,7 @@ solution "exSDK"
 
         -- source
         files { 
-            "ext/zlib-1.2.7/**.c",
+            "ext/zlib-1.2.8/**.c",
             "ext/lpng1514/**.c",
             "ext/physfs-2.0.3/**.c",
             "ext/lua-5.2.2/**.c",
@@ -235,7 +235,7 @@ solution "exSDK"
             "ext/allegro-5.0.8/include/",
             "ext/allegro-5.0.8/addons/primitives/",
             "ext/allegro-5.0.8/addons/image/",
-            "ext/zlib-1.2.7/",
+            "ext/zlib-1.2.8/",
             "ext/lpng1514/",
         } 
         if __PLATFORM == "macosx" then
