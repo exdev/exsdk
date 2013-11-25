@@ -100,6 +100,7 @@ solution "exSDK"
         includedirs {
             "ext/zlib-1.2.8/",
             "ext/libpng-1.6.7/",
+            "ext/jpeg-9/",
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.2/",
             "ext/yajl-2.0.1/include/",
@@ -109,6 +110,7 @@ solution "exSDK"
         files { 
             "ext/zlib-1.2.8/**.c",
             "ext/libpng-1.6.7/**.c",
+            "ext/jpeg-9/**.c",
             "ext/physfs-2.0.3/**.c",
             "ext/lua-5.2.2/**.c",
             "ext/luagl-1.8/**.c",
@@ -120,6 +122,18 @@ solution "exSDK"
         excludes {
             "ext/libpng-1.6.7/pngtest.c",
             "ext/libpng-1.6.7/example.c",
+            "ext/jpeg-9/cdjpeg.c",
+            "ext/jpeg-9/cjpeg.c",
+            "ext/jpeg-9/ckconfig.c",
+            "ext/jpeg-9/djpeg.c",
+            "ext/jpeg-9/example.c",
+            "ext/jpeg-9/jmemdos.c",
+            "ext/jpeg-9/jmemmac.c",
+            "ext/jpeg-9/jmemname.c",
+            "ext/jpeg-9/jmemnobs.c",
+            "ext/jpeg-9/jpegtran.c",
+            "ext/jpeg-9/rdjpgcom.c",
+            "ext/jpeg-9/wrjpgcom.c",
             "ext/lua-5.2.2/lua.c",
             "ext/lua-5.2.2/luac.c",
             "ext/physfs-2.0.3/lzma/**.c",
@@ -238,6 +252,7 @@ solution "exSDK"
             "ext/allegro-5.0.8/addons/image/",
             "ext/zlib-1.2.8/",
             "ext/libpng-1.6.7/",
+            "ext/jpeg-9/",
         } 
         if __PLATFORM == "macosx" then
             includedirs {
@@ -245,7 +260,6 @@ solution "exSDK"
             } 
         elseif __PLATFORM == "win32" then
             includedirs {
-                "ext/jpeg-6b/include/",
                 "C:/Program Files/Microsoft DirectX SDK (June 2010)/Include/",
             } 
         end
@@ -406,7 +420,6 @@ solution "exSDK"
             }
         elseif __PLATFORM == "win32" then
             links {
-                "jpeg",
                 -- "d3d9",
                 -- "d3dx9",
                 -- "dinput8",
@@ -522,7 +535,6 @@ solution "exSDK"
                 }
             elseif __PLATFORM == "win32" then
                 links {
-                    "jpeg",
                     "winmm",
                     "psapi",
                     "shlwapi",
