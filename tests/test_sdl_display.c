@@ -87,6 +87,7 @@ int main ( int argc, char* argv[] ) {
     // init 
     // ======================================================== 
 
+    SDL_SetHint ( SDL_HINT_RENDER_DRIVER, "opengl" );
     // init sdl video
     // NOTE: it will also init mouse, keyboard, touch and events
     if ( SDL_VideoInit(0) < 0 ) {
@@ -105,7 +106,7 @@ int main ( int argc, char* argv[] ) {
         return 1;
     }
 
-    renderer_1st = SDL_CreateRenderer( window_1st, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+    renderer_1st = SDL_CreateRenderer( window_1st, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
     if ( renderer_1st == NULL ) {
         fprintf ( stderr, "Couldn't create renderer_1st: %s\n", SDL_GetError() );
         return 1;
