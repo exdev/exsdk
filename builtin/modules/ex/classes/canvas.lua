@@ -181,10 +181,10 @@ local canvas = class ({
             local last_texture = ex.texture.null
             local last_id = -1
             local id = -1
-            local finished = false
+            local id_list = ex_c.utf8_list(_text)
 
-            while finished == false do
-                id,finished = ex_c.utf8_iterate(_text)
+            for i=1,#id_list do
+                local id = id_list[i]
 
                 -- if this is \n(10) or \r(13)
                 if id == 10 or id == 13 then
@@ -195,7 +195,7 @@ local canvas = class ({
                     assert( charInfo, "Can't find char info by id " .. id )
 
                     -- adjust kerning
-                    if last_id ~= -1 and _font.hasKerning then
+                    if i > 1 and _font.hasKerning then
                         cur_x = cur_x + _font:get_kerning( last_id, id )
                     end
 
