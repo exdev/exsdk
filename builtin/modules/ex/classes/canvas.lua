@@ -177,14 +177,14 @@ local canvas = class ({
             -- checkarg(_dh,"number")
 
             local cur_x, cur_y = _dx, _dy
-            local ustr_ptr = ex_c.ustr_new(_text)
-            local count = ex_c.ustr_length(ustr_ptr)-1
 
             local last_texture = ex.texture.null
             local last_id = -1
+            local id = -1
+            local finished = false
 
-            for i=0,count do
-                local id = ex_c.ustr_get(ustr_ptr,i)
+            while finished == false do
+                id,finished = ex_c.utf8_iterate(_text)
 
                 -- if this is \n(10) or \r(13)
                 if id == 10 or id == 13 then
@@ -195,7 +195,7 @@ local canvas = class ({
                     assert( charInfo, "Can't find char info by id " .. id )
 
                     -- adjust kerning
-                    if i > 0 and _font.hasKerning then
+                    if last_id ~= -1 and _font.hasKerning then
                         cur_x = cur_x + _font:get_kerning( last_id, id )
                     end
 
@@ -226,7 +226,6 @@ local canvas = class ({
             end
 
             ex_c.gui_flush()
-            ex_c.ustr_delete(ustr_ptr)
         end,
     }
 }) 

@@ -118,6 +118,7 @@ solution "exSDK"
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.2/",
             "ext/yajl-2.0.1/include/",
+            "ext/utf8proc-1.1.5/",
         } 
 
         -- source
@@ -130,6 +131,7 @@ solution "exSDK"
             "ext/luagl-1.8/**.c",
             "ext/lua_yajl/**.c",
             "ext/lpeg-0.10.2/**.c",
+            "ext/utf8proc-1.1.5/utf8proc.c",
         }
 
         -- source exclude
@@ -384,6 +386,7 @@ solution "exSDK"
             "ext/SDL_image-2.0.0/",
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.2/",
+            "ext/utf8proc-1.1.5/",
             "core/"
         } 
         if __PLATFORM == "macosx" then

@@ -121,7 +121,7 @@ extern int __ex_lua_add_base ( lua_State * );
 extern int __ex_lua_add_core ( lua_State * );
 extern int __ex_lua_add_fsys ( lua_State * );
 extern int __ex_lua_add_array ( lua_State * );
-extern int __ex_lua_add_ustr ( lua_State * );
+extern int __ex_lua_add_utf8 ( lua_State * );
 extern int __ex_lua_add_vec2f ( lua_State * );
 extern int __ex_lua_add_vec3f ( lua_State * );
 extern int __ex_lua_add_vec4f ( lua_State * );
@@ -136,7 +136,7 @@ static const lua_CFunction loadedlibs[] = {
     __ex_lua_add_core,
     __ex_lua_add_fsys,
     __ex_lua_add_array,
-    __ex_lua_add_ustr,
+    __ex_lua_add_utf8,
     __ex_lua_add_vec2f,
     __ex_lua_add_vec3f,
     __ex_lua_add_vec4f,
