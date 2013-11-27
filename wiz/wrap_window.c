@@ -9,7 +9,8 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
+#include "SDL.h"
+
 #include "exsdk.h"
 
 #include <lua.h>
@@ -41,13 +42,13 @@ static int __lua_create_window ( lua_State *_l ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
-extern void destroy_window ( int );
+extern void destroy_window ( lua_State *, int );
 // ------------------------------------------------------------------ 
 
 static int __lua_destroy_window ( lua_State *_l ) {
     ex_lua_check_nargs(_l,1);
 
-    destroy_window (luaL_checkint(_l,1));
+    destroy_window ( _l, luaL_checkint(_l,1) );
 
     return 0;
 }
@@ -67,17 +68,17 @@ static int __lua_repaint_window ( lua_State *_l ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
-extern ALLEGRO_DISPLAY *get_display ( int );
+void get_window_size ( int, int *, int * );
 // ------------------------------------------------------------------ 
 
 static int __lua_get_window_width ( lua_State *_l ) {
-    ALLEGRO_DISPLAY *display;
+    int w, h;
 
     ex_lua_check_nargs(_l,1);
-    display = get_display( luaL_checkint(_l,1) );
+    get_window_size( luaL_checkint(_l,1), &w, &h );
 
     //
-    lua_pushinteger( _l, al_get_display_width(display) );
+    lua_pushinteger( _l, w );
     return 1;
 }
 
@@ -86,13 +87,13 @@ static int __lua_get_window_width ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_get_window_height ( lua_State *_l ) {
-    ALLEGRO_DISPLAY *display;
+    int w, h;
 
     ex_lua_check_nargs(_l,1);
-    display = get_display( luaL_checkint(_l,1) );
+    get_window_size( luaL_checkint(_l,1), &w, &h );
 
     //
-    lua_pushinteger( _l, al_get_display_height(display) );
+    lua_pushinteger( _l, h );
     return 1;
 }
 

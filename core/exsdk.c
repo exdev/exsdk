@@ -9,9 +9,6 @@
 // includes 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
-#include "allegro5/allegro_image.h"
-#include "allegro5/allegro_primitives.h"
 #include "exSDK.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -230,17 +227,6 @@ int ex_sdk_init () {
         return -1;
 
     ex_log ( "[exSDK] Initializing..." );
-
-    // init Allegro
-    ex_log ( "[exSDK] Initializing Allegro..." );
-    if ( al_init () == false ) {
-        ex_log ( "[exSDK] Error: Could not init Allegro!" );
-        return -1;
-    }
-
-    ex_log ( "[Allegro] Version %s", ALLEGRO_VERSION_STR );
-    al_init_image_addon();
-    al_init_primitives_addon();
 
     // init memory
     ex_log ( "[exSDK] Initializing memory..." );

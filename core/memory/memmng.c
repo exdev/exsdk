@@ -9,7 +9,7 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
+#include "SDL.h"
 #include "exsdk.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ static const size_t __pattern_size = sizeof(uint32) * PREFIX_COUNT + sizeof(uint
 static alloc_unit_t *__reserved_au_list = NULL;
 static ex_hashmap_t __au_map;
 static ex_list_t __au_bucket;
-static ALLEGRO_MUTEX *__access_mutex = NULL;
+static SDL_mutex *__access_mutex = NULL;
 
 static size_t __au_count = 0;
 static size_t __total_org_memory = 0;
@@ -332,7 +332,7 @@ int ex_mem_init () {
         return -1;
 
     //
-    __access_mutex = al_create_mutex();
+    __access_mutex = SDL_CreateMutex();
 
     ex_hashmap_init ( &__au_map, 
                       sizeof(void *), sizeof(alloc_unit_t *), 
@@ -369,7 +369,7 @@ void ex_mem_deinit () {
         return;
 
     if ( __access_mutex )
-        al_destroy_mutex(__access_mutex);
+        SDL_DestroyMutex(__access_mutex);
 
     __dump ();
 
@@ -403,7 +403,7 @@ void *ex_malloc_mng( size_t _size, const char *_tag, const char *_file_name, con
     alloc_unit_t *au;
     size_t push_result;
 
-    al_lock_mutex(__access_mutex);
+    SDL_LockMutex(__access_mutex);
 
     // ANSI says: allocation requests of 0 bytes will still return a valid value
     if ( _size == 0) _size = 1;
@@ -416,7 +416,7 @@ void *ex_malloc_mng( size_t _size, const char *_tag, const char *_file_name, con
     // out of memory
     ex_assert (dbg_ptr != NULL);
     if ( dbg_ptr == NULL ) {
-        al_unlock_mutex(__access_mutex);
+        SDL_UnlockMutex(__access_mutex);
         return NULL;
     }
 
@@ -425,7 +425,7 @@ void *ex_malloc_mng( size_t _size, const char *_tag, const char *_file_name, con
     ex_assert ( au != NULL );
 
     if ( au == NULL ) {
-        al_unlock_mutex(__access_mutex);
+        SDL_UnlockMutex(__access_mutex);
         return NULL;
     }
     // write information
@@ -469,11 +469,11 @@ void *ex_malloc_mng( size_t _size, const char *_tag, const char *_file_name, con
     ex_assert ( push_result != -1 );
 
     if ( push_result == -1 ) {
-        al_unlock_mutex(__access_mutex);
+        SDL_UnlockMutex(__access_mutex);
         return NULL;
     }
 
-    al_unlock_mutex(__access_mutex);
+    SDL_UnlockMutex(__access_mutex);
     return org_ptr;
 }
 
@@ -490,17 +490,17 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
     uint i_pre, i_post;
     size_t rearrange_result;
 
-    al_lock_mutex(__access_mutex);
+    SDL_LockMutex(__access_mutex);
 
     // alloc NULL memory address
     if ( _ptr == NULL ) {
-        al_unlock_mutex(__access_mutex);
+        SDL_UnlockMutex(__access_mutex);
         return ex_malloc_mng( _size, _tag, _file_name, _func_name, _line_nr );
     }
 
     // realloc zero bytes free 
     if ( _size == 0 ) {
-        al_unlock_mutex(__access_mutex);
+        SDL_UnlockMutex(__access_mutex);
         ex_free_mng( _ptr, _file_name, _func_name, _line_nr );
 
         return NULL;
@@ -511,7 +511,7 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
     ex_assert( au != NULL );
 
     if ( au == NULL ) {
-        al_unlock_mutex(__access_mutex);
+        SDL_UnlockMutex(__access_mutex);
         return NULL;
     }
 
@@ -532,7 +532,7 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
     // out of memory
     ex_assert (dbg_ptr != NULL);
     if ( dbg_ptr == NULL ) {
-        al_unlock_mutex(__access_mutex);
+        SDL_UnlockMutex(__access_mutex);
         return NULL;
     }
 
@@ -576,11 +576,11 @@ void *ex_realloc_mng( void *_ptr, size_t _size, const char *_tag, const char *_f
     ex_assert ( rearrange_result != -1 );
 
     if ( rearrange_result == -1 ) {
-        al_unlock_mutex(__access_mutex);
+        SDL_UnlockMutex(__access_mutex);
         return NULL;
     }
 
-    al_unlock_mutex(__access_mutex);
+    SDL_UnlockMutex(__access_mutex);
     return org_ptr;
 }
 
@@ -592,11 +592,11 @@ void ex_free_mng( void *_ptr, const char *_file_name, const char *_func_name, si
 {
     alloc_unit_t *au;
 
-    al_lock_mutex ( __access_mutex );
+    SDL_LockMutex(__access_mutex);
 
     // nothing to do with NULL ptr
     if ( _ptr == NULL ) {
-        al_unlock_mutex(__access_mutex);
+        SDL_UnlockMutex(__access_mutex);
         return;
     }
 
@@ -621,7 +621,7 @@ void ex_free_mng( void *_ptr, const char *_file_name, const char *_func_name, si
     // reclaim the alloc info for next alloc
     __reclaim_au ( au );
 
-    al_unlock_mutex(__access_mutex);
+    SDL_UnlockMutex(__access_mutex);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

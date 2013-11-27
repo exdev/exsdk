@@ -9,7 +9,6 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
 #include "exsdk.h"
 
 #include <lua.h>
@@ -70,8 +69,8 @@ static int __lua_test ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static const luaL_Reg lib[] = {
-    { "open_app",       __lua_open_app },
-    { "close_app",      __lua_close_app },
+    { "open_app",  __lua_open_app },
+    { "close_app", __lua_close_app },
     { "test",      __lua_test },
     { NULL, NULL }
 };
