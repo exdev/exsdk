@@ -37,7 +37,7 @@ static int __lua_utf8_list ( lua_State *_l ) {
 
     index = 0;
     while ( *str ) {
-        str += utf8proc_iterate (str, -1, &id);
+        str += utf8proc_iterate ((const uint8_t *)str, -1, &id);
 
         lua_pushinteger(_l,index+1);
         lua_pushinteger(_l,id);

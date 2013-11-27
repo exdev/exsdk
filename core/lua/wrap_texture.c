@@ -9,7 +9,9 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
+#include "SDL.h"
+#include "SDL_image.h"
+
 #include "exsdk.h"
 
 #include <lua.h>
@@ -26,20 +28,24 @@
 
 static int __lua_texture_load ( lua_State *_l ) {
     const char *path;
-    ALLEGRO_BITMAP *bitmap;
+    SDL_Texture *sdl_texture;
+    SDL_Surface *bitmap;
 
     ex_lua_check_nargs(_l,1);
 
-    al_set_new_bitmap_flags ( ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR );
-
     path = luaL_checkstring(_l,1);
-    bitmap = al_load_bitmap(path);
+    bitmap = IMG_Load(path);
     if ( bitmap == NULL ) {
-        luaL_error ( _l, "Failed to load texture: %s", path );
+        luaL_error ( _l, "Failed to load image: %s", path );
+    }
+    sdl_texture = SDL_CreateTextureFromSurface( ex_get_main_sdl_renderer(),
+                                                bitmap );
+    if ( sdl_texture == NULL ) {
+        luaL_error ( _l, "Failed to create texture from: %s", path );
     }
 
     //
-    lua_pushlightuserdata ( _l, bitmap );
+    lua_pushlightuserdata ( _l, sdl_texture );
     return 1;
 }
 
@@ -49,21 +55,23 @@ static int __lua_texture_load ( lua_State *_l ) {
 
 static int __lua_texture_new ( lua_State *_l ) {
     int w,h;
-    ALLEGRO_BITMAP *bitmap;
+    SDL_Texture *sdl_texture;
 
     ex_lua_check_nargs(_l,2);
 
     w = luaL_checkint(_l,1);
     h = luaL_checkint(_l,2);
 
-    al_set_new_bitmap_flags ( ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR );
-    bitmap = al_create_bitmap(w,h);
-    if ( bitmap == NULL ) {
+    sdl_texture = SDL_CreateTexture( ex_get_main_sdl_renderer(),
+                                     SDL_PIXELFORMAT_ARGB8888,
+                                     SDL_TEXTUREACCESS_STREAMING,
+                                     w, h );
+    if ( sdl_texture == NULL ) {
         luaL_error ( _l, "Failed to create texture" );
     }
 
     //
-    lua_pushlightuserdata ( _l, bitmap );
+    lua_pushlightuserdata ( _l, sdl_texture );
     return 1;
 }
 
@@ -72,15 +80,15 @@ static int __lua_texture_new ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_texture_destroy ( lua_State *_l ) {
-    ALLEGRO_BITMAP *bitmap;
+    SDL_Texture *sdl_texture;
 
     ex_lua_check_nargs(_l,1);
 
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    bitmap = lua_touserdata(_l,1);
+    sdl_texture = lua_touserdata(_l,1);
 
     //
-    al_destroy_bitmap(bitmap);
+    SDL_DestroyTexture(sdl_texture);
     return 0;
 }
 
@@ -89,16 +97,16 @@ static int __lua_texture_destroy ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_texture_get_width ( lua_State *_l ) {
-    ALLEGRO_BITMAP *bitmap;
-    int r;
+    SDL_Texture *sdl_texture;
+    int w;
 
     ex_lua_check_nargs(_l,1);
 
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    bitmap = lua_touserdata(_l,1);
+    sdl_texture = lua_touserdata(_l,1);
 
-    r = al_get_bitmap_width(bitmap);
-    lua_pushinteger(_l,r);
+    SDL_QueryTexture( sdl_texture, NULL, NULL, &w, NULL );
+    lua_pushinteger(_l,w);
 
     return 1;
 }
@@ -108,48 +116,46 @@ static int __lua_texture_get_width ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_texture_get_height ( lua_State *_l ) {
-    ALLEGRO_BITMAP *bitmap;
-    int r;
+    SDL_Texture *sdl_texture;
+    int h;
 
     ex_lua_check_nargs(_l,1);
 
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    bitmap = lua_touserdata(_l,1);
+    sdl_texture = lua_touserdata(_l,1);
 
-    r = al_get_bitmap_height(bitmap);
-    lua_pushinteger(_l,r);
+    SDL_QueryTexture( sdl_texture, NULL, NULL, NULL, &h );
+    lua_pushinteger(_l,h);
 
     return 1;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
-ALLEGRO_STATE __al_state;
-ALLEGRO_BITMAP *__locked_bitmap = NULL;
+static SDL_Texture *__locked_texture = NULL;
+static void *__locked_pixels = NULL;
+static int __locked_pitch = -1;
 // ------------------------------------------------------------------ 
 
 static int __lua_texture_lock_rect ( lua_State *_l ) {
-    ALLEGRO_BITMAP *bitmap;
+    SDL_Rect rect;
 
-    if ( __locked_bitmap != NULL ) {
+    if ( __locked_texture != NULL ) {
         return luaL_error ( _l, "Can't operate different texture at the same time" );
     } 
     ex_lua_check_nargs(_l,5);
 
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    bitmap = lua_touserdata(_l,1);
+    __locked_texture = lua_touserdata(_l,1);
 
-    al_lock_bitmap_region ( bitmap,
-                            luaL_checkint(_l,2),
-                            luaL_checkint(_l,3),
-                            luaL_checkint(_l,4),
-                            luaL_checkint(_l,5),
-                            ALLEGRO_PIXEL_FORMAT_ANY,
-                            ALLEGRO_LOCK_WRITEONLY );
-
-    al_store_state ( &__al_state, ALLEGRO_STATE_TARGET_BITMAP );
-    al_set_target_bitmap(bitmap);
-    __locked_bitmap = bitmap;
+    rect.x = luaL_checkint(_l,2);
+    rect.y = luaL_checkint(_l,3);
+    rect.w = luaL_checkint(_l,4);
+    rect.h = luaL_checkint(_l,5);
+    SDL_LockTexture ( __locked_texture,
+                      &rect,
+                      &__locked_pixels,
+                      &__locked_pitch );
 
     return 0;
 }
@@ -159,20 +165,19 @@ static int __lua_texture_lock_rect ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_texture_unlock ( lua_State *_l ) {
-    ALLEGRO_BITMAP *bitmap;
+    SDL_Texture *sdl_texture;
 
     ex_lua_check_nargs(_l,1);
 
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    bitmap = lua_touserdata(_l,1);
+    sdl_texture = lua_touserdata(_l,1);
 
     //
-    if ( __locked_bitmap != bitmap ) {
+    if ( __locked_texture != sdl_texture ) {
         return luaL_error ( _l, "Can't operate different texture at the same time" );
     } 
-    al_unlock_bitmap ( bitmap );
-    al_restore_state(&__al_state);
-    __locked_bitmap = NULL;
+    SDL_UnlockTexture ( __locked_texture );
+    __locked_texture = NULL;
 
     return 0;
 }
@@ -182,27 +187,32 @@ static int __lua_texture_unlock ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static int __lua_texture_set_pixel ( lua_State *_l ) {
-    ALLEGRO_BITMAP *bitmap;
-    ALLEGRO_COLOR color;
+    SDL_Texture *sdl_texture;
+    ex_vec4f_t color;
+    uint32 *dst_pixel;
+    int x, y;
 
     ex_lua_check_nargs(_l,7);
 
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    bitmap = lua_touserdata(_l,1);
+    sdl_texture = lua_touserdata(_l,1);
 
-    if ( __locked_bitmap != bitmap ) {
+    if ( __locked_texture != sdl_texture ) {
         return luaL_error ( _l, "Can't operate different texture at the same time" );
     } 
 
-    // convert color
-    color = al_map_rgba_f ( (float)luaL_checknumber(_l,4),
-                            (float)luaL_checknumber(_l,5),
-                            (float)luaL_checknumber(_l,6),
-                            (float)luaL_checknumber(_l,7) );
+    x = luaL_checkint(_l,2);
+    y = luaL_checkint(_l,3);
 
-    al_put_pixel ( luaL_checkint(_l,2),
-                   luaL_checkint(_l,3),
-                   color );
+    // convert color
+    ex_color4f_set( &color, 
+                    (float)luaL_checknumber(_l,4),
+                    (float)luaL_checknumber(_l,5),
+                    (float)luaL_checknumber(_l,6),
+                    (float)luaL_checknumber(_l,7) );
+
+    dst_pixel = (uint32 *)( (uint8 *)__locked_pixels + y * __locked_pitch + 4 * x );
+    *dst_pixel = ex_color4f_to_ARGB (&color);
 
     return 0;
 }

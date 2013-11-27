@@ -9,12 +9,16 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
-#include "allegro5/allegro_opengl.h"
-#include "allegro5/internal/aintern_opengl.h"
-
+#include "SDL_opengl.h"
 #include "exsdk.h"
-// #include "gl/gl_inc.h"
+
+///////////////////////////////////////////////////////////////////////////////
+// TEMP
+///////////////////////////////////////////////////////////////////////////////
+
+static void *__main_renderer = NULL;
+void *ex_get_main_sdl_renderer() { return __main_renderer; }
+void ex_set_main_sdl_renderer ( void *_r ) { __main_renderer = _r; }
 
 ///////////////////////////////////////////////////////////////////////////////
 // static
@@ -56,16 +60,6 @@ typedef struct __ui_node_t {
     ex_recti_t rect;
     ex_vec4f_t color;
 } __ui_node_t;
-
-// ------------------------------------------------------------------ 
-// Desc: 
-ex_renderer_t *current_renderer;
-// ------------------------------------------------------------------ 
-
-void ex_set_current_renderer ( ex_renderer_t *_renderer ) {
-    current_renderer = _renderer;
-}
-ex_renderer_t *ex_current_renderer () { return current_renderer; } 
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -369,139 +363,139 @@ void __setup_blending ( ex_renderer_t *_renderer ) {
 // ------------------------------------------------------------------ 
 
 void __draw_ui_nodes ( ex_renderer_t *_renderer ) {
-    __ui_node_t *node;
-    size_t i, index_start;
-    void *last_texture;
-    __ui_vertex_t *verts;
-    uint16 *indices;
-    ALLEGRO_BITMAP *bitmap;
-    ALLEGRO_BITMAP_OGL *ogl_bitmap;
-    float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
-    int sx, sy, sw, sh;
-    float dx, dy, dw, dh;
+    // __ui_node_t *node;
+    // size_t i, index_start;
+    // void *last_texture;
+    // __ui_vertex_t *verts;
+    // uint16 *indices;
+    // ALLEGRO_BITMAP *bitmap;
+    // ALLEGRO_BITMAP_OGL *ogl_bitmap;
+    // float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
+    // int sx, sy, sw, sh;
+    // float dx, dy, dw, dh;
 
-    // process ui nodes
-    qsort ( _renderer->ui_node_block.data, 
-            _renderer->ui_node_block.count,
-            sizeof(__ui_node_t),
-            __ui_node_cmp );
+    // // process ui nodes
+    // qsort ( _renderer->ui_node_block.data, 
+    //         _renderer->ui_node_block.count,
+    //         sizeof(__ui_node_t),
+    //         __ui_node_cmp );
 
-    glEnable(GL_TEXTURE_2D);
+    // glEnable(GL_TEXTURE_2D);
 
-    // loop all ui node and draw
-    last_texture = NULL;
-    for ( i = 0; i < _renderer->ui_node_block.count; ++i ) {
-        node = (__ui_node_t *)ex_memblock_get ( &_renderer->ui_node_block, i );
+    // // loop all ui node and draw
+    // last_texture = NULL;
+    // for ( i = 0; i < _renderer->ui_node_block.count; ++i ) {
+    //     node = (__ui_node_t *)ex_memblock_get ( &_renderer->ui_node_block, i );
 
-        // if this is not the first node,
-        if ( i != 0 && node->texture != last_texture ) {
-            glBindTexture ( GL_TEXTURE_2D, ogl_bitmap->texture );
-            __setup_blending ( _renderer );
-            __flush_ui_vertices ( _renderer );
-        }
+    //     // if this is not the first node,
+    //     if ( i != 0 && node->texture != last_texture ) {
+    //         glBindTexture ( GL_TEXTURE_2D, ogl_bitmap->texture );
+    //         __setup_blending ( _renderer );
+    //         __flush_ui_vertices ( _renderer );
+    //     }
 
-        bitmap = (ALLEGRO_BITMAP *)node->texture;
-        ogl_bitmap = (ALLEGRO_BITMAP_OGL *)node->texture;
+    //     bitmap = (ALLEGRO_BITMAP *)node->texture;
+    //     ogl_bitmap = (ALLEGRO_BITMAP_OGL *)node->texture;
 
-        // draw as pure sprite
-        if ( node->border.l == 0 
-          && node->border.r == 0 
-          && node->border.t == 0 
-          && node->border.b == 0 ) {
+    //     // draw as pure sprite
+    //     if ( node->border.l == 0 
+    //       && node->border.r == 0 
+    //       && node->border.t == 0 
+    //       && node->border.b == 0 ) {
 
-            tex_l = ogl_bitmap->left;
-            tex_r = ogl_bitmap->right;
-            tex_t = ogl_bitmap->top;
-            tex_b = ogl_bitmap->bottom;
+    //         tex_l = ogl_bitmap->left;
+    //         tex_r = ogl_bitmap->right;
+    //         tex_t = ogl_bitmap->top;
+    //         tex_b = ogl_bitmap->bottom;
 
-            dx = (float)node->pos.x;
-            dy = (float)node->pos.y;
-            dw = (float)node->pos.w;
-            dh = (float)node->pos.h;
+    //         dx = (float)node->pos.x;
+    //         dy = (float)node->pos.y;
+    //         dw = (float)node->pos.w;
+    //         dh = (float)node->pos.h;
 
-            sx = node->rect.x;
-            sy = node->rect.y;
-            sw = node->rect.w;
-            sh = node->rect.h;
+    //         sx = node->rect.x;
+    //         sy = node->rect.y;
+    //         sw = node->rect.w;
+    //         sh = node->rect.h;
 
-            w = bitmap->w;
-            h = bitmap->h;
-            true_w = ogl_bitmap->true_w;
-            true_h = ogl_bitmap->true_h;
+    //         w = bitmap->w;
+    //         h = bitmap->h;
+    //         true_w = ogl_bitmap->true_w;
+    //         true_h = ogl_bitmap->true_h;
 
-            tex_l += sx / true_w;
-            tex_t -= sy / true_h;
-            tex_r -= (w - sx - sw) / true_w;
-            tex_b += (h - sy - sh) / true_h;
+    //         tex_l += sx / true_w;
+    //         tex_t -= sy / true_h;
+    //         tex_r -= (w - sx - sw) / true_w;
+    //         tex_b += (h - sy - sh) / true_h;
 
-            // ui_vb
-            verts = (__ui_vertex_t *)ex_memblock_request ( &_renderer->ui_vb, 4 );
+    //         // ui_vb
+    //         verts = (__ui_vertex_t *)ex_memblock_request ( &_renderer->ui_vb, 4 );
 
-            verts[0].pos.x = dx;
-            verts[0].pos.y = dy + dh;
-            verts[0].uv0.x = tex_l;
-            verts[0].uv0.y = tex_b;
-            verts[0].color = node->color;
+    //         verts[0].pos.x = dx;
+    //         verts[0].pos.y = dy + dh;
+    //         verts[0].uv0.x = tex_l;
+    //         verts[0].uv0.y = tex_b;
+    //         verts[0].color = node->color;
 
-            verts[1].pos.x = dx;
-            verts[1].pos.y = dy;
-            verts[1].uv0.x = tex_l;
-            verts[1].uv0.y = tex_t;
-            verts[1].color = node->color;
+    //         verts[1].pos.x = dx;
+    //         verts[1].pos.y = dy;
+    //         verts[1].uv0.x = tex_l;
+    //         verts[1].uv0.y = tex_t;
+    //         verts[1].color = node->color;
 
-            verts[2].pos.x = dx + dw;
-            verts[2].pos.y = dy + dh;
-            verts[2].uv0.x = tex_r;
-            verts[2].uv0.y = tex_b;
-            verts[2].color = node->color;
+    //         verts[2].pos.x = dx + dw;
+    //         verts[2].pos.y = dy + dh;
+    //         verts[2].uv0.x = tex_r;
+    //         verts[2].uv0.y = tex_b;
+    //         verts[2].color = node->color;
 
-            verts[3].pos.x = dx + dw;
-            verts[3].pos.y = dy;
-            verts[3].uv0.x = tex_r;
-            verts[3].uv0.y = tex_t;
-            verts[3].color = node->color;
+    //         verts[3].pos.x = dx + dw;
+    //         verts[3].pos.y = dy;
+    //         verts[3].uv0.x = tex_r;
+    //         verts[3].uv0.y = tex_t;
+    //         verts[3].color = node->color;
 
-            ex_vec2f_mul_mat33f ( &verts[0].pos, &verts[0].pos, &node->transform );
-            ex_vec2f_mul_mat33f ( &verts[1].pos, &verts[1].pos, &node->transform );
-            ex_vec2f_mul_mat33f ( &verts[2].pos, &verts[2].pos, &node->transform );
-            ex_vec2f_mul_mat33f ( &verts[3].pos, &verts[3].pos, &node->transform );
+    //         ex_vec2f_mul_mat33f ( &verts[0].pos, &verts[0].pos, &node->transform );
+    //         ex_vec2f_mul_mat33f ( &verts[1].pos, &verts[1].pos, &node->transform );
+    //         ex_vec2f_mul_mat33f ( &verts[2].pos, &verts[2].pos, &node->transform );
+    //         ex_vec2f_mul_mat33f ( &verts[3].pos, &verts[3].pos, &node->transform );
 
-            // DISABLE: since we use integer here { 
-            // verts[0].pos.x = ceilf(verts[0].pos.x); verts[0].pos.y = ceilf(verts[0].pos.y);
-            // verts[1].pos.x = ceilf(verts[1].pos.x); verts[1].pos.y = ceilf(verts[1].pos.y);
-            // verts[2].pos.x = ceilf(verts[2].pos.x); verts[2].pos.y = ceilf(verts[2].pos.y);
-            // verts[3].pos.x = ceilf(verts[3].pos.x); verts[3].pos.y = ceilf(verts[3].pos.y);
-            // } DISABLE end 
+    //         // DISABLE: since we use integer here { 
+    //         // verts[0].pos.x = ceilf(verts[0].pos.x); verts[0].pos.y = ceilf(verts[0].pos.y);
+    //         // verts[1].pos.x = ceilf(verts[1].pos.x); verts[1].pos.y = ceilf(verts[1].pos.y);
+    //         // verts[2].pos.x = ceilf(verts[2].pos.x); verts[2].pos.y = ceilf(verts[2].pos.y);
+    //         // verts[3].pos.x = ceilf(verts[3].pos.x); verts[3].pos.y = ceilf(verts[3].pos.y);
+    //         // } DISABLE end 
 
-            // ui_ib
-            index_start = _renderer->ui_ib.count;
-            indices = (uint16 *)ex_memblock_request ( &_renderer->ui_ib, 6 );
-            indices[0] = index_start;
-            indices[1] = index_start + 1;
-            indices[2] = index_start + 2;
-            indices[3] = index_start + 2;
-            indices[4] = index_start + 1;
-            indices[5] = index_start + 3;
-        }
+    //         // ui_ib
+    //         index_start = _renderer->ui_ib.count;
+    //         indices = (uint16 *)ex_memblock_request ( &_renderer->ui_ib, 6 );
+    //         indices[0] = index_start;
+    //         indices[1] = index_start + 1;
+    //         indices[2] = index_start + 2;
+    //         indices[3] = index_start + 2;
+    //         indices[4] = index_start + 1;
+    //         indices[5] = index_start + 3;
+    //     }
 
-        // draw as border sprite
-        else {
-        }
+    //     // draw as border sprite
+    //     else {
+    //     }
 
-        last_texture = node->texture;
-    }
+    //     last_texture = node->texture;
+    // }
 
-    // if we still have verices remain, flush it at the end
-    if ( ex_memblock_count (&_renderer->ui_vb) > 0 ) {
-        glBindTexture ( GL_TEXTURE_2D, ogl_bitmap->texture );
-        __setup_blending ( _renderer );
-        __flush_ui_vertices ( _renderer );
-    }
+    // // if we still have verices remain, flush it at the end
+    // if ( ex_memblock_count (&_renderer->ui_vb) > 0 ) {
+    //     glBindTexture ( GL_TEXTURE_2D, ogl_bitmap->texture );
+    //     __setup_blending ( _renderer );
+    //     __flush_ui_vertices ( _renderer );
+    // }
 
-    glDisable(GL_TEXTURE_2D);
+    // glDisable(GL_TEXTURE_2D);
 
-    //
-    ex_memblock_clear( &_renderer->ui_node_block );
+    // //
+    // ex_memblock_clear( &_renderer->ui_node_block );
 }
 
 // ------------------------------------------------------------------ 

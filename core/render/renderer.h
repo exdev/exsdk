@@ -17,6 +17,13 @@ extern "C" {
 // ######################### 
 
 ///////////////////////////////////////////////////////////////////////////////
+// TEMP
+///////////////////////////////////////////////////////////////////////////////
+
+void *ex_get_main_sdl_renderer();
+void ex_set_main_sdl_renderer ( void * );
+
+///////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -44,6 +51,7 @@ enum {
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef struct ex_renderer_t {
+    //
     bool initialized;
 
     // ui data
@@ -68,9 +76,6 @@ extern void ex_renderer_deinit ( ex_renderer_t *_renderer );
 static inline bool ex_renderer_initialized ( ex_renderer_t *_renderer ) {
     return _renderer->initialized;
 }
-
-extern void ex_set_current_renderer ( ex_renderer_t *_renderer );
-extern ex_renderer_t *ex_current_renderer ();
 
 // ------------------------------------------------------------------ 
 // Desc: 

@@ -76,6 +76,7 @@ void create_window ( int _refID, int _w, int _h ) {
     // if this is the first window, create queue
     if ( ex_array_count(__window_list) == 0 ) {
         primary_win_info = win_info;
+        ex_set_main_sdl_renderer(sdl_renderer);
     }
     ex_array_add ( __window_list, &win_info );
 }

@@ -68,7 +68,7 @@ static int __lua_repaint_window ( lua_State *_l ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
-void get_window_size ( int, int *, int * );
+extern void get_window_size ( int, int *, int * );
 // ------------------------------------------------------------------ 
 
 static int __lua_get_window_width ( lua_State *_l ) {
