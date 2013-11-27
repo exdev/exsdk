@@ -9,9 +9,9 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
-
+#include "SDL.h"
 #include "exsdk.h"
+#include "utf8proc.h"
 
 // freetype
 #include <ft2build.h>
@@ -43,7 +43,7 @@ typedef struct __glyph_key_t {
 
 typedef struct __glyph_set_t {
     ex_hashmap_t *glyphs; // char_code -> ex_glyph_t
-    ex_array_t *pages; // bitmap page
+    ex_array_t *pages; // font atlas textures
     int cur_x;
     int cur_y;
     int max_height;
@@ -103,51 +103,44 @@ static int __keycmp ( const void *_key1, const void *_key2 ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static ALLEGRO_BITMAP *__new_texture () {
-    ALLEGRO_BITMAP *bitmap;
-    ALLEGRO_STATE state;
+static SDL_Texture *__new_texture () {
+    SDL_Texture *sdl_texture;
+    int x, y;
+    void *pixels;
+    int pitch;
 
-    al_store_state(&state, ALLEGRO_STATE_NEW_BITMAP_PARAMETERS);
-        al_set_new_bitmap_format ( ALLEGRO_PIXEL_FORMAT_ABGR_8888 );
-        al_set_new_bitmap_flags ( ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR );
-        bitmap = al_create_bitmap( 256, 256 );
-    al_restore_state(&state);
+    sdl_texture = SDL_CreateTexture( ex_get_main_sdl_renderer(),
+                                     SDL_PIXELFORMAT_ARGB8888,
+                                     SDL_TEXTUREACCESS_STREAMING,
+                                     256, 256 );
 
-    al_store_state(&state, ALLEGRO_STATE_TARGET_BITMAP);
-        al_hold_bitmap_drawing(false);
-        al_set_target_bitmap(bitmap);
-        al_clear_to_color(al_map_rgba_f(0, 0, 0, 0));
-    al_restore_state(&state);
+    if ( SDL_LockTexture(sdl_texture, NULL, &pixels, &pitch) < 0 ) {
+        ex_log ( "Couldn't lock texture: %s\n", SDL_GetError() );
+        return NULL;
+    }
+    for ( y = 0; y < 256; ++y ) {
+        uint32 *dst = (uint32 *)((uint8 *)pixels + y * pitch);
+        for ( x = 0; x < 256; ++x ) {
+            *dst++ = 0x00000000;
+        }
+    }
+    SDL_UnlockTexture(sdl_texture);
 
-    // DISABLE { 
-    // ALLEGRO_LOCKED_REGION *locked;
-    // int x, y, p;
-    // unsigned char *rgba;
-    // bitmap = al_create_bitmap( 256, 256 );
-    // locked = al_lock_bitmap ( bitmap, ALLEGRO_PIXEL_FORMAT_ABGR_8888, ALLEGRO_LOCK_WRITEONLY );
-    // rgba = locked->data;
-    // p = locked->pitch;
-    // for ( y = 0; y < 256; ++y ) {
-    //     for ( x = 0; x < 256; ++x ) {
-    //         rgba[y * p + x * 4 + 0] = 0;
-    //         rgba[y * p + x * 4 + 1] = 0;
-    //         rgba[y * p + x * 4 + 2] = 0;
-    //         rgba[y * p + x * 4 + 3] = 0;
-    //     }
-    // }
-    // al_unlock_bitmap(bitmap);
-    // } DISABLE end 
-
-    return bitmap;
+    return sdl_texture;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph_t *_glyph, int _w, int _h, int _padding ) {
-    ALLEGRO_BITMAP *page;
-    ALLEGRO_LOCKED_REGION *region;
+static SDL_Texture *__atlas_get_page ( ex_font_t *_font, 
+                                       __glyph_set_t *_glyph_set, 
+                                       ex_glyph_t *_glyph, 
+                                       int _w, 
+                                       int _h, 
+                                       int _padding ) {
+    SDL_Texture *page;
+    int page_w, page_h;
 
     //
     if ( _glyph_set->pages->count == 0 ) {
@@ -159,21 +152,22 @@ static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_s
         _glyph_set->max_height = 0;
     }
     else {
-        page = *(ALLEGRO_BITMAP **)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
+        page = *(SDL_Texture **)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
     }
 
     //
-    ex_assert ( _w + _padding < al_get_bitmap_width(page) && _h + _padding < al_get_bitmap_height(page) );
+    SDL_QueryTexture( page, NULL, NULL, &page_w, &page_h );
+    ex_assert ( _w + _padding < page_w && _h + _padding < page_h );
 
     //
-    if ( _glyph_set->cur_x + _w + _padding > al_get_bitmap_width(page) ) {
+    if ( _glyph_set->cur_x + _w + _padding > page_w ) {
         _glyph_set->cur_y += (_glyph_set->max_height + _padding);
         _glyph_set->cur_x = _padding;
         _glyph_set->max_height = 0;
     }
 
     //
-    if ( _glyph_set->cur_y + _h + _padding > al_get_bitmap_height(page) ) {
+    if ( _glyph_set->cur_y + _h + _padding > page_h ) {
         page = __new_texture();
         ex_array_add ( _glyph_set->pages, &page );
 
@@ -193,26 +187,19 @@ static ALLEGRO_LOCKED_REGION *__atlas_alloc_region ( ex_font_t *_font, __glyph_s
         _glyph_set->max_height = _h;
     }
 
-    //
-    region = al_lock_bitmap_region( page,
-                                    _glyph->x, _glyph->y,
-                                    _glyph->w, _glyph->h,
-                                    ALLEGRO_PIXEL_FORMAT_ABGR_8888, 
-                                    ALLEGRO_LOCK_WRITEONLY );
-
-    return region;
+    return page;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static void __copy_glyph_color ( FT_Bitmap _ft_bitmap, ALLEGRO_LOCKED_REGION *_region ) {
+static void __copy_glyph_color ( FT_Bitmap _ft_bitmap, void *_pixels, int _pitch ) {
     int x, y;
 
     for ( y = 0; y < _ft_bitmap.rows; ++y ) {
         const uint8 *ptr = _ft_bitmap.buffer + _ft_bitmap.pitch * y;
-        uint8 *dptr = (uint8 *)_region->data + _region->pitch * y;
+        uint8 *dptr = (uint8 *)_pixels + _pitch * y;
 
         for ( x = 0; x < _ft_bitmap.width; ++x ) {
             unsigned char c = *ptr;
@@ -235,14 +222,17 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     FT_Face face;
     FT_Glyph ft_glyph;
     FT_Bitmap ft_bitmap;
-    ALLEGRO_BITMAP *cur_page = NULL;
-    ALLEGRO_LOCKED_REGION *region = NULL;
 
     int ft_bitmap_width = 0;
     int ft_bitmap_rows = 0;
     int ft_bitmap_pitch = 0;
     int ft_glyph_top = 0;
     int ft_glyph_left = 0;
+
+    SDL_Texture *page;
+    SDL_Rect rect;
+    void *pixels;
+    int pitch;
 
     if ( _glyph->page != NULL )
         return;
@@ -308,14 +298,17 @@ static void __init_glyph ( ex_font_t *_font, __glyph_set_t *_glyph_set, ex_glyph
     }
 
     // 
-    region = __atlas_alloc_region ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows, 1 );
-    cur_page = *(ALLEGRO_BITMAP **)ex_array_get ( _glyph_set->pages, _glyph_set->pages->count-1 );
-
-    __copy_glyph_color ( ft_bitmap, region );
-    al_unlock_bitmap(cur_page);
+    page = __atlas_get_page ( _font, _glyph_set, _glyph, ft_bitmap_width, ft_bitmap_rows, 1 );
+    rect.x = _glyph->x;
+    rect.y = _glyph->y;
+    rect.w = _glyph->w;
+    rect.h = _glyph->h;
+    SDL_LockTexture(page, &rect, &pixels, &pitch);
+    __copy_glyph_color ( ft_bitmap, pixels, pitch );
+    SDL_UnlockTexture(page);
 
     //
-    _glyph->page = cur_page;
+    _glyph->page = page;
     _glyph->offset_x = ft_glyph_left;
     _glyph->offset_y = (face->size->metrics.ascender >> 6) - ft_glyph_top;
 
@@ -452,8 +445,8 @@ void ex_font_destroy ( ex_font_t *_font ) {
         ex_hashmap_free( set.glyphs );
 
         // free pages
-        ex_array_each ( set.pages,  ALLEGRO_BITMAP *, page )
-            al_destroy_bitmap(page);
+        ex_array_each ( set.pages,  SDL_Texture *, page )
+            SDL_DestroyTexture(page);
         ex_array_each_end
         ex_array_free( set.pages );
 
@@ -520,7 +513,7 @@ ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, uint _ft_index ) {
                                             ex_hashkey_uint,
                                             ex_keycmp_uint
                                           );
-        new_set.pages = ex_array_alloc ( sizeof(ALLEGRO_BITMAP *), 8 );
+        new_set.pages = ex_array_alloc ( sizeof(SDL_Texture *), 8 );
         new_set.cur_x = 0;
         new_set.cur_y = 0;
         new_set.max_height = -1;
@@ -603,20 +596,18 @@ int ex_font_get_height ( ex_font_t *_font ) {
 // ------------------------------------------------------------------ 
 
 void ex_font_calc_size ( ex_font_t *_font, const char *_text, int *_w, int *_h ) {
-    ALLEGRO_USTR *utext;
-    int ch;
-    int ch_pos;
+    int id;
     uint ft_index, prev_ft_index;
     int cur_x, cur_y;
     int advance = 0;
     int max_x = 0;
+    const char *str;
 
     FT_Face face;
     FT_Size_Metrics metrics;
     int height, line_gap;
 
-    utext = al_ustr_new(_text);
-    ch_pos = 0;
+    str = _text;
     prev_ft_index = -1;
     cur_x = 0;
     cur_y = 0;
@@ -626,12 +617,14 @@ void ex_font_calc_size ( ex_font_t *_font, const char *_text, int *_w, int *_h )
     height = metrics.height >> 6;
     line_gap = (metrics.ascender >> 6) - (metrics.descender >> 6) - height;
 
-    while ( (ch = al_ustr_get_next(utext, &ch_pos)) >= 0 ) {
+    while ( *str ) {
+        str += utf8proc_iterate ((const uint8_t *)str, -1, &id);
+
         advance = 0;
-        ft_index = FT_Get_Char_Index ( face, ch );
+        ft_index = FT_Get_Char_Index ( face, id );
 
         // if this is \n(10) or \r(13)
-        if ( ch == 10 || ch == 13 ) {
+        if ( id == 10 || id == 13 ) {
             if ( max_x < cur_x ) 
                 max_x = cur_x;
 
@@ -649,6 +642,4 @@ void ex_font_calc_size ( ex_font_t *_font, const char *_text, int *_w, int *_h )
 
     *_w = max_x;
     *_h = cur_y + height + line_gap;
-
-    al_ustr_free(utext);
 }

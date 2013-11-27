@@ -322,6 +322,35 @@ static inline int __lua_add_path ( struct lua_State *_l, const char * _fieldName
 
     return 0;
 }
+// TODO: add ex_str_new() functions for easy create strop { 
+// static inline int __lua_add_path ( struct lua_State *_l, const char * _fieldName, const char *_path ) {
+//     char *new_path;
+//     const char *original_path;
+//     size_t original_path_len;
+//     size_t path_len;
+
+//     lua_getglobal( _l, "package" );
+//     lua_getfield( _l, -1, _fieldName );
+
+//     original_path = lua_tostring( _l, -1 ); // grab path string from top of stack
+//     original_path_len = strlen(original_path);
+//     path_len = strlen(_path);
+
+//     new_path = ex_malloc( original_path_len + path_len + 1 + 1 );
+//     strncat( new_path, ";", 1 );
+//     strncat( new_path, _path, path_len );
+//     new_path[original_path_len + path_len + 1 + 1] = '\0';
+
+//     lua_pop( _l, 1 ); // get rid of the string on the stack we just pushed on line 5
+//     lua_pushstring( _l, new_path ); // push the new one
+//     lua_setfield( _l, -2, _fieldName ); // set the field "path" in table at -2 with value at top of stack
+//     lua_pop( _l, 1 ); // get rid of package table from top of stack
+
+//     ex_free(new_path);
+
+//     return 0;
+// }
+// } TODO end 
 
 // ------------------------------------------------------------------ 
 // Desc: 
