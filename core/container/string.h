@@ -1,13 +1,13 @@
 // ======================================================================================
-// File         : str_op.h
+// File         : string.h
 // Author       : Wu Jie 
-// Last Change  : 02/20/2013 | 11:40:57 AM | Wednesday,February
+// Last Change  : 11/28/2013 | 11:31:57 AM | Thursday,November
 // Description  : 
 // ======================================================================================
 
 // #################################################################################
-#ifndef STR_OP_H_1361331658
-#define STR_OP_H_1361331658
+#ifndef STRING_H_1385609798
+#define STRING_H_1385609798
 // #################################################################################
 
 // ######################### 
@@ -16,13 +16,27 @@ extern "C" {
 #endif
 // ######################### 
 
+typedef struct ex_str_t {
+    char *data;
+    size_t count;
+    size_t capacity;
+} ex_str_t;
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_str_replace ( const char *_path, char _from, char _to );
-#define ex_unix_path(_path) ex_str_replace(_path,'\\','/')
-#define ex_windows_path(_path) ex_str_replace(_path,'/','\\')
+ex_str_t *ex_str_alloc ( const char *_cstr );
+ex_str_t *ex_str_allocf ( const char *_fmt, ... );
+void ex_str_free ( ex_str_t *_exstr );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_str_append ( ex_str_t *_exstr, const char *_cstr ); 
+void ex_str_appendf ( ex_str_t *_exstr, const char *_fmt, ... ); 
+
 
 // ######################### 
 #ifdef __cplusplus
@@ -31,7 +45,5 @@ extern void ex_str_replace ( const char *_path, char _from, char _to );
 // ######################### 
 
 // #################################################################################
-#endif // END STR_OP_H_1361331658
+#endif // END STRING_H_1385609798
 // #################################################################################
-
-
