@@ -9,7 +9,7 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
+#include "SDL.h"
 #include "exsdk.h"
 
 #include <lua.h>
@@ -25,16 +25,16 @@
 // ------------------------------------------------------------------ 
 
 static int __lua_painter_set_texture ( lua_State *_l ) {
-    ALLEGRO_BITMAP *bitmap;
+    SDL_Texture *texture;
 
     ex_lua_check_nargs(_l,1);
 
-    // get bitmap ptr
+    // get texture ptr
     luaL_checktype( _l, 1, LUA_TLIGHTUSERDATA );
-    bitmap = lua_touserdata(_l,1);
+    texture = lua_touserdata(_l,1);
 
     //
-    ex_painter_set_texture(bitmap);
+    ex_painter_set_texture(texture);
 
     return 0;
 }

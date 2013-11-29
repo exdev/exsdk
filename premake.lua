@@ -53,11 +53,6 @@ solution "exSDK"
     location (__DEST_DIR)
 
     defines {
-        -- allegro
-        "ALLEGRO_STATICLINK",
-        "ALLEGRO_LIB_BUILD",
-        "ALLEGRO_SRC",
-
         -- SDL, SDL_image
         "SDL_IMAGE_USE_COMMON_BACKEND",
         "LOAD_PNG",
@@ -273,99 +268,6 @@ solution "exSDK"
 
             defines { "NDEBUG" }
             flags { "Optimize" }    
-
-    -- ======================================================== 
-    -- Project: Allegro (library) 
-    -- ======================================================== 
-
-    project "Allegro"
-        kind "StaticLib"
-        language "C"
-        targetname "Allegro"
-
-        -- build options
-        if __PLATFORM == "macosx" then
-        elseif __PLATFORM == "win32" then
-            buildoptions { "/wd4996" }
-        end
-
-        -- include
-        includedirs {
-            "ext/allegro-5.0.8/include/",
-            "ext/allegro-5.0.8/addons/primitives/",
-            "ext/allegro-5.0.8/addons/image/",
-            "ext/zlib-1.2.8/",
-            "ext/libpng-1.6.7/",
-            "ext/jpeg-9/",
-        } 
-        if __PLATFORM == "macosx" then
-            includedirs {
-                -- "/System/Library/Frameworks/AppKit.framework/Headers/", NOTE: in Mac, if we have include problem, uncomment this
-            } 
-        elseif __PLATFORM == "win32" then
-            includedirs {
-                "C:/Program Files/Microsoft DirectX SDK (June 2010)/Include/",
-            } 
-        end
-
-        -- source
-        files { 
-            "ext/allegro-5.0.8/src/**.c",
-            "ext/allegro-5.0.8/addons/primitives/**.c",
-            "ext/allegro-5.0.8/addons/image/**.c",
-            "ext/allegro-5.0.8/addons/main/**.c",
-        }
-        if __PLATFORM == "macosx" then
-            files { 
-                "ext/allegro-5.0.8/src/**.m",
-                "ext/allegro-5.0.8/addons/image/**.m",
-                "ext/allegro-5.0.8/addons/main/**.m",
-            }
-        elseif __PLATFORM == "win32" then
-        end
-
-        -- source exclude
-        excludes {
-            "ext/allegro-5.0.8/src/optimized.c", -- We never use GP2XWIZ, so we never want this
-        }
-        if __PLATFORM == "macosx" then
-            excludes {
-                "ext/allegro-5.0.8/src/gp2xwiz/**",
-                "ext/allegro-5.0.8/src/iphone/**",
-                "ext/allegro-5.0.8/src/linux/**",
-                -- "ext/allegro-5.0.8/src/macosx/**",
-                -- "ext/allegro-5.0.8/src/unix/**",
-                "ext/allegro-5.0.8/src/win/**",
-                "ext/allegro-5.0.8/src/x/**",
-                "ext/allegro-5.0.8/addons/image/jpg.c",
-                "ext/allegro-5.0.8/addons/image/iphone.m",
-            }
-        elseif __PLATFORM == "win32" then
-            excludes {
-                "ext/allegro-5.0.8/src/gp2xwiz/**",
-                "ext/allegro-5.0.8/src/iphone/**",
-                "ext/allegro-5.0.8/src/linux/**",
-                "ext/allegro-5.0.8/src/macosx/**",
-                "ext/allegro-5.0.8/src/unix/**",
-                -- "ext/allegro-5.0.8/src/win/**",
-                "ext/allegro-5.0.8/src/x/**",
-            }
-        end
-
-        -- configurations
-        configuration "Debug"
-            objdir ( __DEST_DIR .. "Allegro/debug/objs/" )
-            targetdir ( __DEST_DIR .. "Allegro/debug/bin/" )
-
-            defines { "DEBUG" }
-            flags { "Symbols" }
-
-        configuration "Release"
-            objdir ( __DEST_DIR .. "Allegro/release/objs/" )
-            targetdir ( __DEST_DIR .. "Allegro/release/bin/" )
-
-            defines { "NDEBUG" }
-            flags { "Optimize" }    
  
     -- ======================================================== 
     -- Project: ex_core
@@ -379,9 +281,6 @@ solution "exSDK"
         -- include
         includedirs {
             "ext/freetype-2.4.11/include/",
-            "ext/allegro-5.0.8/include/",
-            "ext/allegro-5.0.8/addons/primitives/",
-            "ext/allegro-5.0.8/addons/image/",
             "ext/SDL-2.0.1/include/",
             "ext/SDL_image-2.0.0/",
             "ext/physfs-2.0.3/",
@@ -428,7 +327,6 @@ solution "exSDK"
 
         -- include
         includedirs {
-            "ext/allegro-5.0.8/include/",
             "ext/SDL-2.0.1/include/",
             "ext/SDL_image-2.0.0/",
             "ext/lua-5.2.2/",
@@ -451,7 +349,6 @@ solution "exSDK"
             "yajl_s",
             "Deps",
             "SDL",
-            "Allegro",
             "ex_core",
         }
         if __PLATFORM == "macosx" then
@@ -537,9 +434,6 @@ solution "exSDK"
 
             -- include
             includedirs {
-                "ext/allegro-5.0.8/include/",
-                "ext/allegro-5.0.8/addons/primitives/",
-                "ext/allegro-5.0.8/addons/image/",
                 "ext/SDL-2.0.1/include/",
                 "ext/SDL_image-2.0.0/",
                 "ext/lua-5.2.2/",
@@ -569,7 +463,6 @@ solution "exSDK"
                 "yajl_s",
                 "Deps",
                 "SDL",
-                "Allegro",
                 "ex_core",
             }
             if __PLATFORM == "macosx" then
