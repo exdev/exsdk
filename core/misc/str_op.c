@@ -19,7 +19,7 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_str_replace ( const char *_path, char _from, char _to ) {
+const char * ex_str_replace ( const char *_path, char _from, char _to ) {
     char *p;
 
     p = (char *)_path;
@@ -29,5 +29,7 @@ void ex_str_replace ( const char *_path, char _from, char _to ) {
         }
         ++p;
     }
+
+    return _path;
 }
 

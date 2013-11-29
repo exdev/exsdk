@@ -34,10 +34,15 @@ void ex_str_free ( ex_str_t *_exstr );
 // Desc: 
 // ------------------------------------------------------------------ 
 
+const char *ex_cstr ( ex_str_t *_exstr );
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void ex_str_cat ( ex_str_t *_exstr, const char *_cstr ); 
 void ex_str_ncat ( ex_str_t *_exstr, const char *_cstr, size_t _size ); 
 void ex_str_catf ( ex_str_t *_exstr, const char *_fmt, ... ); 
-
 
 // ######################### 
 #ifdef __cplusplus

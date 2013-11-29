@@ -9,7 +9,6 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
 #include "exsdk.h"
 
 #include <lua.h>
@@ -305,20 +304,20 @@ static inline int __lua_set_path ( struct lua_State *_l, const char * _fieldName
     return 0;
 }
 static inline int __lua_add_path ( struct lua_State *_l, const char * _fieldName, const char *_path ) {
-    ALLEGRO_USTR *ustr;
+    ex_str_t *string;
 
     lua_getglobal( _l, "package" );
     lua_getfield( _l, -1, _fieldName );
 
-    ustr = al_ustr_new ( lua_tostring( _l, -1 ) ); // grab path string from top of stack
-    al_ustr_appendf ( ustr, ";%s", _path );
+    string = ex_str_alloc(lua_tostring( _l, -1 )); // grab path string from top of stack
+    ex_str_catf( string, ";%s", _path );
 
     lua_pop( _l, 1 ); // get rid of the string on the stack we just pushed on line 5
-    lua_pushstring( _l, al_cstr(ustr) ); // push the new one
+    lua_pushstring( _l, ex_cstr(string) ); // push the new one
     lua_setfield( _l, -2, _fieldName ); // set the field "path" in table at -2 with value at top of stack
     lua_pop( _l, 1 ); // get rid of package table from top of stack
 
-    al_ustr_free(ustr);
+    ex_str_free(string);
 
     return 0;
 }
@@ -360,33 +359,25 @@ int ex_lua_clear_path ( struct lua_State *_l ) {
     return __lua_set_path ( _l, "path", "\"\"" );
 }
 int ex_lua_set_path ( struct lua_State *_l, const char *_path ) {
-    ALLEGRO_PATH *dir;
-    ALLEGRO_USTR *ustr;
+    ex_str_t *string;
     
-    dir = al_create_path_for_directory ( _path );
-    ustr = al_ustr_newf ( "\"%s?.lua\"", al_path_cstr ( dir, '/' ) );
+    string = ex_str_allocf( "\"%s?.lua\"", ex_unix_path(_path) );
 
     // "package.path = "\"${_path}?.lua\""
-    __lua_set_path ( _l, "path", al_cstr(ustr) );
+    __lua_set_path ( _l, "path", ex_cstr(string) );
 
-    al_destroy_path (dir);
-    al_ustr_free (ustr);
-
+    ex_str_free (string);
     return 0;
 }
 int ex_lua_add_path ( struct lua_State *_l, const char *_path ) {
-    ALLEGRO_PATH *dir;
-    ALLEGRO_USTR *ustr;
+    ex_str_t *string;
     
-    dir = al_create_path_for_directory ( _path );
-    ustr = al_ustr_newf ( ";\"%s?.lua\"", al_path_cstr ( dir, '/' ) );
+    string = ex_str_allocf( ";\"%s?.lua\"", ex_unix_path(_path) );
 
     // "package.path = package.path .. \";${_path}?.lua\""
-    __lua_add_path ( _l, "path", al_cstr(ustr) );
+    __lua_add_path ( _l, "path", ex_cstr(string) );
 
-    al_destroy_path (dir);
-    al_ustr_free (ustr);
-
+    ex_str_free (string);
     return 0;
 }
 
@@ -398,37 +389,29 @@ int ex_lua_clear_cpath ( struct lua_State *_l ) {
     return __lua_set_path ( _l, "cpath", "\"\"" );
 }
 int ex_lua_set_cpath ( struct lua_State *_l, const char *_path ) {
-    ALLEGRO_PATH *dir;
-    ALLEGRO_USTR *ustr;
+    ex_str_t *string;
     const char *dir_cstr;
     
-    dir = al_create_path_for_directory ( _path );
-    dir_cstr = al_path_cstr ( dir, '/' );
-    ustr = al_ustr_newf ( "\"%s?.so;%s?.dll\"", dir_cstr, dir_cstr );
+    dir_cstr = ex_unix_path(_path);
+    string = ex_str_allocf ( "\"%s?.so;%s?.dll\"", dir_cstr, dir_cstr );
 
     // "package.cpath = "\"${_path}?.so;${_path}?.dll\""
-    __lua_set_path ( _l, "cpath", al_cstr(ustr) );
+    __lua_set_path ( _l, "cpath", ex_cstr(string) );
 
-    al_destroy_path (dir);
-    al_ustr_free (ustr);
-
+    ex_str_free (string);
     return 0;
 }
 int ex_lua_add_cpath ( struct lua_State *_l, const char *_path ) {
-    ALLEGRO_PATH *dir;
-    ALLEGRO_USTR *ustr;
+    ex_str_t *string;
     const char *dir_cstr;
     
-    dir = al_create_path_for_directory ( _path );
-    dir_cstr = al_path_cstr ( dir, '/' );
-    ustr = al_ustr_newf ( ";\"%s?.so;%s?.dll\"", dir_cstr, dir_cstr );
+    dir_cstr = ex_unix_path(_path);
+    string = ex_str_allocf ( ";\"%s?.so;%s?.dll\"", dir_cstr, dir_cstr );
 
     // "package.cpath = package.cpath .. \";${_path}?.so;${_path}?.dll\"", 
     __lua_add_path ( _l, "cpath", _path );
 
-    al_destroy_path (dir);
-    al_ustr_free (ustr);
-
+    ex_str_free (string);
     return 0;
 }
 

@@ -20,7 +20,7 @@ extern "C" {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_str_replace ( const char *_path, char _from, char _to );
+extern const char *ex_str_replace ( const char *_path, char _from, char _to );
 #define ex_unix_path(_path) ex_str_replace(_path,'\\','/')
 #define ex_windows_path(_path) ex_str_replace(_path,'/','\\')
 

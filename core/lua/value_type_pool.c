@@ -19,7 +19,7 @@
 static ex_mempool_t __vec2f_pool; 
 static ex_mempool_t __vec3f_pool; 
 static ex_mempool_t __vec4f_pool; 
-static ex_mempool_t __al_transform_pool; 
+static ex_mempool_t __mat44f_pool; 
 
 #define MEMPOOL_INIT( _pool, _type, _size ) \
     ex_mempool_init ( &_pool \
@@ -42,7 +42,7 @@ void __ex_value_type_pool_init () {
     MEMPOOL_INIT ( __vec2f_pool, ex_vec2f_t, 256 );
     MEMPOOL_INIT ( __vec3f_pool, ex_vec3f_t, 256 );
     MEMPOOL_INIT ( __vec4f_pool, ex_vec4f_t, 256 );
-    MEMPOOL_INIT ( __al_transform_pool, ALLEGRO_TRANSFORM, 256 );
+    MEMPOOL_INIT ( __mat44f_pool, ex_mat44f_t, 256 );
 }
 
 // ------------------------------------------------------------------ 
@@ -53,7 +53,7 @@ void __ex_value_type_pool_deinit () {
     ex_mempool_deinit ( &__vec2f_pool );
     ex_mempool_deinit ( &__vec3f_pool );
     ex_mempool_deinit ( &__vec4f_pool );
-    ex_mempool_deinit ( &__al_transform_pool );
+    ex_mempool_deinit ( &__mat44f_pool );
 }
 
 // ------------------------------------------------------------------ 
@@ -102,13 +102,13 @@ ex_vec4f_t *__ex_vec4f_pool_get ( size_t _handle ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-size_t __ex_al_transform_pool_request ( ALLEGRO_TRANSFORM **_ptr ) {
-    return ex_mempool_request( &__al_transform_pool, (void **)_ptr );
+size_t __ex_mat44f_pool_request ( ex_mat44f_t **_ptr ) {
+    return ex_mempool_request( &__mat44f_pool, (void **)_ptr );
 }
-void __ex_al_transform_pool_return ( size_t _handle ) {
-    ex_mempool_return( &__al_transform_pool, _handle );
+void __ex_mat44f_pool_return ( size_t _handle ) {
+    ex_mempool_return( &__mat44f_pool, _handle );
 }
-ALLEGRO_TRANSFORM *__ex_al_transform_pool_get ( size_t _handle ) {
-    return ex_mempool_get( &__al_transform_pool, _handle );
+ex_mat44f_t *__ex_mat44f_pool_get ( size_t _handle ) {
+    return ex_mempool_get( &__mat44f_pool, _handle );
 }
 

@@ -88,6 +88,14 @@ void ex_str_free ( ex_str_t *_exstr ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+const char *ex_cstr ( ex_str_t *_exstr ) {
+    return (const char *)_exstr->data;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void ex_str_cat ( ex_str_t *_exstr, const char *_cstr ) { 
     size_t cstr_len = -1;
     size_t original_len;
@@ -121,7 +129,6 @@ void ex_str_ncat ( ex_str_t *_exstr, const char *_cstr, size_t _size ) {
 
 void ex_str_catf ( ex_str_t *_exstr, const char *_fmt, ... ) { 
     int result = -1;
-    int status;
     char buf[BUF_SIZE];
     char *buffer = NULL;
 
