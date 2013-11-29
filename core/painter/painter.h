@@ -1,13 +1,13 @@
 // ======================================================================================
-// File         : ui.h
+// File         : painter.h
 // Author       : Wu Jie 
-// Last Change  : 04/01/2013 | 11:56:33 AM | Monday,April
+// Last Change  : 11/29/2013 | 16:42:49 PM | Friday,November
 // Description  : 
 // ======================================================================================
 
 // #################################################################################
-#ifndef UI_H_1364788594
-#define UI_H_1364788594
+#ifndef PAINTER_H_1385714570
+#define PAINTER_H_1385714570
 // #################################################################################
 
 // ######################### 
@@ -16,7 +16,7 @@ extern "C" {
 #endif
 // ######################### 
 
-typedef struct ex_ui_state_t {
+typedef struct ex_painter_state_t {
     bool initialized;
     ex_memblock_t vb;
     ex_memblock_t ib;
@@ -25,13 +25,13 @@ typedef struct ex_ui_state_t {
     ex_vec4f_t color;
     void *texture;
     ex_mat33f_t matrix;
-} ex_ui_state_t;
+} ex_painter_state_t;
 
-typedef struct ex_ui_vertex_t {
+typedef struct ex_painter_vertex_t {
     ex_vec2f_t pos;
     ex_vec2f_t uv0;
     ex_vec4f_t color;
-} ex_ui_vertex_t;
+} ex_painter_vertex_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 // state
@@ -41,19 +41,24 @@ typedef struct ex_ui_vertex_t {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern ex_ui_state_t *ex_ui_state ();
-extern void ex_ui_reset_state ();
-
-extern int ex_ui_init ();
-extern void ex_ui_deinit ();
+extern int ex_painter_init ();
+extern void ex_painter_deinit ();
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_ui_set_texture ( void *_texture );
-extern void ex_ui_set_matrix ( ex_mat33f_t *_mat );
-extern void ex_ui_set_color ( ex_vec4f_t *_color );
+extern ex_painter_state_t *ex_painter_state ();
+extern void ex_painter_reset_state ();
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+extern void ex_painter_set_texture ( void *_texture );
+extern void ex_painter_set_matrix ( ex_mat33f_t *_mat );
+extern void ex_painter_set_color ( ex_vec4f_t *_color );
+extern void ex_painter_flush ();
 
 ///////////////////////////////////////////////////////////////////////////////
 // draw
@@ -63,39 +68,28 @@ extern void ex_ui_set_color ( ex_vec4f_t *_color );
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_ui_draw_texture ( int _dx, int _dy, int _dw, int _dh,
-                                 int _sx, int _sy, int _sw, int _sh );
+extern void ex_painter_draw_texture ( int _dx, int _dy, int _dw, int _dh,
+                                      int _sx, int _sy, int _sw, int _sh );
+extern void ex_painter_draw_sliced_texture ( int _dx, int _dy, int _dw, int _dh,
+                                             int _t, int _r, int _b, int _l, 
+                                             int _sx, int _sy, int _sw, int _sh );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
-                                        int _t, int _r, int _b, int _l, 
-                                        int _sx, int _sy, int _sw, int _sh );
+extern void ex_painter_draw_text ( const char *_text, 
+                                   ex_font_t *_font,
+                                   int _dx, int _dy, int _dw, int _dh );
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_ui_draw_text ( const char *_text, 
-                              ex_font_t *_font,
-                              int _dx, int _dy, int _dw, int _dh );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_ui_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness );
-extern void ex_ui_draw_rect_4 ( int _dx, int _dy, int _dw, int _dh, 
-                                int _t_top, int _t_right, int _t_bottom, int _t_left );
-extern void ex_ui_draw_filled_rect ( int _dx, int _dy, int _dw, int _dh );
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-extern void ex_ui_flush ();
+extern void ex_painter_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness );
+extern void ex_painter_draw_rect_4 ( int _dx, int _dy, int _dw, int _dh, 
+                                     int _t, int _r, int _b, int _l );
+extern void ex_painter_draw_filled_rect ( int _dx, int _dy, int _dw, int _dh );
 
 // ######################### 
 #ifdef __cplusplus
@@ -104,5 +98,5 @@ extern void ex_ui_flush ();
 // ######################### 
 
 // #################################################################################
-#endif // END UI_H_1364788594
+#endif // END PAINTER_H_1385714570
 // #################################################################################

@@ -32,7 +32,7 @@
 #include "font/font_inc.h"
 
 // ui
-#include "ui/ui_inc.h"
+#include "painter/painter_inc.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // functions

@@ -1,7 +1,7 @@
 // ======================================================================================
-// File         : ui.c
+// File         : states.c
 // Author       : Wu Jie 
-// Last Change  : 04/01/2013 | 13:32:57 PM | Monday,April
+// Last Change  : 11/29/2013 | 16:43:18 PM | Friday,November
 // Description  : 
 // ======================================================================================
 
@@ -24,7 +24,7 @@
                       , ex_func_dealloc \
                     )
 
-static ex_ui_state_t __ui_state;
+static ex_painter_state_t __painter_state;
 
 ///////////////////////////////////////////////////////////////////////////////
 // 
@@ -34,31 +34,10 @@ static ex_ui_state_t __ui_state;
 // Desc: 
 // ------------------------------------------------------------------ 
 
-ex_ui_state_t *ex_ui_state () {
-    return &__ui_state;
-}
+int ex_painter_init () {
+    ex_assert ( __painter_state.initialized == false );
 
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_ui_reset_state () {
-    ex_memblock_clear ( &__ui_state.vb );
-    ex_memblock_clear ( &__ui_state.ib );
-
-    ex_vec4f_set ( &__ui_state.color, 1.0f, 1.0f, 1.0f, 1.0f );
-    __ui_state.texture = NULL;
-    ex_mat33f_identity ( &__ui_state.matrix );
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-int ex_ui_init () {
-    ex_assert ( __ui_state.initialized == false );
-
-    if ( __ui_state.initialized )
+    if ( __painter_state.initialized )
         return -1;
 
     // ======================================================== 
@@ -66,13 +45,13 @@ int ex_ui_init () {
     // ======================================================== 
 
     // init current ui state
-    ex_ui_reset_state ();
+    ex_painter_reset_state ();
 
     // create ui node pool
-    MEMBLOCK_INIT ( __ui_state.vb, ex_ui_vertex_t, 4096 );
-    MEMBLOCK_INIT ( __ui_state.ib, uint16, 4096 );
+    MEMBLOCK_INIT ( __painter_state.vb, ex_painter_vertex_t, 4096 );
+    MEMBLOCK_INIT ( __painter_state.ib, uint16, 4096 );
 
-    __ui_state.initialized = true;
+    __painter_state.initialized = true;
     return 0;
 }
 
@@ -80,33 +59,57 @@ int ex_ui_init () {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_deinit () {
-    ex_assert ( __ui_state.initialized );
+void ex_painter_deinit () {
+    ex_assert ( __painter_state.initialized );
 
-    if ( __ui_state.initialized == false )
+    if ( __painter_state.initialized == false )
         return;
 
     // destroy ui node pool
-    ex_memblock_deinit ( &__ui_state.vb );
-    ex_memblock_deinit ( &__ui_state.ib );
+    ex_memblock_deinit ( &__painter_state.vb );
+    ex_memblock_deinit ( &__painter_state.ib );
 
-    __ui_state.initialized = false;
+    __painter_state.initialized = false;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_set_texture ( void *_texture ) {
-    __ui_state.texture = _texture;
+ex_painter_state_t *ex_painter_state () {
+    return &__painter_state;
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_set_matrix ( ex_mat33f_t *_mat ) {
-    ex_mat33f_set( &__ui_state.matrix,
+void ex_painter_reset_state () {
+    ex_memblock_clear ( &__painter_state.vb );
+    ex_memblock_clear ( &__painter_state.ib );
+
+    ex_vec4f_set ( &__painter_state.color, 1.0f, 1.0f, 1.0f, 1.0f );
+    __painter_state.texture = NULL;
+    ex_mat33f_identity ( &__painter_state.matrix );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_painter_set_texture ( void *_texture ) {
+    if ( __painter_state.texture != _texture ) {
+        ex_painter_flush();
+        __painter_state.texture = _texture;
+    }
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_painter_set_matrix ( ex_mat33f_t *_mat ) {
+    ex_mat33f_set( &__painter_state.matrix,
                    _mat->m00, _mat->m01, _mat->m02, 
                    _mat->m10, _mat->m11, _mat->m12, 
                    _mat->m20, _mat->m21, _mat->m22 );
@@ -116,6 +119,6 @@ void ex_ui_set_matrix ( ex_mat33f_t *_mat ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_set_color ( ex_vec4f_t *_color ) {
-    ex_vec4f_set ( &__ui_state.color, _color->r, _color->g, _color->b, _color->a ); 
+void ex_painter_set_color ( ex_vec4f_t *_color ) {
+    ex_color4f_set ( &__painter_state.color, _color->r, _color->g, _color->b, _color->a ); 
 }

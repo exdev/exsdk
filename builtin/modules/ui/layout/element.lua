@@ -63,12 +63,12 @@ local element = class ({
         -- draw border
         if style.border_style ~= "none" then
             local color = ex.color4f.from_rgba_8888(style.border_color)
-            ex.canvas.color = color
+            ex.painter.color = color
             if style.border_style == "solid" then
-                ex.canvas.draw_rect_4( x, y, w, h, border_T, border_R, border_B, border_L ) 
+                ex.painter.draw_rect_4( x, y, w, h, border_T, border_R, border_B, border_L ) 
             else
                 local border_image = wiz.assets.load(style.border_style)
-                ex.canvas.draw_image_border( border_image, 
+                ex.painter.draw_image_border( border_image, 
                                              x, y, w, h,
                                              border_T, border_R, border_B, border_L )
             end
@@ -83,8 +83,8 @@ local element = class ({
         -- draw background rect
         if style.background_color[4] ~= 0 then
             local color = ex.color4f.from_rgba_8888(style.background_color)
-            ex.canvas.color = color
-            ex.canvas.draw_filled_rect( x, y, w, h ) 
+            ex.painter.color = color
+            ex.painter.draw_filled_rect( x, y, w, h ) 
         end
 
         -- padding step in
@@ -101,7 +101,7 @@ local element = class ({
             end
 
             local color = ex.color4f.from_rgba_8888(style.color)
-            ex.canvas.color = color
+            ex.painter.color = color
 
             local font = ui.style.setup_font(style)
             local text_done = false
@@ -109,7 +109,7 @@ local element = class ({
             -- draw outline text
             if style.text_outline_thickness > 0 then 
                 local color2 = ex.color4f.from_rgba_8888( style.text_outline_color )
-                ex.canvas.draw_outline_text( content, font, color, color2, style.text_outline_thickness, x, y ) 
+                ex.painter.draw_outline_text( content, font, color, color2, style.text_outline_thickness, x, y ) 
                 text_done = true
             end
 
@@ -117,13 +117,13 @@ local element = class ({
             local shadow_x, shadow_y = style.text_shadow_offset_x, style.text_shadow_offset_y
             if shadow_x > 0 or shadow_y > 0 then 
                 local color2 = ex.color4f.from_rgba_8888( style.text_shadow_color )
-                ex.canvas.draw_shadow_text( content, font, color, color2, ex.vec2f(shadow_x, shadow_y), x, y ) 
+                ex.painter.draw_shadow_text( content, font, color, color2, ex.vec2f(shadow_x, shadow_y), x, y ) 
                 text_done = true
             end
 
             -- draw normal text
             if text_done == false then
-                ex.canvas.draw_text( content, font, x, y ) 
+                ex.painter.draw_text( content, font, x, y ) 
             end
         end
     end,
@@ -155,8 +155,8 @@ local element = class ({
             = style.padding_top, style.padding_right, style.padding_bottom, style.padding_left
 
         -- draw margin
-        ex.canvas.color = ex.color4f.from_rgba_8888 ( { 249, 204, 157, alpha } )
-        ex.canvas.draw_rect_4 ( x, y, w, h,
+        ex.painter.color = ex.color4f.from_rgba_8888 ( { 249, 204, 157, alpha } )
+        ex.painter.draw_rect_4 ( x, y, w, h,
                                 margin_T, margin_R, margin_B, margin_L )
 
         -- margin step in
@@ -166,8 +166,8 @@ local element = class ({
                      h - ( margin_T + margin_B )
 
         -- draw border
-        ex.canvas.color = ex.color4f.from_rgba_8888 ( { 128, 128, 128, alpha } )
-        ex.canvas.draw_rect_4 ( x, y, w, h,
+        ex.painter.color = ex.color4f.from_rgba_8888 ( { 128, 128, 128, alpha } )
+        ex.painter.draw_rect_4 ( x, y, w, h,
                                 border_T, border_R, border_B, border_L )
 
         -- border step in
@@ -177,8 +177,8 @@ local element = class ({
                      h - ( border_T + border_B )
 
         -- draw padding 
-        ex.canvas.color = ex.color4f.from_rgba_8888 ( { 195, 222, 183, alpha } )
-        ex.canvas.draw_rect_4 ( x, y, w, h,
+        ex.painter.color = ex.color4f.from_rgba_8888 ( { 195, 222, 183, alpha } )
+        ex.painter.draw_rect_4 ( x, y, w, h,
                                 padding_T, padding_R, padding_B, padding_L )
 
         -- padding step in 
@@ -188,8 +188,8 @@ local element = class ({
                      h - ( padding_T + padding_B )
 
         -- draw content 
-        ex.canvas.color = ex.color4f.from_rgba_8888( { 155, 192, 227, alpha } )
-        ex.canvas.draw_filled_rect ( x, y, w, h )
+        ex.painter.color = ex.color4f.from_rgba_8888( { 155, 192, 227, alpha } )
+        ex.painter.draw_filled_rect ( x, y, w, h )
 
         for i=1,#_self.children do
             local child = _self.children[i]

@@ -250,8 +250,8 @@ int ex_sdk_init () {
     }
 
     // init ui
-    ex_log ( "[exSDK] Initializing ui..." );
-    if ( ex_ui_init () != 0 ) {
+    ex_log ( "[exSDK] Initializing painter..." );
+    if ( ex_painter_init () != 0 ) {
         ex_log ( "[exSDK] Error: Could not init ui!" );
         return -1;
     }
@@ -283,8 +283,8 @@ void ex_sdk_deinit () {
     ex_log ( "[exSDK] Closing lua..." );
     ex_lua_deinit ();
 
-    ex_log ( "[exSDK] Closing ui..." );
-    ex_ui_deinit ();
+    ex_log ( "[exSDK] Closing painter..." );
+    ex_painter_deinit ();
 
     ex_log ( "[exSDK] Closing font..." );
     ex_font_deinit ();

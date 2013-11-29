@@ -445,6 +445,9 @@ static void __event_loop ( lua_State *_l ) {
                     lua_pop ( _l, 2 );
                 }
 
+                // flush painter
+                ex_painter_flush();
+
                 // flush
                 SDL_RenderPresent(win_info->sdl_renderer);
                 win_info->dirty = false;

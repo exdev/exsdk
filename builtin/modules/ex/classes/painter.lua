@@ -1,18 +1,22 @@
 -- ======================================================================================
--- File         : canvas.lua
+-- File         : painter.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/22/2013 | 16:18:16 PM | Friday,February
+-- Last Change  : 11/29/2013 | 16:04:28 PM | Friday,November
 -- Description  : 
 -- ======================================================================================
 
 local __M = {}
 
 --/////////////////////////////////////////////////////////////////////////////
--- 
+-- Reference 
+-- http://www.w3.org/html/wg/drafts/2dcontext/html5_canvas/
+-- http://www.w3schools.com/tags/ref_canvas.asp
+-- http://qt-project.org/doc/qt-5.1/qtquick/qml-qtquick2-context2d.html
+-- http://qt-project.org/doc/qt-5.1/qtpainter/qpainter.html
 --/////////////////////////////////////////////////////////////////////////////
 
-local canvas = class ({
-    __typename = "canvas",
+local painter = class ({
+    __typename = "painter",
 
     --/////////////////////////////////////////////////////////////////////////////
     -- static 
@@ -24,12 +28,10 @@ local canvas = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        width = property { get = function () return ex_c.canvas_width() end },
-        height = property { get = function () return ex_c.canvas_height() end },
         color = property { 
             set = function ( _self, _v ) 
                 checkarg(_v,"color4f")
-                ex_c.gui_set_color(_v.r, _v.g, _v.b, _v.a) 
+                ex_c.painter_set_color(_v.r, _v.g, _v.b, _v.a) 
             end
         },
 
@@ -37,33 +39,33 @@ local canvas = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        draw_rect = function ( _dx, _dy, _dw, _dh, _thickness )
-            ex_c.gui_draw_rect ( _dx, _dy, _dw, _dh, _thickness or 1 )
+        rect = function ( _dx, _dy, _dw, _dh, _thickness )
+            ex_c.painter_draw_rect ( _dx, _dy, _dw, _dh, _thickness or 1 )
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        draw_rect_4 = function ( _dx, _dy, _dw, _dh, _t_top, _t_right, _t_bottom, _t_left )
-            ex_c.gui_draw_rect_4 ( _dx, _dy, _dw, _dh, _t_top, _t_right, _t_bottom, _t_left )
+        rect4 = function ( _dx, _dy, _dw, _dh, _t_top, _t_right, _t_bottom, _t_left )
+            ex_c.painter_draw_rect_4 ( _dx, _dy, _dw, _dh, _t_top, _t_right, _t_bottom, _t_left )
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        draw_filled_rect = function ( _dx, _dy, _dw, _dh )
-            ex_c.gui_draw_filled_rect ( _dx, _dy, _dw, _dh )
+        filled_rect = function ( _dx, _dy, _dw, _dh )
+            ex_c.painter_draw_filled_rect ( _dx, _dy, _dw, _dh )
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        draw_image = function ( _image, 
-                                _dx, _dy, _dw, _dh,
-                                _sx, _sy, _sw, _sh )
+        image = function ( _image, 
+                           _dx, _dy, _dw, _dh,
+                           _sx, _sy, _sw, _sh )
             checkarg(_image,"texture")
             checkarg(_dx,"number")
             checkarg(_dy,"number")
@@ -75,49 +77,49 @@ local canvas = class ({
             _sw = _sw or _image.width
             _sh = _sh or _image.height
 
-            ex_c.gui_set_texture(_image._cptr) 
-            ex_c.gui_draw_texture( _dx, _dy, _dw, _dh, -- pos
+            ex_c.painter_set_texture(_image._cptr) 
+            ex_c.painter_draw_texture( _dx, _dy, _dw, _dh, -- pos
                                    _sx, _sy, _sw, _sh -- rect
                                  )
-            ex_c.gui_flush()
+            ex_c.painter_flush()
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        draw_image_border = function ( _image, 
-                                       _dx, _dy, _dw, _dh,
-                                       _t, _r, _b, _l,
-                                       _sx, _sy, _sw, _sh )
+        sliced_image = function ( _image, 
+                                  _dx, _dy, _dw, _dh,
+                                  _t, _r, _b, _l,
+                                  _sx, _sy, _sw, _sh )
             checkarg(_image,"texture")
             checkarg(_dx,"number")
             checkarg(_dy,"number")
             checkarg(_dw,"number")
             checkarg(_dh,"number")
-            checkarg(_l,"number")
-            checkarg(_r,"number")
             checkarg(_t,"number")
+            checkarg(_r,"number")
             checkarg(_b,"number")
+            checkarg(_l,"number")
 
             _sx = _sx or 0
             _sy = _sy or 0
             _sw = _sw or _image.width
             _sh = _sh or _image.height
 
-            ex_c.gui_set_texture(_image._cptr) 
-            ex_c.gui_draw_border_texture( _dx, _dy, _dw, _dh, -- pos
-                                          _t, _r, _b, _l, -- border
-                                          _sx, _sy, _sw, _sh -- rect
-                                         )
-            ex_c.gui_flush()
+            ex_c.painter_set_texture(_image._cptr) 
+            ex_c.painter_draw_sliced_texture( _dx, _dy, _dw, _dh,   -- pos
+                                              _t, _r, _b, _l,       -- border
+                                              _sx, _sy, _sw, _sh    -- rect
+                                            )
+            ex_c.painter_flush()
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        draw_text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
+        text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
             checkarg(_text,"string")
             checkarg(_font,"font")
             checkarg(_dx,"number")
@@ -125,49 +127,49 @@ local canvas = class ({
             _dw = _dw or -1
             _dh = _dh or -1
 
-            ex_c.gui_draw_text( _text, _font._cptr, 
-                                _dx, _dy, _dw, _dh -- pos
-                              )
-            ex_c.gui_flush()
+            ex_c.painter_draw_text( _text, _font._cptr, 
+                                    _dx, _dy, _dw, _dh -- pos
+                                  )
+            ex_c.painter_flush()
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        draw_outline_text = function ( _text, _font, _color, _outline_color, _outline_thickness, _dx, _dy, _dw, _dh ) 
+        outline_text = function ( _text, _font, _color, _outline_color, _outline_thickness, _dx, _dy, _dw, _dh ) 
             _font.outline_type = 1
             _font.outline_thickness = _outline_thickness
 
-            ex.canvas.color = _outline_color
-            ex.canvas.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
+            ex.painter.color = _outline_color
+            ex.painter.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
 
             _font.outline_type = 0
             _font.outline_thickness = 0.0
 
-            ex.canvas.color = _color
-            ex.canvas.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
+            ex.painter.color = _color
+            ex.painter.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        draw_shadow_text = function ( _text, _font, _color, _shadow_color, _offset, _dx, _dy, _dw, _dh ) 
+        shadow_text = function ( _text, _font, _color, _shadow_color, _offset, _dx, _dy, _dw, _dh ) 
             _font.outline_type = 0
 
-            ex.canvas.color = _shadow_color
-            ex.canvas.draw_text( _text, _font, _dx + _offset.x, _dy + _offset.y, _dw, _dh ) 
+            ex.painter.color = _shadow_color
+            ex.painter.draw_text( _text, _font, _dx + _offset.x, _dy + _offset.y, _dw, _dh ) 
 
-            ex.canvas.color = _color
-            ex.canvas.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
+            ex.painter.color = _color
+            ex.painter.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        draw_bitmap_text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
+        bitmap_text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
             checkarg(_text,"string")
             checkarg(_font,"bitmapfont")
             checkarg(_dx,"number")
@@ -207,14 +209,14 @@ local canvas = class ({
 
                         if last_texture ~= page_texture then
                             if last_texture ~= ex.texture.null then
-                                ex_c.gui_flush()
+                                ex_c.painter_flush()
                             end
-                            ex_c.gui_set_texture(page_texture._cptr) 
+                            ex_c.painter_set_texture(page_texture._cptr) 
                             last_texture = page_texture
                         end
 
                         -- draw
-                        ex_c.gui_draw_texture( 
+                        ex_c.painter_draw_texture( 
                             cur_x + charInfo.xoffset, cur_y + charInfo.yoffset, charInfo.width, charInfo.height, -- pos
                             charInfo.x, charInfo.y, charInfo.width, charInfo.height -- rect
                         )
@@ -225,11 +227,11 @@ local canvas = class ({
                 last_id = id
             end
 
-            ex_c.gui_flush()
+            ex_c.painter_flush()
         end,
     }
 }) 
-__M.canvas = canvas
+__M.painter = painter
 
 --/////////////////////////////////////////////////////////////////////////////
 --

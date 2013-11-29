@@ -1,7 +1,7 @@
 // ======================================================================================
-// File         : renderer.c
+// File         : draw.c
 // Author       : Wu Jie 
-// Last Change  : 03/12/2013 | 16:21:54 PM | Tuesday,March
+// Last Change  : 11/29/2013 | 16:43:14 PM | Friday,November
 // Description  : 
 // ======================================================================================
 
@@ -9,46 +9,103 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "allegro5/allegro.h"
-#include "allegro5/allegro_opengl.h"
-#include "allegro5/internal/aintern_opengl.h"
-#include "allegro5/allegro_primitives.h"
+#include "SDL.h"
+#include "SDL_opengl.h"
 
 #include "exsdk.h"
 // #include "gl/gl_inc.h"
 
+#include "utf8proc.h"
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+///////////////////////////////////////////////////////////////////////////////
+// TEMP HACK
+///////////////////////////////////////////////////////////////////////////////
+
+// TEMP HACK: copy from SDL, if SDL structure changed, we need to change this block { 
+
+typedef struct
+{
+    GLuint texture;
+    GLenum type;
+    GLfloat texw;
+    GLfloat texh;
+    GLenum format;
+    GLenum formattype;
+    void *pixels;
+    int pitch;
+    SDL_Rect locked_rect;
+
+    /* YV12 texture support */
+    SDL_bool yuv;
+    GLuint utexture;
+    GLuint vtexture;
+
+    void *fbo; // GL_FBOList *fbo;
+} GL_TextureData;
+
+struct SDL_Texture
+{
+    const void *magic;
+    Uint32 format;              /**< The pixel format of the texture */
+    int access;                 /**< SDL_TextureAccess */
+    int w;                      /**< The width of the texture */
+    int h;                      /**< The height of the texture */
+    int modMode;                /**< The texture modulation mode */
+    SDL_BlendMode blendMode;    /**< The texture blend mode */
+    Uint8 r, g, b, a;           /**< Texture modulation values */
+
+    SDL_Renderer *renderer;
+
+    /* Support for formats not supported directly by the renderer */
+    SDL_Texture *native;
+    void *yun; // SDL_SW_YUVTexture *yuv;
+    void *pixels;
+    int pitch;
+    SDL_Rect locked_rect;
+
+    void *driverdata;           /**< Driver specific texture representation */
+
+    SDL_Texture *prev;
+    SDL_Texture *next;
+};
+// } TEMP end 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_draw_texture ( int _dx, int _dy, int _dw, int _dh,
-                          int _sx, int _sy, int _sw, int _sh )
+void ex_painter_draw_texture ( int _dx, int _dy, int _dw, int _dh,
+                               int _sx, int _sy, int _sw, int _sh )
 {
-    ex_ui_state_t *state;
+    ex_painter_state_t *state;
 
     size_t index_start;
-    ex_ui_vertex_t *verts;
+    ex_painter_vertex_t *verts;
     uint16 *indices;
 
-    ALLEGRO_BITMAP *bitmap;
-    ALLEGRO_BITMAP_OGL *ogl_bitmap;
+    SDL_Texture *texture;
+    GL_TextureData *texture_data;
     float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
     int sx, sy, sw, sh;
     float dx, dy, dw, dh;
 
     //
-    state = ex_ui_state();
-    bitmap = (ALLEGRO_BITMAP *)state->texture;
-    ogl_bitmap = (ALLEGRO_BITMAP_OGL *)state->texture;
+    state = ex_painter_state();
+    texture = (SDL_Texture *)state->texture;
+    texture_data = (GL_TextureData *)texture->driverdata;
 
     // create vertex and indices
-    tex_l = ogl_bitmap->left;
-    tex_r = ogl_bitmap->right;
-    tex_t = ogl_bitmap->top;
-    tex_b = ogl_bitmap->bottom;
+    tex_l = 0;
+    tex_r = texture_data->texw;
+    tex_t = 0;
+    tex_b = texture_data->texh;
 
     dx = (float)_dx;
     dy = (float)_dy;
@@ -60,10 +117,10 @@ void ex_ui_draw_texture ( int _dx, int _dy, int _dw, int _dh,
     sw = _sw;
     sh = _sh;
 
-    w = bitmap->w;
-    h = bitmap->h;
-    true_w = ogl_bitmap->true_w;
-    true_h = ogl_bitmap->true_h;
+    w = texture->w;
+    h = texture->h;
+    true_w = ex_ceilpow2f(w);
+    true_h = ex_ceilpow2f(h);
 
     tex_l += sx / true_w;
     tex_t -= sy / true_h;
@@ -72,7 +129,7 @@ void ex_ui_draw_texture ( int _dx, int _dy, int _dw, int _dh,
 
     // ui_vb
     index_start = state->vb.count;
-    verts = (ex_ui_vertex_t *)ex_memblock_request ( &state->vb, 4 );
+    verts = (ex_painter_vertex_t *)ex_memblock_request ( &state->vb, 4 );
 
     verts[0].pos.x = dx;
     verts[0].pos.y = dy + dh;
@@ -126,14 +183,15 @@ void ex_ui_draw_texture ( int _dx, int _dy, int _dw, int _dh,
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
-                                 int _t, int _r, int _b, int _l, 
-                                 int _sx, int _sy, int _sw, int _sh )
+void ex_painter_draw_sliced_texture ( int _dx, int _dy, int _dw, int _dh,
+                                      int _t, int _r, int _b, int _l, 
+                                      int _sx, int _sy, int _sw, int _sh )
 {
-    ex_ui_state_t *state;
+#if 0
+    ex_painter_state_t *state;
 
     size_t index_start;
-    ex_ui_vertex_t *verts;
+    ex_painter_vertex_t *verts;
     uint16 *indices;
     uint16 index_preset[] = {
         4, 0, 5, 5, 0, 1, 5, 1, 6, 6, 1, 2, 6, 2, 7, 7, 2, 3,
@@ -142,22 +200,22 @@ void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
     };
     int i;
 
-    ALLEGRO_BITMAP *bitmap;
-    ALLEGRO_BITMAP_OGL *ogl_bitmap;
+    ALLEGRO_BITMAP *texture;
+    ALLEGRO_BITMAP_OGL *texture_data;
     float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
     float x0, x1, x2, x3, y0, y1, y2, y3;
     float s0, s1, s2, s3, t0, t1, t2, t3;
 
     //
-    state = ex_ui_state();
-    bitmap = (ALLEGRO_BITMAP *)state->texture;
-    ogl_bitmap = (ALLEGRO_BITMAP_OGL *)state->texture;
+    state = ex_painter_state();
+    texture = (ALLEGRO_BITMAP *)state->texture;
+    texture_data = (ALLEGRO_BITMAP_OGL *)state->texture;
 
     // create vertex and indices
-    tex_l = ogl_bitmap->left;
-    tex_r = ogl_bitmap->right;
-    tex_t = ogl_bitmap->top;
-    tex_b = ogl_bitmap->bottom;
+    tex_l = texture_data->left;
+    tex_r = texture_data->right;
+    tex_t = texture_data->top;
+    tex_b = texture_data->bottom;
 
     x0 = (float)_dx;
     x1 = (float)_dx + (float)_l;
@@ -169,10 +227,10 @@ void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
     y2 = (float)_dy + (float)_dh - (float)_b;
     y3 = (float)_dy + (float)_dh;
 
-    w = bitmap->w;
-    h = bitmap->h;
-    true_w = ogl_bitmap->true_w;
-    true_h = ogl_bitmap->true_h;
+    w = texture->w;
+    h = texture->h;
+    true_w = texture_data->true_w;
+    true_h = texture_data->true_h;
 
     s0 = tex_l + _sx / true_w;
     s1 = tex_l + (_sx + _l) / true_w;
@@ -186,7 +244,7 @@ void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
 
     // ui_vb
     index_start = state->vb.count;
-    verts = (ex_ui_vertex_t *)ex_memblock_request ( &state->vb, 16 );
+    verts = (ex_painter_vertex_t *)ex_memblock_request ( &state->vb, 16 );
 
     // row 1
     verts[0].pos.x = x0; verts[0].pos.y = y0;
@@ -280,6 +338,7 @@ void ex_ui_draw_border_texture ( int _dx, int _dy, int _dw, int _dh,
     }
 
     ++state->primitive_count;
+#endif
 }
 
 // ------------------------------------------------------------------ 
@@ -296,25 +355,21 @@ static int __draw_glyph ( ex_font_t *_font, uint _prev_ft_index, uint _ft_index,
    //
    advance += ex_font_get_kerning( _font, _prev_ft_index, _ft_index );
    if ( glyph->page ) {
-       if ( glyph->page != ex_ui_state()->texture ) {
-           ex_ui_flush();
-           ex_ui_set_texture ( glyph->page );
-       }
-       ex_ui_draw_texture ( _dx + advance + glyph->offset_x, _dy + glyph->offset_y, glyph->w, glyph->h,
-                            glyph->x, glyph->y, glyph->w, glyph->h );
+       ex_painter_set_texture ( glyph->page );
+       ex_painter_draw_texture ( _dx + advance + glyph->offset_x, _dy + glyph->offset_y, glyph->w, glyph->h,
+                                 glyph->x, glyph->y, glyph->w, glyph->h );
    }
    advance += glyph->advance_x;
 
    return advance;
 } 
 
-void ex_ui_draw_text ( const char *_text, 
-                       ex_font_t *_font,
-                       int _dx, int _dy, int _dw, int _dh ) 
+void ex_painter_draw_text ( const char *_text, 
+                            ex_font_t *_font,
+                            int _dx, int _dy, int _dw, int _dh ) 
 {
-    ALLEGRO_USTR *utext;
+    const char *str;
     int ch;
-    int ch_pos;
     uint ft_index, prev_ft_index;
     int cur_x, cur_y;
     int advance = 0;
@@ -323,8 +378,7 @@ void ex_ui_draw_text ( const char *_text,
     FT_Size_Metrics metrics;
     int height, line_gap;
 
-    utext = al_ustr_new(_text);
-    ch_pos = 0;
+    str = _text;
     prev_ft_index = -1;
     cur_x = _dx;
     cur_y = _dy;
@@ -334,7 +388,8 @@ void ex_ui_draw_text ( const char *_text,
     height = metrics.height >> 6;
     line_gap = (metrics.ascender >> 6) - (metrics.descender >> 6) - height;
 
-    while ( (ch = al_ustr_get_next(utext, &ch_pos)) >= 0 ) {
+    while ( *str ) {
+        str += utf8proc_iterate ((const uint8_t *)str, -1, &ch);
         advance = 0;
         ft_index = FT_Get_Char_Index ( face, ch );
 
@@ -350,73 +405,71 @@ void ex_ui_draw_text ( const char *_text,
             prev_ft_index = ft_index;
         }
     }
-
-    al_ustr_free(utext);
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness ) {
-    ex_ui_state_t *state;
-    ALLEGRO_COLOR al_color;
-
-    state = ex_ui_state();
-    al_color = al_map_rgba_f ( state->color.r, state->color.g, state->color.b, state->color.a );
-
-    // NOTE: we don't use 0 thickness rectangle
-    al_draw_rectangle ( _dx, _dy, _dx + _dw, _dy + _dh, al_color, (_thickness == 0) ? 1 : _thickness );
+void ex_painter_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness ) {
+    ex_painter_draw_rect_4 ( _dx, _dy, _dx + _dw, _dy + _dh, 
+                             _thickness, _thickness, _thickness, _thickness );
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_draw_rect_4 ( int _dx, int _dy, int _dw, int _dh, 
-                         int _t_top, int _t_right, int _t_bottom, int _t_left ) {
-    ex_ui_state_t *state;
+void ex_painter_draw_rect_4 ( int _dx, int _dy, int _dw, int _dh, 
+                              int _t, int _r, int _b, int _l ) {
+#if 0
+    ex_painter_state_t *state;
     ALLEGRO_COLOR al_color;
 
-    state = ex_ui_state();
+    state = ex_painter_state();
     al_color = al_map_rgba_f ( state->color.r, state->color.g, state->color.b, state->color.a );
 
     al_draw_rectangle_4 ( _dx, _dy, _dx + _dw, _dy + _dh, al_color, 
-                          _t_top, _t_right, _t_bottom, _t_left );
+                          _t, _r, _b, _l );
+#endif
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_draw_filled_rect ( int _dx, int _dy, int _dw, int _dh ) {
-    ex_ui_state_t *state;
+void ex_painter_draw_filled_rect ( int _dx, int _dy, int _dw, int _dh ) {
+#if 0
+    ex_painter_state_t *state;
     ALLEGRO_COLOR al_color;
 
-    state = ex_ui_state();
+    state = ex_painter_state();
     al_color = al_map_rgba_f ( state->color.r, state->color.g, state->color.b, state->color.a );
 
     al_draw_filled_rectangle ( _dx, _dy, _dx + _dw, _dy + _dh, al_color );
+#endif
 }
 
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_ui_flush () {
-    ex_ui_state_t *state;
-    ALLEGRO_BITMAP_OGL *ogl_bitmap;
+void ex_painter_flush () {
+    ex_painter_state_t *state;
+    SDL_Texture *texture;
+    GL_TextureData *texture_data;
 
-    state = ex_ui_state();
+    state = ex_painter_state();
     // nothing to draw
     if ( state->vb.count == 0 )
         return;
 
-    ogl_bitmap = (ALLEGRO_BITMAP_OGL *)state->texture;
+    texture = (SDL_Texture *)state->texture;
+    texture_data = (GL_TextureData *)texture->driverdata;
 
     // bind texture
     glEnable(GL_TEXTURE_2D);
-    glBindTexture ( GL_TEXTURE_2D, ogl_bitmap->texture );
+    glBindTexture ( GL_TEXTURE_2D, texture_data->texture );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -434,9 +487,9 @@ void ex_ui_flush () {
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        glVertexPointer  ( 2, GL_FLOAT, sizeof(ex_ui_vertex_t), state->vb.data );
-        glColorPointer   ( 4, GL_FLOAT, sizeof(ex_ui_vertex_t), (char*)(state->vb.data) + offsetof(ex_ui_vertex_t, color) );
-        glTexCoordPointer( 2, GL_FLOAT, sizeof(ex_ui_vertex_t), (char*)(state->vb.data) + offsetof(ex_ui_vertex_t, uv0) );
+        glVertexPointer  ( 2, GL_FLOAT, sizeof(ex_painter_vertex_t), state->vb.data );
+        glColorPointer   ( 4, GL_FLOAT, sizeof(ex_painter_vertex_t), (char*)(state->vb.data) + offsetof(ex_painter_vertex_t, color) );
+        glTexCoordPointer( 2, GL_FLOAT, sizeof(ex_painter_vertex_t), (char*)(state->vb.data) + offsetof(ex_painter_vertex_t, uv0) );
 
         // draw elements 
         glDrawElements( GL_TRIANGLES, /* also can use GL_TRIANGLES */ 
