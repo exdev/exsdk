@@ -88,19 +88,30 @@ void ex_str_free ( ex_str_t *_exstr ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_str_append ( ex_str_t *_exstr, const char *_cstr ) { 
+void ex_str_cat ( ex_str_t *_exstr, const char *_cstr ) { 
     size_t cstr_len = -1;
     size_t original_len;
 
     original_len = _exstr->count;
     cstr_len = strlen(_cstr);
-    if ( cstr_len+1 > (_exstr->capacity-_exstr->count) ) {
-        _exstr->capacity = ex_ceilpow2u(_exstr->count + cstr_len + 1);
-        _exstr->count = _exstr->count + cstr_len + 1;
+    ex_str_ncat ( _exstr, _cstr, cstr_len );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_str_ncat ( ex_str_t *_exstr, const char *_cstr, size_t _size ) { 
+    size_t original_len;
+
+    original_len = _exstr->count;
+    if ( _size+1 > (_exstr->capacity-_exstr->count) ) {
+        _exstr->capacity = ex_ceilpow2u(_exstr->count + _size + 1);
+        _exstr->count = _exstr->count + _size + 1;
         _exstr->data = ex_realloc( _exstr->data, _exstr->capacity * sizeof(char) );
     }
 
-    strncpy ( _exstr->data+original_len, _cstr, cstr_len );
+    strncpy ( _exstr->data+original_len, _cstr, _size );
     _exstr->data[_exstr->count] = '\0';
 }
 
@@ -108,23 +119,29 @@ void ex_str_append ( ex_str_t *_exstr, const char *_cstr ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_str_appendf ( ex_str_t *_exstr, const char *_fmt, ... ) { 
-    // int result = -1;
-    // char *buffer = NULL;
-    // ex_str_t *new_str;
-    // size_t buffer_size = BUF_SIZE;
+void ex_str_catf ( ex_str_t *_exstr, const char *_fmt, ... ) { 
+    int result = -1;
+    int status;
+    char buf[BUF_SIZE];
+    char *buffer = NULL;
 
-    // buffer = ex_malloc(buffer_size);
-    // EX_GET_VA_STRING_WITH_RESULT( buffer, BUF_SIZE-1, _fmt, &result ); // NOTE: the buffer_size-1 will leave 1 character for null terminal
-    // if ( result == -1 ) {
-    //     buffer_size = BUF_SIZE * 2;
+    EX_GET_VA_STRING_WITH_RESULT( buf, BUF_SIZE, _fmt, &result );
+    buffer = buf;
+    if ( result == -1 ) {
+        char *dyn_buf = NULL;
+        int buffer_count = BUF_SIZE * 2;
 
-    //     // keep get va string until success 
-    //     do {
-    //         buffer = (char *)ex_realloc( buffer, buffer_size * sizeof(char) );
-    //         EX_GET_VA_STRING_WITH_RESULT( buffer, buffer_size-1, _fmt, &result ); // NOTE: the buffer_size-1 will leave 1 character for null terminal
-    //         buffer_size *= 2;
-    //     } while ( result == -1 );
-    // }
-    // buffer[result] = '\0';
+        // keep get va string until success 
+        do {
+            dyn_buf = (char *)ex_realloc_nomng( dyn_buf, buffer_count * sizeof(char) );
+            EX_GET_VA_STRING_WITH_RESULT( dyn_buf, buffer_count, _fmt, &result ); // NOTE: the buffer_count-1 will leave 1 character for null terminal
+            buffer_count *= 2;
+        } while ( result == -1 );
+        buffer = dyn_buf;
+    }
+    ex_str_ncat ( _exstr, buffer, result );
+
+    // if we use dynamic buffer, free it
+    if ( buffer != buf )
+        ex_free_nomng ( buffer );
 }
