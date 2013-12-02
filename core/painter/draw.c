@@ -103,8 +103,8 @@ void ex_painter_draw_texture ( int _dx, int _dy, int _dw, int _dh,
 
     // create vertex and indices
     tex_l = 0.0f;
-    tex_r = 1.0f; // texture_data->texw;
     tex_t = 0.0f;
+    tex_r = 1.0f; // texture_data->texw;
     tex_b = 1.0f; // texture_data->texh;
 
     dx = (float)_dx;
@@ -121,9 +121,9 @@ void ex_painter_draw_texture ( int _dx, int _dy, int _dw, int _dh,
     h = texture->h;
 
     tex_l += sx / w;
-    tex_t -= sy / h;
+    tex_t += sy / h;
     tex_r -= (w - sx - sw) / w;
-    tex_b += (h - sy - sh) / h;
+    tex_b -= (h - sy - sh) / h;
 
     // NOTE: texture_data->texw in GL_TEXTURE_2D is texture->w/power_of_2(texture->w)
     //                          in GL_TEXTURE_RECTANGLE_ARB is texture->w  

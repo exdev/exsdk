@@ -32,11 +32,11 @@ wiz.on_init = function ()
 
     --
     window.on_repaint = function ( _self )
-        -- ex.painter.color = ex.color4f.white
-        -- ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
+        ex.painter.color = ex.color4f.white
+        ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
 
-        -- ex.painter.color = ex.color4f.green
-        -- ex.painter.text( "Hello World", font1, 100, 100 )
+        ex.painter.color = ex.color4f.green
+        ex.painter.text( "Hello World", font1, 100, 100 )
 
         ex.painter.color = ex.color4f.white
         local size = { w = logo.width, h = logo.height } 
@@ -51,10 +51,10 @@ wiz.on_init = function ()
     -- create window 2
     local window2 = wiz.ui_window( 400, 800 )
     window2.background = { 0, 128, 255 }
-    -- window2.on_repaint = function ( _self )
-    --     ex.painter.color = ex.color4f.white
-    --     ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
-    -- end
+    window2.on_repaint = function ( _self )
+        ex.painter.color = ex.color4f.white
+        ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
+    end
 end
 
 -- ------------------------------------------------------------------ 
