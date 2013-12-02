@@ -79,8 +79,8 @@ local painter = class ({
 
             ex_c.painter_set_texture(_image._cptr) 
             ex_c.painter_draw_texture( _dx, _dy, _dw, _dh, -- pos
-                                   _sx, _sy, _sw, _sh -- rect
-                                 )
+                                       _sx, _sy, _sw, _sh -- rect
+                                     )
             ex_c.painter_flush()
         end,
 
@@ -142,13 +142,13 @@ local painter = class ({
             _font.outline_thickness = _outline_thickness
 
             ex.painter.color = _outline_color
-            ex.painter.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
+            ex.painter.text( _text, _font, _dx, _dy, _dw, _dh ) 
 
             _font.outline_type = 0
             _font.outline_thickness = 0.0
 
             ex.painter.color = _color
-            ex.painter.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
+            ex.painter.text( _text, _font, _dx, _dy, _dw, _dh ) 
         end,
 
         -- ------------------------------------------------------------------ 
@@ -159,10 +159,10 @@ local painter = class ({
             _font.outline_type = 0
 
             ex.painter.color = _shadow_color
-            ex.painter.draw_text( _text, _font, _dx + _offset.x, _dy + _offset.y, _dw, _dh ) 
+            ex.painter.text( _text, _font, _dx + _offset.x, _dy + _offset.y, _dw, _dh ) 
 
             ex.painter.color = _color
-            ex.painter.draw_text( _text, _font, _dx, _dy, _dw, _dh ) 
+            ex.painter.text( _text, _font, _dx, _dy, _dw, _dh ) 
         end,
 
         -- ------------------------------------------------------------------ 

@@ -92,7 +92,7 @@ void ex_painter_draw_texture ( int _dx, int _dy, int _dw, int _dh,
 
     SDL_Texture *texture;
     GL_TextureData *texture_data;
-    float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
+    float tex_l, tex_t, tex_r, tex_b, w, h;
     int sx, sy, sw, sh;
     float dx, dy, dw, dh;
 
@@ -102,10 +102,10 @@ void ex_painter_draw_texture ( int _dx, int _dy, int _dw, int _dh,
     texture_data = (GL_TextureData *)texture->driverdata;
 
     // create vertex and indices
-    tex_l = 0;
-    tex_r = texture_data->texw;
-    tex_t = 0;
-    tex_b = texture_data->texh;
+    tex_l = 0.0f;
+    tex_r = 1.0f; // texture_data->texw;
+    tex_t = 0.0f;
+    tex_b = 1.0f; // texture_data->texh;
 
     dx = (float)_dx;
     dy = (float)_dy;
@@ -119,13 +119,18 @@ void ex_painter_draw_texture ( int _dx, int _dy, int _dw, int _dh,
 
     w = texture->w;
     h = texture->h;
-    true_w = ex_ceilpow2f(w);
-    true_h = ex_ceilpow2f(h);
 
-    tex_l += sx / true_w;
-    tex_t -= sy / true_h;
-    tex_r -= (w - sx - sw) / true_w;
-    tex_b += (h - sy - sh) / true_h;
+    tex_l += sx / w;
+    tex_t -= sy / h;
+    tex_r -= (w - sx - sw) / w;
+    tex_b += (h - sy - sh) / h;
+
+    // NOTE: texture_data->texw in GL_TEXTURE_2D is texture->w/power_of_2(texture->w)
+    //                          in GL_TEXTURE_RECTANGLE_ARB is texture->w  
+    tex_l *= texture_data->texw;
+    tex_t *= texture_data->texh;
+    tex_r *= texture_data->texw;
+    tex_b *= texture_data->texh;
 
     // ui_vb
     index_start = state->vb.count;
@@ -468,12 +473,14 @@ void ex_painter_flush () {
     texture_data = (GL_TextureData *)texture->driverdata;
 
     // bind texture
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture ( GL_TEXTURE_2D, texture_data->texture );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // glEnable(GL_TEXTURE_2D);
+    // glBindTexture ( GL_TEXTURE_2D, texture_data->texture );
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    // // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glEnable (texture_data->type);
+    glBindTexture ( texture_data->type, texture_data->texture );
 
     // setup blending 
     glEnable ( GL_BLEND );
@@ -503,7 +510,8 @@ void ex_painter_flush () {
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
     // disable texture
-    glDisable(GL_TEXTURE_2D);
+    // glDisable(GL_TEXTURE_2D);
+    glDisable (texture_data->type);
 
     // clear buf
     ex_memblock_clear ( &state->vb );

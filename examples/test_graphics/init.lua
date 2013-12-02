@@ -25,35 +25,35 @@ wiz.on_init = function ()
     local window = wiz.ui_window( 640, 480 )
 
     -- load resource, NOTE: texture resource must be load after first window created
-    -- local font1 = wiz.assets.load("assets/VeraMono.ttf")
-    -- local font2 = wiz.assets.load("assets/BerlinSansFB_MonoOutline.bft")
-    -- local font3 = wiz.assets.load("assets/MolotShadow.bft")
-    -- local logo = wiz.assets.load("assets/ex2d_logo.png")
+    local font1 = wiz.assets.load("assets/VeraMono.ttf")
+    local font2 = wiz.assets.load("assets/BerlinSansFB_MonoOutline.bft")
+    local font3 = wiz.assets.load("assets/MolotShadow.bft")
+    local logo = wiz.assets.load("assets/ex2d_logo.png")
 
     --
-    -- window.on_repaint = function ( _self )
-    --     ex.canvas.color = ex.color4f.white
-    --     ex.canvas.draw_bitmap_text( "Hello World", font2, 10, 10 )
+    window.on_repaint = function ( _self )
+        -- ex.painter.color = ex.color4f.white
+        -- ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
 
-    --     ex.canvas.color = ex.color4f.green
-    --     ex.canvas.draw_text( "Hello World", font1, 100, 100 )
+        -- ex.painter.color = ex.color4f.green
+        -- ex.painter.text( "Hello World", font1, 100, 100 )
 
-    --     ex.canvas.color = ex.color4f.white
-    --     local size = { w = logo.width * 0.6, h = logo.height * 0.6 } 
-    --     ex.canvas.draw_image( logo, 
-    --                           ex.canvas.width - 10 - size.w, 
-    --                           ex.canvas.height - 10 - size.h,
-    --                           size.w,
-    --                           size.h )
-    -- end
+        ex.painter.color = ex.color4f.white
+        local size = { w = logo.width, h = logo.height } 
+        ex.painter.image( logo, 
+                          _self.width - 10 - size.w, 
+                          _self.height - 10 - size.h,
+                          size.w,
+                          size.h )
+    end
 
 
     -- create window 2
     local window2 = wiz.ui_window( 400, 800 )
     window2.background = { 0, 128, 255 }
     -- window2.on_repaint = function ( _self )
-    --     ex.canvas.color = ex.color4f.white
-    --     ex.canvas.draw_bitmap_text( "Hello World", font2, 10, 10 )
+    --     ex.painter.color = ex.color4f.white
+    --     ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
     -- end
 end
 

@@ -91,14 +91,14 @@ static int __lua_painter_draw_texture ( lua_State *_l ) {
     ex_lua_check_nargs(_l,8);
 
     ex_painter_draw_texture ( luaL_checkint(_l,1),
-                         luaL_checkint(_l,2),
-                         luaL_checkint(_l,3),
-                         luaL_checkint(_l,4),
-                         luaL_checkint(_l,5),
-                         luaL_checkint(_l,6),
-                         luaL_checkint(_l,7),
-                         luaL_checkint(_l,8)
-                       );
+                              luaL_checkint(_l,2),
+                              luaL_checkint(_l,3),
+                              luaL_checkint(_l,4),
+                              luaL_checkint(_l,5),
+                              luaL_checkint(_l,6),
+                              luaL_checkint(_l,7),
+                              luaL_checkint(_l,8)
+                            );
     return 0;
 }
 
