@@ -106,7 +106,7 @@ static int __lua_painter_draw_texture ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int __lua_painter_draw_border_texture ( lua_State *_l ) {
+static int __lua_painter_draw_sliced_texture ( lua_State *_l ) {
     ex_lua_check_nargs(_l,12);
 
     ex_painter_draw_sliced_texture ( luaL_checkint(_l,1 ),
@@ -171,14 +171,14 @@ static int __lua_painter_draw_rect_4 ( lua_State *_l ) {
     ex_lua_check_nargs(_l,8);
 
     ex_painter_draw_rect_4 ( luaL_checkint(_l,1 ),
-                        luaL_checkint(_l,2 ),
-                        luaL_checkint(_l,3 ),
-                        luaL_checkint(_l,4 ),
-                        luaL_checkint(_l,5 ),
-                        luaL_checkint(_l,6 ),
-                        luaL_checkint(_l,7 ),
-                        luaL_checkint(_l,8 )
-                      );
+                             luaL_checkint(_l,2 ),
+                             luaL_checkint(_l,3 ),
+                             luaL_checkint(_l,4 ),
+                             luaL_checkint(_l,5 ),
+                             luaL_checkint(_l,6 ),
+                             luaL_checkint(_l,7 ),
+                             luaL_checkint(_l,8 )
+                           );
     return 0;
 }
 
@@ -217,7 +217,7 @@ static const luaL_Reg lib[] = {
     { "painter_set_matrix",             __lua_painter_set_matrix },
     { "painter_set_color",              __lua_painter_set_color },
     { "painter_draw_texture",           __lua_painter_draw_texture },
-    { "painter_draw_border_texture",    __lua_painter_draw_border_texture },
+    { "painter_draw_sliced_texture",    __lua_painter_draw_sliced_texture },
     { "painter_draw_text",              __lua_painter_draw_text },
     { "painter_draw_rect",              __lua_painter_draw_rect },
     { "painter_draw_rect_4",            __lua_painter_draw_rect_4 },

@@ -29,14 +29,15 @@ wiz.on_init = function ()
     local font2 = wiz.assets.load("assets/BerlinSansFB_MonoOutline.bft")
     local font3 = wiz.assets.load("assets/MolotShadow.bft")
     local logo = wiz.assets.load("assets/ex2d_logo.png")
+    local window_img = wiz.assets.load("assets/windowActive.png")
 
     --
     window.on_repaint = function ( _self )
-        ex.painter.color = ex.color4f.white
-        ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
+        -- ex.painter.color = ex.color4f.white
+        -- ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
 
-        ex.painter.color = ex.color4f.green
-        ex.painter.text( "Hello World", font1, 100, 100 )
+        -- ex.painter.color = ex.color4f.green
+        -- ex.painter.text( "Hello World", font1, 10, 50 )
 
         ex.painter.color = ex.color4f.white
         local size = { w = logo.width, h = logo.height } 
@@ -45,16 +46,36 @@ wiz.on_init = function ()
                           _self.height - 10 - size.h,
                           size.w,
                           size.h )
-    end
 
-
-    -- create window 2
-    local window2 = wiz.ui_window( 400, 800 )
-    window2.background = { 0, 128, 255 }
-    window2.on_repaint = function ( _self )
         ex.painter.color = ex.color4f.white
-        ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
+        ex.painter.sliced_image( window_img, 
+                                 100, 100, 200, 300,
+                                 27, 14, 15, 14 )
+
+        -- ex.painter.color = ex.color4f( 1.0, 0.0, 0.0, 0.5 )
+        -- ex.painter.filled_rect( 100, 100, 200, 300 )
+
+        -- ex.painter.color = ex.color4f( 1.0, 1.0, 0.0, 1.0 )
+        -- ex.painter.rect( 100, 100, 200, 300 )
+
+        -- ex.painter.color = ex.color4f( 1.0, 0.0, 0.0, 0.5 )
+        -- ex.painter.rect4( 100, 100, 200, 300,
+        --                   27, 14, 15, 14 )
+
+        ex.painter.color = ex.color4f( 1.0, 0.0, 0.0, 1.0 )
+        ex.painter.rect( 100, 100, 200, 300, 2 )
     end
+
+    -- -- create window 2
+    -- local window2 = wiz.ui_window( 400, 800 )
+    -- window2.background = { 0, 128, 255 }
+    -- window2.on_repaint = function ( _self )
+    --     ex.painter.color = ex.color4f.white
+    --     ex.painter.bitmap_text( "Hello World", font2, 10, 10 )
+
+    --     ex.painter.color = ex.color4f.green
+    --     ex.painter.bitmap_text( "hello world", font3, 10, 50 )
+    -- end
 end
 
 -- ------------------------------------------------------------------ 

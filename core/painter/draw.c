@@ -93,7 +93,6 @@ void ex_painter_draw_texture ( int _dx, int _dy, int _dw, int _dh,
     SDL_Texture *texture;
     GL_TextureData *texture_data;
     float tex_l, tex_t, tex_r, tex_b, w, h;
-    int sx, sy, sw, sh;
     float dx, dy, dw, dh;
 
     //
@@ -104,26 +103,21 @@ void ex_painter_draw_texture ( int _dx, int _dy, int _dw, int _dh,
     // create vertex and indices
     tex_l = 0.0f;
     tex_t = 0.0f;
-    tex_r = 1.0f; // texture_data->texw;
-    tex_b = 1.0f; // texture_data->texh;
+    tex_r = 1.0f;
+    tex_b = 1.0f;
 
     dx = (float)_dx;
     dy = (float)_dy;
     dw = (float)_dw;
     dh = (float)_dh;
 
-    sx = _sx;
-    sy = _sy;
-    sw = _sw;
-    sh = _sh;
-
     w = texture->w;
     h = texture->h;
 
-    tex_l += sx / w;
-    tex_t += sy / h;
-    tex_r -= (w - sx - sw) / w;
-    tex_b -= (h - sy - sh) / h;
+    tex_l += _sx / w;
+    tex_t += _sy / h;
+    tex_r -= (w - _sx - _sw) / w;
+    tex_b -= (h - _sy - _sh) / h;
 
     // NOTE: texture_data->texw in GL_TEXTURE_2D is texture->w/power_of_2(texture->w)
     //                          in GL_TEXTURE_RECTANGLE_ARB is texture->w  
@@ -192,7 +186,6 @@ void ex_painter_draw_sliced_texture ( int _dx, int _dy, int _dw, int _dh,
                                       int _t, int _r, int _b, int _l, 
                                       int _sx, int _sy, int _sw, int _sh )
 {
-#if 0
     ex_painter_state_t *state;
 
     size_t index_start;
@@ -205,23 +198,32 @@ void ex_painter_draw_sliced_texture ( int _dx, int _dy, int _dw, int _dh,
     };
     int i;
 
-    ALLEGRO_BITMAP *texture;
-    ALLEGRO_BITMAP_OGL *texture_data;
-    float tex_l, tex_t, tex_r, tex_b, w, h, true_w, true_h;
+    SDL_Texture *texture;
+    GL_TextureData *texture_data;
+    float tex_l, tex_t, tex_r, tex_b, w, h;
     float x0, x1, x2, x3, y0, y1, y2, y3;
     float s0, s1, s2, s3, t0, t1, t2, t3;
 
     //
     state = ex_painter_state();
-    texture = (ALLEGRO_BITMAP *)state->texture;
-    texture_data = (ALLEGRO_BITMAP_OGL *)state->texture;
+    texture = (SDL_Texture *)state->texture;
+    texture_data = (GL_TextureData *)texture->driverdata;
 
     // create vertex and indices
-    tex_l = texture_data->left;
-    tex_r = texture_data->right;
-    tex_t = texture_data->top;
-    tex_b = texture_data->bottom;
+    w = texture->w;
+    h = texture->h;
 
+    tex_l = 0.0f;
+    tex_t = 0.0f;
+    tex_r = 1.0f;
+    tex_b = 1.0f;
+
+    tex_l += _sx / w;
+    tex_t += _sy / h;
+    tex_r -= (w - _sx - _sw) / w;
+    tex_b -= (h - _sy - _sh) / h;
+
+    //
     x0 = (float)_dx;
     x1 = (float)_dx + (float)_l;
     x2 = (float)_dx + (float)_dw - (float)_r;
@@ -232,20 +234,27 @@ void ex_painter_draw_sliced_texture ( int _dx, int _dy, int _dw, int _dh,
     y2 = (float)_dy + (float)_dh - (float)_b;
     y3 = (float)_dy + (float)_dh;
 
-    w = texture->w;
-    h = texture->h;
-    true_w = texture_data->true_w;
-    true_h = texture_data->true_h;
+    s0 = tex_l + _sx / w;
+    s1 = tex_l + (_sx + _l) / w;
+    s2 = tex_r - (w - _sx - _sw + _r) / w;
+    s3 = tex_r - (w - _sx - _sw) / w;
 
-    s0 = tex_l + _sx / true_w;
-    s1 = tex_l + (_sx + _l) / true_w;
-    s2 = tex_r - (w - _sx - _sw + _r) / true_w;
-    s3 = tex_r - (w - _sx - _sw) / true_w;
+    t0 = tex_t + _sy / h;
+    t1 = tex_t + (_sy + _t) / h;
+    t2 = tex_b - (h - _sy - _sh + _b) / h;
+    t3 = tex_b - (h - _sy - _sh) / h;
 
-    t0 = tex_t - _sy / true_h;
-    t1 = tex_t - (_sy + _t) / true_h;
-    t2 = tex_b + (h - _sy - _sh + _b) / true_h;
-    t3 = tex_b + (h - _sy - _sh) / true_h;
+    // NOTE: texture_data->texw in GL_TEXTURE_2D is texture->w/power_of_2(texture->w)
+    //                          in GL_TEXTURE_RECTANGLE_ARB is texture->w  
+    s0 *= texture_data->texw;
+    s1 *= texture_data->texw;
+    s2 *= texture_data->texw;
+    s3 *= texture_data->texw;
+
+    t0 *= texture_data->texh;
+    t1 *= texture_data->texh;
+    t2 *= texture_data->texh;
+    t3 *= texture_data->texh;
 
     // ui_vb
     index_start = state->vb.count;
@@ -343,7 +352,6 @@ void ex_painter_draw_sliced_texture ( int _dx, int _dy, int _dw, int _dh,
     }
 
     ++state->primitive_count;
-#endif
 }
 
 // ------------------------------------------------------------------ 
@@ -417,8 +425,31 @@ void ex_painter_draw_text ( const char *_text,
 // ------------------------------------------------------------------ 
 
 void ex_painter_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness ) {
-    ex_painter_draw_rect_4 ( _dx, _dy, _dx + _dw, _dy + _dh, 
-                             _thickness, _thickness, _thickness, _thickness );
+    if ( _thickness > 1 ) {
+        ex_painter_draw_rect_4 ( _dx, _dy, _dw, _dh, 
+                                 _thickness, _thickness, _thickness, _thickness );
+    }
+    else {
+        ex_painter_state_t *state;
+
+        state = ex_painter_state();
+        glBegin(GL_LINE_LOOP);
+            glColor4f(state->color.r, state->color.g, state->color.b, state->color.a ); 
+            glVertex2i(_dx, _dy+1);
+
+            glColor4f(state->color.r, state->color.g, state->color.b, state->color.a ); 
+            glVertex2i(_dx+_dw, _dy+1);
+
+            glColor4f(state->color.r, state->color.g, state->color.b, state->color.a ); 
+            glVertex2i(_dx+_dw, _dy+_dh-1);
+
+            glColor4f(state->color.r, state->color.g, state->color.b, state->color.a ); 
+            glVertex2i(_dx+1, _dy+_dh);
+
+            glColor4f(state->color.r, state->color.g, state->color.b, state->color.a ); 
+            glVertex2i(_dx+1, _dy+2);
+        glEnd();
+    }
 }
 
 // ------------------------------------------------------------------ 
@@ -426,17 +457,110 @@ void ex_painter_draw_rect ( int _dx, int _dy, int _dw, int _dh, int _thickness )
 // ------------------------------------------------------------------ 
 
 void ex_painter_draw_rect_4 ( int _dx, int _dy, int _dw, int _dh, 
-                              int _t, int _r, int _b, int _l ) {
-#if 0
+                              int _t, int _r, int _b, int _l ) 
+{
     ex_painter_state_t *state;
-    ALLEGRO_COLOR al_color;
 
+    size_t index_start;
+    ex_painter_vertex_t *verts;
+    uint16 *indices;
+    float dx, dy, dw, dh;
+    float t, r, b, l;
+
+    //
     state = ex_painter_state();
-    al_color = al_map_rgba_f ( state->color.r, state->color.g, state->color.b, state->color.a );
+    ex_painter_set_texture (NULL);
 
-    al_draw_rectangle_4 ( _dx, _dy, _dx + _dw, _dy + _dh, al_color, 
-                          _t, _r, _b, _l );
-#endif
+    // create vertex and indices
+    dx = (float)_dx;
+    dy = (float)_dy;
+    dw = (float)_dw;
+    dh = (float)_dh;
+
+    t = (float)_t;
+    r = (float)_r;
+    b = (float)_b;
+    l = (float)_l;
+
+    // ui_vb
+    index_start = state->vb.count;
+    verts = (ex_painter_vertex_t *)ex_memblock_request ( &state->vb, 4 );
+
+    verts[0].pos.x = dx;
+    verts[0].pos.y = dy;
+    verts[0].color = state->color;
+
+    verts[1].pos.x = dx + dw;
+    verts[1].pos.y = dy;
+    verts[1].color = state->color;
+
+    verts[2].pos.x = dx + dw;
+    verts[2].pos.y = dy + dh;
+    verts[2].color = state->color;
+
+    verts[3].pos.x = dx;
+    verts[3].pos.y = dy + dh;
+    verts[3].color = state->color;
+
+    verts[4].pos.x = dx + l;
+    verts[4].pos.y = dy + t;
+    verts[4].color = state->color;
+
+    verts[5].pos.x = dx + dw - r;
+    verts[5].pos.y = dy + t;
+    verts[5].color = state->color;
+
+    verts[6].pos.x = dx + dw - r;
+    verts[6].pos.y = dy + dh - b;
+    verts[6].color = state->color;
+
+    verts[7].pos.x = dx + l;
+    verts[7].pos.y = dy + dh - b;
+    verts[7].color = state->color;
+
+    ex_vec2f_mul_mat33f ( &verts[0].pos, &verts[0].pos, &state->matrix );
+    ex_vec2f_mul_mat33f ( &verts[1].pos, &verts[1].pos, &state->matrix );
+    ex_vec2f_mul_mat33f ( &verts[2].pos, &verts[2].pos, &state->matrix );
+    ex_vec2f_mul_mat33f ( &verts[3].pos, &verts[3].pos, &state->matrix );
+    ex_vec2f_mul_mat33f ( &verts[4].pos, &verts[4].pos, &state->matrix );
+    ex_vec2f_mul_mat33f ( &verts[5].pos, &verts[5].pos, &state->matrix );
+    ex_vec2f_mul_mat33f ( &verts[6].pos, &verts[6].pos, &state->matrix );
+    ex_vec2f_mul_mat33f ( &verts[7].pos, &verts[7].pos, &state->matrix );
+
+    // ui_ib
+    indices = (uint16 *)ex_memblock_request ( &state->ib, 24 );
+    indices[0 ] = index_start + 4;
+    indices[1 ] = index_start + 0;
+    indices[2 ] = index_start + 1;
+    indices[3 ] = index_start + 4;
+    indices[4 ] = index_start + 1;
+    indices[5 ] = index_start + 5;
+
+    indices[6 ] = index_start + 5;
+    indices[7 ] = index_start + 1;
+    indices[8 ] = index_start + 2;
+    indices[9 ] = index_start + 5;
+    indices[10] = index_start + 2;
+    indices[11] = index_start + 6;
+
+    indices[12] = index_start + 6;
+    indices[13] = index_start + 2;
+    indices[14] = index_start + 3;
+    indices[15] = index_start + 6;
+    indices[16] = index_start + 3;
+    indices[17] = index_start + 7;
+
+    indices[18] = index_start + 7;
+    indices[19] = index_start + 3;
+    indices[20] = index_start + 0;
+    indices[21] = index_start + 7;
+    indices[22] = index_start + 0;
+    indices[23] = index_start + 4;
+
+
+    ++state->primitive_count;
+
+    ex_painter_flush();
 }
 
 // ------------------------------------------------------------------ 
@@ -444,15 +568,22 @@ void ex_painter_draw_rect_4 ( int _dx, int _dy, int _dw, int _dh,
 // ------------------------------------------------------------------ 
 
 void ex_painter_draw_filled_rect ( int _dx, int _dy, int _dw, int _dh ) {
-#if 0
     ex_painter_state_t *state;
-    ALLEGRO_COLOR al_color;
 
     state = ex_painter_state();
-    al_color = al_map_rgba_f ( state->color.r, state->color.g, state->color.b, state->color.a );
+    glBegin(GL_QUADS);
+        glColor4f(state->color.r, state->color.g, state->color.b, state->color.a ); 
+        glVertex2f(_dx, _dy);
 
-    al_draw_filled_rectangle ( _dx, _dy, _dx + _dw, _dy + _dh, al_color );
-#endif
+        glColor4f(state->color.r, state->color.g, state->color.b, state->color.a ); 
+        glVertex2f(_dx+_dw, _dy);
+
+        glColor4f(state->color.r, state->color.g, state->color.b, state->color.a ); 
+        glVertex2f(_dx+_dw, _dy+_dh);
+
+        glColor4f(state->color.r, state->color.g, state->color.b, state->color.a ); 
+        glVertex2f(_dx, _dy+_dh);
+    glEnd();
 }
 
 // ------------------------------------------------------------------ 
@@ -469,18 +600,14 @@ void ex_painter_flush () {
     if ( state->vb.count == 0 )
         return;
 
-    texture = (SDL_Texture *)state->texture;
-    texture_data = (GL_TextureData *)texture->driverdata;
-
     // bind texture
-    // glEnable(GL_TEXTURE_2D);
-    // glBindTexture ( GL_TEXTURE_2D, texture_data->texture );
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    // // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glEnable (texture_data->type);
-    glBindTexture ( texture_data->type, texture_data->texture );
+    texture = (SDL_Texture *)state->texture;
+    if ( texture != NULL ) {
+        texture_data = (GL_TextureData *)texture->driverdata;
+
+        glEnable (texture_data->type);
+        glBindTexture ( texture_data->type, texture_data->texture );
+    }
 
     // setup blending 
     glEnable ( GL_BLEND );
@@ -491,27 +618,31 @@ void ex_painter_flush () {
 
     // send buffer data 
     glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer( 2, GL_FLOAT, sizeof(ex_painter_vertex_t), state->vb.data );
+
     glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glColorPointer( 4, GL_FLOAT, sizeof(ex_painter_vertex_t), (char*)(state->vb.data) + offsetof(ex_painter_vertex_t, color) );
 
-        glVertexPointer  ( 2, GL_FLOAT, sizeof(ex_painter_vertex_t), state->vb.data );
-        glColorPointer   ( 4, GL_FLOAT, sizeof(ex_painter_vertex_t), (char*)(state->vb.data) + offsetof(ex_painter_vertex_t, color) );
+    if ( texture != NULL ) {
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glTexCoordPointer( 2, GL_FLOAT, sizeof(ex_painter_vertex_t), (char*)(state->vb.data) + offsetof(ex_painter_vertex_t, uv0) );
+    }
 
-        // draw elements 
-        glDrawElements( GL_TRIANGLES, /* also can use GL_TRIANGLES */ 
-                        (GLsizei)(state->ib.count),
-                        GL_UNSIGNED_SHORT, 
-                        state->ib.data );
+    // draw elements 
+    glDrawElements( GL_TRIANGLES,
+                    (GLsizei)(state->ib.count),
+                    GL_UNSIGNED_SHORT, 
+                    state->ib.data );
 
     // unbind buffers
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
     // disable texture
-    // glDisable(GL_TEXTURE_2D);
-    glDisable (texture_data->type);
+    if ( texture != NULL ) {
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisable (texture_data->type);
+    }
 
     // clear buf
     ex_memblock_clear ( &state->vb );

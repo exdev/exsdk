@@ -47,8 +47,8 @@ local painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        rect4 = function ( _dx, _dy, _dw, _dh, _t_top, _t_right, _t_bottom, _t_left )
-            ex_c.painter_draw_rect_4 ( _dx, _dy, _dw, _dh, _t_top, _t_right, _t_bottom, _t_left )
+        rect4 = function ( _dx, _dy, _dw, _dh, _t, _r, _b, _l )
+            ex_c.painter_draw_rect_4 ( _dx, _dy, _dw, _dh, _t, _r, _b, _l )
         end,
 
         -- ------------------------------------------------------------------ 
