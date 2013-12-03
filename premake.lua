@@ -87,6 +87,7 @@ solution "exSDK"
             "_WINDOWS",
             "_CRT_SECURE_NO_DEPRECATE", -- msvc treat sprintf, strcpy, ... functions as no safe, we don't want the compile keep warning us
             "HAVE_LIBC",
+            "GLEW_STATIC", -- for glew
         }
     end
 
@@ -115,6 +116,12 @@ solution "exSDK"
             "ext/yajl-2.0.1/include/",
             "ext/utf8proc-1.1.5/",
         } 
+        if __PLATFORM == "macosx" then
+        elseif __PLATFORM == "win32" then
+            includedirs {
+                "ext/glew-1.10.0/include/",
+            }
+        end
 
         -- source
         files { 
@@ -128,6 +135,12 @@ solution "exSDK"
             "ext/lpeg-0.10.2/**.c",
             "ext/utf8proc-1.1.5/utf8proc.c",
         }
+        if __PLATFORM == "macosx" then
+        elseif __PLATFORM == "win32" then
+            files {
+                "ext/glew-1.10.0/src/**.c",
+            }
+        end
 
         -- source exclude
         excludes {
@@ -291,7 +304,7 @@ solution "exSDK"
         if __PLATFORM == "macosx" then
         elseif __PLATFORM == "win32" then
             includedirs {
-                "ext/glew-1.9.0/include/",
+                "ext/glew-1.10.0/include/",
                 "ext/glut/include/",
             }
         end
@@ -379,7 +392,6 @@ solution "exSDK"
                 "psapi",
                 "shlwapi",
                 "opengl32",
-                "glew32",
                 "glu32",
                 "glut32",
             }
@@ -421,7 +433,7 @@ solution "exSDK"
     -- TEST
     -- ======================================================== 
 
-    matches = os.matchfiles("tests/*.c")
+    matches = os.matchfiles("tests/test_*.c")
     for i=1,#matches do
         -- print ( path.getbasename(matches[i]) )
         local projectName = path.getbasename(matches[i]) 
@@ -442,7 +454,7 @@ solution "exSDK"
             if __PLATFORM == "macosx" then
             elseif __PLATFORM == "win32" then
                 includedirs {
-                    "ext/glew-1.9.0/include/",
+                    "ext/glew-1.10.0/include/",
                     "ext/glut/include/",
                 }
             end
@@ -489,7 +501,6 @@ solution "exSDK"
                     "psapi",
                     "shlwapi",
                     "opengl32",
-                    "glew32",
                     "glu32",
                     "glut32",
                 }

@@ -10,10 +10,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SDL.h"
-#include "SDL_opengl.h"
 
 #include "exsdk.h"
-// #include "gl/gl_inc.h"
+#include "gl/gl_inc.h"
 
 #include "utf8proc.h"
 

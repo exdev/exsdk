@@ -9,8 +9,10 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "SDL_opengl.h"
+#include "SDL.h"
+
 #include "exsdk.h"
+#include "gl/gl_inc.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // TEMP
@@ -18,7 +20,13 @@
 
 static void *__main_renderer = NULL;
 void *ex_get_main_sdl_renderer() { return __main_renderer; }
-void ex_set_main_sdl_renderer ( void *_r ) { __main_renderer = _r; }
+void ex_set_main_sdl_renderer ( void *_r ) { 
+    __main_renderer = _r; 
+
+#if EX_WIN32
+    glewInit(); // NOTE: we must init glew after glContex inited
+#endif
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // static

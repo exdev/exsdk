@@ -26,17 +26,23 @@
 
 #elif (EX_PLATFORM == EX_LINUX)
 
-	#include <OpenGL/gl.h>
-	#include <OpenGL/glu.h>
-	#include <GLUT/glut.h>
+	#include <SDL_opengl.h>
+
+    // #include <OpenGL/gl.h>
+    #include <OpenGL/glu.h>
+    #include <GLUT/glut.h>
 
 #elif (EX_PLATFORM == EX_MACOSX)
 
-	#include <OpenGL/gl.h>
-	#include <OpenGL/glu.h>
-	#include <GLUT/glut.h>
+	#include <SDL_opengl.h>
+
+    // #include <OpenGL/gl.h>
+    #include <OpenGL/glu.h>
+    #include <GLUT/glut.h>
 
 #elif (EX_PLATFORM == EX_IOS)
+
+	#include <SDL_opengl.h>
 
     #include <OpenGLES/ES1/gl.h>
     #include <OpenGLES/ES1/glext.h>
