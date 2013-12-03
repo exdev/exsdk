@@ -23,7 +23,7 @@ void *ex_get_main_sdl_renderer() { return __main_renderer; }
 void ex_set_main_sdl_renderer ( void *_r ) { 
     __main_renderer = _r; 
 
-#if EX_WIN32
+#if (EX_PLATFORM == EX_WIN32)
     glewInit(); // NOTE: we must init glew after glContex inited
 #endif
 }
