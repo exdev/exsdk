@@ -89,7 +89,7 @@ local node = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    get_component = function ( _self, _comp )
+    getComponent = function ( _self, _comp )
         local comp_name = _comp
         if type(_comp) ~= "string" then
             comp_name = typename(_comp)
@@ -111,7 +111,7 @@ local node = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    add_component = function ( _self, _comp )
+    addComponent = function ( _self, _comp )
         local inst = ex.instantiate(_comp)
         inst.node = _self
 

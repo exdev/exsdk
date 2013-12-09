@@ -70,7 +70,7 @@ __M.add = add
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function add_range ( _t, _list )
+local function addRange ( _t, _list )
     assert ( type(_list) == "table" and #_list > 0, "Invalid _list" )
     for i=1,#_list do
         _t[#_t+1] = _list[i]
@@ -78,13 +78,13 @@ local function add_range ( _t, _list )
 
     return _t
 end
-__M.add_range = add_range
+__M.addRange = addRange
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function remove_el ( _t, _el )
+local function removeEl ( _t, _el )
     for i=1,#_t do
         if _t[i] == _el then
             table.remove(_t,i)
@@ -92,34 +92,34 @@ local function remove_el ( _t, _el )
         end
     end
 end
-__M.remove_el = remove_el
+__M.removeEl = removeEl
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function fast_remove_el ( _t, _el )
-    for i=1,#_t do
-        if _t[i] == _el then
-            table.fast_remove_at(_t,i)
-            break
-        end
-    end
-end
-__M.fast_remove_el = fast_remove_el
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-local function fast_remove_at ( _t, _idx )
+local function fastRemoveAt ( _t, _idx )
     assert ( type(_idx) == "number" )
     if _idx > #_t then return end
 
     _t[_idx] = _t[#_t]
     _t[#_t] = nil
 end
-__M.fast_remove_at = fast_remove_at
+__M.fastRemoveAt = fastRemoveAt
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function fastRemoveEl ( _t, _el )
+    for i=1,#_t do
+        if _t[i] == _el then
+            fastRemoveAt(_t,i)
+            break
+        end
+    end
+end
+__M.fastRemoveEl = fastRemoveEl
 
 --/////////////////////////////////////////////////////////////////////////////
 -- 

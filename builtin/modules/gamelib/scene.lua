@@ -35,12 +35,12 @@ __M.tick = tick
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function new_node ( _name )
+local function newNode ( _name )
     local node = ex.node(_name)
     __nodes[#__nodes+1] = node
     return node
 end
-__M.new_node = new_node
+__M.newNode = newNode
 
 --/////////////////////////////////////////////////////////////////////////////
 --

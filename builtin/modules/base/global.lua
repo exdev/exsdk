@@ -16,11 +16,11 @@ local __M = {}
 -- -- Desc: 
 -- -- ------------------------------------------------------------------ 
 
--- local builtin_error = error
+-- local builtinError = error
 -- local function error ( _msg, ... )
 --     print( _msg, ... ) 
 --     print(debug.traceback())
---     builtin_error(_msg, ...)
+--     builtinError(_msg, ...)
 -- end
 -- __M.error = error
 
@@ -28,13 +28,13 @@ local __M = {}
 -- -- Desc: 
 -- -- ------------------------------------------------------------------ 
 
--- local builtin_assert = assert
+-- local builtinAssert = assert
 -- local function assert ( _exp, ... )
 --     if _exp == nil or _exp == false then 
 --         print(...) 
 --         print(debug.traceback()) 
 --     end
---     builtin_assert(_exp, ...)
+--     builtinAssert(_exp, ...)
 -- end
 -- __M.assert = assert
 -- } DISABLE end 

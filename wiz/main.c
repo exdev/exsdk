@@ -103,9 +103,9 @@ void destroy_window ( lua_State *_l, int _refID ) {
         ++i;
     }
 
-    // call win_info.refID.on_destroy { 
+    // call win_info.refID.onDestroy { 
     lua_rawgeti( _l, LUA_REGISTRYINDEX, win_info->refID );
-    lua_getfield( _l, -1, "on_destroy" );
+    lua_getfield( _l, -1, "onDestroy" );
     if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
         lua_pushvalue(_l,-2);
         ex_lua_pcall( _l, 1, 0, idx ); 
@@ -224,8 +224,8 @@ static int __lua_wiz_on_exit ( lua_State *_l ) {
     // get wiz table
     lua_getglobal( _l, "wiz" );
 
-    // get wiz.on_exit
-    lua_getfield( _l, -1, "on_exit" );
+    // get wiz.onExit
+    lua_getfield( _l, -1, "onExit" );
 
     if ( lua_isnil(_l,-1) == false && lua_isfunction(_l,-1) ) {
         ex_lua_pcall(_l, 0, 0, idx);
@@ -281,7 +281,7 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
     switch ( _event->type ) {
 
     // ======================================================== 
-    // windows event
+    // Window Events
     // ======================================================== 
 
     case SDL_WINDOWEVENT:
@@ -310,9 +310,9 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
                 lua_pushcfunction( _l, ex_lua_trace_back );
                 idx = lua_gettop(_l);
 
-                // call window.on_resize(w,h)
+                // call window.onResize(w,h)
                 lua_rawgeti( _l, LUA_REGISTRYINDEX, win_info->refID );
-                lua_getfield( _l, -1, "on_resize" );
+                lua_getfield( _l, -1, "onResize" );
                 if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
                     lua_pushvalue(_l,-2);
                     lua_pushinteger(_l,_event->window.data1);
@@ -334,9 +334,9 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
                 lua_pushcfunction( _l, ex_lua_trace_back );
                 idx = lua_gettop(_l);
 
-                // call window.on_resize(w,h)
+                // call window.onFocus(w,h)
                 lua_rawgeti( _l, LUA_REGISTRYINDEX, win_info->refID );
-                lua_getfield( _l, -1, "on_focus" );
+                lua_getfield( _l, -1, "onFocus" );
                 if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
                     lua_pushvalue(_l,-2);
                     ex_lua_pcall( _l, 1, 0, idx ); 
@@ -355,9 +355,9 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
                 lua_pushcfunction( _l, ex_lua_trace_back );
                 idx = lua_gettop(_l);
 
-                // call window.on_resize(w,h)
+                // call window.onUnfocus(w,h)
                 lua_rawgeti( _l, LUA_REGISTRYINDEX, win_info->refID );
-                lua_getfield( _l, -1, "on_unfocus" );
+                lua_getfield( _l, -1, "onUnfocus" );
                 if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
                     lua_pushvalue(_l,-2);
                     ex_lua_pcall( _l, 1, 0, idx ); 
@@ -375,7 +375,15 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
         break;
 
     // ======================================================== 
-    // quit event
+    // Mouse Events
+    // ======================================================== 
+
+    case SDL_MOUSEMOTION:
+        // SDL_MouseMotionEvent mouseMotionEvent = _event->motion;
+        break;
+
+    // ======================================================== 
+    // Quit
     // ======================================================== 
 
     case SDL_QUIT:
@@ -408,10 +416,10 @@ static void __event_loop ( lua_State *_l ) {
         lua_pushcfunction( _l, ex_lua_trace_back );
         idx = lua_gettop(_l);
 
-        // update windows [on_update]
+        // update windows [onUpdate]
         ex_array_each ( __window_list, __window_info_t *, win_info )
             lua_rawgeti( _l, LUA_REGISTRYINDEX, win_info->refID );
-            lua_getfield( _l, -1, "on_update" );
+            lua_getfield( _l, -1, "onUpdate" );
             if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
                 lua_pushvalue(_l,-2);
                 ex_lua_pcall( _l, 1, 0, idx ); 
@@ -422,7 +430,7 @@ static void __event_loop ( lua_State *_l ) {
             }
         ex_array_each_end
 
-        // draw one frame [on_repaint]
+        // draw one frame [onRepaint]
         ex_array_each ( __window_list, __window_info_t *, win_info )
             if ( win_info->dirty ) {
                 // clear background
@@ -433,9 +441,9 @@ static void __event_loop ( lua_State *_l ) {
                                         0xFF );
                 SDL_RenderClear(win_info->sdl_renderer);
 
-                // on_repaint
+                // onRepaint
                 lua_rawgeti( _l, LUA_REGISTRYINDEX, win_info->refID );
-                lua_getfield( _l, -1, "on_repaint" );
+                lua_getfield( _l, -1, "onRepaint" );
                 if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
                     lua_pushvalue(_l,-2);
                     ex_lua_pcall( _l, 1, 0, idx ); 
@@ -502,7 +510,7 @@ static void __wiz_deinit ( lua_State *_l ) {
     }
     ex_array_free ( __window_list );
 
-    // call wiz.on_exit()
+    // call wiz.onExit()
     __lua_wiz_on_exit (_l);
 }
 

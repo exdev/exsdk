@@ -1,7 +1,7 @@
 -- ======================================================================================
 -- File         : window.lua
 -- Author       : Wu Jie 
--- Last Change  : 05/07/2013 | 18:02:22 PM | Tuesday,May
+-- Last Change  : 12/09/2013 | 11:31:32 AM | Monday,December
 -- Description  : 
 -- ======================================================================================
 
@@ -50,11 +50,12 @@ local window = class ({
     -- system events
     --/////////////////////////////////////////////////////////////////////////////
 
-    -- on_update ( _self )
-    -- on_repaint ( _self )
-    -- on_resize ( _self, _w, _h )
-    -- on_focus ( _self )
-    -- on_unfocus ( _self )
+    -- onUpdate ( _self )
+    -- onRepaint ( _self )
+    -- onResize ( _self, _w, _h )
+    -- onFocus ( _self )
+    -- onUnfocus ( _self )
+    -- onDestroy ( _self )
 }) 
 __M.window = window
 

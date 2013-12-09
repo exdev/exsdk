@@ -1,7 +1,7 @@
 -- ======================================================================================
--- File         : texture_importer.lua
+-- File         : fontImporter.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/18/2013 | 17:33:43 PM | Monday,February
+-- Last Change  : 12/09/2013 | 11:28:34 AM | Monday,December
 -- Description  : 
 -- ======================================================================================
 
@@ -11,8 +11,8 @@ local __M = {}
 -- 
 --/////////////////////////////////////////////////////////////////////////////
 
-local texture_importer = wiz.importer.extend ({
-    __typename = "texture_importer",
+local fontImporter = wiz.importer.extend ({
+    __typename = "fontImporter",
 
     -- constructor & destructor
     __init = function ( _self, _path )
@@ -25,10 +25,7 @@ local texture_importer = wiz.importer.extend ({
     -- properties
     --/////////////////////////////////////////////////////////////////////////////
 
-    textureFormat = "ARGB32",
-    writable = false,
-    filterMode = "Bilinear",
-    wrapMode = "Clamp",
+    size = 16,
 
     --/////////////////////////////////////////////////////////////////////////////
     -- methods
@@ -39,14 +36,14 @@ local texture_importer = wiz.importer.extend ({
     -- ------------------------------------------------------------------ 
 
     exec = function (_self)
-        local tex = ex.texture.new()
-        local cptr = ex_c.texture_load ( wiz.sys_path(_self.path) )
-        tex._cptr = cptr
+        local fnt = ex.font.new()
+        local cptr = ex_c.font_load ( wiz.fsysPath(_self.path), _self.size )
+        fnt._cptr = cptr
 
-        return tex
+        return fnt
     end,
 })
-__M.texture_importer = texture_importer
+__M.fontImporter = fontImporter
 
 --/////////////////////////////////////////////////////////////////////////////
 --

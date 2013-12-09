@@ -9,26 +9,26 @@
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
 
-local function parse_args ( _arguments, _options ) 
+local function parseArgs ( _arguments, _options ) 
 end
 
 --/////////////////////////////////////////////////////////////////////////////
 -- execute
 --/////////////////////////////////////////////////////////////////////////////
 
-parse_args ( wiz.arguments, {
+parseArgs ( wiz.arguments, {
     -- { "app" },
 } )
 
 -- test_app
-local app_name = "test_graphics"
-local app_path = ""
+local appName = "test_graphics"
+local appPath = ""
 
 -- if wiz.platform == "windows" then
---     app_path = string.format( "d:/dev/exdev/exsdk/examples/%s/", app_name ) 
+--     appPath = string.format( "d:/dev/exdev/exsdk/examples/%s/", appName ) 
 -- elseif wiz.platform == "macosx" then
---     app_path = string.format( "/Users/Johnny/exdev/exsdk/examples/%s/", app_name ) 
+--     appPath = string.format( "/Users/Johnny/exdev/exsdk/examples/%s/", appName ) 
 -- end
-app_path = string.format( "../../../../../examples/%s/", app_name ) 
+appPath = string.format( "../../../../../examples/%s/", appName ) 
 
-wiz:open_app(app_path)
+wiz:openApp(appPath)

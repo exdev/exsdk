@@ -46,7 +46,7 @@ local bitmapfont = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    get_kerning = function ( _self, _first, _second )
+    getKerning = function ( _self, _first, _second )
         for i=1,#_self.kerningInfos do
             local kerningInfo = _self.kerningInfos[i]
             if kerningInfo.first == _first and 

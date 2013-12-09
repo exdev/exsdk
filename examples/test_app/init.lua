@@ -17,7 +17,7 @@ test = wiz.dofile("test_layout.lua")
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-wiz.on_init = function () 
+wiz.onInit = function () 
     print ( "" )
     print ( "=======================" )
     print ( "start" )
@@ -58,7 +58,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-wiz.on_exit = function () 
+wiz.onExit = function () 
     wiz:close_app()
 
     print ( "" )

@@ -8,6 +8,14 @@
 local __M = {}
 
 --/////////////////////////////////////////////////////////////////////////////
+-- events
+--/////////////////////////////////////////////////////////////////////////////
+
+-- onInit
+-- onClose
+-- onExit
+
+--/////////////////////////////////////////////////////////////////////////////
 -- base functions
 --/////////////////////////////////////////////////////////////////////////////
 
@@ -36,59 +44,59 @@ __M.arguments = arguments
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local open_app = function ( _self, _path )
+local openApp = function ( _self, _path )
     wiz_c.open_app(_path)
     wiz.dofile("init.lua") -- FIXME NOTE: right now we only allow one app running.
 
-    if _self.on_init ~= nil then
-        _self.on_init()
+    if _self.onInit ~= nil then
+        _self.onInit()
     end
 end
-__M.open_app = open_app
+__M.openApp = openApp
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local close_app = function ( _self )
-    if _self.on_close ~= nil then
-        _self.on_close()
+local closeApp = function ( _self )
+    if _self.onClose ~= nil then
+        _self.onClose()
     end
     wiz_c.close_app()
 end
-__M.close_app = close_app
+__M.closeApp = closeApp
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- path can recognized by ex_fsys
 -- ------------------------------------------------------------------ 
 
-local function fsys_path (_path)
+local function fsysPath (_path)
     return path.join("__app__",_path)
 end
-__M.fsys_path = fsys_path
+__M.fsysPath = fsysPath
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- *full*path can recognized by operating system
 -- ------------------------------------------------------------------ 
 
-local function sys_path (_path)
-    local fpath = fsys_path(_path)
+local function sysPath (_path)
+    local fpath = fsysPath(_path)
     if ex_c.fsys_exists(fpath) then
         return path.join( ex_c.fsys_realdir(fpath), _path )
     end
 
     error ( "Can't get the real path by %s", _path )
 end
-__M.sys_path = sys_path
+__M.sysPath = sysPath
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
 local function exists ( _path )
-    return ex_c.fsys_exists( fsys_path(_path) )
+    return ex_c.fsys_exists( fsysPath(_path) )
 end
 __M.exists = exists
 
@@ -96,22 +104,22 @@ __M.exists = exists
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function files_in (_path)
-    local fpath = fsys_path(_path)
+local function filesIn (_path)
+    local fpath = fsysPath(_path)
     if ex_c.fsys_exists(fpath) then
         return ex_c.fsys_files_in(fpath)
     end
 
     error ( "Can't get the files at path %s", _path )
 end
-__M.files_in = files_in
+__M.filesIn = filesIn
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
 local function dofile (_path)
-    local fpath = fsys_path(_path)
+    local fpath = fsysPath(_path)
     if ex_c.fsys_exists(fpath) == false then
         error ( "File not found %s", _path )
     end

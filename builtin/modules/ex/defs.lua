@@ -15,23 +15,23 @@ local __M = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local blend_op = {
+local blendOP = {
     add = 0,
-    src_minus_dest = 1,
-    dest_minus_src = 2,
+    srcMinusDest = 1,
+    destMinusSrc = 2,
 } 
-__M.blend_op = blend_op
+__M.blendOp = blendOp
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local blend_mode = {
+local blendMode = {
     zero = 0,
     one = 1,
     alpha = 2,
-    inverse_alpha = 3,
+    inverseAlpha = 3,
 }
-__M.blend_mode = blend_mode
+__M.blendMode = blendMode
 
 return __M

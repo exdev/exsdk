@@ -1,7 +1,7 @@
 -- ======================================================================================
--- File         : bitmapfont_importer.lua
+-- File         : bitmapfontImporter.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/20/2013 | 13:48:36 PM | Wednesday,February
+-- Last Change  : 12/09/2013 | 11:27:18 AM | Monday,December
 -- Description  : 
 -- ======================================================================================
 
@@ -15,7 +15,7 @@ local __M = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function create_pattern () 
+local function createPattern () 
     local space = lpeg.space^0
     local name = lpeg.C(lpeg.alpha^1) * space
     local range = lpeg.graph - lpeg.S("\"")
@@ -43,8 +43,8 @@ end
 -- 
 --/////////////////////////////////////////////////////////////////////////////
 
-local bitmapfont_importer = wiz.importer.extend ({
-    __typename = "bitmapfont_importer",
+local bitmapfontImporter = wiz.importer.extend ({
+    __typename = "bitmapfontImporter",
 
     -- constructor & destructor
     __init = function ( _self, _path )
@@ -58,7 +58,7 @@ local bitmapfont_importer = wiz.importer.extend ({
     --/////////////////////////////////////////////////////////////////////////////
 
     __static = {
-        _pattern = create_pattern(),
+        _pattern = createPattern(),
     },
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -75,14 +75,14 @@ local bitmapfont_importer = wiz.importer.extend ({
 
     exec = function (_self)
         local assets = wiz.assets
-        local files = wiz.files_in(_self.path)
+        local files = wiz.filesIn(_self.path)
         local file = nil
 
         -- get the first txt/fnt file
         for i=1,#files do
             local filename = files[i]
             if path.is( filename, {".txt",".fnt"} ) then
-                file = io.open( wiz.sys_path(path.join(_self.path,filename)), "r" )
+                file = io.open( wiz.sysPath(path.join(_self.path,filename)), "r" )
                 break
             end
         end
@@ -92,7 +92,7 @@ local bitmapfont_importer = wiz.importer.extend ({
         local bpfont = ex.bitmapfont.new()
 
         -- parse the bitmapfont txt file
-        local pattern = wiz.bitmapfont_importer._pattern
+        local pattern = wiz.bitmapfontImporter._pattern
         for line in file:lines() do 
             local t = pattern:match(line)
 
@@ -192,7 +192,7 @@ local bitmapfont_importer = wiz.importer.extend ({
         return bpfont
     end,
 })
-__M.bitmapfont_importer = bitmapfont_importer
+__M.bitmapfontImporter = bitmapfontImporter
 
 --/////////////////////////////////////////////////////////////////////////////
 --

@@ -13,11 +13,11 @@ local pi = math.pi
 -- constants
 --/////////////////////////////////////////////////////////////////////////////
 
-local two_pi = pi*2 
-__M.two_pi = two_pi
+local twoPI = pi*2 
+__M.twoPI = twoPI
 
-local half_pi = pi/2
-__M.half_pi = half_pi
+local halfPI = pi/2
+__M.halfPI = halfPI
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions

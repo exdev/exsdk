@@ -49,7 +49,7 @@ local texture = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    lock_rect = function ( _self, _rect )
+    lockRect = function ( _self, _rect )
         _self._lock_start_x = math.ceil(_rect.x)
         _self._lock_start_y = math.ceil(_rect.y)
         ex_c.texture_lock_rect ( _self._cptr, 
@@ -81,7 +81,7 @@ local texture = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    set_pixel = function ( _self, _x, _y, _color )
+    setPixel = function ( _self, _x, _y, _color )
         ex_c.texture_set_pixel ( _self._cptr, 
                                  _self._lock_start_x + _x, 
                                  _self._lock_start_y + _y, 

@@ -30,12 +30,12 @@ local font = class ({
         set = function (_self,_v) ex_c.font_set_size(_self._cptr,_v) end
     },
 
-    outline_type = property { 
+    outlineType = property { 
         get = function (_self) return ex_c.font_get_outline_type(_self._cptr) end, 
         set = function (_self,_v) ex_c.font_set_outline_type(_self._cptr,_v) end
     },
 
-    outline_thickness = property { 
+    outlineThickness = property { 
         get = function (_self) return ex_c.font_get_outline_thickness(_self._cptr) end, 
         set = function (_self,_v) ex_c.font_set_outline_thickness(_self._cptr,_v) end
     },

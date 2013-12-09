@@ -11,40 +11,40 @@ local __M = {}
 -- 
 --/////////////////////////////////////////////////////////////////////////////
 
-local path_to_asset = {}
+local pathToAsset = {}
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function get_importer ( _path )
+local function getImporter ( _path )
     if wiz.exists (_path) == false then
         error ( "Can't find file at " .. _path )
     end
 
     if path.is ( _path, {".bmp", ".jpg", ".png", ".tga"} ) then
-        return wiz.texture_importer(_path)
+        return wiz.textureImporter(_path)
     elseif path.is( _path, {".bft"} ) then
-        return wiz.bitmapfont_importer(_path)
+        return wiz.bitmapfontImporter(_path)
     elseif path.is( _path, {".ttf"} ) then
-        return wiz.font_importer(_path)
+        return wiz.fontImporter(_path)
     end
 end
-__M.get_importer = get_importer
+__M.getImporter = getImporter
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
 local function import ( _path )
-    local importer = get_importer(_path)
+    local importer = getImporter(_path)
     local asset = nil
     if importer then
         asset = importer:exec()
     end
 
     if asset then
-        path_to_asset[_path] = asset
+        pathToAsset[_path] = asset
     end
 
     return asset
@@ -56,7 +56,7 @@ __M.import = import
 -- ------------------------------------------------------------------ 
 
 local function load ( _path )
-    local asset = path_to_asset[_path]
+    local asset = pathToAsset[_path]
     if asset ~= nil then
         return asset
     end

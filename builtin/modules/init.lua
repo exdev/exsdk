@@ -5,27 +5,27 @@
 -- Description  : 
 -- ======================================================================================
 
-cur_module_path = ""
-cur_module_name = ""
-cur_module = {}
+curModulePath = ""
+curModuleName = ""
+curModule = {}
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
 function module_add ( _fileName, _subName )
-    local mod = cur_module
+    local mod = curModule
     if _subName ~= nil then
-        mod = cur_module[_subName]
+        mod = curModule[_subName]
         if mod == nil or type(mod) ~= "table" then 
             mod = {}
-            cur_module[_subName] = mod
+            curModule[_subName] = mod
         end
     end
 
     local lib = ex_c.lua_dofile ( string.format( "%s%s/%s", 
-                                                 cur_module_path,
-                                                 cur_module_name, 
+                                                 curModulePath,
+                                                 curModuleName, 
                                                  _fileName ) )
     -- for each var in lib, add to _module
     assert ( type(lib) == "table" )
@@ -39,15 +39,15 @@ end
 -- ------------------------------------------------------------------ 
 
 function module_load ( _path, _moduleName, _isglobal )
-    cur_module_path = _path
-    cur_module_name = _moduleName
+    curModulePath = _path
+    curModuleName = _moduleName
 
     if _isglobal then
-        cur_module = _G
+        curModule = _G
     else
-        cur_module = {}
-        _G[_moduleName] = cur_module
-        package.loaded[_moduleName] = cur_module 
+        curModule = {}
+        _G[_moduleName] = curModule
+        package.loaded[_moduleName] = curModule 
     end
 
     ex_c.lua_dofile( string.format( "%s%s/__module__.lua", 
@@ -66,12 +66,12 @@ lpeg.locale(lpeg) -- adds locale entries into 'lpeg' table
 module_load( "builtin/modules/", "base", true )
 module_load( "builtin/modules/", "ex" )
 
-module_load( "builtin/modules/", "ui" )
+-- module_load( "builtin/modules/", "ui" )
 module_load( "builtin/modules/", "wiz" )
 
 -- module_load( "builtin/modules/", "gamelib" )
 
 -- nil the internal value
-cur_module_path = nil
-cur_module_name = nil
-cur_module = nil
+curModulePath = nil
+curModuleName = nil
+curModule = nil

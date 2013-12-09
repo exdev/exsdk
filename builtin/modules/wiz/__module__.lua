@@ -8,11 +8,10 @@
 -- wiz
 module_add( "wiz.lua" )
 module_add( "window.lua" )
-module_add( "ui_window.lua" )
 
 -- basic
 module_add( "assets.lua", "assets" )
 module_add( "importer.lua" )
-module_add( "texture_importer.lua" )
-module_add( "bitmapfont_importer.lua" )
-module_add( "font_importer.lua" )
+module_add( "textureImporter.lua" )
+module_add( "bitmapfontImporter.lua" )
+module_add( "fontImporter.lua" )

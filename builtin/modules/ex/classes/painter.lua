@@ -55,7 +55,7 @@ local painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        filled_rect = function ( _dx, _dy, _dw, _dh )
+        filledRect = function ( _dx, _dy, _dw, _dh )
             ex_c.painter_draw_filled_rect ( _dx, _dy, _dw, _dh )
         end,
 
@@ -88,7 +88,7 @@ local painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        sliced_image = function ( _image, 
+        slicedImage = function ( _image, 
                                   _dx, _dy, _dw, _dh,
                                   _t, _r, _b, _l,
                                   _sx, _sy, _sw, _sh )
@@ -137,15 +137,15 @@ local painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        outline_text = function ( _text, _font, _color, _outline_color, _outline_thickness, _dx, _dy, _dw, _dh ) 
-            _font.outline_type = 1
-            _font.outline_thickness = _outline_thickness
+        outlineText = function ( _text, _font, _color, _outline_color, _outline_thickness, _dx, _dy, _dw, _dh ) 
+            _font.outlineType = 1
+            _font.outlineThickness = _outline_thickness
 
             ex.painter.color = _outline_color
             ex.painter.text( _text, _font, _dx, _dy, _dw, _dh ) 
 
-            _font.outline_type = 0
-            _font.outline_thickness = 0.0
+            _font.outlineType = 0
+            _font.outlineThickness = 0.0
 
             ex.painter.color = _color
             ex.painter.text( _text, _font, _dx, _dy, _dw, _dh ) 
@@ -155,8 +155,8 @@ local painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        shadow_text = function ( _text, _font, _color, _shadow_color, _offset, _dx, _dy, _dw, _dh ) 
-            _font.outline_type = 0
+        shadowText = function ( _text, _font, _color, _shadow_color, _offset, _dx, _dy, _dw, _dh ) 
+            _font.outlineType = 0
 
             ex.painter.color = _shadow_color
             ex.painter.text( _text, _font, _dx + _offset.x, _dy + _offset.y, _dw, _dh ) 
@@ -169,7 +169,7 @@ local painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        bitmap_text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
+        bitmapText = function ( _text, _font, _dx, _dy, _dw, _dh ) 
             checkarg(_text,"string")
             checkarg(_font,"bitmapfont")
             checkarg(_dx,"number")
@@ -198,7 +198,7 @@ local painter = class ({
 
                     -- adjust kerning
                     if i > 1 and _font.hasKerning then
-                        cur_x = cur_x + _font:get_kerning( last_id, id )
+                        cur_x = cur_x + _font:getKerning( last_id, id )
                     end
 
                     -- if this is space(32)
