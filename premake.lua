@@ -115,6 +115,7 @@ solution "exSDK"
             "ext/lua-5.2.2/",
             "ext/yajl-2.0.1/include/",
             "ext/utf8proc-1.1.5/",
+            "ext/expat-2.1.0/",
         } 
         if __PLATFORM == "macosx" then
         elseif __PLATFORM == "win32" then
@@ -134,6 +135,7 @@ solution "exSDK"
             "ext/lua_yajl/**.c",
             "ext/lpeg-0.10.2/**.c",
             "ext/utf8proc-1.1.5/utf8proc.c",
+            "ext/expat-2.1.0/**.c",
         }
         if __PLATFORM == "macosx" then
         elseif __PLATFORM == "win32" then
@@ -299,6 +301,7 @@ solution "exSDK"
             "ext/physfs-2.0.3/",
             "ext/lua-5.2.2/",
             "ext/utf8proc-1.1.5/",
+            "ext/expat-2.1.0/",
             "core/"
         } 
         if __PLATFORM == "macosx" then
