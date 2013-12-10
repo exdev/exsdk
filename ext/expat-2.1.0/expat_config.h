@@ -7,7 +7,7 @@
 
 // windows 32-bit 
 #if defined ( WIN32 ) || defined ( _WIN32 )
-    #include <expat_win32_config.h>
+    #include <winconfig.h>
 // linux
 #elif defined(linux) || defined(__linux) || defined(__linux__)
     #include <expat_linux_config.h>
