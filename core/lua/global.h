@@ -20,11 +20,9 @@ extern "C" {
 // lua core
 ///////////////////////////////////////////////////////////////////////////////
 
-extern int ex_lua_init ();
-extern void ex_lua_deinit ();
+extern struct lua_State *ex_lua_init ();
+extern void ex_lua_deinit ( struct lua_State * );
 extern bool ex_lua_initialized ();
-
-extern struct lua_State *ex_lua_main_state ();
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua op

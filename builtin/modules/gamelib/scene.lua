@@ -5,7 +5,8 @@
 -- Description  : 
 -- ======================================================================================
 
-local __M = {}
+ex.scene = ex.scene or {}
+local __M = ex.scene
 
 local __nodes = {}
 

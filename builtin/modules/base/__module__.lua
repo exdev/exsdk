@@ -5,23 +5,24 @@
 -- Description  : 
 -- ======================================================================================
 
---/////////////////////////////////////////////////////////////////////////////
---
---/////////////////////////////////////////////////////////////////////////////
+return {
+    -- name = nil, NOTE: DO NOT define name for global module
+    files = {
+        -- global extension
+        "global.lua",
+        "class.lua",
+        "defs.lua",
 
--- global extension
-module_add ( "global.lua" )
-module_add ( "class.lua" )
-module_add ( "defs.lua" )
+        -- lua internal extension
+        "debug.lua",
+        "table.lua",
+        "string.lua",
+        "os.lua",
+        "math/math.lua",
+        "math/ease.lua",
 
--- lua internal extension
-module_add ( "debug.lua", "debug" )
-module_add ( "table.lua", "table" )
-module_add ( "string.lua", "string" )
-module_add ( "os.lua", "os" )
-module_add ( "math/math.lua", "math" )
-module_add ( "math/ease.lua", "math" )
-
--- ex internal extension
-module_add ( "re.lua", "re" ) -- lpeg re module
-module_add ( "path.lua", "path" )
+        -- ex internal extension
+        "re.lua",
+        "path.lua",
+    }
+}

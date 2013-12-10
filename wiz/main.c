@@ -491,9 +491,11 @@ static void __wiz_init ( lua_State *_l, int _argc, char **_argv ) {
 
     lua_pop(_l, 1);  /* remove wiz_c table */
 
+    // TODO { 
     // execute main.lua if exists  
     if ( ex_fsys_exists ("main.lua") )
         ex_lua_dofile ( _l, "main.lua" );
+    // } TODO end 
 } 
 
 // ------------------------------------------------------------------ 
@@ -534,18 +536,18 @@ int main ( int _argc, char **_argv ) {
     }
     SDL_GL_SetAttribute( SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1 );
 
-    // init exsdk ( including allegro ) 
+    // init exsdk ( including ex_c lua module ) 
     if ( ex_sdk_init() != 0 ) {
         ex_log ( "Could not init exsdk!" );
         return 1;
     }
 
-    // get the lua main state
-    l = ex_lua_main_state();
+    // initialize ex_c module
+    l = ex_lua_init ();
 
     // load builtin modules
-    ex_log ( "[exSDK] Loading builtin modules" );
-    ex_lua_dofile ( l, "builtin/modules/init.lua" );
+    ex_log ( "[lua] Loading builtin modules..." );
+    ex_lua_dofile ( l, "builtin/modules/__init__.lua" );
 
     // init wiz
     __wiz_init ( l, _argc, _argv );
@@ -563,6 +565,9 @@ int main ( int _argc, char **_argv ) {
 
     // deinit wiz 
     __wiz_deinit(l);
+
+    ex_log ( "[lua] Closing..." );
+    ex_lua_deinit (l);
 
     // deinit exsdk 
     ex_sdk_deinit ();

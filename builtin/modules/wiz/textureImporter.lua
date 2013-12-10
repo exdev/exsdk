@@ -5,13 +5,11 @@
 -- Description  : 
 -- ======================================================================================
 
-local __M = {}
-
 --/////////////////////////////////////////////////////////////////////////////
 -- 
 --/////////////////////////////////////////////////////////////////////////////
 
-local textureImporter = wiz.importer.extend ({
+wiz.textureImporter = wiz.importer.extend ({
     __typename = "textureImporter",
 
     -- constructor & destructor
@@ -46,10 +44,3 @@ local textureImporter = wiz.importer.extend ({
         return tex
     end,
 })
-__M.textureImporter = textureImporter
-
---/////////////////////////////////////////////////////////////////////////////
---
---/////////////////////////////////////////////////////////////////////////////
-
-return __M

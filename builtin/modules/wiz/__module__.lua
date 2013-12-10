@@ -5,13 +5,20 @@
 -- Description  : 
 -- ======================================================================================
 
--- wiz
-module_add( "wiz.lua" )
-module_add( "window.lua" )
+wiz = wiz or {}
 
--- basic
-module_add( "assets.lua", "assets" )
-module_add( "importer.lua" )
-module_add( "textureImporter.lua" )
-module_add( "bitmapfontImporter.lua" )
-module_add( "fontImporter.lua" )
+return {
+    name = "wiz",
+    files = {
+        -- wiz
+        "wiz.lua",
+        "window.lua",
+
+        -- basic
+        "assets.lua",
+        "importer.lua",
+        "textureImporter.lua",
+        "bitmapfontImporter.lua",
+        "fontImporter.lua",
+    }
+}

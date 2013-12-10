@@ -95,7 +95,6 @@ The third field, x, tells whether the function may throw errors:
 
 #define BUF_SIZE 1024
 
-static lua_State *__L = NULL;
 static bool __initialized = false;
 
 // ------------------------------------------------------------------ 
@@ -169,11 +168,11 @@ extern int luaopen_yajl ( lua_State * );
 // ------------------------------------------------------------------ 
 
 static void __ex_lua_openlibs_ext ( lua_State *_l ) {
-    luaopen_lpeg (__L); // new lpeg table
+    luaopen_lpeg (_l); // new lpeg table
     ex_lua_add_module ( _l, "lpeg" );
     lua_pop(_l, 1);  /* remove module table */
 
-    luaopen_yajl (__L); // new yajl-json table
+    luaopen_yajl (_l); // new yajl-json table
     ex_lua_add_module ( _l, "json" );
     lua_pop(_l, 1);  /* remove module table */
 }
@@ -191,65 +190,65 @@ extern int luaopen_luaglu ( lua_State * );
 extern void __ex_value_type_pool_init ();
 // ------------------------------------------------------------------ 
 
-int ex_lua_init () {
+lua_State *ex_lua_init () {
+    lua_State *l = NULL;
 
     // the lua-interpreter already initialized.
     // the lua status already opened.
     ex_assert ( __initialized == false );
-    ex_assert( __L == NULL );
 
     if ( __initialized )
-        return -1;
+        return NULL;
 
     //
-    __L = luaL_newstate();
+    l = luaL_newstate();
     __ex_value_type_pool_init ();
 
     //
-    ex_log ( "[lua] Version %0.f", *lua_version(__L) );
+    ex_log ( "[lua] Version %0.f", *lua_version(l) );
 
     // open default lua libs
-    ex_log ( "[lua] Loading default library..." );
-    luaL_openlibs(__L);
+    ex_log ( "[lua] Loading default modules..." );
+    luaL_openlibs(l);
 
     // open ex_c libs
-    ex_log ( "[lua] Loading ex_c library..." );
-    lua_settop ( __L, 0 ); // clear the stack
-    __ex_lua_openlibs (__L);
+    ex_log ( "[lua] Loading ex_c modules..." );
+    lua_settop ( l, 0 ); // clear the stack
+    __ex_lua_openlibs (l);
 
     // open lpeg
-    ex_log ( "[lua] Loading lpeg library..." );
-    lua_settop ( __L, 0 ); // clear the stack
-    __ex_lua_openlibs_ext (__L);
+    ex_log ( "[lua] Loading lpeg modules..." );
+    lua_settop ( l, 0 ); // clear the stack
+    __ex_lua_openlibs_ext (l);
 
     // open luagl
 #if ( EX_PLATFORM != EX_IOS )
-    ex_log ( "[lua] Loading gl library..." );
-    lua_settop ( __L, 0 ); // clear the stack
-    luaopen_luagl (__L);
-    luaopen_luaglu (__L);
+    ex_log ( "[lua] Loading gl modules..." );
+    lua_settop ( l, 0 ); // clear the stack
+    luaopen_luagl (l);
+    luaopen_luaglu (l);
 #endif
 
     // clear the package.path and package.cpath
-    ex_lua_clear_path(__L);
-    ex_lua_clear_cpath(__L);
+    ex_lua_clear_path(l);
+    ex_lua_clear_cpath(l);
 
     // DELME { 
-    // ex_lua_add_path( __L, "./" );
-    // ex_lua_add_cpath( __L, "./" );
+    // ex_lua_add_path( l, "./" );
+    // ex_lua_add_cpath( l, "./" );
     // {
     //     char **mounts = ex_fsys_mounts();
     //     char **i;
     //     for ( i = mounts; *i != NULL; ++i  ) {
-    //         ex_lua_add_path( __L, *i );
-    //         ex_lua_add_cpath( __L, *i );
+    //         ex_lua_add_path( l, *i );
+    //         ex_lua_add_cpath( l, *i );
     //     }
     //     ex_fsys_free_list(mounts);
     // }
     // } DELME end 
 
     __initialized = true;
-    return 0;
+    return l;
 }
 
 // ------------------------------------------------------------------ 
@@ -257,20 +256,20 @@ int ex_lua_init () {
 extern void __ex_value_type_pool_deinit ();
 // ------------------------------------------------------------------ 
 
-void ex_lua_deinit () {
+void ex_lua_deinit ( lua_State *_l ) {
     ex_assert ( __initialized );
 
     if ( __initialized == false )
         return;
 
     // before close modules, force a complete garbage collection in case of memory leak
-    lua_gc(__L, LUA_GCCOLLECT, 0);
-    lua_close(__L);
+    lua_gc(_l, LUA_GCCOLLECT, 0);
+    lua_close(_l);
 
     // 
     __ex_value_type_pool_deinit ();
 
-    __L = NULL;
+    _l = NULL;
     __initialized = false;
 }
 
@@ -281,12 +280,6 @@ void ex_lua_deinit () {
 bool ex_lua_initialized () { 
     return __initialized;
 }
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-lua_State *ex_lua_main_state () { return __L; }
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua op

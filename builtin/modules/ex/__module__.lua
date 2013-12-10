@@ -5,16 +5,23 @@
 -- Description  : 
 -- ======================================================================================
 
--- general
-module_add( "defs.lua" )
+ex = ex or {}
 
--- basic classes
-module_add( "classes/vec2f.lua" )
-module_add( "classes/rect.lua" )
-module_add( "classes/color4f.lua" )
-module_add( "classes/texture.lua" )
-module_add( "classes/bitmapfont.lua" )
-module_add( "classes/font.lua" )
+return {
+    name = "ex",
+    files = {
+        -- general
+        "defs.lua",
 
--- paint classes
-module_add( "classes/painter.lua" )
+        -- basic classes
+        "classes/vec2f.lua",
+        "classes/rect.lua",
+        "classes/color4f.lua",
+        "classes/texture.lua",
+        "classes/bitmapfont.lua",
+        "classes/font.lua",
+
+        -- paint classes
+        "classes/painter.lua",
+    }
+}

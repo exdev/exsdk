@@ -5,9 +5,16 @@
 -- Description  : 
 -- ======================================================================================
 
--- classes
-module_add( "classes/node.lua" )
-module_add( "classes/component.lua" )
+ex = ex or {}
 
---
-module_add( "scene.lua", "scene" )
+return {
+    name = "ex",
+    files = {
+        -- classes
+        "classes/node.lua",
+        "classes/component.lua",
+
+        -- scene
+        "scene.lua",
+    }
+}
