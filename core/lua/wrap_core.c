@@ -74,11 +74,11 @@ static int __lua_load_module ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static const luaL_Reg lib[] = {
-    { "lua_dump_stack",     ex_lua_dump_stack },
-    { "lua_total_memory",   ex_lua_totoal_memory },
-    { "lua_dofile",         __lua_dofile },
-    { "lua_init_modules",   __lua_init_modules },
-    { "lua_load_module",    __lua_load_module },
+    { "dump_stack",     ex_lua_dump_stack },
+    { "total_memory",   ex_lua_totoal_memory },
+    { "dofile",         __lua_dofile },
+    { "init_modules",   __lua_init_modules },
+    { "load_module",    __lua_load_module },
     { NULL, NULL }
 };
 

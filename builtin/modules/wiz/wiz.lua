@@ -124,7 +124,7 @@ local function dofile (_path)
         error ( "File not found %s", _path )
     end
 
-    return ex_c.lua_dofile (fpath)
+    return ex_c.dofile (fpath)
 end
 __M.dofile = dofile
 

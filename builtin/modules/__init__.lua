@@ -13,10 +13,10 @@
 
 function load_module ( _path )
     local path = string.format( "%s/%s", ex_c.cwd, _path )
-    local m = ex_c.lua_dofile( string.format( "%s/__module__.lua", path ) )
+    local m = ex_c.dofile( string.format( "%s/__module__.lua", path ) )
 
     for i=1,#m.files do
-        ex_c.lua_dofile( string.format( "%s/%s", path, m.files[i] ) )
+        ex_c.dofile( string.format( "%s/%s", path, m.files[i] ) )
     end
 
     if m.name ~= nil then
