@@ -12,6 +12,7 @@
 -- ------------------------------------------------------------------ 
 
 function load_module ( _path )
+    -- NOTE: you can not use path.join here, because the base module is not loaded yet
     local path = string.format( "%s/%s", ex_c.cwd, _path )
     local m = ex_c.dofile( string.format( "%s/__module__.lua", path ) )
 

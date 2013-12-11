@@ -5,19 +5,12 @@
 -- Description  : 
 -- ======================================================================================
 
-math = math or {}
-local __M = math
-local pi = math.pi
-
 --/////////////////////////////////////////////////////////////////////////////
 -- properties
 --/////////////////////////////////////////////////////////////////////////////
 
-local twoPI = pi*2 
-__M.twoPI = twoPI
-
-local halfPI = pi/2
-__M.halfPI = halfPI
+math.twoPI = math.pi*2 
+math.halfPI = math.pi/2
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions
@@ -27,22 +20,20 @@ __M.halfPI = halfPI
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local clamp = function ( _val, _min, _max ) 
+function math.clamp ( _val, _min, _max ) 
     if _val > _max then return _max end 
     if _val < _min then return _min end 
     return _val
 end
-__M.clamp = clamp
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local lerp = function ( _src, _dest, _ratio )
+function math.lerp ( _src, _dest, _ratio )
     assert ( type(_ratio) == "number", "Type error: _ratio is not a number" )
     return _src * (1.0 - _ratio) + _dest * _ratio 
 end
-__M.lerp = lerp
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -52,7 +43,7 @@ __M.lerp = lerp
 -- drop_item = item[gen_idx()]
 -- ------------------------------------------------------------------ 
 
-local probability = function ( _weights )
+function math.probability ( _weights )
     local sum = 0.0
     local cdf = {}
 
@@ -77,10 +68,3 @@ local probability = function ( _weights )
         return -1
     end
 end
-__M.probability = probability
-
---/////////////////////////////////////////////////////////////////////////////
---
---/////////////////////////////////////////////////////////////////////////////
-
-return __M

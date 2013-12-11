@@ -6,7 +6,6 @@
 -- ======================================================================================
 
 path = path or {}
-local __M = path
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions
@@ -20,7 +19,7 @@ local sep = "/"
 if os.platform == "windows" then
     sep = "\\"
 end
-__M.sep = sep
+path.sep = sep
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -33,7 +32,7 @@ __M.sep = sep
 --      "foobar/" ==> "foobar/" 
 -- ------------------------------------------------------------------ 
 
-local function dirname (_p)
+function path.dirname (_p)
     local i = _p:findlast("/", true)
     if i then
         if i > 1 then i = i - 1 end
@@ -42,7 +41,6 @@ local function dirname (_p)
         return "."
     end
 end
-__M.dirname = dirname
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -54,7 +52,7 @@ __M.dirname = dirname
 --      "foobar/" ==> "" 
 -- ------------------------------------------------------------------ 
 
-local function extname (_p) 
+function path.extname (_p) 
     local i = _p:findlast(".", true)
     if i then
         return _p:sub(i)
@@ -62,7 +60,6 @@ local function extname (_p)
         return ""
     end
 end
-__M.extname = extname
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -74,7 +71,7 @@ __M.extname = extname
 --      "foobar/" ==> "" 
 -- ------------------------------------------------------------------ 
 
-local function filename (_p)
+function path.filename (_p)
     local i = _p:findlast("[/\\]")
     if i then
         return _p:sub(i + 1)
@@ -82,7 +79,6 @@ local function filename (_p)
         return _p
     end
 end
-__M.filename = filename
 
 -- ------------------------------------------------------------------ 
 -- Desc: filename without extension
@@ -94,8 +90,8 @@ __M.filename = filename
 --      "foobar/" ==> "" 
 -- ------------------------------------------------------------------ 
 
-local function basename (_p) 
-    local name = filename(_p)
+function path.basename (_p) 
+    local name = path.filename(_p)
     local i = name:findlast(".", true)
     if i then
         return name:sub(1,i-1)
@@ -103,7 +99,6 @@ local function basename (_p)
         return name
     end
 end
-__M.basename = basename
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -111,7 +106,7 @@ __M.basename = basename
 --          ==> "assets\\foo\\bar\\foobar.txt" 
 -- ------------------------------------------------------------------ 
 
-local function translate (_p, _sep)
+function path.translate (_p, _sep)
     if _sep == nil then
         if ex.platform == "windows" then
             _sep = "\\"
@@ -121,13 +116,12 @@ local function translate (_p, _sep)
     end
     return _p:gsub("[/\\]", _sep)
 end
-__M.translate = translate
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function join (_p1, _p2)
+function path.join (_p1, _p2)
     _p1 = _p1 or ""
 
     if not _p2 then
@@ -141,25 +135,16 @@ local function join (_p1, _p2)
 
     return _p1 .. _p2
 end
-__M.join = join
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function is ( _fname, _ext_list )
-    local ext = extname(_fname)
+function path.is ( _fname, _ext_list )
+    local ext = path.extname(_fname)
     if type(_ext_list) == "string" then 
         return ext == _ext_list
     else
         return table.contains(_ext_list,ext)
     end
 end
-__M.is = is
-
---/////////////////////////////////////////////////////////////////////////////
--- 
---/////////////////////////////////////////////////////////////////////////////
-
-return __M
-

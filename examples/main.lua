@@ -21,7 +21,7 @@ parseArgs ( wiz.arguments, {
 } )
 
 -- test_app
-local appName = "test_runtime_update"
+local appName = "test_graphics"
 local appPath = ""
 
 -- if wiz.platform == "windows" then

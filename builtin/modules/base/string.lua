@@ -5,9 +5,6 @@
 -- Description  : 
 -- ======================================================================================
 
-string = string or {}
-local __M = string
-
 --/////////////////////////////////////////////////////////////////////////////
 -- base functions
 --/////////////////////////////////////////////////////////////////////////////
@@ -16,7 +13,7 @@ local __M = string
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function findlast ( _s, _pattern, _plain )
+function string.findlast ( _s, _pattern, _plain )
     local curr = 0
 
     repeat
@@ -28,32 +25,23 @@ function findlast ( _s, _pattern, _plain )
         return curr
     end	
 end
-__M.findlast = findlast
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function split ( _s, _pattern )
+function string.split ( _s, _pattern )
     local list = {}
-    for w in string.gmatch(_s, "[^".._pattern.."]+") do
+    for w in _s:gmatch("[^".._pattern.."]+") do
         list[#list+1] = w
     end
     return list
 end
-__M.split = split
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function trim ( _s )
+function string.trim ( _s )
     return _s:match( "^%s*(.-)%s*$" )
 end
-__M.trim = trim
-
---/////////////////////////////////////////////////////////////////////////////
--- 
---/////////////////////////////////////////////////////////////////////////////
-
-return __M

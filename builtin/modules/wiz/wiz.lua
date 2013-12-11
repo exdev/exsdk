@@ -5,8 +5,6 @@
 -- Description  : 
 -- ======================================================================================
 
-local __M = wiz
-
 --/////////////////////////////////////////////////////////////////////////////
 -- events
 --/////////////////////////////////////////////////////////////////////////////
@@ -23,28 +21,25 @@ local __M = wiz
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local platform = ex_c.platform
-__M.platform = platform
+wiz.platform = ex_c.platform
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local cwd = ex_c.fsys_app_dir()
-__M.cwd = cwd
+wiz.cwd = ex_c.fsys_app_dir()
 
 -- ------------------------------------------------------------------ 
 -- Desc: the arguments will be set by exsdk through __lua_wiz_init()
 -- ------------------------------------------------------------------ 
 
-local arguments = {}
-__M.arguments = arguments
+wiz.arguments = {}
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local openApp = function ( _self, _path )
+function wiz.openApp ( _self, _path )
     wiz_c.open_app(_path)
     wiz.dofile("init.lua") -- FIXME NOTE: right now we only allow one app running.
 
@@ -52,84 +47,71 @@ local openApp = function ( _self, _path )
         _self.onInit()
     end
 end
-__M.openApp = openApp
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local closeApp = function ( _self )
+function wiz.closeApp ( _self )
     if _self.onClose ~= nil then
         _self.onClose()
     end
     wiz_c.close_app()
 end
-__M.closeApp = closeApp
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- path can recognized by ex_fsys
 -- ------------------------------------------------------------------ 
 
-local function fsysPath (_path)
+function wiz.fsysPath (_path)
     return path.join("__app__",_path)
 end
-__M.fsysPath = fsysPath
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- *full*path can recognized by operating system
 -- ------------------------------------------------------------------ 
 
-local function sysPath (_path)
-    local fpath = fsysPath(_path)
+function wiz.sysPath (_path)
+    local fpath = wiz.fsysPath(_path)
     if ex_c.fsys_exists(fpath) then
         return path.join( ex_c.fsys_realdir(fpath), _path )
     end
 
     error ( "Can't get the real path by %s", _path )
 end
-__M.sysPath = sysPath
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function exists ( _path )
-    return ex_c.fsys_exists( fsysPath(_path) )
+function wiz.exists ( _path )
+    return ex_c.fsys_exists( wiz.fsysPath(_path) )
 end
-__M.exists = exists
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function filesIn (_path)
-    local fpath = fsysPath(_path)
+function wiz.filesIn (_path)
+    local fpath = wiz.fsysPath(_path)
     if ex_c.fsys_exists(fpath) then
         return ex_c.fsys_files_in(fpath)
     end
 
     error ( "Can't get the files at path %s", _path )
 end
-__M.filesIn = filesIn
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function dofile (_path)
-    local fpath = fsysPath(_path)
+function wiz.dofile (_path)
+    local fpath = wiz.fsysPath(_path)
     if ex_c.fsys_exists(fpath) == false then
         error ( "File not found %s", _path )
     end
 
     return ex_c.dofile (fpath)
 end
-__M.dofile = dofile
-
---/////////////////////////////////////////////////////////////////////////////
--- 
---/////////////////////////////////////////////////////////////////////////////
-
-return __M

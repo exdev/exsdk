@@ -6,7 +6,6 @@
 -- ======================================================================================
 
 debug = debug or {}
-local __M = debug
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions defines
@@ -45,11 +44,7 @@ indent is a first indentation (optional).
 --]]
 -- ------------------------------------------------------------------ 
 
-local function dump(_t, _name, _indent, _show_meta)
-    if type(_t) ~= "table" then 
-        return tostring(_t)
-    end
-
+function debug.dump(_t, _name, _indent, _show_meta)
     local cart     -- a container
     local autoref  -- for self references
 
@@ -142,10 +137,3 @@ local function dump(_t, _name, _indent, _show_meta)
     addtocart(_t, _name, _indent, {}, _name, _show_meta)
     print(cart .. autoref)
 end
-__M.dump = dump
-
---/////////////////////////////////////////////////////////////////////////////
--- 
---/////////////////////////////////////////////////////////////////////////////
-
-return __M

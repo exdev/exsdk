@@ -5,8 +5,6 @@
 -- Description  : 
 -- ======================================================================================
 
-local __M = _G
-
 local __classes = {}
 
 --/////////////////////////////////////////////////////////////////////////////
@@ -24,14 +22,13 @@ local __classes = {}
 -- }
 -- ------------------------------------------------------------------ 
 
-local property = setmetatable( {}, {
+property = setmetatable( {}, {
     __call = function ( _t, ... ) 
         local info = ... or {}
         info.__isproperty = true
         return info
     end
 } )
-__M.property = property
 
 --/////////////////////////////////////////////////////////////////////////////
 -- type-op
@@ -41,7 +38,7 @@ __M.property = property
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function typeof (_object)
+function typeof (_object)
     if type(_object) == "table" then
         -- this is an object
         if _object.__isinstance then 
@@ -50,26 +47,24 @@ local function typeof (_object)
     end
     return nil
 end
-__M.typeof = typeof
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function isclasstype (_class)
+function isclasstype (_class)
     local r = rawget(tp, "__isclass")
     if r == nil then 
         return false 
     end
     return r
 end
-__M.isclasstype = isclasstype
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function isclass (_object)
+function isclass (_object)
     local tp = typeof(_object)
     if tp and type(tp) == "table" then 
         local r = rawget(tp, "__isclass")
@@ -80,13 +75,12 @@ local function isclass (_object)
     end
     return false
 end
-__M.isclass = isclass
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function isvalue (_object)
+function isvalue (_object)
     local tp = typeof(_object)
     if tp and type(tp) == "table" then 
         local r = rawget(tp, "__isvalue")
@@ -97,13 +91,12 @@ local function isvalue (_object)
     end 
     return false
 end
-__M.isvalue = isvalue
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function isproperty (_v)
+function isproperty (_v)
     if type(_v) == "table" then 
         local r = rawget(_v, "__isproperty")
         if r == nil then 
@@ -113,7 +106,6 @@ local function isproperty (_v)
     end 
     return false 
 end
-__M.isproperty = isproperty
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -131,22 +123,20 @@ local function __childof ( _myclass,_superclass )
 end
 
 --
-local function ischildof ( _myclass, _superclass )
+function ischildof ( _myclass, _superclass )
     return __childof(_myclass,_superclass)
 end
-__M.ischildof = ischildof
 
 --
-local function issuperof ( _myclass, _subclass )
+function issuperof ( _myclass, _subclass )
 	return __childof(_subclass,_myclass)
 end
-__M.issuperof = issuperof
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function typename (_object)
+function typename (_object)
     if isclass(_object) then 
         local name = rawget(typeof(_object), "__typename")
         assert ( name ~= nil, "Can't find __typename define in your class." )
@@ -154,7 +144,6 @@ local function typename (_object)
     end
     return type(_object)
 end
-__M.typename = typename
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -167,7 +156,7 @@ local function __instantiate ( _class, ... )
 end
 
 --
-local function instantiate ( _class, ... )
+function instantiate ( _class, ... )
     local class_type = _class
 
     -- if the argument is class type name
@@ -178,13 +167,12 @@ local function instantiate ( _class, ... )
 
     return __instantiate( class_type, ... )
 end
-__M.instantiate = instantiate
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function deepcopy ( _v )
+function deepcopy ( _v )
     local lookup_table = {}
     local function _copy ( _v )
         if isvalue ( _v ) then
@@ -205,7 +193,6 @@ local function deepcopy ( _v )
     end
     return _copy(_v)
 end
-__M.deepcopy = deepcopy
 
 --/////////////////////////////////////////////////////////////////////////////
 -- classes functions
@@ -391,7 +378,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function class(...)
+function class(...)
     local base,super = ...
     assert( type(base) == "table", "The first parameter must be a table" )
     assert( base.__typename ~= nil, "Please define __typename for your class" )
@@ -478,10 +465,4 @@ local function class(...)
     end
     return setmetatable( base, metaclass )
 end
-__M.class = class
 
---/////////////////////////////////////////////////////////////////////////////
--- 
---/////////////////////////////////////////////////////////////////////////////
-
-return __M

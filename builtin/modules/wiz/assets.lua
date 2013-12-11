@@ -6,7 +6,6 @@
 -- ======================================================================================
 
 wiz.assets = wiz.assets or {}
-local __M = wiz.assets
 
 --/////////////////////////////////////////////////////////////////////////////
 -- 
@@ -18,7 +17,7 @@ local pathToAsset = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function getImporter ( _path )
+function wiz.assets.getImporter ( _path )
     if wiz.exists (_path) == false then
         error ( "Can't find file at " .. _path )
     end
@@ -31,14 +30,13 @@ local function getImporter ( _path )
         return wiz.fontImporter(_path)
     end
 end
-__M.getImporter = getImporter
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function import ( _path )
-    local importer = getImporter(_path)
+function wiz.assets.import ( _path )
+    local importer = wiz.assets.getImporter(_path)
     local asset = nil
     if importer then
         asset = importer:exec()
@@ -50,13 +48,12 @@ local function import ( _path )
 
     return asset
 end
-__M.import = import
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function load ( _path )
+function wiz.assets.load ( _path )
     local asset = pathToAsset[_path]
     if asset ~= nil then
         return asset
@@ -64,14 +61,8 @@ local function load ( _path )
 
     --
     print ( "[assets] load file: " .. _path )
-    asset = import(_path)
+    asset = wiz.assets.import(_path)
 
     return asset
 end
-__M.load = load
 
---/////////////////////////////////////////////////////////////////////////////
---
---/////////////////////////////////////////////////////////////////////////////
-
-return __M
