@@ -56,7 +56,7 @@ int __ex_lua_add_base ( lua_State *_l ) {
     // string
     lua_getglobal(_l,"string");
     luaL_setfuncs( _l, string_lib, 0 );
-    lua_pop(_l,1);
+    lua_pop(_l,1); // pop string
 
     // os
     lua_getglobal(_l,"os");
@@ -77,6 +77,7 @@ int __ex_lua_add_base ( lua_State *_l ) {
     lua_pushstring ( _l, "android" );
 #endif
     lua_setfield( _l, -2, "platform" );
+    lua_pop(_l,1); // pop os
 
     return 0;
 }

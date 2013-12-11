@@ -39,7 +39,12 @@ extern int ex_lua_set_cpath ( struct lua_State *_l, const char *_path );
 extern int ex_lua_add_cpath ( struct lua_State *_l, const char *_path );
 
 // module
+// add module will load table from lua stack, and add it by the modname you provide 
 extern void ex_lua_add_module ( struct lua_State *_l, const char *_modname );
+
+// init modules will execute __init__.lua under the _path
+extern int ex_lua_init_modules ( struct lua_State *_l, const char *_path );
+extern int ex_lua_load_module ( struct lua_State *_l, const char *_file );
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua interpreter op
@@ -47,6 +52,7 @@ extern void ex_lua_add_module ( struct lua_State *_l, const char *_modname );
 
 extern int ex_lua_pcall ( struct lua_State *_l, int _nargs, int _nresults, int _errfunc );
 extern int ex_lua_dofile ( struct lua_State *_l, const char *_filepath );
+extern int ex_lua_dofile_2 ( struct lua_State *_l, const char *_filepath, int _idx );
 extern int ex_lua_dostring ( struct lua_State *_l, const char *_fmt, ... );
 extern void ex_lua_run_interpretor ( struct lua_State *_l );
 

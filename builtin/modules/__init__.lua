@@ -12,10 +12,11 @@
 -- ------------------------------------------------------------------ 
 
 function load_module ( _path )
-    local m = ex_c.lua_dofile( string.format( "%s/__module__.lua", _path ) )
+    local path = string.format( "%s/%s", ex_c.cwd, _path )
+    local m = ex_c.lua_dofile( string.format( "%s/__module__.lua", path ) )
 
     for i=1,#m.files do
-        ex_c.lua_dofile( string.format( "%s/%s", _path, m.files[i] ) )
+        ex_c.lua_dofile( string.format( "%s/%s", path, m.files[i] ) )
     end
 
     if m.name ~= nil then
@@ -31,12 +32,12 @@ end
 lpeg.locale(lpeg) -- adds locale entries into 'lpeg' table
 
 -- init builtin modules
-load_module( "builtin/modules/base" )
-load_module( "builtin/modules/ex" )
+load_module( "base" )
+load_module( "ex" )
 
 -- init wiz 
--- load_module( "builtin/modules/ui" )
-load_module( "builtin/modules/wiz" )
+-- load_module( "ui" )
+load_module( "wiz" )
 
 -- init game engine
--- load_module( "builtin/modules/gamelib" )
+-- load_module( "gamelib" )

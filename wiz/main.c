@@ -90,7 +90,7 @@ void destroy_window ( lua_State *_l, int _refID ) {
     size_t i = 0;
     __window_info_t *win_info;
 
-    // error func
+    // push traceback function
     lua_pushcfunction( _l, ex_lua_trace_back );
     idx = lua_gettop(_l);
 
@@ -114,7 +114,7 @@ void destroy_window ( lua_State *_l, int _refID ) {
     else {
         lua_pop ( _l, 2 ); // pop win_info.refID
     }
-    lua_pop ( _l, 1 ); // pop error func
+    lua_pop ( _l, 1 ); // pop traceback function
 
     //
     ex_array_remove_at_fast ( __window_list, i );
@@ -217,7 +217,7 @@ static int __lua_wiz_init ( lua_State *_l, int _argc, char **_argv ) {
 static int __lua_wiz_on_exit ( lua_State *_l ) {
     int idx = -1;
 
-    // error func
+    // push traceback function
     lua_pushcfunction( _l, ex_lua_trace_back );
     idx = lua_gettop(_l);
 
@@ -235,7 +235,7 @@ static int __lua_wiz_on_exit ( lua_State *_l ) {
         lua_pop(_l,2);
     }
 
-    lua_pop(_l,1); // pop error func
+    lua_pop(_l,1); // pop traceback function
 
     return 0;
 }
@@ -306,7 +306,7 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
                 viewportRect.h = _event->window.data2;  
                 SDL_RenderSetViewport(win_info->sdl_renderer, &viewportRect);
 
-                // error func
+                // push traceback function
                 lua_pushcfunction( _l, ex_lua_trace_back );
                 idx = lua_gettop(_l);
 
@@ -323,14 +323,14 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
                 else {
                     lua_pop ( _l, 2 );
                 }
-                lua_pop ( _l, 1 ); // pop error func
+                lua_pop ( _l, 1 ); // pop traceback function
 
                 //
                 __repaint_window (win_info);
                 break;
 
             case SDL_WINDOWEVENT_FOCUS_GAINED:
-                // error func
+                // push traceback function
                 lua_pushcfunction( _l, ex_lua_trace_back );
                 idx = lua_gettop(_l);
 
@@ -345,13 +345,13 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
                 else {
                     lua_pop ( _l, 2 );
                 }
-                lua_pop ( _l, 1 ); // pop error func
+                lua_pop ( _l, 1 ); // pop traceback function
 
                 __repaint_window (win_info);
                 break;
 
             case SDL_WINDOWEVENT_FOCUS_LOST:
-                // error func
+                // push traceback function
                 lua_pushcfunction( _l, ex_lua_trace_back );
                 idx = lua_gettop(_l);
 
@@ -366,7 +366,7 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
                 else {
                     lua_pop ( _l, 2 );
                 }
-                lua_pop ( _l, 1 ); // pop error func
+                lua_pop ( _l, 1 ); // pop traceback function
 
                 __repaint_window (win_info);
                 break;
@@ -412,7 +412,7 @@ static void __event_loop ( lua_State *_l ) {
                 return;
         }
 
-        // push error func
+        // push traceback function
         lua_pushcfunction( _l, ex_lua_trace_back );
         idx = lua_gettop(_l);
 
@@ -462,7 +462,7 @@ static void __event_loop ( lua_State *_l ) {
             }
         ex_array_each_end
 
-        lua_pop ( _l, 1 ); // pop error func
+        lua_pop ( _l, 1 ); // pop traceback function
 
         SDL_Delay(10);
     }
@@ -547,7 +547,10 @@ int main ( int _argc, char **_argv ) {
 
     // load builtin modules
     ex_log ( "[lua] Loading builtin modules..." );
-    ex_lua_dofile ( l, "builtin/modules/__init__.lua" );
+    if ( ex_lua_init_modules ( l, "builtin/modules" ) ) {
+        ex_log ( "Failed to init builtin modules" );
+        return 1;
+    }
 
     // init wiz
     __wiz_init ( l, _argc, _argv );

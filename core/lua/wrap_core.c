@@ -21,39 +21,20 @@
 
 // ------------------------------------------------------------------ 
 // Desc: 
-// NOTE: don't call ex_lua_dofile here, because ex_lua_dofile will push an error func to trace debug stack.
-//       if lua script call ex_c.lua_dofile with this functon, it will recursively push the error func handle and lead to error. 
 // ------------------------------------------------------------------ 
 
 static int __lua_dofile ( lua_State *_l ) {
     const char *path;
     int status;
-    ex_file_t *file;
-    size_t buf_size;
-    void *buffer;
 
     ex_lua_check_nargs(_l,1);
     path = luaL_checkstring(_l,1);
 
-    // open the file
-    file = ex_fsys_fopen_r(path);
-    if ( file == NULL ) {
-        ex_log ( "[lua] Can't find the file %s", path );
-        return 1;
-    }
-
-    // get the file to the buffer we allocated.
-    buf_size = ex_fsys_fsize (file);
-    buffer = ex_malloc (buf_size);
-    ex_fsys_fread (file, buffer, buf_size );
-    ex_fsys_fclose(file);
-
-    // parse the buffer by lua interpreter & call the script
-    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, path ) || lua_pcall ( _l, 0, LUA_MULTRET, 0 );
-    ex_free(buffer);
-
+    // NOTE: don't call ex_lua_dofile here, because ex_lua_dofile will push 
+    //       an error func to trace debug stack. if lua script call ex_c.lua_dofile 
+    //       with this functon, it will recursively push the error func handle and lead to error. 
+    status = ex_lua_dofile_2( _l, path, 0 );
     if ( status ) {
-        ex_lua_alert(_l);
         return status;
     }
 
@@ -65,15 +46,48 @@ static int __lua_dofile ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_init_modules ( lua_State *_l ) {
+    const char *path;
+    int status;
+
+    ex_lua_check_nargs(_l,1);
+    path = luaL_checkstring(_l,1);
+    status = ex_lua_init_modules (_l, path);
+    if ( status ) {
+        return status;
+    }
+
+    //
+    return lua_gettop(_l) - 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_load_module ( lua_State *_l ) {
+    return -1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg lib[] = {
     { "lua_dump_stack",     ex_lua_dump_stack },
     { "lua_total_memory",   ex_lua_totoal_memory },
     { "lua_dofile",         __lua_dofile },
+    { "lua_init_modules",   __lua_init_modules },
+    { "lua_load_module",    __lua_load_module },
     { NULL, NULL }
 };
 
 int __ex_lua_add_core ( lua_State *_l ) {
     luaL_setfuncs( _l, lib, 0 );
+
+    // ex_c.cwd = ""
+    lua_pushstring ( _l, "" );
+    lua_setfield( _l, -2, "cwd" );
 
     // ex_c.null = NULL
     lua_pushlightuserdata ( _l, NULL );
