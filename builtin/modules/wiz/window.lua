@@ -18,7 +18,6 @@ wiz.window = class ({
         checkarg(_h,"number")
 
         _self.id = wiz_c.create_window (_self,_w,_h)
-        _self.background = { 128, 128, 128 }
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -48,6 +47,7 @@ wiz.window = class ({
     -- system events
     --/////////////////////////////////////////////////////////////////////////////
 
+    -- onDestroy ( _self )
     -- onUpdate ( _self )
     -- onRepaint ( _self )
     -- onResize ( _self, _w, _h )

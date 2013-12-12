@@ -113,5 +113,5 @@ function wiz.dofile (_path)
         error ( "File not found %s", _path )
     end
 
-    return ex_c.dofile (fpath)
+    return ex_c.fsys_dofile (fpath)
 end

@@ -42,19 +42,22 @@ extern int ex_lua_add_cpath ( struct lua_State *_l, const char *_path );
 // add module will load table from lua stack, and add it by the modname you provide 
 extern void ex_lua_add_module ( struct lua_State *_l, const char *_modname );
 
-// init modules will execute __init__.lua under the _path
-extern int ex_lua_init_modules ( struct lua_State *_l, const char *_path );
-extern int ex_lua_load_module ( struct lua_State *_l, const char *_file );
+// fsys init modules will execute __init__.lua under the fsys path
+extern int ex_lua_fsys_init_modules ( struct lua_State *_l, const char *_fsys_path );
+extern int ex_lua_fsys_load_module ( struct lua_State *_l, const char *_fsys_file );
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua interpreter op
 ///////////////////////////////////////////////////////////////////////////////
 
 extern int ex_lua_pcall ( struct lua_State *_l, int _nargs, int _nresults, int _errfunc );
-extern int ex_lua_dofile ( struct lua_State *_l, const char *_filepath );
-extern int ex_lua_dofile_2 ( struct lua_State *_l, const char *_filepath, int _idx );
 extern int ex_lua_dostring ( struct lua_State *_l, const char *_fmt, ... );
 extern void ex_lua_run_interpretor ( struct lua_State *_l );
+
+extern int ex_lua_dofile ( struct lua_State *_l, const char *_fsys_filepath );
+
+extern int ex_lua_fsys_dofile ( struct lua_State *_l, const char *_fsys_filepath );
+extern int ex_lua_fsys_dofile_2 ( struct lua_State *_l, const char *_fsys_filepath, int _idx );
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua checks

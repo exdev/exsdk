@@ -427,26 +427,26 @@ void ex_lua_add_module ( lua_State *_l, const char *_modname ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_lua_init_modules ( lua_State *_l, const char *_path ) {
+int ex_lua_fsys_init_modules ( lua_State *_l, const char *_fsys_path ) {
     ex_str_t *filePath;
     // NOTE: we use idx because lua_dofile may have return value pushes on to the stack 
     int idx_ex_c, idx_cwd;
     int status;
 
-    // set ex_c.cwd to the _path 
+    // set ex_c.fsys_cwd to the _fsys_path 
     lua_getglobal ( _l, "ex_c" ); idx_ex_c = lua_gettop(_l);
-    lua_getfield ( _l, -1, "cwd" ); idx_cwd = lua_gettop(_l); // store the old cwd
-    lua_pushstring ( _l, _path );
-    lua_setfield ( _l, -3, "cwd" ); // ex_c.cwd = _path;
+    lua_getfield ( _l, -1, "fsys_cwd" ); idx_cwd = lua_gettop(_l); // store the old fsys_cwd
+    lua_pushstring ( _l, _fsys_path );
+    lua_setfield ( _l, -3, "fsys_cwd" ); // ex_c.fsys_cwd = _fsys_path;
 
-    // dofile ( "_path/__init__.lua" )
-    filePath = ex_str_allocf( "%s/__init__.lua", _path );
-    status = ex_lua_dofile ( _l, ex_cstr(filePath) );
+    // dofile ( "_fsys_path/__init__.lua" )
+    filePath = ex_str_allocf( "%s/__init__.lua", _fsys_path );
+    status = ex_lua_fsys_dofile ( _l, ex_cstr(filePath) );
 
-    // restore ex_c.cwd
+    // restore ex_c.fsys_cwd
     lua_pushvalue( _l, idx_cwd );
-    lua_setfield ( _l, idx_ex_c, "cwd" );
-    lua_remove(_l,idx_cwd); // remove cwd
+    lua_setfield ( _l, idx_ex_c, "fsys_cwd" );
+    lua_remove(_l,idx_cwd); // remove fsys_cwd
     lua_remove(_l,idx_ex_c); // remove ex_c
 
     ex_str_free(filePath);
@@ -458,7 +458,7 @@ int ex_lua_init_modules ( lua_State *_l, const char *_path ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_lua_load_module ( lua_State *_l, const char *_file ) {
+int ex_lua_fsys_load_module ( lua_State *_l, const char *_fsys_file ) {
     return -1;
 }
 
@@ -480,56 +480,6 @@ int ex_lua_pcall ( lua_State *_l, int _nargs, int _nresults, int _errfunc ) {
     }
 
     return 0;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-int ex_lua_dofile ( lua_State *_l, const char *_filepath ) {
-    int status;
-    int idx = -1;
-
-    lua_pushcfunction( _l, ex_lua_trace_back );     /* push traceback function */
-    idx = lua_gettop(_l);                           /* function index */
-    status = ex_lua_dofile_2( _l, _filepath, idx );
-    lua_remove(_l, idx);                            /* remove traceback function */
-
-    return status;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-int ex_lua_dofile_2 ( lua_State *_l, const char *_filepath, int _idx ) {
-    int status;
-    ex_file_t *file;
-    size_t buf_size;
-    void *buffer;
-
-    // open the file
-    file = ex_fsys_fopen_r(_filepath);
-    if ( file == NULL ) {
-        ex_log ( "[lua] Can't find the file %s", _filepath );
-        return 1;
-    }
-
-    // get the file to the buffer we allocated.
-    buf_size = ex_fsys_fsize (file);
-    buffer = ex_malloc (buf_size);
-    ex_fsys_fread (file, buffer, buf_size );
-    ex_fsys_fclose(file);
-
-    // parse the buffer by lua interpreter & call the script
-    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, _idx );
-    ex_free(buffer);
-    if ( status ) {
-        ex_lua_alert(_l);
-    }
-
-    //
-    return status;
 }
 
 // ------------------------------------------------------------------ 
@@ -588,6 +538,98 @@ void ex_lua_run_interpretor ( lua_State *_l ) {
             lua_pop(_l, 1); /* pop error message from the stack */
         }
     }
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_lua_dofile ( struct lua_State *_l, const char *_filepath ) {
+    int status;
+    int idx = -1;
+    FILE *file;
+    size_t buf_size;
+    void *buffer;
+
+    lua_pushcfunction( _l, ex_lua_trace_back );     /* push traceback function */
+    idx = lua_gettop(_l);                           /* function index */
+
+    // open the file
+    file = fopen (_filepath, "rb");
+    if ( file == NULL ) {
+        ex_log ( "[lua] Can't find the file %s", _filepath );
+        return 1;
+    }
+
+    // get the file to the buffer we allocated.
+    if ( fseek (file, 0, SEEK_END) == 0 ) {
+        buf_size = ftell(file);
+        fseek (file, 0, SEEK_SET);
+    }
+    buffer = ex_malloc (buf_size);
+    fread (buffer, buf_size, buf_size, file);
+    fclose(file);
+
+    // parse the buffer by lua interpreter & call the script
+    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, idx );
+    ex_free(buffer);
+    if ( status ) {
+        ex_lua_alert(_l);
+    }
+
+    lua_remove(_l, idx);                            /* remove traceback function */
+
+    return status;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_lua_fsys_dofile ( lua_State *_l, const char *_fsys_filepath ) {
+    int status;
+    int idx = -1;
+
+    lua_pushcfunction( _l, ex_lua_trace_back );     /* push traceback function */
+    idx = lua_gettop(_l);                           /* function index */
+    status = ex_lua_fsys_dofile_2( _l, _fsys_filepath, idx );
+    lua_remove(_l, idx);                            /* remove traceback function */
+
+    return status;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_lua_fsys_dofile_2 ( lua_State *_l, const char *_fsys_filepath, int _idx ) {
+    int status;
+    ex_file_t *file;
+    size_t buf_size;
+    void *buffer;
+
+    // open the file
+    file = ex_fsys_fopen_r(_fsys_filepath);
+    if ( file == NULL ) {
+        ex_log ( "[lua] Can't find the file %s", _fsys_filepath );
+        return 1;
+    }
+
+    // get the file to the buffer we allocated.
+    buf_size = ex_fsys_fsize (file);
+    buffer = ex_malloc (buf_size);
+    ex_fsys_fread (file, buffer, buf_size );
+    ex_fsys_fclose(file);
+
+    // parse the buffer by lua interpreter & call the script
+    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _fsys_filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, _idx );
+    ex_free(buffer);
+    if ( status ) {
+        ex_lua_alert(_l);
+    }
+
+    //
+    return status;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -679,7 +721,7 @@ static int __refID_init, __refID_deinit, __refID_update, __refID_render;
 // ------------------------------------------------------------------ 
 
 void ex_lua_parse_main ( struct lua_State *_l ) {
-    ex_lua_dofile ( _l, "__app__/main.lua" );
+    ex_lua_fsys_dofile ( _l, "__app__/main.lua" );
 
     lua_getglobal( _l, "init" );
     __refID_init = luaL_ref( _l, LUA_REGISTRYINDEX );

@@ -38,8 +38,8 @@ end
 
 --
 if __COMMAND == "update" then
-    copy_files ( "builtin", __DEST_DIR.."ex_wiz/debug/bin/" )
-    copy_files ( "builtin", __DEST_DIR.."ex_wiz/release/bin/" )
+    copy_files ( "builtin", __DEST_DIR.."wiz/debug/bin/" )
+    copy_files ( "builtin", __DEST_DIR.."wiz/release/bin/" )
     return
 end
 
@@ -333,13 +333,13 @@ solution "exSDK"
             flags { "Optimize" }    
 
     -- ======================================================== 
-    -- Project: ex_wiz
+    -- Project: wiz
     -- ======================================================== 
 
-    project "ex_wiz"
+    project "wiz"
         kind "ConsoleApp"
         language "C"
-        targetname "ex_wiz"
+        targetname "wiz"
 
         -- include
         includedirs {
@@ -413,24 +413,24 @@ solution "exSDK"
 
         -- configurations
         configuration "Debug"
-            objdir ( __DEST_DIR .. "ex_wiz/debug/objs/" )
-            targetdir ( __DEST_DIR .. "ex_wiz/debug/bin/" )
-            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex_wiz/debug/bin/" )
+            objdir ( __DEST_DIR .. "wiz/debug/objs/" )
+            targetdir ( __DEST_DIR .. "wiz/debug/bin/" )
+            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "wiz/debug/bin/" )
 
             defines { "DEBUG" }
             flags { "Symbols" }
 
         configuration "Release"
-            objdir ( __DEST_DIR .. "ex_wiz/release/objs/" )
-            targetdir ( __DEST_DIR .. "ex_wiz/release/bin/" )
-            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "ex_wiz/release/bin/" )
+            objdir ( __DEST_DIR .. "wiz/release/objs/" )
+            targetdir ( __DEST_DIR .. "wiz/release/bin/" )
+            -- debugdir ( __SCRIPT_DIR .. __DEST_DIR .. "wiz/release/bin/" )
 
             defines { "NDEBUG" }
             flags { "Optimize" }
 
         -- post copies
-        copy_files ( "builtin", __DEST_DIR.."ex_wiz/debug/bin/" )
-        copy_files ( "builtin", __DEST_DIR.."ex_wiz/release/bin/" )
+        copy_files ( "builtin", __DEST_DIR.."wiz/debug/bin/" )
+        copy_files ( "builtin", __DEST_DIR.."wiz/release/bin/" )
 
     -- ======================================================== 
     -- TEST

@@ -16,7 +16,7 @@
 #include <lualib.h>
 
 ///////////////////////////////////////////////////////////////////////////////
-// functions
+// fsys basic
 ///////////////////////////////////////////////////////////////////////////////
 
 // ------------------------------------------------------------------ 
@@ -115,21 +115,87 @@ static int __lua_fsys_files_in ( lua_State *_l ) {
     return 1;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// fsys lua script
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_fsys_dofile ( lua_State *_l ) {
+    const char *path;
+    int status;
+
+    ex_lua_check_nargs(_l,1);
+    path = luaL_checkstring(_l,1);
+
+    // NOTE: don't call ex_lua_dofile here, because ex_lua_dofile will push 
+    //       an error func to trace debug stack. if lua script call ex_c.lua_dofile 
+    //       with this functon, it will recursively push the error func handle and lead to error. 
+    status = ex_lua_fsys_dofile_2( _l, path, 0 );
+    if ( status ) {
+        return status;
+    }
+
+    //
+    return lua_gettop(_l) - 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_fsys_init_modules ( lua_State *_l ) {
+    const char *path;
+    int status;
+
+    ex_lua_check_nargs(_l,1);
+    path = luaL_checkstring(_l,1);
+    status = ex_lua_fsys_init_modules (_l, path);
+    if ( status ) {
+        return status;
+    }
+
+    //
+    return lua_gettop(_l) - 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_fsys_load_module ( lua_State *_l ) {
+    return -1;
+}
+
 // ------------------------------------------------------------------ 
 // Desc: 
 // ------------------------------------------------------------------ 
 
 static const luaL_Reg lib[] = {
+    // fsys basic
     { "fsys_app_dir",       __lua_fsys_app_dir },
     { "fsys_user_dir",      __lua_fsys_user_dir },
     { "fsys_writedir",      __lua_fsys_writedir },
     { "fsys_realdir",       __lua_fsys_realdir },
     { "fsys_exists",        __lua_fsys_exists },
     { "fsys_files_in",      __lua_fsys_files_in },
+
+    // fsys lua file process
+    { "fsys_dofile",         __lua_fsys_dofile },
+    { "fsys_init_modules",   __lua_fsys_init_modules },
+    { "fsys_load_module",    __lua_fsys_load_module },
+
     { NULL, NULL }
 };
 
 int __ex_lua_add_fsys ( lua_State *_l ) {
     luaL_setfuncs( _l, lib, 0 );
+
+    // ex_c.fsys_cwd = ""
+    lua_pushstring ( _l, "" );
+    lua_setfield( _l, -2, "fsys_cwd" );
+
     return 0;
 }

@@ -9,7 +9,7 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "exsdk.h"
+#include "wiz.h"
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -75,7 +75,7 @@ static const luaL_Reg lib[] = {
     { NULL, NULL }
 };
 
-int __ex_lua_add_app ( lua_State *_l ) {
+int __wiz_lua_add_app ( lua_State *_l ) {
     luaL_setfuncs( _l, lib, 0 );
     return 0;
 }
