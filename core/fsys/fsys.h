@@ -148,6 +148,9 @@ extern int ex_fsys_feof ( ex_file_t *_file );
 // Desc: 
 // ------------------------------------------------------------------ 
 
+extern const char *ex_os_getcwd ();
+extern void ex_os_setcwd ( const char *_path );
+
 extern bool ex_os_exists ( const char *_path );
 extern bool ex_os_isdir ( const char *_path );
 extern bool ex_os_issymlink ( const char *_path );

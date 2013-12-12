@@ -430,24 +430,20 @@ void ex_lua_add_module ( lua_State *_l, const char *_modname ) {
 int ex_lua_fsys_init_modules ( lua_State *_l, const char *_fsys_path ) {
     ex_str_t *filePath;
     // NOTE: we use idx because lua_dofile may have return value pushes on to the stack 
-    int idx_os, idx_cwd;
+    int idx_cwd;
     int status;
 
     // set os.cwd to the _fsys_path 
-    lua_getglobal ( _l, "os" ); idx_os = lua_gettop(_l);
-    lua_getfield ( _l, -1, "cwd" ); idx_cwd = lua_gettop(_l); // store the old cwd
-    lua_pushstring ( _l, _fsys_path );
-    lua_setfield ( _l, -3, "cwd" ); // os.cwd = _fsys_path;
+    lua_pushstring ( _l, ex_os_getcwd() ); idx_cwd = lua_gettop(_l); // store the old cwd
+    ex_os_setcwd(_fsys_path);
 
     // dofile ( "_fsys_path/__init__.lua" )
     filePath = ex_str_allocf( "%s/__init__.lua", _fsys_path );
     status = ex_lua_fsys_dofile ( _l, ex_cstr(filePath) );
 
-    // restore os.cwd
-    lua_pushvalue( _l, idx_cwd );
-    lua_setfield ( _l, idx_os, "cwd" );
+    // restore old cwd
+    ex_os_setcwd(lua_tostring(_l, idx_cwd));
     lua_remove(_l,idx_cwd); // remove cwd
-    lua_remove(_l,idx_os); // remove os
 
     ex_str_free(filePath);
 

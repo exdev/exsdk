@@ -16,7 +16,7 @@
 #include <lualib.h>
 
 ///////////////////////////////////////////////////////////////////////////////
-// functions
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 // ------------------------------------------------------------------ 
@@ -52,36 +52,67 @@ static const luaL_Reg string_lib[] = {
     { NULL, NULL }
 };
 
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_os_getcwd ( lua_State *_l ) {
+    lua_pushstring( _l, ex_os_getcwd() );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static const luaL_Reg os_lib[] = {
+    { "getcwd",     __lua_os_getcwd },
+    { NULL, NULL }
+};
+#if ( EX_PLATFORM == EX_WIN32 )
+    static const char *__platform_name = "windows";
+#elif ( EX_PLATFORM == EX_LINUX )
+    static const char *__platform_name = "linux";
+#elif ( EX_PLATFORM == EX_MACOSX )
+    static const char *__platform_name = "macosx";
+#elif ( EX_PLATFORM == EX_XENON )
+    static const char *__platform_name = "xbox360";
+#elif ( EX_PLATFORM == EX_PS3 )
+    static const char *__platform_name = "ps3";
+#elif ( EX_PLATFORM == EX_IOS )
+    static const char *__platform_name = "ios";
+#elif ( EX_PLATFORM == EX_ANDROID )
+    static const char *__platform_name = "android";
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+
 int __ex_lua_add_base ( lua_State *_l ) {
+    // ======================================================== 
     // string
+    // ======================================================== 
+
     lua_getglobal(_l,"string");
     luaL_setfuncs( _l, string_lib, 0 );
     lua_pop(_l,1); // pop string
 
+    // ======================================================== 
     // os
+    // ======================================================== 
+
     lua_getglobal(_l,"os");
+    luaL_setfuncs( _l, os_lib, 0 );
+
     // os.platform = "..."
-#if ( EX_PLATFORM == EX_WIN32 )
-    lua_pushstring ( _l, "windows" );
-#elif ( EX_PLATFORM == EX_LINUX )
-    lua_pushstring ( _l, "linux" );
-#elif ( EX_PLATFORM == EX_MACOSX )
-    lua_pushstring ( _l, "macosx" );
-#elif ( EX_PLATFORM == EX_XENON )
-    lua_pushstring ( _l, "xb360" );
-#elif ( EX_PLATFORM == EX_PS3 )
-    lua_pushstring ( _l, "ps3" );
-#elif ( EX_PLATFORM == EX_IOS )
-    lua_pushstring ( _l, "ios" );
-#elif ( EX_PLATFORM == EX_ANDROID )
-    lua_pushstring ( _l, "android" );
-#endif
+    lua_pushstring ( _l, __platform_name );
     lua_setfield( _l, -2, "platform" );
     lua_pop(_l,1); // pop os
-
-    // os.cwd = ""
-    lua_pushstring ( _l, "" );
-    lua_setfield( _l, -2, "cwd" );
 
     return 0;
 }
