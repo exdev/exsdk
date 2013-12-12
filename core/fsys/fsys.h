@@ -153,6 +153,16 @@ extern bool ex_os_isdir ( const char *_path );
 extern bool ex_os_issymlink ( const char *_path );
 extern bool ex_os_isfile ( const char *_path );
 
+extern ex_file_t *ex_os_fopen ( const char *_path, const char *_mode );
+extern int ex_os_fclose ( ex_file_t *_file );
+
+extern int ex_os_fseek ( ex_file_t *_file, size_t _pos );
+extern size_t ex_os_fsize ( ex_file_t *_file ); 
+extern size_t ex_os_ftell ( ex_file_t *_file ); 
+
+extern size_t ex_os_fread ( ex_file_t *_file, void *_buf, uint64 _size );
+extern size_t ex_os_fwrite ( ex_file_t *_file, const void *_buf, uint64 _size );
+
 // #################################################################################
 #endif // END FSYS_H_1358753184
 // #################################################################################

@@ -9,10 +9,9 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "SDL.h"
 #include "exsdk.h"
-
-// physfs
-#include <physfs.h>
+#include <physfs.h> // physfs
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -446,3 +445,58 @@ bool ex_os_isfile ( const char *_path ) {
     return (__PHYSFS_platformIsSymLink(_path) || __PHYSFS_platformIsDirectory(_path)) ? false : true;
 }
 
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+ex_file_t *ex_os_fopen ( const char *_path, const char *_mode ) {
+    return SDL_RWFromFile(_path, _mode);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_os_fclose ( ex_file_t *_file ) {
+    return SDL_RWclose((SDL_RWops *)_file);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_os_fseek ( ex_file_t *_file, size_t _pos ) {
+    return SDL_RWseek((SDL_RWops *)_file,0,_pos);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+size_t ex_os_fsize ( ex_file_t *_file ) {
+    return SDL_RWsize((SDL_RWops *)_file);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+size_t ex_os_ftell ( ex_file_t *_file ) {
+    return SDL_RWtell((SDL_RWops *)_file);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+size_t ex_os_fread ( ex_file_t *_file, void *_buf, uint64 _size ) {
+    return SDL_RWread( (SDL_RWops *)_file, _buf, _size, _size );
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+size_t ex_os_fwrite ( ex_file_t *_file, const void *_buf, uint64 _size ) {
+    return SDL_RWwrite( (SDL_RWops *)_file, _buf, _size, _size );
+}

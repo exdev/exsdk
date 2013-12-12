@@ -547,7 +547,7 @@ void ex_lua_run_interpretor ( lua_State *_l ) {
 int ex_lua_dofile ( struct lua_State *_l, const char *_filepath ) {
     int status;
     int idx = -1;
-    FILE *file;
+    ex_file_t *file;
     size_t buf_size;
     void *buffer;
 
@@ -555,20 +555,17 @@ int ex_lua_dofile ( struct lua_State *_l, const char *_filepath ) {
     idx = lua_gettop(_l);                           /* function index */
 
     // open the file
-    file = fopen (_filepath, "rb");
+    file = ex_os_fopen (_filepath, "rb");
     if ( file == NULL ) {
         ex_log ( "[lua] Can't find the file %s", _filepath );
         return 1;
     }
 
     // get the file to the buffer we allocated.
-    if ( fseek (file, 0, SEEK_END) == 0 ) {
-        buf_size = ftell(file);
-        fseek (file, 0, SEEK_SET);
-    }
+    buf_size = ex_os_fsize(file);
     buffer = ex_malloc (buf_size);
-    fread (buffer, buf_size, buf_size, file);
-    fclose(file);
+    ex_os_fread (file, buffer, buf_size);
+    ex_os_fclose(file);
 
     // parse the buffer by lua interpreter & call the script
     status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, idx );

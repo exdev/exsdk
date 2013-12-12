@@ -22,17 +22,17 @@ extern "C" {
 // wiz
 ///////////////////////////////////////////////////////////////////////////////
 
-void wiz_run ( struct lua_State *_l, int _argc, char **_argv );
+extern void wiz_run ( struct lua_State *_l, int _argc, char **_argv );
 
 ///////////////////////////////////////////////////////////////////////////////
 // window op
 ///////////////////////////////////////////////////////////////////////////////
 
-void wiz_create_window ( struct lua_State *_l, int _refID, int _w, int _h );
-void wiz_destroy_window ( struct lua_State *_l, int _refID );
-void wiz_repaint_window ( int _refID );
-void wiz_get_window_size ( int _refID, int *_w, int *_h );
-void wiz_set_window_background ( int _refID, int _r, int _g, int _b );
+extern void wiz_create_window ( struct lua_State *_l, int _refID, int _w, int _h );
+extern void wiz_destroy_window ( struct lua_State *_l, int _refID );
+extern void wiz_repaint_window ( int _refID );
+extern void wiz_get_window_size ( int _refID, int *_w, int *_h );
+extern void wiz_set_window_background ( int _refID, int _r, int _g, int _b );
 
 // ######################### 
 #ifdef __cplusplus
