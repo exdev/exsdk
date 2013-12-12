@@ -193,9 +193,5 @@ static const luaL_Reg lib[] = {
 int __ex_lua_add_fsys ( lua_State *_l ) {
     luaL_setfuncs( _l, lib, 0 );
 
-    // ex_c.fsys_cwd = ""
-    lua_pushstring ( _l, "" );
-    lua_setfield( _l, -2, "fsys_cwd" );
-
     return 0;
 }

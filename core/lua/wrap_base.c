@@ -79,5 +79,9 @@ int __ex_lua_add_base ( lua_State *_l ) {
     lua_setfield( _l, -2, "platform" );
     lua_pop(_l,1); // pop os
 
+    // os.cwd = ""
+    lua_pushstring ( _l, "" );
+    lua_setfield( _l, -2, "cwd" );
+
     return 0;
 }
