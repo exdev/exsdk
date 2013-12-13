@@ -25,11 +25,11 @@ wiz.onInit = function ()
     local window = wiz.window( 640, 480 )
 
     -- load resource, NOTE: texture resource must be load after first window created
-    local font1 = wiz.assets.load("assets/VeraMono.ttf")
-    local font2 = wiz.assets.load("assets/BerlinSansFB_MonoOutline.bft")
-    local font3 = wiz.assets.load("assets/MolotShadow.bft")
-    local logo = wiz.assets.load("assets/ex2d_logo.png")
-    local imgWindow = wiz.assets.load("assets/windowActive.png")
+    local font1 = wiz.load("wiz://assets/VeraMono.ttf")
+    local font2 = wiz.load("wiz://assets/BerlinSansFB_MonoOutline.bft")
+    local font3 = wiz.load("wiz://assets/MolotShadow.bft")
+    local logo = wiz.load("wiz://assets/ex2d_logo.png")
+    local imgWindow = wiz.load("wiz://assets/windowActive.png")
 
     --
     window.onRepaint = function ( _self )

@@ -10,15 +10,15 @@ wiz = wiz or {}
 return {
     name = "wiz",
     files = {
-        -- wiz
-        "wiz.lua",
-        "window.lua",
-
         -- basic
-        "assets.lua",
-        "importer.lua",
-        "textureImporter.lua",
-        "bitmapfontImporter.lua",
-        "fontImporter.lua",
+        "base/wiz.lua",
+        "base/assets.lua",
+        "base/window.lua",
+
+        -- importer
+        "importer/importer.lua",
+        "importer/textureImporter.lua",
+        "importer/bitmapfontImporter.lua",
+        "importer/fontImporter.lua",
     }
 }

@@ -276,8 +276,8 @@ static int __init ( lua_State *_l, int _argc, char **_argv ) {
 #endif
     usr_path = ex_fsys_user_dir();
 
-    ex_log ( "[wiz] User Dir: %s", usr_path );
-    ex_log ( "[wiz] Application Dir: %s", app_path );
+    ex_log ( "[wiz] User path: %s", usr_path );
+    ex_log ( "[wiz] Application path: %s", app_path );
 
     // mount wiz(.exe) process path to __wiz__/ primary
     if ( app_path ) {
@@ -285,14 +285,14 @@ static int __init ( lua_State *_l, int _argc, char **_argv ) {
         // strcat ( path, "builtin/" );
 
         // NOTE: set write dir doesn't means you mount it.
-        if ( ex_fsys_set_write_dir(path) != 0 )
+        if ( ex_fsys_set_write_path(path) != 0 )
             return -1;
-        ex_log ( "[wiz] Set default write dir: %s", path  );
+        ex_log ( "[wiz] Set default write path: %s", path  );
 
         //
         if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
             return -1;
-        ex_log ( "[wiz] Mount dir: %s to __wiz__/", path  );
+        ex_log ( "[wiz] Mount %s to wiz://", path  );
     }
 
     // if ~/.wiz/ exists we mount it to __wiz__/ secondly
@@ -304,7 +304,7 @@ static int __init ( lua_State *_l, int _argc, char **_argv ) {
         if ( ex_os_exists(path) && ex_os_isdir(path) ) {
             if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
                 return -1;
-            ex_log ("[wiz] Mount dir: %s to __wiz__/", path );
+            ex_log ("[wiz] Mount %s to wiz://", path );
         }
     }
 

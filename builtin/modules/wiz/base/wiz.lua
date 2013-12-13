@@ -35,13 +35,15 @@ wiz.cwd = ex_c.fsys_app_dir()
 
 wiz.arguments = {}
 
+-- TODO { 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function wiz.openApp ( _self, _path )
-    wiz_c.open_app(_path)
-    wiz.dofile("init.lua") -- FIXME NOTE: right now we only allow one app running.
+function wiz.open ( _self, _path, _name )
+    -- wiz_c.open_app(_path)
+    wiz.mount( _name )
+    wiz.dofile( _name .. "://init.lua" ) -- FIXME NOTE: right now we only allow one app running.
 
     if _self.onInit ~= nil then
         _self.onInit()
@@ -52,12 +54,15 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function wiz.closeApp ( _self )
+function wiz.close ( _self, _name )
     if _self.onClose ~= nil then
         _self.onClose()
     end
-    wiz_c.close_app()
+
+    wiz.unmount( _name )
+    -- wiz_c.close_app()
 end
+-- } TODO end 
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -65,7 +70,20 @@ end
 -- ------------------------------------------------------------------ 
 
 function wiz.fsysPath (_path)
-    return path.join("__wiz__",_path)
+    local list = _path:split("://",true)
+    local proxy, relate_path = table.unpack(list)
+    local fpath = _path;
+
+    -- process http, https, .. first 
+    if proxy == "http" then
+    else
+        -- for example wiz://foo/bar => __wiz__/foo/bar
+        --             bundle_name://foo/bar => __bundle_name__/foo/bar
+        proxy = "__" .. proxy .. "__"
+        fpath = path.join( proxy, relate_path ), relate_path
+    end
+
+    return fpath, relate_path;
 end
 
 -- ------------------------------------------------------------------ 
@@ -73,10 +91,10 @@ end
 -- *full*path can recognized by operating system
 -- ------------------------------------------------------------------ 
 
-function wiz.sysPath (_path)
-    local fpath = wiz.fsysPath(_path)
+function wiz.osPath (_path)
+    local fpath, relate_path = wiz.fsysPath(_path)
     if ex_c.fsys_exists(fpath) then
-        return path.join( ex_c.fsys_realdir(fpath), _path )
+        return path.join( ex_c.fsys_os_dir(fpath), relate_path )
     end
 
     error ( "Can't get the real path by %s", _path )
@@ -87,7 +105,8 @@ end
 -- ------------------------------------------------------------------ 
 
 function wiz.exists ( _path )
-    return ex_c.fsys_exists( wiz.fsysPath(_path) )
+    local fpath = wiz.fsysPath(_path)
+    return ex_c.fsys_exists( fpath )
 end
 
 -- ------------------------------------------------------------------ 

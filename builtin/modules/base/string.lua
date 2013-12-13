@@ -30,11 +30,43 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function string.split ( _s, _pattern )
+function string.gsplit ( _s, _sep, _plain )
+	local start = 1
+	local done = false
+	local function pass(i, j, ...)
+		if i then
+			local seg = _s:sub(start, i - 1)
+			start = j + 1
+			return seg, ...
+		else
+			done = true
+			return _s:sub(start)
+		end
+	end
+	return function()
+		if done then return end
+		if _sep == '' then done = true return _s end
+		return pass(_s:find(_sep, start, _plain))
+	end
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+function string.split ( _s, _sep, _plain )
     local list = {}
-    for w in _s:gmatch("[^".._pattern.."]+") do
-        list[#list+1] = w
+
+    if _plain then
+        for w in _s:gsplit( _sep, _plain ) do
+            list[#list+1] = w
+        end
+    else
+        for w in _s:gmatch("[^".._sep.."]+") do
+            list[#list+1] = w
+        end
     end
+
     return list
 end
 

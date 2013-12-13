@@ -14,7 +14,6 @@
 -- ------------------------------------------------------------------ 
 
 function os.executef (_cmd, ...)
-    cmd = string.format(_cmd, ...)
-    return os.execute(_cmd)
+    return os.execute( string.format(_cmd, ...) )
 end
 

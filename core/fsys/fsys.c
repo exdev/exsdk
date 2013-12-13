@@ -69,7 +69,7 @@ const char *ex_fsys_main_bundle_path () { return __main_bundle_path; }
 const char *ex_fsys_app_dir () { return PHYSFS_getBaseDir(); }
 const char *ex_fsys_user_dir () { return PHYSFS_getUserDir(); }
 const char *ex_fsys_write_dir () { return PHYSFS_getWriteDir(); }
-const char *ex_fsys_realdir ( const char *_path ) { return PHYSFS_getRealDir(_path); }
+const char *ex_fsys_os_dir ( const char *_path ) { return PHYSFS_getRealDir(_path); }
 
 // ------------------------------------------------------------------ 
 // Desc: 
@@ -83,7 +83,7 @@ void ex_fsys_set_main_bundle_path ( const char *_path ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_fsys_set_write_dir ( const char *_new_dir ) { 
+int ex_fsys_set_write_path ( const char *_new_dir ) { 
     __PHYSFS_CHECK( PHYSFS_setWriteDir(_new_dir) );
     return 0;
 }

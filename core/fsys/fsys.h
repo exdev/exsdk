@@ -62,10 +62,10 @@ extern const char *ex_fsys_write_dir ();
 // So, if you look for "maps/level1.map", 
 // and C:\mygame is in your search path and C:\mygame\maps\level1.map exists, 
 // then "C:\mygame" is returned.
-extern const char *ex_fsys_realdir ( const char *_path );
+extern const char *ex_fsys_os_dir ( const char *_path );
 
 extern void ex_fsys_set_main_bundle_path ( const char *_path );
-extern int ex_fsys_set_write_dir ( const char *_new_dir );
+extern int ex_fsys_set_write_path ( const char *_new_dir );
 
 // ------------------------------------------------------------------ 
 // Desc: 

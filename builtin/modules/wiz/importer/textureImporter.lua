@@ -38,7 +38,7 @@ wiz.textureImporter = wiz.importer.extend ({
 
     exec = function (_self)
         local tex = ex.texture.new()
-        local cptr = ex_c.texture_load ( wiz.sysPath(_self.path) )
+        local cptr = ex_c.texture_load ( wiz.osPath(_self.path) )
         tex._cptr = cptr
 
         return tex

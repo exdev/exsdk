@@ -67,7 +67,7 @@ local element = class ({
             if style.border_style == "solid" then
                 ex.painter.draw_rect_4( x, y, w, h, border_T, border_R, border_B, border_L ) 
             else
-                local border_image = wiz.assets.load(style.border_style)
+                local border_image = wiz.load(style.border_style)
                 ex.painter.draw_image_border( border_image, 
                                              x, y, w, h,
                                              border_T, border_R, border_B, border_L )

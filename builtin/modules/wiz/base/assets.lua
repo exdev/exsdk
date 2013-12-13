@@ -17,7 +17,7 @@ local pathToAsset = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function wiz.assets.getImporter ( _path )
+local function getImporter ( _path )
     if wiz.exists (_path) == false then
         error ( "Can't find file at " .. _path )
     end
@@ -35,33 +35,24 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function wiz.assets.import ( _path )
-    local importer = wiz.assets.getImporter(_path)
-    local asset = nil
-    if importer then
-        asset = importer:exec()
-    end
-
-    if asset then
-        pathToAsset[_path] = asset
-    end
-
-    return asset
-end
-
--- ------------------------------------------------------------------ 
--- Desc: 
--- ------------------------------------------------------------------ 
-
-function wiz.assets.load ( _path )
+function wiz.load ( _path )
+    -- check if we have cache
     local asset = pathToAsset[_path]
     if asset ~= nil then
         return asset
     end
 
-    --
+    -- import asset through path
     print ( "[assets] load file: " .. _path )
-    asset = wiz.assets.import(_path)
+    local importer = getImporter(_path)
+    if importer then
+        asset = importer:exec()
+    end
+
+    -- cache asset
+    if asset then
+        pathToAsset[_path] = asset
+    end
 
     return asset
 end

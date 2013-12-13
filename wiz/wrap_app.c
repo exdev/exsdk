@@ -34,10 +34,10 @@ static int __lua_open_app ( lua_State *_l ) {
 
     // if the media_path exists, use it. if not, try to search it in the app/ directory
     if ( ex_os_exists (path) == false ) {
-        return luaL_error ( _l, "[wiz] Error: Can't load project at %s", path );
+        return luaL_error ( _l, "[wiz] Error: Can't load bundle at %s", path );
     }
 
-    ex_log ( "[wiz] Open project: %s", path  );
+    ex_log ( "[wiz] Open bundle: %s", path  );
 
     // mount the dir to __wiz__/
     if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
