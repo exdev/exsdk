@@ -43,7 +43,7 @@ wiz.arguments = {}
 function wiz.open ( _self, _path, _name )
     -- wiz_c.open_app(_path)
     wiz.mount( _name )
-    wiz.dofile( _name .. "://init.lua" ) -- FIXME NOTE: right now we only allow one app running.
+    wiz.dofile( "wiz://bundle@%s/init.lua", _name ) -- FIXME NOTE: right now we only allow one app running.
 
     if _self.onInit ~= nil then
         _self.onInit()
@@ -75,12 +75,11 @@ function wiz.fsysPath (_path)
     local fpath = _path;
 
     -- process http, https, .. first 
-    if proxy == "http" then
-    else
+    if proxy == "wiz" then
         -- for example wiz://foo/bar => __wiz__/foo/bar
-        --             bundle_name://foo/bar => __bundle_name__/foo/bar
-        proxy = "__" .. proxy .. "__"
-        fpath = path.join( proxy, relate_path ), relate_path
+        fpath = path.join( "__wiz__", relate_path ), relate_path
+    elseif proxy == "http" then
+        -- TODO
     end
 
     return fpath, relate_path;
