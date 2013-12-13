@@ -407,18 +407,8 @@ void wiz_run ( lua_State *_l, int _argc, char **_argv ) {
         strncpy ( result, filepath, len );
         result[len] = '\0';
 
-        // if this is a lua file
-        if ( strncmp( (p-3), ".lua", 4 ) == 0 ) {
-            // NOTE: do not use ex_lua_fsys_dofile, because we are working with command line environment
-            ex_lua_dofile ( _l, result );
-        }
-        // if this is an xml file
-        else if ( strncmp( (p-3), ".xml", 4 ) == 0 ) {
-            // TODO:
-        }
-        else {
-            ex_log ( "Invalid argument: %s", result );
-        }
+        // open the file
+        wiz_open(_l,result);
     }
 
     // enter the event-loop if we create display(window) 
@@ -428,6 +418,32 @@ void wiz_run ( lua_State *_l, int _argc, char **_argv ) {
 
     // deinit wiz 
     __deinit(_l);
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void wiz_open ( lua_State *_l, const char *_path ) {
+    size_t len;
+    const char *end;
+    int idx_cwd;
+
+    len = strlen(_path);
+    end = _path + len - 1;
+
+    // if this is a lua file
+    if ( strncmp( (end-3), ".lua", 4 ) == 0 ) {
+        // NOTE: do not use ex_lua_fsys_dofile, because we are working with command line environment
+        ex_lua_dofile ( _l, _path );
+    }
+    // if this is an xml file
+    else if ( strncmp( (end-3), ".xml", 4 ) == 0 ) {
+        // TODO:
+    }
+    else {
+        ex_log ( "Invalid file: %s", _path );
+    }
 }
 
 // ------------------------------------------------------------------ 
