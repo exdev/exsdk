@@ -28,7 +28,7 @@ extern void wiz_run ( struct lua_State *_l, int _argc, char **_argv );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-extern void wiz_open ( struct lua_State *_l, const char *_path );
+extern int wiz_execute ( struct lua_State *_l, const char *_path );
 
 ///////////////////////////////////////////////////////////////////////////////
 // window op

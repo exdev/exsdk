@@ -263,9 +263,57 @@ extern int __wiz_lua_add_app ( lua_State * );
 extern int __wiz_lua_add_window ( lua_State * );
 // ------------------------------------------------------------------ 
 
-static void __init ( lua_State *_l, int _argc, char **_argv ) {
-    //
-    __window_list = ex_array_alloc ( sizeof(__window_info_t *), 8 );
+static int __init ( lua_State *_l, int _argc, char **_argv ) {
+    char path[MAX_PATH];
+    const char *app_path = NULL;
+    const char *usr_path = NULL;
+
+    // mount the wiz path to __wiz__/ in fsys
+#if (EX_PLATFORM == EX_IOS)
+    app_path = ex_fsys_main_bundle_path();
+#else
+    app_path = ex_fsys_app_dir();
+#endif
+    usr_path = ex_fsys_user_dir();
+
+    ex_log ( "[wiz] User Dir: %s", usr_path );
+    ex_log ( "[wiz] Application Dir: %s", app_path );
+
+    // mount wiz(.exe) process path to __wiz__/ primary
+    if ( app_path ) {
+        strncpy ( path, app_path, MAX_PATH );
+        // strcat ( path, "builtin/" );
+
+        // NOTE: set write dir doesn't means you mount it.
+        if ( ex_fsys_set_write_dir(path) != 0 )
+            return -1;
+        ex_log ( "[wiz] Set default write dir: %s", path  );
+
+        //
+        if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
+            return -1;
+        ex_log ( "[wiz] Mount dir: %s to __wiz__/", path  );
+    }
+
+    // if ~/.wiz/ exists we mount it to __wiz__/ secondly
+    if ( usr_path ) {
+        strncpy ( path, usr_path, MAX_PATH );
+        strcat ( path, ".wiz/" );
+
+        //
+        if ( ex_os_exists(path) && ex_os_isdir(path) ) {
+            if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
+                return -1;
+            ex_log ("[wiz] Mount dir: %s to __wiz__/", path );
+        }
+    }
+
+    // load builtin modules
+    ex_log ( "[wiz] Loading builtin modules..." );
+    if ( ex_lua_fsys_init_modules ( _l, "__wiz__/builtin/modules" ) ) {
+        ex_log ( "Failed to load builtin modules" );
+        return -1;
+    }
 
     // create wiz_c table
     lua_newtable(_l);
@@ -279,6 +327,11 @@ static void __init ( lua_State *_l, int _argc, char **_argv ) {
 
     // push arguments to wiz.arguments in lua
     __lua_wiz_init_arguments ( _l, _argc, _argv );
+
+    //
+    __window_list = ex_array_alloc ( sizeof(__window_info_t *), 8 );
+
+    return 0;
 } 
 
 // ------------------------------------------------------------------ 
@@ -383,7 +436,10 @@ static void __event_loop ( lua_State *_l ) {
 
 void wiz_run ( lua_State *_l, int _argc, char **_argv ) {
     // init wiz
-    __init ( _l, _argc, _argv );
+    if ( __init ( _l, _argc, _argv ) != 0 ) {
+        ex_log ( "Failed to init wiz" );
+        return;
+    }
 
     // process argument
     if ( _argc >= 2 ) {
@@ -402,13 +458,15 @@ void wiz_run ( lua_State *_l, int _argc, char **_argv ) {
         }
 
         // copy the result
-        len = filepath-p;
+        len = p-filepath+1;
         if ( len > 511 ) len = 511;
         strncpy ( result, filepath, len );
         result[len] = '\0';
 
         // open the file
-        wiz_open(_l,result);
+        if ( wiz_execute(_l,result) != 0 ) {
+            return;
+        }
     }
 
     // enter the event-loop if we create display(window) 
@@ -424,18 +482,42 @@ void wiz_run ( lua_State *_l, int _argc, char **_argv ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void wiz_open ( lua_State *_l, const char *_path ) {
+int wiz_execute ( lua_State *_l, const char *_path ) {
     size_t len;
-    const char *end;
+    const char *end, *ptr;
+    char dirpath[512];
     int idx_cwd;
 
+    // initialize
     len = strlen(_path);
     end = _path + len - 1;
+    ptr = end;
+
+    // get dirpath
+    while ( ptr != _path && *ptr != '/' ) {
+        --ptr;
+    }
+    len = ptr-_path+1;
+    if ( len > 511 ) len = 511;
+    if ( len == 1 ) {
+        strncpy ( dirpath, "./", 2 );
+        dirpath[2] = '\0';
+    }
+    else {
+        strncpy ( dirpath, _path, len );
+        dirpath[len] = '\0';
+    }
+
+    // set os.cwd to the dirpath 
+    lua_pushstring ( _l, ex_os_getcwd() ); idx_cwd = lua_gettop(_l); // store the old cwd
+    ex_os_setcwd(dirpath);
 
     // if this is a lua file
     if ( strncmp( (end-3), ".lua", 4 ) == 0 ) {
         // NOTE: do not use ex_lua_fsys_dofile, because we are working with command line environment
-        ex_lua_dofile ( _l, _path );
+        if ( ex_lua_dofile ( _l, _path ) != 0 ) {
+            return -1;
+        }
     }
     // if this is an xml file
     else if ( strncmp( (end-3), ".xml", 4 ) == 0 ) {
@@ -444,6 +526,10 @@ void wiz_open ( lua_State *_l, const char *_path ) {
     else {
         ex_log ( "Invalid file: %s", _path );
     }
+
+    // restore the old cwd
+    ex_os_setcwd(lua_tostring(_l, idx_cwd));
+    lua_remove(_l,idx_cwd); // remove cwd
 }
 
 // ------------------------------------------------------------------ 

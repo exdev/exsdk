@@ -34,10 +34,6 @@ static char __main_bundle_path[MAX_PATH];
 // ------------------------------------------------------------------ 
 
 int ex_fsys_init () {
-    char path[MAX_PATH];
-    const char *app_path = NULL;
-    const char *usr_path = NULL;
-
     __PHYSFS_CHECK( PHYSFS_init(".") ); // NOTE: we write like this to prevent compile error 
     PHYSFS_permitSymbolicLinks(1); // yes, we permit symbolic links
 
@@ -45,45 +41,6 @@ int ex_fsys_init () {
              PHYSFS_VER_MAJOR, 
              PHYSFS_VER_MINOR,
              PHYSFS_VER_PATCH );
-
-#if (EX_PLATFORM == EX_IOS)
-    app_path = ex_fsys_main_bundle_path();
-#else
-    app_path = ex_fsys_app_dir();
-#endif
-    usr_path = ex_fsys_user_dir();
-
-    ex_log ( "[fsys] User Dir: %s", usr_path );
-    ex_log ( "[fsys] Application Dir: %s", app_path );
-
-    // if ~/.exsdk/ exists we add it as the secondly primary search directory
-    if ( usr_path ) {
-        strncpy ( path, usr_path, MAX_PATH );
-        strcat ( path, ".exsdk/" );
-
-        //
-        if ( ex_os_exists(path) && ex_os_isdir(path) ) {
-            if ( ex_fsys_mount( path, NULL, true ) != 0 )
-                return -1;
-            ex_log ("[fsys] Mount dir: %s", path );
-        }
-    }
-
-    // if app/ exists, we add it as the secondly search directory.
-    if ( app_path ) {
-        strncpy ( path, app_path, MAX_PATH );
-        // strcat ( path, "builtin/" );
-
-        // NOTE: set write dir doesn't means you mount it.
-        if ( ex_fsys_set_write_dir(path) != 0 )
-            return -1;
-        ex_log ( "[fsys] Set default write dir: %s", path  );
-
-        //
-        if ( ex_fsys_mount( path, NULL, true ) != 0 )
-            return -1;
-        ex_log ( "[fsys] Mount dir: %s", path  );
-    }
 
     return 0;
 }

@@ -526,11 +526,11 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
 #define DLMALLOC_VERSION 20806
 #endif /* DLMALLOC_VERSION */
 
-// exSDK ADD { 
+// exsdk ADD { 
 #define USE_DL_PREFIX 1
 // for thread-safty
 #define USE_LOCKS 1
-// } exSDK ADD end 
+// } exsdk ADD end 
 
 #ifndef DLMALLOC_EXPORT
 #define DLMALLOC_EXPORT extern
@@ -549,7 +549,7 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tchar.h>
-#include <errno.h> // exSDK ADD
+#include <errno.h> // exsdk ADD
 #define HAVE_MMAP 1
 #define HAVE_MORECORE 0
 #define LACKS_UNISTD_H

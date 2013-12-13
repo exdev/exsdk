@@ -1,7 +1,7 @@
 // ======================================================================================
-// File         : exSDK.c
+// File         : exsdk.c
 // Author       : Wu Jie 
-// Last Change  : 06/26/2010 | 21:03:19 PM | Saturday,June
+// Last Change  : 12/13/2013 | 12:12:06 PM | Friday,December
 // Description  : 
 // ======================================================================================
 
@@ -16,7 +16,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------
-//! @mainpage exSDK manual
+//! @mainpage exsdk manual
 //! 
 //! Index
 //! - Modules
@@ -37,7 +37,7 @@
     // log title
     #pragma message(" ")
     #pragma message("==========================================")
-    #pragma message("exSDK predefine log")
+    #pragma message("exsdk predefine log")
     #pragma message("==========================================")
     #pragma message(" ")
     #pragma message("<<<<<<")
@@ -226,38 +226,38 @@ int ex_sdk_init () {
     if ( __initialized )
         return -1;
 
-    ex_log ( "[exSDK] Initializing..." );
+    ex_log ( "[exsdk] Initializing..." );
 
     // init memory
-    ex_log ( "[exSDK] Initializing memory..." );
+    ex_log ( "[exsdk] Initializing memory..." );
     if ( ex_mem_init () != 0 ) {
-        ex_log ( "[exSDK] Error: Could not init memory!" );
+        ex_log ( "[exsdk] Error: Could not init memory!" );
         return -1;
     }
 
     // init fsys
-    ex_log ( "[exSDK] Initializing fsys..." );
+    ex_log ( "[exsdk] Initializing fsys..." );
     if ( ex_fsys_init () != 0 ) {
-        ex_log ( "[exSDK] Error: Could not init fsys!" );
+        ex_log ( "[exsdk] Error: Could not init fsys!" );
         return -1;
     }
 
     // init font
-    ex_log ( "[exSDK] Initializing font..." );
+    ex_log ( "[exsdk] Initializing font..." );
     if ( ex_font_init () != 0 ) {
-        ex_log ( "[exSDK] Error: Could not init font!" );
+        ex_log ( "[exsdk] Error: Could not init font!" );
         return -1;
     }
 
     // init painter
-    ex_log ( "[exSDK] Initializing painter..." );
+    ex_log ( "[exsdk] Initializing painter..." );
     if ( ex_painter_init () != 0 ) {
-        ex_log ( "[exSDK] Error: Could not init ui!" );
+        ex_log ( "[exsdk] Error: Could not init ui!" );
         return -1;
     }
 
     __initialized = true;
-    ex_log ( "[exSDK] Initialized!" );
+    ex_log ( "[exsdk] Initialized!" );
     return 0;
 }
 
@@ -271,22 +271,22 @@ void ex_sdk_deinit () {
     if ( __initialized == false )
         return;
 
-    ex_log ( "[exSDK] Closing..." );
+    ex_log ( "[exsdk] Closing..." );
 
-    ex_log ( "[exSDK] Closing painter..." );
+    ex_log ( "[exsdk] Closing painter..." );
     ex_painter_deinit ();
 
-    ex_log ( "[exSDK] Closing font..." );
+    ex_log ( "[exsdk] Closing font..." );
     ex_font_deinit ();
 
-    ex_log ( "[exSDK] Closing fsys..." );
+    ex_log ( "[exsdk] Closing fsys..." );
     ex_fsys_deinit ();
 
-    ex_log ( "[exSDK] Closing memory..." );
+    ex_log ( "[exsdk] Closing memory..." );
     ex_mem_deinit ();
 
     __initialized = false;
-    ex_log ( "[exSDK] Closed!" );
+    ex_log ( "[exsdk] Closed!" );
 }
 
 // ------------------------------------------------------------------ 

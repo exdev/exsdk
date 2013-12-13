@@ -42,6 +42,9 @@ extern int ex_lua_add_cpath ( struct lua_State *_l, const char *_path );
 // add module will load table from lua stack, and add it by the modname you provide 
 extern void ex_lua_add_module ( struct lua_State *_l, const char *_modname );
 
+// init modules will execute __init__.lua under the os path
+extern int ex_lua_init_modules ( struct lua_State *_l, const char *_path );
+
 // fsys init modules will execute __init__.lua under the fsys path
 extern int ex_lua_fsys_init_modules ( struct lua_State *_l, const char *_fsys_path );
 extern int ex_lua_fsys_load_module ( struct lua_State *_l, const char *_fsys_file );

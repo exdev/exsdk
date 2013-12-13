@@ -100,14 +100,8 @@ int main ( int _argc, char **_argv ) {
     }
 
     // initialize ex_c module
+    ex_log ( "[wiz] Initializing lua..." );
     l = ex_lua_init ();
-
-    // load builtin modules
-    ex_log ( "[lua] Loading builtin modules..." );
-    if ( ex_lua_fsys_init_modules ( l, "builtin/modules" ) ) {
-        ex_log ( "Failed to init builtin modules" );
-        return 1;
-    }
 
     // ======================================================== 
     // wiz phase ( init, loop, deinit )
@@ -119,7 +113,7 @@ int main ( int _argc, char **_argv ) {
     // system deinit phase
     // ======================================================== 
 
-    ex_log ( "[lua] Closing..." );
+    ex_log ( "[lua] Closing lua..." );
     ex_lua_deinit (l);
 
     // deinit exsdk 

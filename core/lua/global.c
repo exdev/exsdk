@@ -433,7 +433,7 @@ int ex_lua_fsys_init_modules ( lua_State *_l, const char *_fsys_path ) {
     int idx_cwd;
     int status;
 
-    // set os.cwd to the _fsys_path 
+    // push the old cwd to the stack and set _fsys_path as new cwd
     lua_pushstring ( _l, ex_os_getcwd() ); idx_cwd = lua_gettop(_l); // store the old cwd
     ex_os_setcwd(_fsys_path);
 
@@ -441,7 +441,7 @@ int ex_lua_fsys_init_modules ( lua_State *_l, const char *_fsys_path ) {
     filePath = ex_str_allocf( "%s/__init__.lua", _fsys_path );
     status = ex_lua_fsys_dofile ( _l, ex_cstr(filePath) );
 
-    // restore old cwd
+    // restore the old cwd
     ex_os_setcwd(lua_tostring(_l, idx_cwd));
     lua_remove(_l,idx_cwd); // remove cwd
 
@@ -702,87 +702,3 @@ int ex_lua_dump_stack ( lua_State *_l ) {
 int ex_lua_totoal_memory ( struct lua_State *_l ) {
     return lua_gc(_l, LUA_GCCOUNT, 0);
 }
-
-#if 0
-///////////////////////////////////////////////////////////////////////////////
-// main.lua
-///////////////////////////////////////////////////////////////////////////////
-
-// ------------------------------------------------------------------ 
-// Desc: 
-static int __refID_init, __refID_deinit, __refID_update, __refID_render;
-// ------------------------------------------------------------------ 
-
-void ex_lua_parse_main ( struct lua_State *_l ) {
-    ex_lua_fsys_dofile ( _l, "__app__/main.lua" );
-
-    lua_getglobal( _l, "init" );
-    __refID_init = luaL_ref( _l, LUA_REGISTRYINDEX );
-    ex_assert ( __refID_init != LUA_REFNIL );
-
-    lua_getglobal( _l, "deinit" );
-    __refID_deinit = luaL_ref( _l, LUA_REGISTRYINDEX );
-    ex_assert ( __refID_deinit != LUA_REFNIL );
-
-    lua_getglobal( _l, "update" );
-    __refID_update = luaL_ref( _l, LUA_REGISTRYINDEX );
-    ex_assert ( __refID_update != LUA_REFNIL );
-
-    lua_getglobal( _l, "render" );
-    __refID_render = luaL_ref( _l, LUA_REGISTRYINDEX );
-    ex_assert ( __refID_render != LUA_REFNIL );
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_lua_main_init ( struct lua_State *_l ) {
-    lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_init );
-    if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
-        lua_pushvalue(_l,-2);
-        ex_lua_pcall( _l, 1, 0, 0 );
-    }
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_lua_main_deinit ( struct lua_State *_l ) {
-    lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_deinit );
-    if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
-        lua_pushvalue(_l,-2);
-        ex_lua_pcall( _l, 1, 0, 0 ) 
-    }
-
-    luaL_unref( _l, LUA_REGISTRYINDEX, __refID_init );
-    luaL_unref( _l, LUA_REGISTRYINDEX, __refID_deinit );
-    luaL_unref( _l, LUA_REGISTRYINDEX, __refID_update );
-    luaL_unref( _l, LUA_REGISTRYINDEX, __refID_render );
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_lua_main_update ( struct lua_State *_l ) {
-    lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_update );
-    if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
-        lua_pushvalue(_l,-2);
-        ex_lua_pcall( _l, 1, 0, 0 ) 
-    }
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-void ex_lua_main_render ( struct lua_State *_l ) {
-    lua_rawgeti( _l, LUA_REGISTRYINDEX, __refID_render );
-    if ( lua_isnil(_l,-1) == 0 && lua_isfunction(_l,-1) ) {
-        lua_pushvalue(_l,-2);
-        ex_lua_pcall( _l, 1, 0, 0 ) 
-    }
-}
-#endif

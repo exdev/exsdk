@@ -34,14 +34,14 @@ static int __lua_open_app ( lua_State *_l ) {
 
     // if the media_path exists, use it. if not, try to search it in the app/ directory
     if ( ex_os_exists (path) == false ) {
-        return luaL_error ( _l, "[exSDK] Error: Can't load project at %s", path );
+        return luaL_error ( _l, "[wiz] Error: Can't load project at %s", path );
     }
 
-    ex_log ( "[exSDK] Open project: %s", path  );
+    ex_log ( "[wiz] Open project: %s", path  );
 
-    // mount the dir to __app__/
-    if ( ex_fsys_mount( path, "__app__", true ) != 0 )
-        return luaL_error ( _l, "[fsys] Error: Can't mount dir %s", path );
+    // mount the dir to __wiz__/
+    if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
+        return luaL_error ( _l, "[wiz] Error: Can't mount dir %s", path );
 
     return 0;
 }
