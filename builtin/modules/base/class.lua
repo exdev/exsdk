@@ -149,6 +149,15 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+function super ( _object )
+    local tp = typeof(_object)
+    return rawget(tp,"__super")
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function __instantiate ( _class, ... )
     local object = ... or {}
     object.__isinstance = true

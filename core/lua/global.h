@@ -45,9 +45,8 @@ extern void ex_lua_add_module ( struct lua_State *_l, const char *_modname );
 // init modules will execute __init__.lua under the os path
 extern int ex_lua_init_modules ( struct lua_State *_l, const char *_path );
 
-// fsys init modules will execute __init__.lua under the fsys path
-extern int ex_lua_fsys_init_modules ( struct lua_State *_l, const char *_fsys_path );
-extern int ex_lua_fsys_load_module ( struct lua_State *_l, const char *_fsys_file );
+// init modules will execute __init__.lua under the os path
+extern int ex_lua_init_modules ( struct lua_State *_l, const char *_path );
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua interpreter op
@@ -57,7 +56,8 @@ extern int ex_lua_pcall ( struct lua_State *_l, int _nargs, int _nresults, int _
 extern int ex_lua_dostring ( struct lua_State *_l, const char *_fmt, ... );
 extern void ex_lua_run_interpretor ( struct lua_State *_l );
 
-extern int ex_lua_dofile ( struct lua_State *_l, const char *_fsys_filepath );
+extern int ex_lua_dofile ( struct lua_State *_l, const char *_filepath );
+extern int ex_lua_dofile_2 ( struct lua_State *_l, const char *_filepath, int _idx );
 
 extern int ex_lua_fsys_dofile ( struct lua_State *_l, const char *_fsys_filepath );
 extern int ex_lua_fsys_dofile_2 ( struct lua_State *_l, const char *_fsys_filepath, int _idx );

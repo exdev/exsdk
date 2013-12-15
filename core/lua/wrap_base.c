@@ -60,7 +60,7 @@ static const luaL_Reg string_lib[] = {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int __lua_os_getcwd ( lua_State *_l ) {
+static int __lua_os_cwd ( lua_State *_l ) {
     lua_pushstring( _l, ex_os_getcwd() );
     return 1;
 }
@@ -69,8 +69,36 @@ static int __lua_os_getcwd ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_os_app_dir ( lua_State *_l ) {
+    char path[MAX_PATH]; 
+
+    strncpy( path, ex_fsys_app_dir(), MAX_PATH );
+    ex_unix_path(path);
+    lua_pushstring( _l, path );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_os_user_dir ( lua_State *_l ) {
+    char path[MAX_PATH]; 
+
+    strncpy( path, ex_fsys_user_dir(), MAX_PATH );
+    ex_unix_path(path);
+    lua_pushstring( _l, path );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg os_lib[] = {
-    { "getcwd",     __lua_os_getcwd },
+    { "cwd",     __lua_os_cwd },
+    { "appdir",  __lua_os_app_dir },
+    { "userdir", __lua_os_user_dir },
     { NULL, NULL }
 };
 #if ( EX_PLATFORM == EX_WIN32 )

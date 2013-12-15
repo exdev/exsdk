@@ -23,32 +23,6 @@
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int __lua_fsys_app_dir ( lua_State *_l ) {
-    char path[MAX_PATH]; 
-
-    strncpy( path, ex_fsys_app_dir(), MAX_PATH );
-    ex_unix_path(path);
-    lua_pushstring( _l, path );
-    return 1;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-static int __lua_fsys_user_dir ( lua_State *_l ) {
-    char path[MAX_PATH]; 
-
-    strncpy( path, ex_fsys_user_dir(), MAX_PATH );
-    ex_unix_path(path);
-    lua_pushstring( _l, path );
-    return 1;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
 static int __lua_fsys_writedir ( lua_State *_l ) {
     char path[MAX_PATH]; 
 
@@ -71,6 +45,39 @@ static int __lua_fsys_os_dir ( lua_State *_l ) {
     ex_unix_path(path);
     lua_pushstring( _l, path );
     return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_fsys_mount ( lua_State *_l ) {
+    const char *path;
+    const char *mountPoint;
+
+    ex_lua_check_nargs(_l,2);
+    path = luaL_checkstring(_l,1);
+    mountPoint = luaL_checkstring(_l,2);
+
+    // always use append here
+    if ( ex_fsys_mount ( path, mountPoint, true ) != 0 ) {
+        ex_log( "[fsys] Failed to mount %s to %s", path, mountPoint );
+        return 0;
+    }
+    ex_log( "[fsys] Mount %s to %s", path, mountPoint );
+
+    return 0;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+static int __lua_fsys_unmount ( lua_State *_l ) {
+    ex_lua_check_nargs(_l,1);
+    ex_fsys_unmount (luaL_checkstring(_l,1));
+    
+    return 0;
 }
 
 // ------------------------------------------------------------------ 
@@ -123,69 +130,18 @@ static int __lua_fsys_files_in ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-static int __lua_fsys_dofile ( lua_State *_l ) {
-    const char *path;
-    int status;
-
-    ex_lua_check_nargs(_l,1);
-    path = luaL_checkstring(_l,1);
-
-    // NOTE: don't call ex_lua_dofile here, because ex_lua_dofile will push 
-    //       an error func to trace debug stack. if lua script call ex_c.lua_dofile 
-    //       with this functon, it will recursively push the error func handle and lead to error. 
-    status = ex_lua_fsys_dofile_2( _l, path, 0 );
-    if ( status ) {
-        return status;
-    }
-
-    //
-    return lua_gettop(_l) - 1;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-static int __lua_fsys_init_modules ( lua_State *_l ) {
-    const char *path;
-    int status;
-
-    ex_lua_check_nargs(_l,1);
-    path = luaL_checkstring(_l,1);
-    status = ex_lua_fsys_init_modules (_l, path);
-    if ( status ) {
-        return status;
-    }
-
-    //
-    return lua_gettop(_l) - 1;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-static int __lua_fsys_load_module ( lua_State *_l ) {
-    return -1;
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
 static const luaL_Reg lib[] = {
     // fsys basic
-    { "fsys_app_dir",       __lua_fsys_app_dir },
-    { "fsys_user_dir",      __lua_fsys_user_dir },
     { "fsys_writedir",      __lua_fsys_writedir },
     { "fsys_os_dir",        __lua_fsys_os_dir },
+
+    // mount
+    { "fsys_mount",         __lua_fsys_mount },
+    { "fsys_unmount",       __lua_fsys_unmount },
+
+    // file process
     { "fsys_exists",        __lua_fsys_exists },
     { "fsys_files_in",      __lua_fsys_files_in },
-
-    // fsys lua file process
-    { "fsys_dofile",         __lua_fsys_dofile },
-    { "fsys_init_modules",   __lua_fsys_init_modules },
-    { "fsys_load_module",    __lua_fsys_load_module },
 
     { NULL, NULL }
 };

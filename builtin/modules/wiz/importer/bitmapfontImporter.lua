@@ -45,10 +45,8 @@ wiz.bitmapfontImporter = wiz.importer.extend ({
     __typename = "bitmapfontImporter",
 
     -- constructor & destructor
-    __init = function ( _self, _path )
-        checkarg(_path,"string")
-
-        _self.path = _path
+    __init = function ( _self, _bundle, _path )
+        super(_self).__init( _self, _bundle, _path )
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -72,14 +70,14 @@ wiz.bitmapfontImporter = wiz.importer.extend ({
     -- ------------------------------------------------------------------ 
 
     exec = function (_self)
-        local files = wiz.filesIn(_self.path)
+        local files = _self.bundle:filesIn(_self.path)
         local file = nil
 
         -- get the first txt/fnt file
         for i=1,#files do
             local filename = files[i]
             if path.is( filename, {".txt",".fnt"} ) then
-                file = io.open( wiz.osPath(path.join(_self.path,filename)), "r" )
+                file = io.open( _self.bundle:osPath(path.join(_self.path,filename)), "r" )
                 break
             end
         end
@@ -149,8 +147,8 @@ wiz.bitmapfontImporter = wiz.importer.extend ({
                          pageinfo.file ~= "", 
                          "Can't find image file in pageinfo" )
                 imagefile = path.join(_self.path,pageinfo.file)
-                if wiz.exists( imagefile ) then
-                    bpfont.pageInfos[pageinfo.id] = wiz.load(imagefile)
+                if _self.bundle:exists( imagefile ) then
+                    bpfont.pageInfos[pageinfo.id] = _self.bundle:load(imagefile)
                 end
 
             -- parse the char info

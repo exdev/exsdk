@@ -96,6 +96,26 @@ const char *ex_cstr ( ex_str_t *_exstr ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+void ex_str_set ( ex_str_t *_exstr, const char *_cstr ) {
+    size_t cstr_len = -1;
+
+    cstr_len = strlen(_cstr);
+
+    if ( cstr_len+1 > _exstr->capacity ) {
+        size_t new_len = ex_ceilpow2u((uint32)(cstr_len+1));
+        _exstr->data = ex_realloc ( _exstr->data, new_len * sizeof(char) );
+        _exstr->capacity = new_len;
+    }
+
+    strncpy( _exstr->data, _cstr, cstr_len );
+    _exstr->data[cstr_len] = '\0';
+    _exstr->count = cstr_len;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 void ex_str_cat ( ex_str_t *_exstr, const char *_cstr ) { 
     size_t cstr_len = -1;
     size_t original_len;

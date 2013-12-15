@@ -12,7 +12,7 @@ return {
     files = {
         -- basic
         "base/wiz.lua",
-        "base/assets.lua",
+        "base/bundle.lua",
         "base/window.lua",
 
         -- importer

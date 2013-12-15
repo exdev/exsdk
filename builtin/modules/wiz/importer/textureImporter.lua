@@ -13,10 +13,8 @@ wiz.textureImporter = wiz.importer.extend ({
     __typename = "textureImporter",
 
     -- constructor & destructor
-    __init = function ( _self, _path )
-        checkarg(_path,"string")
-
-        _self.path = _path
+    __init = function ( _self, _bundle, _path )
+        super(_self).__init( _self, _bundle, _path )
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -38,7 +36,7 @@ wiz.textureImporter = wiz.importer.extend ({
 
     exec = function (_self)
         local tex = ex.texture.new()
-        local cptr = ex_c.texture_load ( wiz.osPath(_self.path) )
+        local cptr = ex_c.texture_load ( _self.bundle:osPath(_self.path) )
         tex._cptr = cptr
 
         return tex

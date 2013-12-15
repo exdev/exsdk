@@ -9,26 +9,13 @@
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
 
-local function parseArgs ( _arguments, _options ) 
+print("arguments = " .. #wiz.arguments)
+for i=1,#wiz.arguments do
+    print(wiz.arguments[i])
 end
 
---/////////////////////////////////////////////////////////////////////////////
--- execute
---/////////////////////////////////////////////////////////////////////////////
-
-parseArgs ( wiz.arguments, {
-    -- { "app" },
-} )
-
 -- test_app
-local appName = "test_graphics"
-local appPath = ""
+local appPath = "../../../../../examples/"
 
--- if wiz.platform == "windows" then
---     appPath = string.format( "d:/dev/exdev/exsdk/examples/%s/", appName ) 
--- elseif wiz.platform == "macosx" then
---     appPath = string.format( "/Users/Johnny/exdev/exsdk/examples/%s/", appName ) 
--- end
-appPath = string.format( "../../../../../examples/%s/", appName ) 
-
-wiz:openApp(appPath)
+local bundle = wiz.mount( "./test_graphics/", "test.graphics" )
+bundle:dofile( "init.lua" )

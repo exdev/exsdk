@@ -427,19 +427,19 @@ void ex_lua_add_module ( lua_State *_l, const char *_modname ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-int ex_lua_fsys_init_modules ( lua_State *_l, const char *_fsys_path ) {
+int ex_lua_init_modules ( lua_State *_l, const char *_path ) {
     ex_str_t *filePath;
     // NOTE: we use idx because lua_dofile may have return value pushes on to the stack 
     int idx_cwd;
     int status;
 
-    // push the old cwd to the stack and set _fsys_path as new cwd
+    // push the old cwd to the stack and set _path as new cwd
     lua_pushstring ( _l, ex_os_getcwd() ); idx_cwd = lua_gettop(_l); // store the old cwd
-    ex_os_setcwd(_fsys_path);
+    ex_os_setcwd(_path);
 
-    // dofile ( "_fsys_path/__init__.lua" )
-    filePath = ex_str_allocf( "%s/__init__.lua", _fsys_path );
-    status = ex_lua_fsys_dofile ( _l, ex_cstr(filePath) );
+    // dofile ( "_path/__init__.lua" )
+    filePath = ex_str_allocf( "%s/__init__.lua", _path );
+    status = ex_lua_dofile ( _l, ex_cstr(filePath) );
 
     // restore the old cwd
     ex_os_setcwd(lua_tostring(_l, idx_cwd));
@@ -543,12 +543,28 @@ void ex_lua_run_interpretor ( lua_State *_l ) {
 int ex_lua_dofile ( struct lua_State *_l, const char *_filepath ) {
     int status;
     int idx = -1;
+
+    lua_pushcfunction( _l, ex_lua_trace_back );     /* push traceback function */
+    idx = lua_gettop(_l);                           /* function index */
+    status = ex_lua_dofile_2( _l, _filepath, idx );
+    lua_remove(_l, idx);                            /* remove traceback function */
+
+    return status;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+int ex_lua_dofile_2 ( lua_State *_l, const char *_filepath, int _idx ) {
+    int status;
     ex_file_t *file;
     size_t buf_size;
     void *buffer;
 
-    lua_pushcfunction( _l, ex_lua_trace_back );     /* push traceback function */
-    idx = lua_gettop(_l);                           /* function index */
+    const size_t SHORT_PATH_LEN = 30;
+    size_t pathLen = -1;
+    char shortPath[SHORT_PATH_LEN];
 
     // open the file
     file = ex_os_fopen (_filepath, "rb");
@@ -563,15 +579,22 @@ int ex_lua_dofile ( struct lua_State *_l, const char *_filepath ) {
     ex_os_fread (file, buffer, buf_size);
     ex_os_fclose(file);
 
+    // get short path
+    pathLen = strlen(_filepath);
+    if ( pathLen > SHORT_PATH_LEN ) {
+        strncpy( shortPath + 3, _filepath + pathLen - (SHORT_PATH_LEN-4), SHORT_PATH_LEN-4 );
+        strncpy( shortPath, "...", 3 );
+        shortPath[SHORT_PATH_LEN-1] = '\0';
+    }
+
     // parse the buffer by lua interpreter & call the script
-    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, idx );
+    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, shortPath ) || lua_pcall ( _l, 0, LUA_MULTRET, _idx );
     ex_free(buffer);
     if ( status ) {
         ex_lua_alert(_l);
     }
 
-    lua_remove(_l, idx);                            /* remove traceback function */
-
+    //
     return status;
 }
 
@@ -601,6 +624,10 @@ int ex_lua_fsys_dofile_2 ( lua_State *_l, const char *_fsys_filepath, int _idx )
     size_t buf_size;
     void *buffer;
 
+    const size_t SHORT_PATH_LEN = 30;
+    size_t pathLen = -1;
+    char shortPath[SHORT_PATH_LEN];
+
     // open the file
     file = ex_fsys_fopen_r(_fsys_filepath);
     if ( file == NULL ) {
@@ -614,8 +641,16 @@ int ex_lua_fsys_dofile_2 ( lua_State *_l, const char *_fsys_filepath, int _idx )
     ex_fsys_fread (file, buffer, buf_size );
     ex_fsys_fclose(file);
 
+    // get short path
+    pathLen = strlen(_fsys_filepath);
+    if ( pathLen > SHORT_PATH_LEN ) {
+        strncpy( shortPath + 3, _fsys_filepath + pathLen - (SHORT_PATH_LEN-4), SHORT_PATH_LEN-4 );
+        strncpy( shortPath, "...", 3 );
+        shortPath[SHORT_PATH_LEN-1] = '\0';
+    }
+
     // parse the buffer by lua interpreter & call the script
-    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, _fsys_filepath ) || lua_pcall ( _l, 0, LUA_MULTRET, _idx );
+    status = luaL_loadbuffer( _l, (const char *)buffer, buf_size, shortPath ) || lua_pcall ( _l, 0, LUA_MULTRET, _idx );
     ex_free(buffer);
     if ( status ) {
         ex_lua_alert(_l);

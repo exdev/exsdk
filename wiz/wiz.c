@@ -259,12 +259,11 @@ static int __process_event ( lua_State *_l, SDL_Event *_event ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
-extern int __wiz_lua_add_app ( lua_State * );
 extern int __wiz_lua_add_window ( lua_State * );
 // ------------------------------------------------------------------ 
 
 static int __init ( lua_State *_l, int _argc, char **_argv ) {
-    char path[MAX_PATH];
+    ex_str_t *path;
     const char *app_path = NULL;
     const char *usr_path = NULL;
 
@@ -279,51 +278,55 @@ static int __init ( lua_State *_l, int _argc, char **_argv ) {
     ex_log ( "[wiz] User path: %s", usr_path );
     ex_log ( "[wiz] Application path: %s", app_path );
 
-    // mount wiz(.exe) process path to __wiz__/ primary
-    if ( app_path ) {
-        strncpy ( path, app_path, MAX_PATH );
-        // strcat ( path, "builtin/" );
+    // DISABLE: { 
+    // // mount wiz(.exe) process path to __wiz__/ primary
+    // if ( app_path ) {
+    //     strncpy ( path, app_path, MAX_PATH );
+    //     // strcat ( path, "builtin/" );
 
-        // NOTE: set write dir doesn't means you mount it.
-        if ( ex_fsys_set_write_path(path) != 0 )
-            return -1;
-        ex_log ( "[wiz] Set default write path: %s", path  );
+    //     // NOTE: set write dir doesn't means you mount it.
+    //     if ( ex_fsys_set_write_path(path) != 0 )
+    //         return -1;
+    //     ex_log ( "[wiz] Set default write path: %s", path  );
 
-        //
-        if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
-            return -1;
-        ex_log ( "[wiz] Mount %s to wiz://", path  );
-    }
+    //     //
+    //     if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
+    //         return -1;
+    //     ex_log ( "[wiz] Mount %s to wiz://", path  );
+    // }
 
-    // if ~/.wiz/ exists we mount it to __wiz__/ secondly
-    if ( usr_path ) {
-        strncpy ( path, usr_path, MAX_PATH );
-        strcat ( path, ".wiz/" );
+    // // if ~/.wiz/ exists we mount it to __wiz__/ secondly
+    // if ( usr_path ) {
+    //     strncpy ( path, usr_path, MAX_PATH );
+    //     strcat ( path, ".wiz/" );
 
-        //
-        if ( ex_os_exists(path) && ex_os_isdir(path) ) {
-            if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
-                return -1;
-            ex_log ("[wiz] Mount %s to wiz://", path );
-        }
-    }
+    //     //
+    //     if ( ex_os_exists(path) && ex_os_isdir(path) ) {
+    //         if ( ex_fsys_mount( path, "__wiz__", true ) != 0 )
+    //             return -1;
+    //         ex_log ("[wiz] Mount %s to wiz://", path );
+    //     }
+    // }
+    // } DISABLE end 
 
-    // load builtin modules
-    ex_log ( "[wiz] Loading builtin modules..." );
-    if ( ex_lua_fsys_init_modules ( _l, "__wiz__/builtin/modules" ) ) {
-        ex_log ( "Failed to load builtin modules" );
-        return -1;
-    }
+    // init wiz_c
+    lua_newtable(_l); // create wiz_c table
 
-    // create wiz_c table
-    lua_newtable(_l);
-
-        __wiz_lua_add_app (_l);
         __wiz_lua_add_window (_l);
 
         ex_lua_add_module ( _l, "wiz_c" );
 
     lua_pop(_l, 1);  /* remove wiz_c table */
+
+    // load builtin modules
+    path = ex_str_allocf( "%s/builtin/modules", app_path );
+    ex_log ( "[wiz] Loading builtin modules..." );
+    if ( ex_lua_init_modules ( _l, ex_cstr(path) ) ) {
+        ex_str_free(path);
+        ex_log ( "Failed to load builtin modules" );
+        return -1;
+    }
+    ex_str_free(path);
 
     // push arguments to wiz.arguments in lua
     __lua_wiz_init_arguments ( _l, _argc, _argv );

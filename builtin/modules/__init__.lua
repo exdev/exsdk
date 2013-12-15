@@ -13,11 +13,11 @@
 
 function load_module ( _path )
     -- NOTE: you can not use path.join here, because the base module is not loaded yet
-    local path = string.format( "%s/%s", os.getcwd(), _path )
-    local m = ex_c.fsys_dofile( string.format( "%s/__module__.lua", path ) )
+    local path = string.format( "%s/%s", os.cwd(), _path )
+    local m = ex_c.dofile( string.format( "%s/__module__.lua", path ) )
 
     for i=1,#m.files do
-        ex_c.fsys_dofile( string.format( "%s/%s", path, m.files[i] ) )
+        ex_c.dofile( string.format( "%s/%s", path, m.files[i] ) )
     end
 
     if m.name ~= nil then

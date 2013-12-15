@@ -14,10 +14,20 @@ local __M = {}
 wiz.importer = class ({
     __typename = "importer",
 
+    -- constructor & destructor
+    __init = function ( _self, _bundle, _path )
+        checkarg(_bundle,"bundle")
+        checkarg(_path,"string")
+
+        _self.bundle = _bundle
+        _self.path = _path
+    end,
+
     --/////////////////////////////////////////////////////////////////////////////
     -- properties
     --/////////////////////////////////////////////////////////////////////////////
 
+    bundle = wiz.bundle.null,
     path = "",
 
     --/////////////////////////////////////////////////////////////////////////////
