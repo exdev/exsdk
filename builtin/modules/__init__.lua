@@ -11,9 +11,9 @@
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function load_module ( _path )
+function load_module ( _moduleName )
     -- NOTE: you can not use path.join here, because the base module is not loaded yet
-    local path = string.format( "%s/%s", os.cwd(), _path )
+    local path = string.format( "builtin/modules/%s", _moduleName )
     local m = ex_c.dofile( string.format( "%s/__module__.lua", path ) )
 
     for i=1,#m.files do

@@ -263,9 +263,9 @@ extern int __wiz_lua_add_window ( lua_State * );
 // ------------------------------------------------------------------ 
 
 static int __init ( lua_State *_l, int _argc, char **_argv ) {
-    ex_str_t *path;
     const char *app_path = NULL;
     const char *usr_path = NULL;
+    ex_str_t *init_file;
 
     // mount the wiz path to __wiz__/ in fsys
 #if (EX_PLATFORM == EX_IOS)
@@ -314,19 +314,19 @@ static int __init ( lua_State *_l, int _argc, char **_argv ) {
 
         __wiz_lua_add_window (_l);
 
-        ex_lua_add_module ( _l, "wiz_c" );
+        ex_lua_add_c_module ( _l, "wiz_c" );
 
     lua_pop(_l, 1);  /* remove wiz_c table */
 
     // load builtin modules
-    path = ex_str_allocf( "%s/builtin/modules", app_path );
-    ex_log ( "[wiz] Loading builtin modules..." );
-    if ( ex_lua_init_modules ( _l, ex_cstr(path) ) ) {
-        ex_str_free(path);
-        ex_log ( "Failed to load builtin modules" );
+    init_file = ex_str_allocf( "%s/builtin/modules/__init__.lua", app_path );
+    ex_log ( "[wiz] Initializing builtin modules..." );
+    if ( ex_lua_dofile ( _l, ex_cstr(init_file) ) ) {
+        ex_str_free(init_file);
+        ex_log ( "Failed to init builtin modules" );
         return -1;
     }
-    ex_str_free(path);
+    ex_str_free(init_file);
 
     // push arguments to wiz.arguments in lua
     __lua_wiz_init_arguments ( _l, _argc, _argv );

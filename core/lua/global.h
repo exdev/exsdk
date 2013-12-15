@@ -39,14 +39,8 @@ extern int ex_lua_set_cpath ( struct lua_State *_l, const char *_path );
 extern int ex_lua_add_cpath ( struct lua_State *_l, const char *_path );
 
 // module
-// add module will load table from lua stack, and add it by the modname you provide 
-extern void ex_lua_add_module ( struct lua_State *_l, const char *_modname );
-
-// init modules will execute __init__.lua under the os path
-extern int ex_lua_init_modules ( struct lua_State *_l, const char *_path );
-
-// init modules will execute __init__.lua under the os path
-extern int ex_lua_init_modules ( struct lua_State *_l, const char *_path );
+// add c-module will load table from lua stack, and add it by the modname you provide 
+extern void ex_lua_add_c_module ( struct lua_State *_l, const char *_modname );
 
 ///////////////////////////////////////////////////////////////////////////////
 // lua interpreter op

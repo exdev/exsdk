@@ -156,7 +156,7 @@ static void __ex_lua_openlibs ( lua_State *_l ) {
             (*pfunc) (_l); // add functions to the table
         }
 
-        ex_lua_add_module ( _l, "ex_c" );
+        ex_lua_add_c_module ( _l, "ex_c" );
 
     lua_pop(_l, 1);  /* remove module table */
 }
@@ -169,11 +169,11 @@ extern int luaopen_yajl ( lua_State * );
 
 static void __ex_lua_openlibs_ext ( lua_State *_l ) {
     luaopen_lpeg (_l); // new lpeg table
-    ex_lua_add_module ( _l, "lpeg" );
+    ex_lua_add_c_module ( _l, "lpeg" );
     lua_pop(_l, 1);  /* remove module table */
 
     luaopen_yajl (_l); // new yajl-json table
-    ex_lua_add_module ( _l, "json" );
+    ex_lua_add_c_module ( _l, "json" );
     lua_pop(_l, 1);  /* remove module table */
 }
 
@@ -413,7 +413,7 @@ int ex_lua_add_cpath ( struct lua_State *_l, const char *_path ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_lua_add_module ( lua_State *_l, const char *_modname ) {
+void ex_lua_add_c_module ( lua_State *_l, const char *_modname ) {
     luaL_getsubtable(_l, LUA_REGISTRYINDEX, "_LOADED");
     lua_pushvalue(_l, -2);  /* make copy of module (call result) */
     lua_setfield(_l, -2, _modname);  /* _LOADED[modname] = module */
@@ -421,41 +421,6 @@ void ex_lua_add_module ( lua_State *_l, const char *_modname ) {
 
     lua_pushvalue(_l, -1);  /* copy of 'mod' */
     lua_setglobal(_l, _modname);  /* _G[modname] = module */
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-int ex_lua_init_modules ( lua_State *_l, const char *_path ) {
-    ex_str_t *filePath;
-    // NOTE: we use idx because lua_dofile may have return value pushes on to the stack 
-    int idx_cwd;
-    int status;
-
-    // push the old cwd to the stack and set _path as new cwd
-    lua_pushstring ( _l, ex_os_getcwd() ); idx_cwd = lua_gettop(_l); // store the old cwd
-    ex_os_setcwd(_path);
-
-    // dofile ( "_path/__init__.lua" )
-    filePath = ex_str_allocf( "%s/__init__.lua", _path );
-    status = ex_lua_dofile ( _l, ex_cstr(filePath) );
-
-    // restore the old cwd
-    ex_os_setcwd(lua_tostring(_l, idx_cwd));
-    lua_remove(_l,idx_cwd); // remove cwd
-
-    ex_str_free(filePath);
-
-    return status; 
-}
-
-// ------------------------------------------------------------------ 
-// Desc: 
-// ------------------------------------------------------------------ 
-
-int ex_lua_fsys_load_module ( lua_State *_l, const char *_fsys_file ) {
-    return -1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
