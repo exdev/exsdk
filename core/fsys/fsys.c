@@ -457,7 +457,7 @@ size_t ex_os_ftell ( ex_file_t *_file ) {
 // ------------------------------------------------------------------ 
 
 size_t ex_os_fread ( ex_file_t *_file, void *_buf, uint64 _size ) {
-    return SDL_RWread( (SDL_RWops *)_file, _buf, _size, _size );
+    return SDL_RWread( (SDL_RWops *)_file, _buf, 1, _size );
 }
 
 // ------------------------------------------------------------------ 
@@ -465,5 +465,5 @@ size_t ex_os_fread ( ex_file_t *_file, void *_buf, uint64 _size ) {
 // ------------------------------------------------------------------ 
 
 size_t ex_os_fwrite ( ex_file_t *_file, const void *_buf, uint64 _size ) {
-    return SDL_RWwrite( (SDL_RWops *)_file, _buf, _size, _size );
+    return SDL_RWwrite( (SDL_RWops *)_file, _buf, 1, _size );
 }

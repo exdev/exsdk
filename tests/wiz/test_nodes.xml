@@ -1,0 +1,16 @@
+<!-- ======================================================================================-->
+<!-- File         : test_nodes.xml-->
+<!-- Author       : Wu Jie -->
+<!-- Last Change  : 12/16/2013 | 14:47:06 PM | Monday,December-->
+<!-- Description  : -->
+<!-- ======================================================================================-->
+
+<uml>
+    <bundle name="test" path="./" />
+
+    <window title="Window" position="10,10" width="400" height="300">
+        Hello World
+        <hbox>
+        </hbox>
+    </window>
+</uml>
