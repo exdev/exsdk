@@ -14,6 +14,7 @@
 -- ------------------------------------------------------------------ 
 
 wiz.arguments = {}
+wiz.bundles = {}
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
@@ -22,8 +23,16 @@ wiz.arguments = {}
 function wiz.mount ( _path, _name )
     local path = path.join( os.cwd(), _path )
     local bundle = wiz.bundle( _name, path )
-    ex_c.fsys_mount( path, string.format("__wiz__/%s",_name) )
 
+    --
+    local old_bundle = wiz.bundles[_name]
+    if old_bundle ~= nil then
+        wiz.unmount(old_bundle)
+    end
+    wiz.bundles[_name] = bundle
+
+    --
+    ex_c.fsys_mount( path, string.format("__wiz__/%s",_name) )
     return bundle
 end
 
@@ -33,6 +42,7 @@ end
 
 function wiz.unmount ( _bundle )
     checkarg ( _bundle, "bundle" )
+    wiz.bundles[bundle.name] = nil
     ex_c.fsys_unmount( _bundle.path )
 end
 

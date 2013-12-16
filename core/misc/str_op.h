@@ -24,7 +24,7 @@ extern const char *ex_str_replace ( const char *_path, char _from, char _to );
 #define ex_unix_path(_path) ex_str_replace(_path,'\\','/')
 #define ex_windows_path(_path) ex_str_replace(_path,'/','\\')
 
-extern void ex_simplify_path ( char *_path );
+extern void ex_str_simplify_path ( char *_path );
 
 // ######################### 
 #ifdef __cplusplus

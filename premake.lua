@@ -31,9 +31,6 @@ local copy_files = function ( _src_dirname, _dest_dirpath )
         os.mkdir( _dest_dirpath.."/"..path.getdirectory(matches[i]) )
         os.copyfile( matches[i], _dest_dirpath..matches[i] )
     end
-
-    -- TEST: for unit-test
-    os.copyfile( "examples/main.lua", _dest_dirpath.."/main.lua" )
 end
 
 --

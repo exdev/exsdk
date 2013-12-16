@@ -467,9 +467,7 @@ void wiz_run ( lua_State *_l, int _argc, char **_argv ) {
         result[len] = '\0';
 
         // open the file
-        if ( wiz_execute(_l,result) != 0 ) {
-            return;
-        }
+        wiz_execute(_l,result);
     }
 
     // enter the event-loop if we create display(window) 
@@ -533,6 +531,8 @@ int wiz_execute ( lua_State *_l, const char *_path ) {
     // restore the old cwd
     ex_os_setcwd(lua_tostring(_l, idx_cwd));
     lua_remove(_l,idx_cwd); // remove cwd
+
+    return 0;
 }
 
 // ------------------------------------------------------------------ 

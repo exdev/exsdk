@@ -17,5 +17,5 @@ end
 -- test_app
 local appPath = "../../../../../examples/"
 
-local bundle = wiz.mount( "./test_graphics/", "test.graphics" )
+local bundle = wiz.mount( "./test_graphics/", "test_graphics" )
 bundle:dofile( "init.lua" )

@@ -59,10 +59,11 @@ static int __lua_fsys_mount ( lua_State *_l ) {
     path = luaL_checkstring(_l,1);
     mountPoint = luaL_checkstring(_l,2);
 
+    ex_str_simplify_path (path);
+
     // always use append here
     if ( ex_fsys_mount ( path, mountPoint, true ) != 0 ) {
-        ex_log( "[fsys] Failed to mount %s to %s", path, mountPoint );
-        return 0;
+        return luaL_error ( _l, "[fsys] Failed to mount %s to %s", path, mountPoint );
     }
     ex_log( "[fsys] Mount %s to %s", path, mountPoint );
 
