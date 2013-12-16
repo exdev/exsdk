@@ -433,7 +433,7 @@ solution "exSDK"
     -- TEST
     -- ======================================================== 
 
-    matches = os.matchfiles("tests/test_*.c")
+    matches = os.matchfiles("tests/exsdk/test_*.c")
     for i=1,#matches do
         -- print ( path.getbasename(matches[i]) )
         local projectName = path.getbasename(matches[i]) 

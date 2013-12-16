@@ -481,6 +481,7 @@ void wiz_run ( lua_State *_l, int _argc, char **_argv ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+extern int __wiz_load_xml ( lua_State *, const char * );
 // ------------------------------------------------------------------ 
 
 int wiz_execute ( lua_State *_l, const char *_path ) {
@@ -522,7 +523,9 @@ int wiz_execute ( lua_State *_l, const char *_path ) {
     }
     // if this is an xml file
     else if ( strncmp( (end-3), ".xml", 4 ) == 0 ) {
-        // TODO:
+        if ( __wiz_load_xml ( _l, _path ) != 0 ) {
+            return -1;
+        }
     }
     else {
         ex_log ( "Invalid file: %s", _path );
