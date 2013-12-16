@@ -29,11 +29,12 @@ static XML_Parser parser = NULL;
 
 static void __process_character_data ( void *_userData, const char *_text, int _len ) {
     if ( _len > 0 ) {
+        // lua_pushlstring( _text, _len );
         char *t = ex_malloc( _len+1 );
 
         strncpy( t, _text, _len );
         t[_len] = '\0';
-        printf( "\"%s\"", t );
+        printf( "(%s)", t );
 
         ex_free(t);
     }
@@ -47,10 +48,8 @@ static void XMLCALL __start_element ( void *_userData, const char *_name, const 
     int i;
     int *depthPtr = (int *)_userData;
 
-    XML_SetCharacterDataHandler ( parser, __process_character_data );
-
-    for ( i = 0; i < *depthPtr; i++ )
-        printf("\t");
+    // for ( i = 0; i < *depthPtr; i++ )
+    //     printf("\t");
 
     printf( "%s: ", _name );
     while ( *_attrs ) {
@@ -68,9 +67,6 @@ static void XMLCALL __start_element ( void *_userData, const char *_name, const 
 
 static void XMLCALL __end_element(void *_userData, const char *_name) {
     int *depthPtr = (int *)_userData;
-
-    XML_SetCharacterDataHandler ( parser, NULL );
-
     *depthPtr -= 1;
 }
 
@@ -98,6 +94,7 @@ int __wiz_load_xml ( lua_State *_l, const char *_filepath ) {
     parser = XML_ParserCreate(NULL);
     XML_SetUserData(parser, &depth);
     XML_SetElementHandler ( parser, __start_element, __end_element );
+    XML_SetCharacterDataHandler ( parser, __process_character_data );
 
     // begin parse strimming xml 
     do {
