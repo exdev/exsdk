@@ -6,9 +6,4 @@
 -- ======================================================================================
 
 print("simple test")
-
-function my_test () 
-    print( "return value is " .. tostring(wiz_c.test()) )
-end
-
-my_test()
+print( tostring( wiz_c.test() ) )

@@ -9,13 +9,12 @@
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
 
+-- NOTE: XCode add command: "../../../../../tests/wiz/main.lua"
+
 print("arguments = " .. #wiz.arguments)
 for i=1,#wiz.arguments do
     print(wiz.arguments[i])
 end
-
--- test_app
-local appPath = "../../../../../tests/wiz/"
 
 local bundle = wiz.mount( "./", "tests" )
 bundle:dofile( "test_graphics.lua" )
