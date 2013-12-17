@@ -27,6 +27,20 @@ wiz.domNode = class ({
         _node.parent = _self
         table.add( _self.children, _node )
     end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    getElementByTag = function ( _self, _tag )
+        for i=1,#_self.children do
+            local node = _self.children[i]
+            if node.tag == _tag then
+                return node
+            end
+        end
+        return nil
+    end,
 })
 
 --/////////////////////////////////////////////////////////////////////////////

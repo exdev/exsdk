@@ -52,7 +52,15 @@ wiz.parser = {
     -- ------------------------------------------------------------------ 
 
     onFinish = function ()
-        local window = wiz.window( 640, 480 )
+        local body = rootElement:getElementByTag("body")
+        if body == nil then
+            error ( "Parse Error: Can't find body" )
+        end
+
+        local w = body.attrs.width or 640
+        local h = body.attrs.height or 480
+        local window = wiz.window( tonumber(w), tonumber(h) )
+
         window.document = wiz.document(rootElement)
     end,
 }
