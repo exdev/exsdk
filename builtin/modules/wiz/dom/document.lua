@@ -14,7 +14,7 @@ wiz.document = class ({
 
     -- constructor & destructor
     __init = function ( _self, _root_el )
-        checkarg(_root_el,"element")
+        checkarg(_root_el,"elementNode")
 
         _self._root = _root_el
     end,
@@ -23,6 +23,6 @@ wiz.document = class ({
     --
     --/////////////////////////////////////////////////////////////////////////////
 
-    _root = wiz.element.null,
+    _root = nil,
 
 })

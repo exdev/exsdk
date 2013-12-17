@@ -5,8 +5,8 @@
 -- Description  : 
 -- ======================================================================================
 
-local rootElement = wiz.element.null
-local curElement = wiz.element.null
+local rootElement = nil -- wiz.element
+local curElement = nil -- wiz.element
 
 --/////////////////////////////////////////////////////////////////////////////
 --
@@ -19,6 +19,15 @@ wiz.parser = {
     -- ------------------------------------------------------------------ 
 
     onStartElement = function ( _tag, _attrs ) 
+        local newElement = wiz.elementNode( _tag, _attrs )
+
+        if rootElement == nil then
+            rootElement = newElement
+        else
+            curElement:addChild(newElement)
+        end
+
+        curElement = newElement
     end,
 
     -- ------------------------------------------------------------------ 
@@ -26,6 +35,7 @@ wiz.parser = {
     -- ------------------------------------------------------------------ 
 
     onEndElement = function ( _tag ) 
+        curElement = curElement.parent
     end,
 
     -- ------------------------------------------------------------------ 
@@ -33,9 +43,8 @@ wiz.parser = {
     -- ------------------------------------------------------------------ 
 
     onAddText = function ( _text, _isWhiteSpace ) 
-        if _isWhiteSpace == false then
-            print(_text)
-        end
+        local newText = wiz.textNode( _text, _isWhiteSpace )
+        curElement:addChild(newText)
     end,
 
     -- ------------------------------------------------------------------ 

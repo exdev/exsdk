@@ -29,9 +29,9 @@
 
 typedef struct __user_data_t {
     lua_State *l;
-    int refID_on_add_text;
     int refID_on_start_element;
     int refID_on_end_element;
+    int refID_on_add_text;
     int refID_on_finish;
 } __user_data_t;
 
@@ -69,18 +69,25 @@ static void __process_character_data ( void *_userData, const char *_text, int _
 
 static void XMLCALL __start_element ( void *_userData, const char *_name, const char **_attrs ) {
     __user_data_t *userData = (__user_data_t *)_userData;
+    lua_State *l = userData->l;
 
-    // for ( i = 0; i < *depthPtr; i++ )
-    //     printf("\t");
+    //
+    lua_rawgeti( l, LUA_REGISTRYINDEX, userData->refID_on_start_element );
 
-    printf( "%s: ", _name );
+    // set tag name and attributes
+    lua_pushstring(l,_name);
+    lua_newtable(l);
     while ( *_attrs ) {
-        printf( "%s ", *_attrs );
+        lua_pushstring( l, _attrs[1] );
+        lua_setfield( l, -2, _attrs[0] );
 
-        ++_attrs; 
+        _attrs += 2; 
     } 
-    printf("\n");
-    // *depthPtr += 1;
+
+    // invoke wiz.parser.onStartElement(_name, _attrs)
+    if ( lua_pcall( l, 2, 0, 0 ) ) {
+        ex_lua_alert(l);
+    }
 }
 
 // ------------------------------------------------------------------ 
@@ -89,8 +96,15 @@ static void XMLCALL __start_element ( void *_userData, const char *_name, const 
 
 static void XMLCALL __end_element ( void *_userData, const char *_name ) {
     __user_data_t *userData = (__user_data_t *)_userData;
+    lua_State *l = userData->l;
 
-    // *depthPtr -= 1;
+    //
+    lua_rawgeti( l, LUA_REGISTRYINDEX, userData->refID_on_end_element );
+
+    // invoke wiz.parser.onEndElement(_name, _attrs)
+    if ( lua_pcall( l, 0, 0, 0 ) ) {
+        ex_lua_alert(l);
+    }
 }
 
 // ------------------------------------------------------------------ 
@@ -117,14 +131,14 @@ int __wiz_load_xml ( lua_State *_l, const char *_filepath ) {
     lua_getglobal( _l, "wiz" );
     lua_getfield( _l, -1, "parser" );
 
-    lua_getfield( _l, -1, "onAddText" );
-    userData.refID_on_add_text = luaL_ref( _l, LUA_REGISTRYINDEX );
-
     lua_getfield( _l, -1, "onStartElement" );
     userData.refID_on_start_element = luaL_ref( _l, LUA_REGISTRYINDEX );
 
     lua_getfield( _l, -1, "onEndElement" );
     userData.refID_on_end_element = luaL_ref( _l, LUA_REGISTRYINDEX );
+
+    lua_getfield( _l, -1, "onAddText" );
+    userData.refID_on_add_text = luaL_ref( _l, LUA_REGISTRYINDEX );
 
     lua_getfield( _l, -1, "onFinish" );
     userData.refID_on_finish = luaL_ref( _l, LUA_REGISTRYINDEX );
@@ -157,9 +171,9 @@ int __wiz_load_xml ( lua_State *_l, const char *_filepath ) {
         }
 
     // deinit userData
-    luaL_unref( _l, LUA_REGISTRYINDEX, userData.refID_on_add_text );
     luaL_unref( _l, LUA_REGISTRYINDEX, userData.refID_on_start_element );
     luaL_unref( _l, LUA_REGISTRYINDEX, userData.refID_on_end_element );
+    luaL_unref( _l, LUA_REGISTRYINDEX, userData.refID_on_add_text );
     luaL_unref( _l, LUA_REGISTRYINDEX, userData.refID_on_finish );
     lua_pop(_l,2); // pop wiz.parser
 

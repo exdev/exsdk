@@ -15,7 +15,7 @@ return {
         "base/bundle.lua",
 
         -- dom
-        "dom/element.lua",
+        "dom/node.lua",
         "dom/document.lua",
         "dom/parser.lua",
 
