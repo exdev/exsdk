@@ -34,6 +34,7 @@ wiz.window = class ({
     height = property {
         get = function ( _self ) return wiz_c.get_window_height(_self.id) end
     },
+    document = wiz.document.null,
 
     --/////////////////////////////////////////////////////////////////////////////
     -- functions

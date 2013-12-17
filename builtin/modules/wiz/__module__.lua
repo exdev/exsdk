@@ -13,6 +13,13 @@ return {
         -- basic
         "base/wiz.lua",
         "base/bundle.lua",
+
+        -- dom
+        "dom/element.lua",
+        "dom/document.lua",
+        "dom/parser.lua",
+
+        -- window
         "base/window.lua",
 
         -- importer
