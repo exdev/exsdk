@@ -15,6 +15,8 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+#define SHORT_PATH_LEN 30
+
 ///////////////////////////////////////////////////////////////////////////////
 // quick reference
 ///////////////////////////////////////////////////////////////////////////////
@@ -527,7 +529,6 @@ int ex_lua_dofile_2 ( lua_State *_l, const char *_filepath, int _idx ) {
     size_t buf_size;
     void *buffer;
 
-    const size_t SHORT_PATH_LEN = 30;
     size_t pathLen = -1;
     char shortPath[SHORT_PATH_LEN];
 
@@ -589,7 +590,6 @@ int ex_lua_fsys_dofile_2 ( lua_State *_l, const char *_fsys_filepath, int _idx )
     size_t buf_size;
     void *buffer;
 
-    const size_t SHORT_PATH_LEN = 30;
     size_t pathLen = -1;
     char shortPath[SHORT_PATH_LEN];
 

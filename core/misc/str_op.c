@@ -37,11 +37,11 @@ const char * ex_str_replace ( const char *_path, char _from, char _to ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
-void ex_str_simplify_path ( char *_path ) {
+void ex_str_simplify_path ( const char *_path ) {
     char *cur;
     char *t;
     int isrooted;
-    char *very_start = _path;
+    char *very_start = (char *)_path;
     char *start;
 
     if (!*_path)

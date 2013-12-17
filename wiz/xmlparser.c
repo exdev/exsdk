@@ -21,6 +21,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#define BUF_SIZE 1024
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+
 typedef struct __user_data_t {
     lua_State *l;
     int refID_on_add_text;
@@ -92,8 +98,6 @@ static void XMLCALL __end_element ( void *_userData, const char *_name ) {
 // ------------------------------------------------------------------ 
 
 int __wiz_load_xml ( lua_State *_l, const char *_filepath ) {
-    const size_t BUF_SIZE = 1024;
-
     XML_Parser parser;
     ex_file_t *file;
     char buffer[BUF_SIZE];

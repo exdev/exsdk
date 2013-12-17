@@ -433,7 +433,7 @@ int ex_os_fclose ( ex_file_t *_file ) {
 // ------------------------------------------------------------------ 
 
 int ex_os_fseek ( ex_file_t *_file, size_t _pos ) {
-    return SDL_RWseek((SDL_RWops *)_file,0,_pos);
+    return (int)SDL_RWseek((SDL_RWops *)_file,0,_pos);
 }
 
 // ------------------------------------------------------------------ 
@@ -441,7 +441,7 @@ int ex_os_fseek ( ex_file_t *_file, size_t _pos ) {
 // ------------------------------------------------------------------ 
 
 size_t ex_os_fsize ( ex_file_t *_file ) {
-    return SDL_RWsize((SDL_RWops *)_file);
+    return (size_t)SDL_RWsize((SDL_RWops *)_file);
 }
 
 // ------------------------------------------------------------------ 
@@ -449,7 +449,7 @@ size_t ex_os_fsize ( ex_file_t *_file ) {
 // ------------------------------------------------------------------ 
 
 size_t ex_os_ftell ( ex_file_t *_file ) {
-    return SDL_RWtell((SDL_RWops *)_file);
+    return (size_t)SDL_RWtell((SDL_RWops *)_file);
 }
 
 // ------------------------------------------------------------------ 
@@ -457,7 +457,7 @@ size_t ex_os_ftell ( ex_file_t *_file ) {
 // ------------------------------------------------------------------ 
 
 size_t ex_os_fread ( ex_file_t *_file, void *_buf, uint64 _size ) {
-    return SDL_RWread( (SDL_RWops *)_file, _buf, 1, _size );
+    return SDL_RWread( (SDL_RWops *)_file, _buf, 1, (size_t)_size );
 }
 
 // ------------------------------------------------------------------ 
@@ -465,5 +465,5 @@ size_t ex_os_fread ( ex_file_t *_file, void *_buf, uint64 _size ) {
 // ------------------------------------------------------------------ 
 
 size_t ex_os_fwrite ( ex_file_t *_file, const void *_buf, uint64 _size ) {
-    return SDL_RWwrite( (SDL_RWops *)_file, _buf, 1, _size );
+    return SDL_RWwrite( (SDL_RWops *)_file, _buf, 1, (size_t)_size );
 }

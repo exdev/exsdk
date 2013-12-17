@@ -9,7 +9,8 @@
 -- functions
 --/////////////////////////////////////////////////////////////////////////////
 
--- NOTE: XCode add command: "../../../../../tests/wiz/main.lua"
+-- NOTE: add command: "../../../../../tests/wiz/main.lua"
+-- if this is msvc, change working directory to $(TargetDir)
 
 print("arguments = " .. #wiz.arguments)
 for i=1,#wiz.arguments do

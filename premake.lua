@@ -70,6 +70,9 @@ solution "exSDK"
         "LUA_COMPAT_ALL",
         -- "LPEG_DEBUG_PRINT",
 
+        -- expat 
+        "XML_STATIC",
+
         -- exsdk defines
         "EX_USE_DL_MALLOC",
         "EX_USE_MEMORY_MANAGER",
@@ -342,6 +345,7 @@ solution "exSDK"
         includedirs {
             "ext/SDL-2.0.1/include/",
             "ext/SDL_image-2.0.0/",
+            "ext/expat-2.1.0/",
             "ext/lua-5.2.2/",
             "core/"
         } 
