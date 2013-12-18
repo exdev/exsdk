@@ -9,6 +9,11 @@
     <bundle name="bundle.test" path="./" />
 
     <body title="Test" position="10,10" width="400" height="300">
-        Hello World This is a test
+        <space flexible="true"/>
+        <hbox>
+            <space flexible="true"/>
+            <button id="btn_01">OK</button>
+            <button id="btn_02">Cancel</button>
+        </hbox>
     </body>
 </xml>
