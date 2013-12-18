@@ -79,12 +79,14 @@ wiz.domNode = class ({
             node:repaint()
         end
 
-        -- repaint myself
-        if self.repaintDirty then
-            self:_doRepaint()
+        -- TODO: right now, we always repaint
+        self:_doRepaint()
+        -- -- repaint myself
+        -- if self.repaintDirty then
+        --     self:_doRepaint()
 
-            self.repaintDirty = false
-        end
+        --     self.repaintDirty = false
+        -- end
     end,
 })
 

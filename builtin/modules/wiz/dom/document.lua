@@ -31,5 +31,14 @@ wiz.document = class ({
 
     repaint = function ( self ) 
         self._root:repaint()
-    end
+    end,
+
+    setSize = function ( self, w, h )
+        local style = self._root.style
+        style.width = w
+        style.height = h
+
+        self.root.layoutDirty = true
+        self.root.repaintDirty = true
+    end,
 })
