@@ -19,3 +19,4 @@ end
 
 local bundle = wiz.mount( "./", "tests" )
 bundle:dofile( "test_graphics.lua" )
+

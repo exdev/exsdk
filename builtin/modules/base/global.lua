@@ -15,8 +15,8 @@
 
 -- DISABLE: if use this, the callback stack will show only here
 -- local builtinAssert = assert
--- function assert ( _exp, _msg, ... )
---     builtinAssert ( _exp,  _msg:format(...)  )
+-- function assert ( exp, msg, ... )
+--     builtinAssert ( exp,  msg:format(...)  )
 -- end
 
 -- ------------------------------------------------------------------ 
@@ -24,25 +24,25 @@
 -- ------------------------------------------------------------------ 
 
 local builtinError = error
-function error ( _msg, ... )
-    builtinError( _msg:format(...) )
+function error ( msg, ... )
+    builtinError( msg:format(...) )
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function printf ( _msg, ... ) 
-    print ( _msg:format(...) )
+function printf ( msg, ... ) 
+    print ( msg:format(...) )
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function checkarg ( _arg, _typename )
-    assert ( typename(_arg) == _typename, 
-             string.format("Type error: must be %s", _typename ) )
+function checkarg ( arg, tpname )
+    assert ( typename(arg) == tpname, 
+             string.format("Type error: must be %s", tpname ) )
 end
 
 -- ------------------------------------------------------------------ 

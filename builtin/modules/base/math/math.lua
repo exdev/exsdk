@@ -20,19 +20,19 @@ math.halfPI = math.pi/2
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function math.clamp ( _val, _min, _max ) 
-    if _val > _max then return _max end 
-    if _val < _min then return _min end 
-    return _val
+function math.clamp ( val, min, max ) 
+    if val > max then return max end 
+    if val < min then return min end 
+    return val
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function math.lerp ( _src, _dest, _ratio )
-    assert ( type(_ratio) == "number", "Type error: _ratio is not a number" )
-    return _src * (1.0 - _ratio) + _dest * _ratio 
+function math.lerp ( src, dest, ratio )
+    assert ( type(ratio) == "number", "Type error: ratio is not a number" )
+    return src * (1.0 - ratio) + dest * ratio 
 end
 
 -- ------------------------------------------------------------------ 
@@ -43,20 +43,20 @@ end
 -- drop_item = item[gen_idx()]
 -- ------------------------------------------------------------------ 
 
-function math.probability ( _weights )
+function math.probability ( weights )
     local sum = 0.0
     local cdf = {}
 
-    for i=1,#_weights do 
-        sum = sum + _weights[i] 
+    for i=1,#weights do 
+        sum = sum + weights[i] 
     end
 
-    cdf[1] = _weights[1]/sum
-    for i=2,#_weights-1 do
-        cdf[i] = _weights[i]/sum
+    cdf[1] = weights[1]/sum
+    for i=2,#weights-1 do
+        cdf[i] = weights[i]/sum
         cdf[i] = cdf[i] + cdf[i-1]
     end
-    cdf[#_weights] = 1.0
+    cdf[#weights] = 1.0
 
     return function ()
         local y = math.random()

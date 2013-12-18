@@ -13,11 +13,11 @@
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function string.findlast ( _s, _pattern, _plain )
+function string.findlast ( s, pattern, plain )
     local curr = 0
 
     repeat
-        local next = _s:find(_pattern, curr + 1, _plain)
+        local next = s:find(pattern, curr + 1, plain)
         if next then curr = next end
     until not next
 
@@ -30,23 +30,23 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function string.gsplit ( _s, _sep, _plain )
+function string.gsplit ( s, sep, plain )
 	local start = 1
 	local done = false
 	local function pass(i, j, ...)
 		if i then
-			local seg = _s:sub(start, i - 1)
+			local seg = s:sub(start, i - 1)
 			start = j + 1
 			return seg, ...
 		else
 			done = true
-			return _s:sub(start)
+			return s:sub(start)
 		end
 	end
 	return function()
 		if done then return end
-		if _sep == '' then done = true return _s end
-		return pass(_s:find(_sep, start, _plain))
+		if sep == '' then done = true return s end
+		return pass(s:find(sep, start, plain))
 	end
 end
 
@@ -54,15 +54,15 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function string.split ( _s, _sep, _plain )
+function string.split ( s, sep, plain )
     local list = {}
 
-    if _plain then
-        for w in _s:gsplit( _sep, _plain ) do
+    if plain then
+        for w in s:gsplit( sep, plain ) do
             list[#list+1] = w
         end
     else
-        for w in _s:gmatch("[^".._sep.."]+") do
+        for w in s:gmatch("[^"..sep.."]+") do
             list[#list+1] = w
         end
     end
@@ -74,6 +74,6 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function string.trim ( _s )
-    return _s:match( "^%s*(.-)%s*$" )
+function string.trim ( s )
+    return s:match( "^%s*(.-)%s*$" )
 end

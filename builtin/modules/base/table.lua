@@ -13,9 +13,9 @@
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function table.contains (_t,_v)
-    for _,v in pairs(_t) do
-        if v == _v then
+function table.contains ( t, val )
+    for _,v in pairs(t) do
+        if v == val then
             return true
         end
     end
@@ -27,11 +27,11 @@ end
 -- copy will not create new table and copy table-refrence
 -- ------------------------------------------------------------------ 
 
-function table.copy ( _t, _from )
-    for k,v in pairs(_from) do
-        _t[k] = v
+function table.copy ( t, from )
+    for k,v in pairs(from) do
+        t[k] = v
     end
-    return _t
+    return t
 end
 
 -- ------------------------------------------------------------------ 
@@ -39,48 +39,48 @@ end
 -- deepcopy will create new table and copy the value in the table to the new table
 -- ------------------------------------------------------------------ 
 
-function table.deepcopy ( _t, _from )
-    for k,v in pairs(_from) do
+function table.deepcopy ( t, from )
+    for k,v in pairs(from) do
         if type(v) == "table" then
             local tt = {}
-            _t[k] = table.deepcopy ( tt, v )
+            t[k] = table.deepcopy ( tt, v )
         else
-            _t[k] = v
+            t[k] = v
         end
     end
-    return _t
+    return t
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function table.add ( _t, _el )
-    _t[#_t+1] = _el
-    return _t
+function table.add ( t, el )
+    t[#t+1] = el
+    return t
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function table.addlist ( _t, _list )
-    assert ( type(_list) == "table" and #_list > 0, "Invalid _list" )
-    for i=1,#_list do
-        _t[#_t+1] = _list[i]
+function table.addlist ( t, list )
+    assert ( type(list) == "table" and #list > 0, "Invalid list" )
+    for i=1,#list do
+        t[#t+1] = list[i]
     end
 
-    return _t
+    return t
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function table.removeel ( _t, _el )
-    for i=1,#_t do
-        if _t[i] == _el then
-            table.remove(_t,i)
+function table.removeel ( t, el )
+    for i=1,#t do
+        if t[i] == el then
+            table.remove(t,i)
             break
         end
     end
@@ -90,22 +90,22 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function table.fastremoveat ( _t, _idx )
-    assert ( type(_idx) == "number" )
-    if _idx > #_t then return end
+function table.fastremoveat ( t, idx )
+    assert ( type(idx) == "number" )
+    if idx > #t then return end
 
-    _t[_idx] = _t[#_t]
-    _t[#_t] = nil
+    t[idx] = t[#t]
+    t[#t] = nil
 end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function table.fastremoveel ( _t, _el )
-    for i=1,#_t do
-        if _t[i] == _el then
-            table.fastremoveat(_t,i)
+function table.fastremoveel ( t, el )
+    for i=1,#t do
+        if t[i] == el then
+            table.fastremoveat(t,i)
             break
         end
     end

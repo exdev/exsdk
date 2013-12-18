@@ -44,20 +44,20 @@ indent is a first indentation (optional).
 --]]
 -- ------------------------------------------------------------------ 
 
-function debug.dump(_t, _name, _indent, _show_meta)
+function debug.dump(t, name, indent, show_meta)
     local cart     -- a container
     local autoref  -- for self references
 
     --[[ counts the number of elements in a table
-    local function tablecount(_t)
+    local function tablecount(t)
         local n = 0
-        for _, _ in pairs(_t) do n = n+1 end
+        for _, _ in pairs(t) do n = n+1 end
         return n
     end
     ]]
     -- returns true if the table is empty
-    local function isemptytable(_t) 
-        return next(_t) == nil 
+    local function isemptytable(t) 
+        return next(t) == nil 
     end
 
     local function basicSerialize (o)
@@ -80,60 +80,58 @@ function debug.dump(_t, _name, _indent, _show_meta)
         end
     end
 
-    local function addtocart (_value, _name, _indent, _saved, _field, _show_meta)
-        local _indent = _indent or ""
-        local _saved = _saved or {}
-        local _field = _field or _name
-        if _show_meta == nil then
-            _show_meta = true
-        end
+    local function addtocart (value, name, indent, saved, field, show_meta)
+        local indent = indent or ""
+        local saved = saved or {}
+        local field = field or name
+        if show_meta == nil then show_meta = true end
 
-        cart = cart .. _indent .. _field
+        cart = cart .. indent .. field
 
-        if type(_value) ~= "table" then
-            cart = cart .. " = " .. basicSerialize(_value) .. ";\n"
+        if type(value) ~= "table" then
+            cart = cart .. " = " .. basicSerialize(value) .. ";\n"
         else
-            if _saved[_value] then
-                cart = cart .. " = {}; -- " .. _saved[_value] 
+            if saved[value] then
+                cart = cart .. " = {}; -- " .. saved[value] 
                 .. " (self reference)\n"
-                autoref = autoref ..  _name .. " = " .. _saved[_value] .. ";\n"
+                autoref = autoref ..  name .. " = " .. saved[value] .. ";\n"
             else
                 local mt = nil
-                if _show_meta then mt = getmetatable(_value) end
-                _saved[_value] = _name
+                if show_meta then mt = getmetatable(value) end
+                saved[value] = name
 
-                -- if tablecount(_value) == 0 then
-                if isemptytable(_value) and mt == nil then
+                -- if tablecount(value) == 0 then
+                if isemptytable(value) and mt == nil then
                     cart = cart .. " = {};\n"
                 else
                     cart = cart .. " = {\n"
-                    -- _saved mt
+                    -- saved mt
                     if mt then
-                        addtocart(mt, "", _indent .. "   ", {} --[[ FIXME: this may have bugs in self reference --]], "[metatable]", _show_meta)
+                        addtocart(mt, "", indent .. "   ", {} --[[ FIXME: this may have bugs in self reference --]], "[metatable]", show_meta)
                     end
 
                     -- save table if it is not empty
-                    if isemptytable(_value) == false then
-                        for k, v in pairs(_value) do
+                    if isemptytable(value) == false then
+                        for k, v in pairs(value) do
                             local sk = basicSerialize(k)
-                            local fname = string.format("%s[%s]", _name, sk)
-                            _field = string.format("[%s]", k)
+                            local fname = string.format("%s[%s]", name, sk)
+                            field = string.format("[%s]", k)
                             -- three spaces between levels
-                            addtocart(v, fname, _indent .. "   ", _saved, _field, _show_meta)
+                            addtocart(v, fname, indent .. "   ", saved, field, show_meta)
                         end
                     end
-                    cart = cart .. _indent .. "};\n"
+                    cart = cart .. indent .. "};\n"
                 end
             end
         end
     end
 
-    _name = _name or "__unnamed__"
-    if type(_t) ~= "table" then
-        print (_name .. " = " .. basicSerialize(_t))
+    name = name or "__unnamed__"
+    if type(t) ~= "table" then
+        print (name .. " = " .. basicSerialize(t))
         return
     end
     cart, autoref = "", ""
-    addtocart(_t, _name, _indent, {}, _name, _show_meta)
+    addtocart(t, name, indent, {}, name, show_meta)
     print(cart .. autoref)
 end

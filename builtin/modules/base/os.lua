@@ -13,7 +13,7 @@
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function os.executef (_cmd, ...)
-    return os.execute( string.format(_cmd, ...) )
+function os.executef (cmd, ...)
+    return os.execute( string.format(cmd, ...) )
 end
 
