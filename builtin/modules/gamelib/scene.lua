@@ -38,8 +38,8 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function ex.scene.newNode ( _name )
-    local node = ex.node(_name)
+function ex.scene.newNode ( name )
+    local node = ex.node(name)
     __nodes[#__nodes+1] = node
     return node
 end

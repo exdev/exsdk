@@ -27,9 +27,9 @@ ex.painter = class ({
         -- ------------------------------------------------------------------ 
 
         color = property { 
-            set = function ( _self, _v ) 
-                checkarg(_v,"color4f")
-                ex_c.painter_set_color(_v.r, _v.g, _v.b, _v.a) 
+            set = function ( self, v ) 
+                checkarg(v,"color4f")
+                ex_c.painter_set_color(v.r, v.g, v.b, v.a) 
             end
         },
 
@@ -37,47 +37,47 @@ ex.painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        rect = function ( _dx, _dy, _dw, _dh, _thickness )
-            ex_c.painter_draw_rect ( _dx, _dy, _dw, _dh, _thickness or 1 )
+        rect = function ( dx, dy, dw, dh, thickness )
+            ex_c.painter_draw_rect ( dx, dy, dw, dh, thickness or 1 )
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        rect4 = function ( _dx, _dy, _dw, _dh, _t, _r, _b, _l )
-            ex_c.painter_draw_rect_4 ( _dx, _dy, _dw, _dh, _t, _r, _b, _l )
+        rect4 = function ( dx, dy, dw, dh, t, r, b, l )
+            ex_c.painter_draw_rect_4 ( dx, dy, dw, dh, t, r, b, l )
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        filledRect = function ( _dx, _dy, _dw, _dh )
-            ex_c.painter_draw_filled_rect ( _dx, _dy, _dw, _dh )
+        filledRect = function ( dx, dy, dw, dh )
+            ex_c.painter_draw_filled_rect ( dx, dy, dw, dh )
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        image = function ( _image, 
-                           _dx, _dy, _dw, _dh,
-                           _sx, _sy, _sw, _sh )
-            checkarg(_image,"texture")
-            checkarg(_dx,"number")
-            checkarg(_dy,"number")
+        image = function ( img, 
+                           dx, dy, dw, dh,
+                           sx, sy, sw, sh )
+            checkarg(img,"texture")
+            checkarg(dx,"number")
+            checkarg(dy,"number")
 
-            _dw = _dw or _image.width
-            _dh = _dh or _image.height
-            _sx = _sx or 0
-            _sy = _sy or 0
-            _sw = _sw or _image.width
-            _sh = _sh or _image.height
+            dw = dw or img.width
+            dh = dh or img.height
+            sx = sx or 0
+            sy = sy or 0
+            sw = sw or img.width
+            sh = sh or img.height
 
-            ex_c.painter_set_texture(_image._cptr) 
-            ex_c.painter_draw_texture( _dx, _dy, _dw, _dh, -- pos
-                                       _sx, _sy, _sw, _sh -- rect
+            ex_c.painter_set_texture(img._cptr) 
+            ex_c.painter_draw_texture( dx, dy, dw, dh, -- pos
+                                       sx, sy, sw, sh -- rect
                                      )
             ex_c.painter_flush()
         end,
@@ -86,29 +86,29 @@ ex.painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        slicedImage = function ( _image, 
-                                  _dx, _dy, _dw, _dh,
-                                  _t, _r, _b, _l,
-                                  _sx, _sy, _sw, _sh )
-            checkarg(_image,"texture")
-            checkarg(_dx,"number")
-            checkarg(_dy,"number")
-            checkarg(_dw,"number")
-            checkarg(_dh,"number")
-            checkarg(_t,"number")
-            checkarg(_r,"number")
-            checkarg(_b,"number")
-            checkarg(_l,"number")
+        slicedImage = function ( img, 
+                                 dx, dy, dw, dh,
+                                 t, r, b, l,
+                                 sx, sy, sw, sh )
+            checkarg(img,"texture")
+            checkarg(dx,"number")
+            checkarg(dy,"number")
+            checkarg(dw,"number")
+            checkarg(dh,"number")
+            checkarg(t,"number")
+            checkarg(r,"number")
+            checkarg(b,"number")
+            checkarg(l,"number")
 
-            _sx = _sx or 0
-            _sy = _sy or 0
-            _sw = _sw or _image.width
-            _sh = _sh or _image.height
+            sx = sx or 0
+            sy = sy or 0
+            sw = sw or img.width
+            sh = sh or img.height
 
-            ex_c.painter_set_texture(_image._cptr) 
-            ex_c.painter_draw_sliced_texture( _dx, _dy, _dw, _dh,   -- pos
-                                              _t, _r, _b, _l,       -- border
-                                              _sx, _sy, _sw, _sh    -- rect
+            ex_c.painter_set_texture(img._cptr) 
+            ex_c.painter_draw_sliced_texture( dx, dy, dw, dh,   -- pos
+                                              t, r, b, l,       -- border
+                                              sx, sy, sw, sh    -- rect
                                             )
             ex_c.painter_flush()
         end,
@@ -117,16 +117,16 @@ ex.painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        text = function ( _text, _font, _dx, _dy, _dw, _dh ) 
-            checkarg(_text,"string")
-            checkarg(_font,"font")
-            checkarg(_dx,"number")
-            checkarg(_dy,"number")
-            _dw = _dw or -1
-            _dh = _dh or -1
+        text = function ( txt, fnt, dx, dy, dw, dh ) 
+            checkarg(txt,"string")
+            checkarg(fnt,"font")
+            checkarg(dx,"number")
+            checkarg(dy,"number")
+            dw = dw or -1
+            dh = dh or -1
 
-            ex_c.painter_draw_text( _text, _font._cptr, 
-                                    _dx, _dy, _dw, _dh -- pos
+            ex_c.painter_draw_text( txt, fnt._cptr, 
+                                    dx, dy, dw, dh -- pos
                                   )
             ex_c.painter_flush()
         end,
@@ -135,75 +135,75 @@ ex.painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        outlineText = function ( _text, _font, _color, _outline_color, _outline_thickness, _dx, _dy, _dw, _dh ) 
-            _font.outlineType = 1
-            _font.outlineThickness = _outline_thickness
+        outlineText = function ( txt, fnt, color, outlineColor, outlineThickness, dx, dy, dw, dh ) 
+            fnt.outlineType = 1
+            fnt.outlineThickness = outlineThickness
 
-            ex.painter.color = _outline_color
-            ex.painter.text( _text, _font, _dx, _dy, _dw, _dh ) 
+            ex.painter.color = outlineColor
+            ex.painter.text( txt, fnt, dx, dy, dw, dh ) 
 
-            _font.outlineType = 0
-            _font.outlineThickness = 0.0
+            fnt.outlineType = 0
+            fnt.outlineThickness = 0.0
 
-            ex.painter.color = _color
-            ex.painter.text( _text, _font, _dx, _dy, _dw, _dh ) 
+            ex.painter.color = color
+            ex.painter.text( txt, fnt, dx, dy, dw, dh ) 
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        shadowText = function ( _text, _font, _color, _shadow_color, _offset, _dx, _dy, _dw, _dh ) 
-            _font.outlineType = 0
+        shadowText = function ( txt, fnt, color, shadowColor, offset, dx, dy, dw, dh ) 
+            fnt.outlineType = 0
 
-            ex.painter.color = _shadow_color
-            ex.painter.text( _text, _font, _dx + _offset.x, _dy + _offset.y, _dw, _dh ) 
+            ex.painter.color = shadowColor
+            ex.painter.text( txt, fnt, dx + offset.x, dy + offset.y, dw, dh ) 
 
-            ex.painter.color = _color
-            ex.painter.text( _text, _font, _dx, _dy, _dw, _dh ) 
+            ex.painter.color = color
+            ex.painter.text( txt, fnt, dx, dy, dw, dh ) 
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        bitmapText = function ( _text, _font, _dx, _dy, _dw, _dh ) 
-            checkarg(_text,"string")
-            checkarg(_font,"bitmapfont")
-            checkarg(_dx,"number")
-            checkarg(_dy,"number")
+        bitmapText = function ( txt, fnt, dx, dy, dw, dh ) 
+            checkarg(txt,"string")
+            checkarg(fnt,"bitmapfont")
+            checkarg(dx,"number")
+            checkarg(dy,"number")
             -- TODO: auto calc size
-            -- checkarg(_dw,"number")
-            -- checkarg(_dh,"number")
+            -- checkarg(dw,"number")
+            -- checkarg(dh,"number")
 
-            local cur_x, cur_y = _dx, _dy
+            local cur_x, cur_y = dx, dy
 
             local last_texture = ex.texture.null
             local last_id = -1
             local id = -1
-            local id_list = ex_c.utf8_list(_text)
+            local id_list = ex_c.utf8_list(txt)
 
             for i=1,#id_list do
                 local id = id_list[i]
 
                 -- if this is \n(10) or \r(13)
                 if id == 10 or id == 13 then
-                    cur_y = cur_y + _font.lineHeight
-                    cur_x = _dx
+                    cur_y = cur_y + fnt.lineHeight
+                    cur_x = dx
                 else
-                    local charInfo = _font.charInfos[id]
+                    local charInfo = fnt.charInfos[id]
                     assert( charInfo, "Can't find char info by id " .. id )
 
                     -- adjust kerning
-                    if i > 1 and _font.hasKerning then
-                        cur_x = cur_x + _font:getKerning( last_id, id )
+                    if i > 1 and fnt.hasKerning then
+                        cur_x = cur_x + fnt:getKerning( last_id, id )
                     end
 
                     -- if this is space(32)
                     if id == 32 then
                         cur_x = cur_x + charInfo.xadvance
                     else
-                        local page_texture = _font.pageInfos[charInfo.page]
+                        local page_texture = fnt.pageInfos[charInfo.page]
 
                         if last_texture ~= page_texture then
                             if last_texture ~= ex.texture.null then

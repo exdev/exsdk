@@ -13,14 +13,14 @@ ex.node = class ({
     __typename = "node",
 
     -- constructor & destructor
-    __init = function ( _self, _name )
-        checkarg(_name,"string")
+    __init = function ( self, name )
+        checkarg(name,"string")
 
-        _self.name = _name
+        self.name = name
     end,
 
     -- meta-methods
-    __len = function (_op)
+    __len = function (op)
         local cnt = 0
         for _,v in pairs(op) do
             if isclass(v) and v:childof(ex.component) then
@@ -29,24 +29,24 @@ ex.node = class ({
         end
         return cnt
     end,
-    __add = function (_op1,_op2)
-        checkarg(_op1,"node")
-        assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: must be component or string" )
+    __add = function (op1,op2)
+        checkarg(op1,"node")
+        assert ( ischildof(op2,ex.component) or type(op2) == "string", "Type error: must be component or string" )
 
-        _op1:add_component (_op2)
-        return _op1
+        op1:add_component (op2)
+        return op1
     end,
-    __sub = function (_op1,_op2)
-        checkarg(_op1,"node")
-        assert ( ischildof(_op2,ex.component) or type(_op2) == "string", "Type error: must be component or string" )
+    __sub = function (op1,op2)
+        checkarg(op1,"node")
+        assert ( ischildof(op2,ex.component) or type(op2) == "string", "Type error: must be component or string" )
 
-        if type(_op2) == "string" then
-            _op1[_op2] = nil
+        if type(op2) == "string" then
+            op1[op2] = nil
         else
-            _op1[typename(_op2)] = nil
+            op1[typename(op2)] = nil
         end
 
-        return _op1
+        return op1
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ ex.node = class ({
 
     _isdead = false,
     isvalid = property {
-        get = function (_self) return _self._isdead == false end,
+        get = function (self) return self._isdead == false end,
     },
 
     name = "",
@@ -71,7 +71,7 @@ ex.node = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    destroy = function ( _self )
+    destroy = function ( self )
         _isdead = true
         -- TODO: destroy each component
     end,
@@ -80,20 +80,20 @@ ex.node = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    update = function ( _self )
+    update = function ( self )
     end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    getComponent = function ( _self, _comp )
-        local comp_name = _comp
-        if type(_comp) ~= "string" then
-            comp_name = typename(_comp)
+    getComponent = function ( self, comp )
+        local comp_name = comp
+        if type(comp) ~= "string" then
+            comp_name = typename(comp)
         end
 
-        local comp_inst = _self[comp_name]
+        local comp_inst = self[comp_name]
 
         if comp_inst ~= nil 
         and isclass(comp_inst) 
@@ -109,14 +109,14 @@ ex.node = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    addComponent = function ( _self, _comp )
-        local inst = ex.instantiate(_comp)
-        inst.node = _self
+    addComponent = function ( self, comp )
+        local inst = ex.instantiate(comp)
+        inst.node = self
 
-        if type(_comp) == "string" then
-            _self[_comp] = inst
+        if type(comp) == "string" then
+            self[comp] = inst
         else
-            _self[typename(_comp)] = inst
+            self[typename(comp)] = inst
         end
 
         return inst

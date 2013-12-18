@@ -14,97 +14,97 @@ ex.color4f = class ({
     __isvalue = true,
 
     -- constructor & destructor
-    __init = function ( _self, _r, _g, _b, _a )
-        checkarg(_r,"number")
-        checkarg(_g,"number")
-        checkarg(_b,"number")
-        checkarg(_a,"number")
+    __init = function ( self, r, g, b, a )
+        checkarg(r,"number")
+        checkarg(g,"number")
+        checkarg(b,"number")
+        checkarg(a,"number")
 
-        _self._handle = ex_c.vec4f_new(_r,_g,_b,_a)
+        self._handle = ex_c.vec4f_new(r,g,b,a)
     end,
 
-    __gc = function (_self)
-        ex_c.vec4f_delete(_self._handle)
+    __gc = function (self)
+        ex_c.vec4f_delete(self._handle)
     end,
 
     -- meta-methods
-    __tostring = function (_op)
-        return string.format ( "{ %.3f, %.3f }", _op.r, _op.g, _op.b, _op.a )
+    __tostring = function (op)
+        return string.format ( "{ %.3f, %.3f }", op.r, op.g, op.b, op.a )
     end,
-    __concat = function (_op1,_op2)
-        return tostring(_op1)..tostring(_op2)
+    __concat = function (op1,op2)
+        return tostring(op1)..tostring(op2)
     end,
-    __len = function (_op)
-        return 2
+    __len = function (op)
+        return 4
     end,
-    __add = function (_op1,_op2)
-        checkarg(_op1,"color4f")
-        checkarg(_op2,"color4f")
+    __add = function (op1,op2)
+        checkarg(op1,"color4f")
+        checkarg(op2,"color4f")
 
-        r = ex.color4f.black
-        ex_c.vec4f_add ( r._handle, _op1._handle, _op2._handle )
-        return r
+        local result = ex.color4f.black
+        ex_c.vec4f_add ( result._handle, op1._handle, op2._handle )
+        return result
     end,
-    __sub = function (_op1,_op2)
-        checkarg(_op1,"color4f")
-        checkarg(_op2,"color4f")
+    __sub = function (op1,op2)
+        checkarg(op1,"color4f")
+        checkarg(op2,"color4f")
 
-        r = ex.color4f.black
-        ex_c.vec4f_sub ( r._handle, _op1._handle, _op2._handle )
-        return r
+        local result = ex.color4f.black
+        ex_c.vec4f_sub ( result._handle, op1._handle, op2._handle )
+        return result
     end,
-    __mul = function (_op1,_op2)
-        type1 = typename(_op1)
-        type2 = typename(_op2)
-
-        if type1 == "color4f" and type2 == "color4f" then
-            r = ex.color4f.black
-            ex_c.vec4f_mul ( r._handle, _op1._handle, _op2._handle )
-            return r
-        elseif type1 == "color4f" and type2 == "number" then
-            r = ex.color4f.black
-            ex_c.vec4f_mul_scalar ( r._handle, _op1._handle, _op2 )
-            return r
-        elseif type1 == "number" and type2 == "color4f" then
-            r = ex.color4f.black
-            ex_c.vec4f_mul_scalar ( r._handle, _op2._handle, _op1 )
-            return r
-        end
-
-        error ( "Type error: _op1, _op2 must be color4f or number" )
-        return nil
-    end,
-    __div = function (_op1,_op2)
-        type1 = typename(_op1)
-        type2 = typename(_op2)
+    __mul = function (op1,op2)
+        local type1 = typename(op1)
+        local type2 = typename(op2)
 
         if type1 == "color4f" and type2 == "color4f" then
-            r = ex.color4f.black
-            ex_c.vec4f_div ( r._handle, _op1._handle, _op2._handle )
-            return r
+            local result = ex.color4f.black
+            ex_c.vec4f_mul ( result._handle, op1._handle, op2._handle )
+            return result
         elseif type1 == "color4f" and type2 == "number" then
-            r = ex.color4f.black
-            ex_c.vec4f_div_scalar ( r._handle, _op1._handle, _op2 )
-            return r
+            local result = ex.color4f.black
+            ex_c.vec4f_mul_scalar ( result._handle, op1._handle, op2 )
+            return result
         elseif type1 == "number" and type2 == "color4f" then
-            r = ex.color4f.black
-            ex_c.scalar_div_vec4f ( r._handle, _op1, _op2._handle )
-            return r
+            local result = ex.color4f.black
+            ex_c.vec4f_mul_scalar ( result._handle, op2._handle, op1 )
+            return result
         end
 
-        error ( "Type error: _op1, _op2 must be color4f or number" )
+        error ( "Type error: op1, op2 must be color4f or number" )
         return nil
     end,
-    __unm = function (_op)
-        r = ex.color4f.black
-        ex_c.vec4f_neg ( r._handle, _op )
-        return r
-    end,
-    __eq = function (_op1,_op2)
-        checkarg(_op1,"color4f")
-        checkarg(_op2,"color4f")
+    __div = function (op1,op2)
+        local type1 = typename(op1)
+        local type2 = typename(op2)
 
-        return ex_c.vec4f_eq ( _op1._handle, _op2._handle )
+        if type1 == "color4f" and type2 == "color4f" then
+            local result = ex.color4f.black
+            ex_c.vec4f_div ( result._handle, op1._handle, op2._handle )
+            return result
+        elseif type1 == "color4f" and type2 == "number" then
+            local result = ex.color4f.black
+            ex_c.vec4f_div_scalar ( result._handle, op1._handle, op2 )
+            return result
+        elseif type1 == "number" and type2 == "color4f" then
+            local result = ex.color4f.black
+            ex_c.scalar_div_vec4f ( result._handle, op1, op2._handle )
+            return result
+        end
+
+        error ( "Type error: op1, op2 must be color4f or number" )
+        return nil
+    end,
+    __unm = function (op)
+        local result = ex.color4f.black
+        ex_c.vec4f_neg ( result._handle, op )
+        return result
+    end,
+    __eq = function (op1,op2)
+        checkarg(op1,"color4f")
+        checkarg(op2,"color4f")
+
+        return ex_c.vec4f_eq ( op1._handle, op2._handle )
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -121,16 +121,16 @@ ex.color4f = class ({
         cyan    = property { get = function () return ex.color4f( 0.0, 1.0, 1.0, 1.0 ) end },
         magenta = property { get = function () return ex.color4f( 1.0, 0.0, 1.0, 1.0 ) end },
         gray    = property { get = function () return ex.color4f( 0.5, 0.5, 0.5, 1.0 ) end },
-        lerp  = function ( _from, _to, _t )
-            local r = ex.color4f.black
-            ex_c.vec4f_lerp( r._handle, _from._handle, _to._handle, _t )
-            return r
+        lerp = function ( from, to, t )
+            local result = ex.color4f.black
+            ex_c.vec4f_lerp( result._handle, from._handle, to._handle, t )
+            return result
         end,
-        from_rgba_8888 = function ( _array )
-            return ex.color4f( _array[1]/255, 
-                               _array[2]/255, 
-                               _array[3]/255, 
-                               (_array[4] or 255)/255 )
+        from_rgba_8888 = function ( list )
+            return ex.color4f( list[1]/255, 
+                               list[2]/255, 
+                               list[3]/255, 
+                               (list[4] or 255)/255 )
         end,
     },
 
@@ -140,26 +140,26 @@ ex.color4f = class ({
 
     _handle = ex_c.invalid_handle,
     r = property {
-        get = function (_self) return ex_c.vec4f_get_x ( _self._handle ) end,
-        set = function (_self,_v) ex_c.vec4f_set_x ( _self._handle, _v ) end
+        get = function (self) return ex_c.vec4f_get_x ( self._handle ) end,
+        set = function (self,v) ex_c.vec4f_set_x ( self._handle, v ) end
     },
     g = property { 
-        get = function (_self) return ex_c.vec4f_get_y ( _self._handle ) end,
-        set = function (_self,_v) ex_c.vec4f_set_y ( _self._handle, _v ) end
+        get = function (self) return ex_c.vec4f_get_y ( self._handle ) end,
+        set = function (self,v) ex_c.vec4f_set_y ( self._handle, v ) end
     },
     b = property { 
-        get = function (_self) return ex_c.vec4f_get_z ( _self._handle ) end,
-        set = function (_self,_v) ex_c.vec4f_set_z ( _self._handle, _v ) end
+        get = function (self) return ex_c.vec4f_get_z ( self._handle ) end,
+        set = function (self,v) ex_c.vec4f_set_z ( self._handle, v ) end
     },
     a = property { 
-        get = function (_self) return ex_c.vec4f_get_w ( _self._handle ) end,
-        set = function (_self,_v) ex_c.vec4f_set_w ( _self._handle, _v ) end
+        get = function (self) return ex_c.vec4f_get_w ( self._handle ) end,
+        set = function (self,v) ex_c.vec4f_set_w ( self._handle, v ) end
     },
     normalized = property { 
-        get = function (_self) 
-            r = ex.color4f.black
-            ex_c.vec4f_get_normalize ( _self._handle, r._handle ) 
-            return r
+        get = function (self) 
+            local result = ex.color4f.black
+            ex_c.vec4f_get_normalize ( self._handle, result._handle ) 
+            return result
         end
     },
 
@@ -171,8 +171,7 @@ ex.color4f = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    copy = function ( _self )
-        t = typeof (_self)
-        return t( _self.r, _self.g, _self.b, _self.a )
+    copy = function ( self )
+        return ex.color4f ( self.r, self.g, self.b, self.a )
     end,
 }) 

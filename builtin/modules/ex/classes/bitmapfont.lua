@@ -44,11 +44,11 @@ ex.bitmapfont = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    getKerning = function ( _self, _first, _second )
-        for i=1,#_self.kerningInfos do
-            local kerningInfo = _self.kerningInfos[i]
-            if kerningInfo.first == _first and 
-               kerningInfo.second == _second then 
+    getKerning = function ( self, first, second )
+        for i=1,#self.kerningInfos do
+            local kerningInfo = self.kerningInfos[i]
+            if kerningInfo.first == first and 
+               kerningInfo.second == second then 
                return kerningInfo.amount
             end
         end
