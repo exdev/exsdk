@@ -22,7 +22,7 @@ local logo = bundle:load("assets/ex2d_logo.png")
 local imgWindow = bundle:load("assets/windowActive.png")
 
 --
-window.onRepaint = function ( _self )
+window.onRepaint = function ( self )
     -- ex.painter.color = ex.color4f.white
     -- ex.painter.bitmapText( "Hello World", font2, 10, 10 )
 
@@ -32,8 +32,8 @@ window.onRepaint = function ( _self )
     ex.painter.color = ex.color4f.white
     local size = { w = logo.width, h = logo.height } 
     ex.painter.image( logo, 
-    _self.width - 10 - size.w, 
-    _self.height - 10 - size.h,
+    self.width - 10 - size.w, 
+    self.height - 10 - size.h,
     size.w,
     size.h )
 
@@ -59,7 +59,7 @@ end
 -- -- create window 2
 -- local window2 = wiz.window( 400, 800 )
 -- window2.background = { 0, 128, 255 }
--- window2.onRepaint = function ( _self )
+-- window2.onRepaint = function ( self )
 --     ex.painter.color = ex.color4f.white
 --     ex.painter.bitmapText( "Hello World", font2, 10, 10 )
 
@@ -67,7 +67,7 @@ end
 --     ex.painter.bitmapText( "hello world", font3, 10, 50 )
 -- end
 
-window.onDestroy = function ( _self )
+window.onDestroy = function ( self )
     print ( "" )
     print ( "=======================" )
     print ( "end" )
