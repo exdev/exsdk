@@ -35,19 +35,19 @@ wiz.domNode = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    addChild = function ( _self, _node )
-        _node.parent = _self
-        table.add( _self.children, _node )
+    addChild = function ( self, node )
+        node.parent = self
+        table.add( self.children, node )
     end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    getElementByTag = function ( _self, _tag )
-        for i=1,#_self.children do
-            local node = _self.children[i]
-            if node.tag == _tag then
+    getElementByTag = function ( self, tag )
+        for i=1,#self.children do
+            local node = self.children[i]
+            if node.tag == tag then
                 return node
             end
         end
@@ -58,32 +58,32 @@ wiz.domNode = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    layout = function ( _self, _x, _y, _w, _h )
-        if _self.layoutDirty then
+    layout = function ( self, x, y, w, h )
+        if self.layoutDirty then
             -- TODO:
 
-            _self.layoutDirty = false
+            self.layoutDirty = false
         end
 
-        return _self.x, _self.y, _self.w, _self.h
+        return self.x, self.y, self.w, self.h
     end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    repaint = function ( _self )
+    repaint = function ( self )
         -- recursively repaint the child 
-        for i=1,#_self.children do
-            local node = _self.children[i]
+        for i=1,#self.children do
+            local node = self.children[i]
             node:repaint()
         end
 
         -- repaint myself
-        if _self.repaintDirty then
-            _self:_doRepaint()
+        if self.repaintDirty then
+            self:_doRepaint()
 
-            _self.repaintDirty = false
+            self.repaintDirty = false
         end
     end,
 })
@@ -96,12 +96,12 @@ wiz.elementNode = wiz.domNode.extend ({
     __typename = "elementNode",
 
     -- constructor & destructor
-    __init = function ( _self, _tag, _attrs )
-        _self.tag = _tag
-        _self.attrs = _attrs
+    __init = function ( self, tag, attrs )
+        self.tag = tag
+        self.attrs = attrs
 
-        if _attrs.id ~= nil then
-            _self.id = _attrs.id
+        if attrs.id ~= nil then
+            self.id = attrs.id
         end
     end,
 
@@ -121,7 +121,7 @@ wiz.elementNode = wiz.domNode.extend ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    _doRepaint = function ( _self ) 
+    _doRepaint = function ( self ) 
     end,
 })
 
@@ -133,9 +133,9 @@ wiz.textNode = wiz.domNode.extend ({
     __typename = "textNode",
 
     -- constructor & destructor
-    __init = function ( _self, _text, _isWhiteSpace )
-        _self.text = _text
-        _self.isWhiteSpace = _isWhiteSpace or false
+    __init = function ( self, text, isWhiteSpace )
+        self.text = text
+        self.isWhiteSpace = isWhiteSpace or false
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -153,13 +153,13 @@ wiz.textNode = wiz.domNode.extend ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    _doRepaint = function ( _self ) 
+    _doRepaint = function ( self ) 
         -- TEMP
         local ttfFont = wiz.bundles["os.fonts"]:load("Arial.ttf")
 
-        if _self.isWhiteSpace == false then
+        if self.isWhiteSpace == false then
             ex.painter.color = ex.color4f.black 
-            ex.painter.text( _self.text, ttfFont, _self.x, _self.y, 100, 100 )
+            ex.painter.text( self.text, ttfFont, self.x, self.y, 100, 100 )
         end
     end,
 })

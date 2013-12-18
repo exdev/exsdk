@@ -20,23 +20,23 @@ wiz.bundles = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function wiz.mount ( _path, _name )
-    local realPath = _path
-    if path.isabsolute(_path) == false then
-        realPath = path.join( os.cwd(), _path )
+function wiz.mount ( path, name )
+    local realPath = path
+    if pathutil.isabsolute(path) == false then
+        realPath = os.cwd():join( path )
     end
 
-    local bundle = wiz.bundle( _name, realPath )
+    local bundle = wiz.bundle( name, realPath )
 
     --
-    local old_bundle = wiz.bundles[_name]
+    local old_bundle = wiz.bundles[name]
     if old_bundle ~= nil then
         wiz.unmount(old_bundle)
     end
-    wiz.bundles[_name] = bundle
+    wiz.bundles[name] = bundle
 
     --
-    ex_c.fsys_mount( realPath, string.format("__wiz__/%s",_name) )
+    ex_c.fsys_mount( realPath, string.format("__wiz__/%s",name) )
     return bundle
 end
 
@@ -44,10 +44,10 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function wiz.unmount ( _bundle )
-    checkarg ( _bundle, "bundle" )
+function wiz.unmount ( bundle )
+    checkarg ( bundle, "bundle" )
     wiz.bundles[bundle.name] = nil
-    ex_c.fsys_unmount( _bundle.path )
+    ex_c.fsys_unmount( bundle.path )
 end
 
 -- TODO: need a bundle table for this { 
@@ -55,10 +55,10 @@ end
 -- -- Desc: 
 -- -- ------------------------------------------------------------------ 
 
--- function wiz.load ( _path )
---     local list = _path:split("://",true)
+-- function wiz.load ( path )
+--     local list = path:split("://",true)
 --     local proxy, relate_path = table.unpack(list)
---     local fpath = _path;
+--     local fpath = path;
 
 --     -- process http, https, .. first 
 --     if proxy == "wiz" then

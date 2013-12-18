@@ -28,11 +28,11 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function convert ( _from, _keys, _func ) 
+local function convert ( from, keys, func ) 
     local to = {}
-    for i=1,#_keys do
-        local k = _keys[i]
-        to[k] = _func( k, _from[k] )
+    for i=1,#keys do
+        local k = keys[i]
+        to[k] = func( k, from[k] )
     end
     return to
 end
@@ -45,8 +45,8 @@ wiz.bitmapfontImporter = wiz.importer.extend ({
     __typename = "bitmapfontImporter",
 
     -- constructor & destructor
-    __init = function ( _self, _bundle, _path )
-        super(_self).__init( _self, _bundle, _path )
+    __init = function ( self, bundle, path )
+        super(self).__init( self, bundle, path )
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -69,19 +69,19 @@ wiz.bitmapfontImporter = wiz.importer.extend ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    exec = function (_self)
-        local files = _self.bundle:filesIn(_self.path)
+    exec = function (self)
+        local files = self.bundle:filesIn(self.path)
         local file = nil
 
         -- get the first txt/fnt file
         for i=1,#files do
             local filename = files[i]
-            if path.is( filename, {".txt",".fnt"} ) then
-                file = io.open( _self.bundle:osPath(path.join(_self.path,filename)), "r" )
+            if pathutil.is( filename, {".txt",".fnt"} ) then
+                file = io.open( self.bundle:osPath(self.path:join(filename)), "r" )
                 break
             end
         end
-        assert ( file, string.format("Can't find .txt/.fnt file at %s", _self.path) )
+        assert ( file, string.format("Can't find .txt/.fnt file at %s", self.path) )
 
         -- instantiate a bitmapfont for parsing
         local bpfont = ex.bitmapfont.new()
@@ -146,9 +146,9 @@ wiz.bitmapfontImporter = wiz.importer.extend ({
                 assert ( pageinfo.file ~= nil and
                          pageinfo.file ~= "", 
                          "Can't find image file in pageinfo" )
-                imagefile = path.join(_self.path,pageinfo.file)
-                if _self.bundle:exists( imagefile ) then
-                    bpfont.pageInfos[pageinfo.id] = _self.bundle:load(imagefile)
+                imagefile = self.path:join(pageinfo.file)
+                if self.bundle:exists( imagefile ) then
+                    bpfont.pageInfos[pageinfo.id] = self.bundle:load(imagefile)
                 end
 
             -- parse the char info

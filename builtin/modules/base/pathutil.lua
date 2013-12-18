@@ -1,11 +1,11 @@
 -- ======================================================================================
--- File         : path.lua
+-- File         : pathutil.lua
 -- Author       : Wu Jie 
--- Last Change  : 02/17/2013 | 18:26:39 PM | Sunday,February
+-- Last Change  : 12/18/2013 | 17:36:52 PM | Wednesday,December
 -- Description  : 
 -- ======================================================================================
 
-path = path or {}
+pathutil = pathutil or {}
 
 --/////////////////////////////////////////////////////////////////////////////
 -- functions
@@ -19,13 +19,13 @@ local sep = "/"
 if os.platform == "windows" then
     sep = "\\"
 end
-path.sep = sep
+pathutil.sep = sep
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function path.isabsolute (p)
+function pathutil.isabsolute (p)
     -- /foo/bar
     local i = p:find("/", 0, true )
     if i == 1 then
@@ -52,7 +52,7 @@ end
 --      "foobar/" ==> "foobar/" 
 -- ------------------------------------------------------------------ 
 
-function path.dirname (p)
+function pathutil.dirname (p)
     local i = p:findlast("/", true)
     if i then
         if i > 1 then i = i - 1 end
@@ -72,7 +72,7 @@ end
 --      "foobar/" ==> "" 
 -- ------------------------------------------------------------------ 
 
-function path.extname (p) 
+function pathutil.extname (p) 
     local i = p:findlast(".", true)
     if i then
         return p:sub(i)
@@ -91,7 +91,7 @@ end
 --      "foobar/" ==> "" 
 -- ------------------------------------------------------------------ 
 
-function path.filename (p)
+function pathutil.filename (p)
     local i = p:findlast("[/\\]")
     if i then
         return p:sub(i + 1)
@@ -110,8 +110,8 @@ end
 --      "foobar/" ==> "" 
 -- ------------------------------------------------------------------ 
 
-function path.basename (p) 
-    local name = path.filename(p)
+function pathutil.basename (p) 
+    local name = pathutil.filename(p)
     local i = name:findlast(".", true)
     if i then
         return name:sub(1,i-1)
@@ -122,12 +122,12 @@ end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
---      path.translate("assets/foo/bar/foobar.txt","\\") 
+--      pathutil.translate("assets/foo/bar/foobar.txt","\\") 
 --          ==> "assets\\foo\\bar\\foobar.txt" 
 -- ------------------------------------------------------------------ 
 
-function path.translate (p, sep)
-    sep = sep or path.sep
+function pathutil.translate (p, sep)
+    sep = sep or pathutil.sep
     return p:gsub("[/\\]", sep)
 end
 
@@ -135,7 +135,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function path.join (p1, p2)
+function pathutil.join (p1, p2)
     p1 = p1 or ""
 
     if not p2 then
@@ -154,8 +154,8 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function path.is ( fname, extList )
-    local ext = path.extname(fname)
+function pathutil.is ( fname, extList )
+    local ext = pathutil.extname(fname)
     if type(extList) == "string" then 
         return ext == extList
     else

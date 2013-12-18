@@ -23,6 +23,6 @@ return {
 
         -- ex internal extension
         "re.lua",
-        "path.lua",
+        "pathutil.lua",
     }
 }

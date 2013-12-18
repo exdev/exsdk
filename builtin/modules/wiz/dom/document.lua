@@ -13,10 +13,10 @@ wiz.document = class ({
     __typename = "document",
 
     -- constructor & destructor
-    __init = function ( _self, _root_el )
-        checkarg(_root_el,"elementNode")
+    __init = function ( self, rootEL )
+        checkarg(rootEL,"elementNode")
 
-        _self._root = _root_el
+        self._root = rootEL
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ wiz.document = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    repaint = function ( _self ) 
-        _self._root:repaint()
+    repaint = function ( self ) 
+        self._root:repaint()
     end
 })

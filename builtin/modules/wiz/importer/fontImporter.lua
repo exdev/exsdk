@@ -13,8 +13,8 @@ wiz.fontImporter = wiz.importer.extend ({
     __typename = "fontImporter",
 
     -- constructor & destructor
-    __init = function ( _self, _bundle, _path )
-        super(_self).__init( _self, _bundle, _path )
+    __init = function ( self, bundle, path )
+        super(self).__init( self, bundle, path )
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -31,9 +31,9 @@ wiz.fontImporter = wiz.importer.extend ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    exec = function (_self)
+    exec = function (self)
         local fnt = ex.font.new()
-        local cptr = ex_c.font_load ( _self.bundle:osPath(_self.path), _self.size )
+        local cptr = ex_c.font_load ( self.bundle:osPath(self.path), self.size )
         fnt._cptr = cptr
 
         return fnt

@@ -12,7 +12,7 @@
 -- ------------------------------------------------------------------ 
 
 function load_module ( _moduleName )
-    -- NOTE: you can not use path.join here, because the base module is not loaded yet
+    -- NOTE: you can not use string.join here, because the base module is not loaded yet
     local path = string.format( "builtin/modules/%s", _moduleName )
     local m = ex_c.dofile( string.format( "%s/__module__.lua", path ) )
 

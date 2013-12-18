@@ -77,3 +77,25 @@ end
 function string.trim ( s )
     return s:match( "^%s*(.-)%s*$" )
 end
+
+-- ------------------------------------------------------------------ 
+-- Desc: join path
+--    foo join bar ==> foo/bar 
+--    foo/ join bar ==> foo/bar 
+--    foo join /bar ==> foo/bar 
+-- ------------------------------------------------------------------ 
+
+function string.join ( s, p2 )
+    local p1 = s or ""
+
+    if not p2 then
+        return p1
+    end
+
+    local len = p1:len()
+    if len > 0 and not p1:ncmp("/", len-1, 1) then
+        p1 = p1 .. "/"
+    end
+
+    return p1 .. p2
+end

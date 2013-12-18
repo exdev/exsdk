@@ -15,12 +15,12 @@ wiz.importer = class ({
     __typename = "importer",
 
     -- constructor & destructor
-    __init = function ( _self, _bundle, _path )
-        checkarg(_bundle,"bundle")
-        checkarg(_path,"string")
+    __init = function ( self, bundle, path )
+        checkarg(bundle,"bundle")
+        checkarg(path,"string")
 
-        _self.bundle = _bundle
-        _self.path = _path
+        self.bundle = bundle
+        self.path = path
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ wiz.importer = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    exec = function (_self)
+    exec = function (self)
         error ( "Please impliment this interface in your own" )
     end,
 })

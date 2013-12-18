@@ -18,8 +18,8 @@ wiz.parser = {
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    onStartElement = function ( _tag, _attrs ) 
-        local newElement = wiz.elementNode( _tag, _attrs )
+    onStartElement = function ( tag, attrs ) 
+        local newElement = wiz.elementNode( tag, attrs )
 
         if rootElement == nil then
             rootElement = newElement
@@ -34,7 +34,7 @@ wiz.parser = {
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    onEndElement = function ( _tag ) 
+    onEndElement = function ( tag ) 
         curElement = curElement.parent
     end,
 
@@ -42,8 +42,8 @@ wiz.parser = {
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    onAddText = function ( _text, _isWhiteSpace ) 
-        local newText = wiz.textNode( _text, _isWhiteSpace )
+    onAddText = function ( text, isWhiteSpace ) 
+        local newText = wiz.textNode( text, isWhiteSpace )
         newText.style = curElement.style -- NOTE: textNode's style shares with its parent
         curElement:addChild(newText)
     end,
