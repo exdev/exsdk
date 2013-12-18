@@ -9,7 +9,6 @@
     <bundle name="bundle.test" path="./" />
 
     <body title="Test" position="10,10" width="400" height="300">
-        Hello World
-        Hello World 02
+        Hello World This is a test
     </body>
 </xml>

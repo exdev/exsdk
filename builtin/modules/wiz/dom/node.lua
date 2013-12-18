@@ -16,8 +16,20 @@ wiz.domNode = class ({
     --
     --/////////////////////////////////////////////////////////////////////////////
 
+    -- relation
     parent = nil,
     children = {},
+
+    -- position & size
+    x = 0,
+    y = 0,
+    w = 0,
+    h = 0,
+    style = {},
+
+    --
+    layoutDirty = true,
+    repaintDirty = true,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -40,6 +52,39 @@ wiz.domNode = class ({
             end
         end
         return nil
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    layout = function ( _self, _x, _y, _w, _h )
+        if _self.layoutDirty then
+            -- TODO:
+
+            _self.layoutDirty = false
+        end
+
+        return _self.x, _self.y, _self.w, _self.h
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    repaint = function ( _self )
+        -- recursively repaint the child 
+        for i=1,#_self.children do
+            local node = _self.children[i]
+            node:repaint()
+        end
+
+        -- repaint myself
+        if _self.repaintDirty then
+            _self:_doRepaint()
+
+            _self.repaintDirty = false
+        end
     end,
 })
 
@@ -67,7 +112,17 @@ wiz.elementNode = wiz.domNode.extend ({
     tag = "",
     id = "",
     attrs = {},
-    style = {},
+
+    --/////////////////////////////////////////////////////////////////////////////
+    --
+    --/////////////////////////////////////////////////////////////////////////////
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    _doRepaint = function ( _self ) 
+    end,
 })
 
 --/////////////////////////////////////////////////////////////////////////////
@@ -89,4 +144,22 @@ wiz.textNode = wiz.domNode.extend ({
 
     text = "",
     isWhiteSpace = false,
+
+    --/////////////////////////////////////////////////////////////////////////////
+    --
+    --/////////////////////////////////////////////////////////////////////////////
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    _doRepaint = function ( _self ) 
+        -- TEMP
+        local ttfFont = wiz.bundles["os.fonts"]:load("Arial.ttf")
+
+        if _self.isWhiteSpace == false then
+            ex.painter.color = ex.color4f.black 
+            ex.painter.text( _self.text, ttfFont, _self.x, _self.y, 100, 100 )
+        end
+    end,
 })

@@ -44,6 +44,7 @@ wiz.parser = {
 
     onAddText = function ( _text, _isWhiteSpace ) 
         local newText = wiz.textNode( _text, _isWhiteSpace )
+        newText.style = curElement.style -- NOTE: textNode's style shares with its parent
         curElement:addChild(newText)
     end,
 
@@ -54,7 +55,7 @@ wiz.parser = {
     onFinish = function ()
         local body = rootElement:getElementByTag("body")
         if body == nil then
-            error ( "Parse Error: Can't find body" )
+            error ( "Parse Error: Can't find the <body>" )
         end
 
         local w = body.attrs.width or 640
@@ -62,5 +63,9 @@ wiz.parser = {
         local window = wiz.window( tonumber(w), tonumber(h) )
 
         window.document = wiz.document(rootElement)
+
+        if os.platform == "macosx" then
+            wiz.mount( "/Library/Fonts/", "os.fonts" )
+        end
     end,
 }

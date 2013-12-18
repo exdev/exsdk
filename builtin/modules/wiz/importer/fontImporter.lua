@@ -33,7 +33,7 @@ wiz.fontImporter = wiz.importer.extend ({
 
     exec = function (_self)
         local fnt = ex.font.new()
-        local cptr = ex_c.font_load ( _self.bundle:fsysPath(_self.path), _self.size )
+        local cptr = ex_c.font_load ( _self.bundle:osPath(_self.path), _self.size )
         fnt._cptr = cptr
 
         return fnt

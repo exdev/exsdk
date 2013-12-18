@@ -388,17 +388,17 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
     char *name;
 
     // open the file
-    file = ex_fsys_fopen_r(_filepath);
+    file = ex_os_fopen( _filepath, "rb" );
     if ( file == NULL ) {
         ex_log ( "[FreeType] Can't find the file %s", _filepath );
         return NULL;
     }
 
     // get the file to the buffer we allocated.
-    buf_size = ex_fsys_fsize (file);
+    buf_size = ex_os_fsize (file);
     buffer = ex_malloc (buf_size);
-    ex_fsys_fread (file, buffer, buf_size );
-    ex_fsys_fclose(file);
+    ex_os_fread (file, buffer, buf_size );
+    ex_os_fclose (file);
 
     //
     error = FT_New_Memory_Face( __ft_lib,

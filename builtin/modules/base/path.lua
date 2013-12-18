@@ -23,6 +23,26 @@ path.sep = sep
 
 -- ------------------------------------------------------------------ 
 -- Desc: 
+-- ------------------------------------------------------------------ 
+
+function path.isabsolute (_p)
+    -- /foo/bar
+    local i = _p:find("/", 0, true )
+    if i == 1 then
+        return true
+    end
+
+    -- d:/foo/bar
+    local i = _p:find(":/", 0, true )
+    if i ~= nil then
+        return true
+    end
+
+    return false
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
 --      "assets/foo/bar/foobar.txt" ==> "assets/foo/bar/" 
 --      "assets/foo/bar/foobar" ==> "assets/foo/bar/" 
 --      "assets/foo/bar/.foobar" ==> "assets/foo/bar/" 

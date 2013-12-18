@@ -21,8 +21,12 @@ wiz.bundles = {}
 -- ------------------------------------------------------------------ 
 
 function wiz.mount ( _path, _name )
-    local path = path.join( os.cwd(), _path )
-    local bundle = wiz.bundle( _name, path )
+    local realPath = _path
+    if path.isabsolute(_path) == false then
+        realPath = path.join( os.cwd(), _path )
+    end
+
+    local bundle = wiz.bundle( _name, realPath )
 
     --
     local old_bundle = wiz.bundles[_name]
@@ -32,7 +36,7 @@ function wiz.mount ( _path, _name )
     wiz.bundles[_name] = bundle
 
     --
-    ex_c.fsys_mount( path, string.format("__wiz__/%s",_name) )
+    ex_c.fsys_mount( realPath, string.format("__wiz__/%s",_name) )
     return bundle
 end
 
