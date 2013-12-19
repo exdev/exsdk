@@ -138,12 +138,10 @@ static int __lua_painter_draw_text ( lua_State *_l ) {
     font = lua_touserdata(_l,2);
 
     ex_painter_draw_text ( luaL_checkstring(_l,1),
-                      font,
-                      luaL_checkint(_l,3 ),
-                      luaL_checkint(_l,4 ),
-                      luaL_checkint(_l,5 ),
-                      luaL_checkint(_l,6 )
-                    );
+                           font,
+                           luaL_checkint(_l,3 ),
+                           luaL_checkint(_l,4 )
+                         );
     return 0;
 }
 

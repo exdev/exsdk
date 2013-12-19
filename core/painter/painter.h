@@ -78,9 +78,7 @@ extern void ex_painter_draw_sliced_texture ( int _dx, int _dy, int _dw, int _dh,
 // Desc: 
 // ------------------------------------------------------------------ 
 
-extern void ex_painter_draw_text ( const char *_text, 
-                                   ex_font_t *_font,
-                                   int _dx, int _dy, int _dw, int _dh );
+extern void ex_painter_draw_text ( const char *_text, ex_font_t *_font, int _dx, int _dy );
 
 // ------------------------------------------------------------------ 
 // Desc: 

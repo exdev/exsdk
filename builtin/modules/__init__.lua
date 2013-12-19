@@ -37,8 +37,8 @@ load_module( "base" )
 load_module( "ex" )
 
 -- init wiz 
--- load_module( "ui" )
 load_module( "wiz" )
+-- load_module( "ui" )
 
 -- init game engine
 -- load_module( "gamelib" )

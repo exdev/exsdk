@@ -117,7 +117,7 @@ ex.painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        text = function ( txt, fnt, dx, dy, dw, dh ) 
+        text = function ( txt, fnt, dx, dy ) 
             checkarg(txt,"string")
             checkarg(fnt,"font")
             checkarg(dx,"number")
@@ -140,27 +140,27 @@ ex.painter = class ({
             fnt.outlineThickness = outlineThickness
 
             ex.painter.color = outlineColor
-            ex.painter.text( txt, fnt, dx, dy, dw, dh ) 
+            ex.painter.text( txt, fnt, dx, dy ) 
 
             fnt.outlineType = 0
             fnt.outlineThickness = 0.0
 
             ex.painter.color = color
-            ex.painter.text( txt, fnt, dx, dy, dw, dh ) 
+            ex.painter.text( txt, fnt, dx, dy ) 
         end,
 
         -- ------------------------------------------------------------------ 
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        shadowText = function ( txt, fnt, color, shadowColor, offset, dx, dy, dw, dh ) 
+        shadowText = function ( txt, fnt, color, shadowColor, offset, dx, dy ) 
             fnt.outlineType = 0
 
             ex.painter.color = shadowColor
-            ex.painter.text( txt, fnt, dx + offset.x, dy + offset.y, dw, dh ) 
+            ex.painter.text( txt, fnt, dx + offset.x, dy + offset.y ) 
 
             ex.painter.color = color
-            ex.painter.text( txt, fnt, dx, dy, dw, dh ) 
+            ex.painter.text( txt, fnt, dx, dy ) 
         end,
 
         -- ------------------------------------------------------------------ 

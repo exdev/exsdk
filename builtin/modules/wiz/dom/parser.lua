@@ -42,8 +42,8 @@ wiz.parser = {
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    onAddText = function ( text, isWhiteSpace ) 
-        local newText = wiz.textNode( text, isWhiteSpace )
+    onAddText = function ( text, textType ) 
+        local newText = wiz.textNode( text, textType )
         newText.style = curElement.style -- NOTE: textNode's style shares with its parent
         curElement:addChild(newText)
     end,

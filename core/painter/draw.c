@@ -376,9 +376,7 @@ static int __draw_glyph ( ex_font_t *_font, uint _prev_ft_index, uint _ft_index,
    return advance;
 } 
 
-void ex_painter_draw_text ( const char *_text, 
-                            ex_font_t *_font,
-                            int _dx, int _dy, int _dw, int _dh ) 
+void ex_painter_draw_text ( const char *_text, ex_font_t *_font, int _dx, int _dy ) 
 {
     const char *str;
     int ch;
@@ -405,17 +403,14 @@ void ex_painter_draw_text ( const char *_text,
         advance = 0;
         ft_index = FT_Get_Char_Index ( face, ch );
 
-        // if this is \n(10) or \r(13)
+        // if this is \n(10) or \r(13), it will turn to ' ' space
         if ( ch == 10 || ch == 13 ) {
-            cur_x = _dx;
-            prev_ft_index = -1;
-            cur_y = cur_y + height + line_gap;
+            ft_index = FT_Get_Char_Index ( face, ' ' );
         }
-        else {
-            advance = __draw_glyph ( _font, prev_ft_index, ft_index, cur_x, cur_y );
-            cur_x += advance;
-            prev_ft_index = ft_index;
-        }
+
+        advance = __draw_glyph ( _font, prev_ft_index, ft_index, cur_x, cur_y );
+        cur_x += advance;
+        prev_ft_index = ft_index;
     }
 }
 

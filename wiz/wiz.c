@@ -571,7 +571,7 @@ void wiz_create_window ( lua_State *_l, int _refID, int _w, int _h ) {
     win_info->sdl_renderer = sdl_renderer;
     win_info->refID = _refID;
     win_info->dirty = true;
-    ex_color3u_set ( &win_info->bg_color, 128, 128, 128 );
+    ex_color3u_set ( &win_info->bg_color, 255, 255, 255 );
 
     // if this is the first window, create queue
     if ( ex_array_count(__window_list) == 0 ) {

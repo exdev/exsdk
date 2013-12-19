@@ -25,11 +25,10 @@ wiz.domNode = class ({
     y = 0,
     w = 0,
     h = 0,
-    style = {},
+    style = {}, -- computed style
 
     --
     layoutDirty = true,
-    repaintDirty = true,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -60,7 +59,9 @@ wiz.domNode = class ({
 
     layout = function ( self, x, y, w, h )
         if self.layoutDirty then
-            -- TODO:
+            if self:isa(wiz.textNode) then
+                -- TODO:
+            end
 
             self.layoutDirty = false
         end
@@ -79,14 +80,7 @@ wiz.domNode = class ({
             node:repaint()
         end
 
-        -- TODO: right now, we always repaint
         self:_doRepaint()
-        -- -- repaint myself
-        -- if self.repaintDirty then
-        --     self:_doRepaint()
-
-        --     self.repaintDirty = false
-        -- end
     end,
 })
 
@@ -135,9 +129,9 @@ wiz.textNode = wiz.domNode.extend ({
     __typename = "textNode",
 
     -- constructor & destructor
-    __init = function ( self, text, isWhiteSpace )
+    __init = function ( self, text, textType )
         self.text = text
-        self.isWhiteSpace = isWhiteSpace or false
+        self.textType = textType
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -145,7 +139,11 @@ wiz.textNode = wiz.domNode.extend ({
     --/////////////////////////////////////////////////////////////////////////////
 
     text = "",
-    isWhiteSpace = false,
+    textType = 2, -- 0: white-space, 1: end-of-line, 2: plain-text
+
+    isWhiteSpace = property { get = function (self) return self.textType == 0 end },
+    isEndOfLine = property { get = function (self) return self.textType == 1 end },
+    isPlainText = property { get = function (self) return self.textType == 2 end },
 
     --/////////////////////////////////////////////////////////////////////////////
     --
@@ -161,7 +159,7 @@ wiz.textNode = wiz.domNode.extend ({
 
         if self.isWhiteSpace == false then
             ex.painter.color = ex.color4f.black 
-            ex.painter.text( self.text, ttfFont, self.x, self.y, 100, 100 )
+            ex.painter.text( self.text, ttfFont, self.x, self.y )
         end
     end,
 })
