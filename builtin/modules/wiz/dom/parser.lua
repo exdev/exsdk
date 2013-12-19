@@ -5,8 +5,9 @@
 -- Description  : 
 -- ======================================================================================
 
-local rootElement = nil -- wiz.element
-local curElement = nil -- wiz.element
+local rootElement = nil -- wiz.elementNode
+local curElement = nil -- wiz.elementNode
+local lastTextNode = nil -- wiz.textNode
 
 --/////////////////////////////////////////////////////////////////////////////
 --
@@ -28,6 +29,7 @@ wiz.parser = {
         end
 
         curElement = newElement
+        lastTextNode = nil
     end,
 
     -- ------------------------------------------------------------------ 
@@ -42,9 +44,17 @@ wiz.parser = {
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    onAddText = function ( text, textType ) 
-        local newText = wiz.textNode( text, textType )
-        curElement:addChild(newText)
+    onAddText = function ( text, isWhiteSpace ) 
+        if lastTextNode == nil then
+            local newText = wiz.textNode( text, isWhiteSpace )
+            curElement:addChild(newText)
+            lastTextNode = newText
+
+            return
+        end
+
+        lastTextNode.text = lastTextNode.text .. text
+        lastTextNode.isWhiteSpace = lastTextNode.isWhiteSpace or isWhiteSpace
     end,
 
     -- ------------------------------------------------------------------ 

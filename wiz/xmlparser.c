@@ -40,20 +40,15 @@ typedef struct __user_data_t {
 // ------------------------------------------------------------------ 
 
 static void __process_character_data ( void *_userData, const char *_text, int _len ) {
-    int textType = 0; // 0: white-space, 1: end-of-line, 2: plain-text
+    bool isWhiteSpace = true;
     const char *p = _text; 
     __user_data_t *userData = (__user_data_t *)_userData;
     lua_State *l = userData->l;
 
     // check if is white-space
     while ( (p - _text) < _len ) {
-        if ( *p == '\n' || *p == '\r' ) {
-            textType = 1; // end-of-line
-            break;
-        }
-
         if ( isspace(*p) == false ) {
-            textType = 2; // plain-text
+            isWhiteSpace = false;
             break;
         }
         ++p;
@@ -62,7 +57,7 @@ static void __process_character_data ( void *_userData, const char *_text, int _
     // invoke wiz.parser.onAddText(_text,_isWhiteSpace)
     lua_rawgeti( l, LUA_REGISTRYINDEX, userData->refID_on_add_text );
     lua_pushlstring( l, _text, _len );
-    lua_pushinteger( l, textType );
+    lua_pushboolean( l, isWhiteSpace );
     if ( lua_pcall( l, 2, 0, 0 ) ) {
         ex_lua_alert(l);
     }

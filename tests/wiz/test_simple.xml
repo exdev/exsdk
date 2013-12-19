@@ -1,0 +1,13 @@
+<!-- ======================================================================================-->
+<!-- File         : test_simple.xml-->
+<!-- Author       : Wu Jie -->
+<!-- Last Change  : 12/19/2013 | 23:56:57 PM | Thursday,December-->
+<!-- Description  : -->
+<!-- ======================================================================================-->
+
+<xml>
+    <bundle name="bundle.test" path="./" />
+    <body title="Test" position="10,10" width="400" height="300">
+        Hello World
+    </body>
+</xml>

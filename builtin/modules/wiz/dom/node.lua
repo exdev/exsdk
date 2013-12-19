@@ -47,7 +47,7 @@ wiz.elementNode = wiz.domNode.extend ({
     tag = "",
     id = "",
     attrs = {},
-    style = {}, -- computed style
+    style = {}, -- css-parsed style
 
     --/////////////////////////////////////////////////////////////////////////////
     --
@@ -92,9 +92,9 @@ wiz.textNode = wiz.domNode.extend ({
     __typename = "textNode",
 
     -- constructor & destructor
-    __init = function ( self, text, textType )
+    __init = function ( self, text, isWhiteSpace )
         self.text = text
-        self.textType = textType
+        self.isWhiteSpace = isWhiteSpace
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -102,9 +102,5 @@ wiz.textNode = wiz.domNode.extend ({
     --/////////////////////////////////////////////////////////////////////////////
 
     text = "",
-    textType = 2, -- 0: white-space, 1: end-of-line, 2: plain-text
-
-    isWhiteSpace = property { get = function (self) return self.textType == 0 end },
-    isEndOfLine = property { get = function (self) return self.textType == 1 end },
-    isPlainText = property { get = function (self) return self.textType == 2 end },
+    isWhiteSpace = false,
 })
