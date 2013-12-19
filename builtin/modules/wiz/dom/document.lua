@@ -17,6 +17,7 @@ wiz.document = class ({
         checkarg(rootEL,"elementNode")
 
         self._root = rootEL
+        rootEL:createRenderNodes()
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -30,15 +31,6 @@ wiz.document = class ({
     -- ------------------------------------------------------------------ 
 
     repaint = function ( self ) 
-        self._root:repaint()
-    end,
-
-    setSize = function ( self, w, h )
-        local style = self._root.style
-        style.width = w
-        style.height = h
-
-        self.root.layoutDirty = true
-        self.root.repaintDirty = true
+        -- TODO: create render tree, repaint it
     end,
 })

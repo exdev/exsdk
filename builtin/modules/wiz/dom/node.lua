@@ -18,70 +18,7 @@ wiz.domNode = class ({
 
     -- relation
     parent = nil,
-    children = {},
-
-    -- position & size
-    x = 0,
-    y = 0,
-    w = 0,
-    h = 0,
-    style = {}, -- computed style
-
-    --
-    layoutDirty = true,
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
-    addChild = function ( self, node )
-        node.parent = self
-        table.add( self.children, node )
-    end,
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
-    getElementByTag = function ( self, tag )
-        for i=1,#self.children do
-            local node = self.children[i]
-            if node.tag == tag then
-                return node
-            end
-        end
-        return nil
-    end,
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
-    layout = function ( self, x, y, w, h )
-        if self.layoutDirty then
-            if self:isa(wiz.textNode) then
-                -- TODO:
-            end
-
-            self.layoutDirty = false
-        end
-
-        return self.x, self.y, self.w, self.h
-    end,
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
-    repaint = function ( self )
-        -- recursively repaint the child 
-        for i=1,#self.children do
-            local node = self.children[i]
-            node:repaint()
-        end
-
-        self:_doRepaint()
-    end,
+    renderNode = nil,
 })
 
 --/////////////////////////////////////////////////////////////////////////////
@@ -105,9 +42,12 @@ wiz.elementNode = wiz.domNode.extend ({
     --
     --/////////////////////////////////////////////////////////////////////////////
 
+    children = {},
+
     tag = "",
     id = "",
     attrs = {},
+    style = {}, -- computed style
 
     --/////////////////////////////////////////////////////////////////////////////
     --
@@ -117,7 +57,30 @@ wiz.elementNode = wiz.domNode.extend ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    _doRepaint = function ( self ) 
+    createRenderNodes = function ( self ) 
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    addChild = function ( self, node )
+        node.parent = self
+        table.add( self.children, node )
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    getElementByTag = function ( self, tag )
+        for i=1,#self.children do
+            local node = self.children[i]
+            if node.tag == tag then
+                return node
+            end
+        end
+        return nil
     end,
 })
 
@@ -144,22 +107,4 @@ wiz.textNode = wiz.domNode.extend ({
     isWhiteSpace = property { get = function (self) return self.textType == 0 end },
     isEndOfLine = property { get = function (self) return self.textType == 1 end },
     isPlainText = property { get = function (self) return self.textType == 2 end },
-
-    --/////////////////////////////////////////////////////////////////////////////
-    --
-    --/////////////////////////////////////////////////////////////////////////////
-
-    -- ------------------------------------------------------------------ 
-    -- Desc: 
-    -- ------------------------------------------------------------------ 
-
-    _doRepaint = function ( self ) 
-        -- TEMP
-        local ttfFont = wiz.bundles["os.fonts"]:load("Arial.ttf")
-
-        if self.isWhiteSpace == false then
-            ex.painter.color = ex.color4f.black 
-            ex.painter.text( self.text, ttfFont, self.x, self.y )
-        end
-    end,
 })
