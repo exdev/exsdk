@@ -13,11 +13,10 @@ wiz.document = class ({
     __typename = "document",
 
     -- constructor & destructor
-    __init = function ( self, rootEL )
-        checkarg(rootEL,"elementNode")
+    __init = function ( self, el )
+        checkarg(el,"elementNode")
 
-        self._root = rootEL
-        rootEL:createRenderNodes()
+        self._root = el
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -31,6 +30,23 @@ wiz.document = class ({
     -- ------------------------------------------------------------------ 
 
     repaint = function ( self ) 
-        -- TODO: create render tree, repaint it
+        self._root.renderNode:repaint()
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    applyStyle = function ( self )
+        self._root:applyStyle()
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    generateRenderNodes = function ( self )
+        self._root:generateRenderNodes()
+        self._root.renderNode:layout()
     end,
 })

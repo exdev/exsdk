@@ -19,6 +19,10 @@ return {
         "dom/document.lua",
         "dom/parser.lua",
 
+        -- renderer
+        "dom/style.lua",
+        "dom/renderer.lua",
+
         -- window
         "base/window.lua",
 

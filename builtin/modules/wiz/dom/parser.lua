@@ -62,16 +62,18 @@ wiz.parser = {
     -- ------------------------------------------------------------------ 
 
     onFinish = function ()
-        local body = rootElement:getElementByTag("body")
-        if body == nil then
-            error ( "Parse Error: Can't find the <body>" )
+        local windowEL = rootElement:getElementByTag("window")
+        if windowEL == nil then
+            error ( "Parse Error: Can't find the <window>" )
         end
 
-        local w = body.attrs.width or 640
-        local h = body.attrs.height or 480
+        local w = windowEL.attrs.width or 640
+        local h = windowEL.attrs.height or 480
         local window = wiz.window( tonumber(w), tonumber(h) )
 
-        window.document = wiz.document(rootElement)
+        window.document = wiz.document(windowEL)
+        window.document:applyStyle()
+        window.document:generateRenderNodes()
 
         if os.platform == "macosx" then
             wiz.mount( "/Library/Fonts/", "os.fonts" )

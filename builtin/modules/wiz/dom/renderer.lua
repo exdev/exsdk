@@ -5,11 +5,17 @@
 -- Description  : 
 -- ======================================================================================
 
+-- TODO { 
+-- local layoutState = {
+-- }
+-- } TODO end 
+
 --/////////////////////////////////////////////////////////////////////////////
 -- class renderNode
 --/////////////////////////////////////////////////////////////////////////////
 
 wiz.renderNode = class ({
+    __typename = "renderNode",
 
     -- relation
     parent = nil,
@@ -24,6 +30,14 @@ wiz.renderNode = class ({
     --
     domNode = nil,
 
+    --
+    -- lineBox = {
+    --     w = 0, -- max-width of the line-box
+    --     h = 0, -- max-height of the line-box
+    --     nodes = {}, -- render nodes
+    -- }
+    _lines = {}, -- lineBox list
+
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
@@ -37,8 +51,7 @@ wiz.renderNode = class ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    layout = function ( self, x, y, w, h )
-        return self.x, self.y, self.w, self.h
+    layout = function ( self )
     end,
 
     -- ------------------------------------------------------------------ 
@@ -60,7 +73,12 @@ wiz.renderNode = class ({
 -- class renderBlock
 --/////////////////////////////////////////////////////////////////////////////
 
-wiz.renderBlock = class ({
+wiz.renderBlock = wiz.renderNode.extend ({
+    __typename = "renderBlock",
+
+    __init = function ( self, domNode )
+        self.domNode = domNode
+    end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -74,7 +92,12 @@ wiz.renderBlock = class ({
 -- class renderInline
 --/////////////////////////////////////////////////////////////////////////////
 
-wiz.renderInline = class ({
+wiz.renderInline = wiz.renderNode.extend ({
+    __typename = "renderInline",
+
+    __init = function ( self, domNode )
+        self.domNode = domNode
+    end,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -88,7 +111,13 @@ wiz.renderInline = class ({
 -- class renderText
 --/////////////////////////////////////////////////////////////////////////////
 
-wiz.renderText = class ({
+wiz.renderText = wiz.renderNode.extend ({
+    __typename = "renderText",
+
+    __init = function ( self, domNode, text )
+        self.domNode = domNode
+        self.text = text
+    end,
 
     text = "",
 

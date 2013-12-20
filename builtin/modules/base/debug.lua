@@ -44,7 +44,7 @@ indent is a first indentation (optional).
 --]]
 -- ------------------------------------------------------------------ 
 
-function debug.dump(t, name, indent, show_meta)
+function debug.dump(t, name, indent, showMeta)
     local cart     -- a container
     local autoref  -- for self references
 
@@ -80,11 +80,11 @@ function debug.dump(t, name, indent, show_meta)
         end
     end
 
-    local function addtocart (value, name, indent, saved, field, show_meta)
+    local function addtocart (value, name, indent, saved, field, showMeta)
         local indent = indent or ""
         local saved = saved or {}
         local field = field or name
-        if show_meta == nil then show_meta = true end
+        if showMeta == nil then showMeta = true end
 
         cart = cart .. indent .. field
 
@@ -97,7 +97,7 @@ function debug.dump(t, name, indent, show_meta)
                 autoref = autoref ..  name .. " = " .. saved[value] .. ";\n"
             else
                 local mt = nil
-                if show_meta then mt = getmetatable(value) end
+                if showMeta then mt = getmetatable(value) end
                 saved[value] = name
 
                 -- if tablecount(value) == 0 then
@@ -107,7 +107,7 @@ function debug.dump(t, name, indent, show_meta)
                     cart = cart .. " = {\n"
                     -- saved mt
                     if mt then
-                        addtocart(mt, "", indent .. "   ", {} --[[ FIXME: this may have bugs in self reference --]], "[metatable]", show_meta)
+                        addtocart(mt, "", indent .. "   ", {} --[[ FIXME: this may have bugs in self reference --]], "[metatable]", showMeta)
                     end
 
                     -- save table if it is not empty
@@ -117,7 +117,7 @@ function debug.dump(t, name, indent, show_meta)
                             local fname = string.format("%s[%s]", name, sk)
                             field = string.format("[%s]", k)
                             -- three spaces between levels
-                            addtocart(v, fname, indent .. "   ", saved, field, show_meta)
+                            addtocart(v, fname, indent .. "   ", saved, field, showMeta)
                         end
                     end
                     cart = cart .. indent .. "};\n"
@@ -132,6 +132,6 @@ function debug.dump(t, name, indent, show_meta)
         return
     end
     cart, autoref = "", ""
-    addtocart(t, name, indent, {}, name, show_meta)
+    addtocart(t, name, indent, {}, name, showMeta)
     print(cart .. autoref)
 end

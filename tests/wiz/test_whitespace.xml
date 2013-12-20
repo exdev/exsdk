@@ -7,7 +7,7 @@
 
 <xml>
 <bundle name="bundle.test" path="./" />
-<body title="Test" position="10,10" width="400" height="300">
+<window title="Test" position="10,10" width="400" height="300">
                <!-- empty line with whitespace -->
 <!-- empty line without whitespace -->
         foo bar<!-- whitespace before words -->
@@ -15,5 +15,5 @@ foo bar        <!-- whitespace after words -->
     foo bar    <!-- whitespace between words -->
 foo         bar<!-- words between whitespace -->
 foo <b>bar</b> bar
-</body>
+</window>
 </xml>

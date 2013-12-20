@@ -7,7 +7,8 @@
 
 <xml>
     <bundle name="bundle.test" path="./" />
-    <body title="Test" position="10,10" width="400" height="300">
+    <window title="Test" position="10,10" width="400" height="300">
         Hello World
-    </body>
+        <label>Foo Bar</label>
+    </window>
 </xml>

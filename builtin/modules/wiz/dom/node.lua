@@ -46,8 +46,8 @@ wiz.elementNode = wiz.domNode.extend ({
 
     tag = "",
     id = "",
-    attrs = {},
-    style = {}, -- css-parsed style
+    attrs = nil, -- {}
+    style = nil, -- {} css-parsed style
 
     --/////////////////////////////////////////////////////////////////////////////
     --
@@ -57,7 +57,36 @@ wiz.elementNode = wiz.domNode.extend ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    createRenderNodes = function ( self ) 
+    generateRenderNodes = function ( self, parentRenderNode ) 
+        if self.style.display == "inline" then
+            self.renderNode = wiz.renderInline(self)
+        else
+            self.renderNode = wiz.renderBlock(self)
+        end
+
+        if parentRenderNode ~= nil then
+            parentRenderNode:addChild(self.renderNode)
+        end
+
+        for i=1,#self.children do
+            local node = self.children[i]
+            node:generateRenderNodes(self.renderNode)
+        end
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    applyStyle = function ( self )
+        self.style = self.style or wiz.style() -- create default style
+        self.style.display = "block"
+        -- TODO: apply style
+
+        for i=1,#self.children do
+            local node = self.children[i]
+            node:applyStyle()
+        end
     end,
 
     -- ------------------------------------------------------------------ 
@@ -103,4 +132,29 @@ wiz.textNode = wiz.domNode.extend ({
 
     text = "",
     isWhiteSpace = false,
+    style = nil, -- must reference parent style
+
+    --/////////////////////////////////////////////////////////////////////////////
+    --
+    --/////////////////////////////////////////////////////////////////////////////
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    generateRenderNodes = function ( self, parentRenderNode ) 
+        self.renderNode = wiz.renderText( self, self.text )
+
+        if parentRenderNode ~= nil then
+            parentRenderNode:addChild(self.renderNode)
+        end
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    applyStyle = function ( self )
+        self.style = self.parent.style
+    end,
 })
