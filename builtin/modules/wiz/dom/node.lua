@@ -79,9 +79,14 @@ wiz.elementNode = wiz.domNode.extend ({
     -- ------------------------------------------------------------------ 
 
     applyStyle = function ( self )
-        self.style = self.style or wiz.style() -- create default style
-        self.style.display = "block"
-        -- TODO: apply style
+        -- create default style
+        self.style = self.style or wiz.style()
+
+        -- apply style
+        local styleAttr = self.attrs.style
+        if styleAttr ~= nil then
+            self.style:css(styleAttr)
+        end
 
         for i=1,#self.children do
             local node = self.children[i]

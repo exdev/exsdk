@@ -22,8 +22,8 @@ wiz.renderNode = class ({
     children = {},
 
     -- position & size
-    x = 0,
-    y = 0,
+    x = 0, -- left, relate with parent
+    y = 0, -- top, relate with parent
     w = 0,
     h = 0,
 
