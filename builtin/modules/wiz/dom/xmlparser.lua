@@ -77,6 +77,8 @@ wiz.xmlparser = {
 
         if os.platform == "macosx" then
             wiz.mount( "/Library/Fonts/", "os.fonts" )
+        elseif os.platform == "windows" then
+            wiz.mount( "c:/WINDOWS/Fonts/", "os.fonts" )
         end
     end,
 }

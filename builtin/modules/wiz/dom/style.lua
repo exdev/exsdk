@@ -68,6 +68,16 @@ wiz.style = class ({
     borderTopColor    = ex.color4f.white,
     borderBottomColor = ex.color4f.white,
 
+    -- TODO: need to consider if add this { 
+    -- -- outline 
+    -- -- NOTE: the diff between outline and border is outline will not take-up space
+    -- -- The outline is the same on all sides. In contrast to borders, there is no 'outline-top' or 'outline-left' property.
+    -- outlineStyle     = "none", -- none, solid, image
+    -- outlineImage     = ex.texture.null, 
+    -- outlineWidth     = 0,
+    -- outlineColor     = ex.color4f.white,
+    -- } TODO end 
+
     -- background
     backgroundColor = ex.color4f.white,
     backgroundImage = ex.texture.null,
