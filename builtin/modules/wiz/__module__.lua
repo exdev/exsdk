@@ -18,7 +18,7 @@ return {
         "dom/node.lua",
         "dom/document.lua",
         "dom/xmlparser.lua",
-        "dom/cssparser.lua",
+        "dom/css.lua",
 
         -- renderer
         "dom/style.lua",

@@ -74,9 +74,10 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function string.trim ( s )
-    return s:match( "^%s*(.-)%s*$" )
-end
+-- DISABLE: we define this in wrap_base.c __lua_string_trim
+-- function string.trim ( s )
+--     return s:match( "^%s*(.-)%s*$" )
+-- end
 
 -- ------------------------------------------------------------------ 
 -- Desc: join path

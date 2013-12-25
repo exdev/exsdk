@@ -9,6 +9,10 @@
 --
 --/////////////////////////////////////////////////////////////////////////////
 
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 -- type: auto, relative, percent, length, none
 -- value: float, double, int
 local function length ( type, value ) 
@@ -98,7 +102,7 @@ wiz.style = class ({
     display = "inline", -- inline, block, inline-block, flex, inline-flex, grid, inline-grid, none,  
     overflowX = "visible", -- visible, hidden, scroll, auto, overlay, marquee, pagedx, pagedy
     overflowY = "visible", -- visible, hidden, scroll, auto, overlay, marquee, pagedx, pagedy
-    verticalAlign = "baseline", -- baseline, middle, sub, super, text_top, text_bottom, top, bottom, baseline_middle, length
+    verticalAlign = "baseline", -- baseline, middle, sub, super, text-top, text-bottom, top, bottom, baseline-middle, length
     -- clear = "none", -- none, left, right, both
     position = "static", -- static, relative, absolute, sticky, fixed
     -- floating = "none", -- none, left, right
@@ -108,7 +112,7 @@ wiz.style = class ({
     --/////////////////////////////////////////////////////////////////////////////
 
     css = function ( self, text )
-        local decls = text:split ( ";", true )
+        wiz.css.parse( self, text )
     end,
 })
 

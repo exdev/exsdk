@@ -47,8 +47,30 @@ static int __lua_string_ncmp ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_string_trim ( lua_State *_l ) {
+    const char *front;
+    const char *end;
+    size_t      size;
+
+    front = luaL_checklstring(_l,1,&size);
+    end   = &front[size - 1];
+
+    for ( ; size && isspace(*front) ; --size , ++front )
+        ;
+    for ( ; size && isspace(*end) ; --size , --end )
+        ;
+
+    lua_pushlstring ( _l, front, (size_t)(end - front) + 1 );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg string_lib[] = {
     { "ncmp",     __lua_string_ncmp },
+    { "trim",     __lua_string_trim },
     { NULL, NULL }
 };
 
