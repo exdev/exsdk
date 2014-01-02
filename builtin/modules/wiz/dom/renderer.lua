@@ -85,6 +85,8 @@ wiz.renderBlock = wiz.renderNode.extend ({
     -- ------------------------------------------------------------------ 
 
     paint = function ( self )
+        -- local style = self.domNode.style
+        -- TODO: 
     end,
 })
 

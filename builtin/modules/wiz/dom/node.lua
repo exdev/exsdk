@@ -82,6 +82,18 @@ wiz.elementNode = wiz.domNode.extend ({
         -- create default style
         self.style = self.style or wiz.style()
 
+        -- apply display by tag
+        if self.tag == "div" then 
+            self.style.display = "block"
+        end
+
+        local parentTag = self.parent.tag
+        if parentTag == "hbox" then
+            self.style.display = "inline-block"
+        elseif parentTag == "vbox" then 
+            self.style.display = "block"
+        end
+
         -- apply style
         local styleAttr = self.attrs.style
         if styleAttr ~= nil then

@@ -8,6 +8,7 @@
 <xml>
     <bundle name="bundle.test" path="./" />
     <window title="Test" position="10,10" width="400" height="300">
+        <div style="width: 100; height: 100; border-style: solid;">Test</div>
         Hello World
         <label>Foo Bar</label>
     </window>
