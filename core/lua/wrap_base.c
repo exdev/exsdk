@@ -25,16 +25,16 @@
 
 static int __lua_string_ncmp ( lua_State *_l ) {
     const char *str1, *str2;
-    size_t idx, cnt;
+    size_t idx, cnt, strlen1;
 
     ex_lua_check_nargs(_l,4);
 
-    str1 = luaL_checkstring(_l,1);
+    str1 = luaL_checklstring(_l,1,&strlen1);
     str2 = luaL_checkstring(_l,2);
     idx = luaL_checkint(_l,3);
     cnt = luaL_checkint(_l,4);
 
-    if ( (idx + cnt) > strlen(str1) ) {
+    if ( (idx + cnt) > strlen1 ) {
         lua_pushboolean( _l, false );
         return 1;
     }
@@ -68,9 +68,26 @@ static int __lua_string_trim ( lua_State *_l ) {
 // Desc: 
 // ------------------------------------------------------------------ 
 
+static int __lua_string_isblank ( lua_State *_l ) {
+    const char *front;
+    size_t      size;
+
+    front = luaL_checklstring(_l,1,&size);
+    for ( ; size && isspace(*front) ; --size , ++front )
+        ;
+
+    lua_pushboolean(_l, size == 0 );
+    return 1;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 static const luaL_Reg string_lib[] = {
     { "ncmp",     __lua_string_ncmp },
     { "trim",     __lua_string_trim },
+    { "isblank",  __lua_string_isblank },
     { NULL, NULL }
 };
 

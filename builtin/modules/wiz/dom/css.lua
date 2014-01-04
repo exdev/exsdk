@@ -137,7 +137,7 @@ local function parseOption ( propName, options )
             end
         end
 
-        assert ( found, "Can't not find option: " .. text .. " for property: " .. propName )
+        assert ( found, "Can not find option: " .. text .. " for property: " .. propName )
         style[propName] = text
     end
 end
@@ -266,16 +266,24 @@ wiz.css = {
         local decls = text:split ( ";", true )
 
         for i=1,#decls do
+        end
+
+        for i=1,#decls do
             local decl = decls[i]
-            local result = decl:split ( ":", true )
-            assert ( #result == 2, "Invalid declaration " .. decl )
 
-            local prop = result[1]:trim()
-            local value = result[2]:trim()
-            local parser = lookupTable[prop]
-            assert ( parser ~= nil, "can't not find parser for " .. prop )
+            if decl:isblank() == false then
+                local result = decl:split ( ":", true )
+                assert ( #result == 2, "Invalid declaration " .. decl )
 
-            parser( style, text )
+                -- DEBUG: print( string.format( "decl[%d] = %s, prop = %s, value = %s", i, decl, result[1], result[2] ) )
+
+                local prop = result[1]:trim()
+                local value = result[2]
+                local parser = lookupTable[prop]
+                assert ( parser ~= nil, "Can not find parser for " .. prop )
+
+                parser( style, value )
+            end
         end
     end,
 }
