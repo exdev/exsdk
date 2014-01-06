@@ -19,6 +19,7 @@ wiz.domNode = class ({
     -- relation
     parent = nil,
     renderNode = nil,
+    style = nil, -- {} css-parsed style
 })
 
 --/////////////////////////////////////////////////////////////////////////////
@@ -47,7 +48,6 @@ wiz.elementNode = wiz.domNode.extend ({
     tag = "",
     id = "",
     attrs = nil, -- {}
-    style = nil, -- {} css-parsed style
 
     --/////////////////////////////////////////////////////////////////////////////
     --
@@ -149,7 +149,6 @@ wiz.textNode = wiz.domNode.extend ({
 
     text = "",
     isWhiteSpace = false,
-    style = nil, -- must reference parent style
 
     --/////////////////////////////////////////////////////////////////////////////
     --

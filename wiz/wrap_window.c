@@ -113,12 +113,14 @@ static int __lua_set_window_background ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 
 static const luaL_Reg lib[] = {
-    { "create_window",          __lua_create_window },
-    { "destroy_window",         __lua_destroy_window },
-    { "repaint_window",         __lua_repaint_window },
-    { "get_window_width",       __lua_get_window_width },
-    { "get_window_height",      __lua_get_window_height },
-    { "set_window_background",  __lua_set_window_background },
+    { "create_window",           __lua_create_window },
+    { "destroy_window",          __lua_destroy_window },
+    { "repaint_window",          __lua_repaint_window },
+    { "get_window_width",        __lua_get_window_width },
+    { "get_window_height",       __lua_get_window_height },
+    // { "get_window_client_width", __lua_get_window_width },
+    // { "get_window_client_height", __lua_get_window_width },
+    { "set_window_background",   __lua_set_window_background },
     { NULL, NULL }
 };
 

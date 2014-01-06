@@ -11,6 +11,33 @@ local lookupTable = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+local function parseNumber ( propName, options )
+    local hasPX = false
+
+    for i=1,#options do
+        local opt = options[i]
+
+        if     opt == "px"      then hasPX      = true 
+        end
+    end
+
+    return function ( style, text )
+        local text = text:trim()
+        local len = text:len()
+
+        -- px
+        if hasPX and text:ncmp( "px", len-2, 2 ) then 
+            style[propName] = tonumber( text:sub( 1, len-2 ) )
+            return
+        end
+        style[propName] = tonumber(text)
+    end
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 local function parseLength ( propName, options )
     local hasPX = false
     local hasPercent = false
@@ -34,17 +61,17 @@ local function parseLength ( propName, options )
 
         -- inherit
         if hasInherit and text == "inherit" then
-            style[propName] = { "inherit", 0 } 
+            style[propName] = { type = "inherit", value = 0 } 
             return
 
         -- auto
         elseif hasAuto and text == "auto" then
-            style[propName] = { "auto", 0 } 
+            style[propName] = { type = "auto", value = 0 } 
             return
 
         -- none
         elseif hasNone and text == "none" then
-            style[propName] = { "none", 0 } 
+            style[propName] = { type = "none", value = 0 } 
             return
         end
 
@@ -52,12 +79,12 @@ local function parseLength ( propName, options )
 
         -- px
         if hasPX and text:ncmp( "px", len-2, 2 ) then 
-            style[propName] = { "length", tonumber( text:sub( 1, len-2 ) ) } 
+            style[propName] = { type = "length", value = tonumber( text:sub( 1, len-2 ) ) } 
             return
 
         -- %
         elseif hasPercent and text:ncmp( "%", len-1, 1 ) then
-            style[propName] = { "percent", tonumber( text:sub( 1, len-1 ) ) } 
+            style[propName] = { type = "percent", value = tonumber( text:sub( 1, len-1 ) ) } 
             return
 
         end
@@ -196,7 +223,7 @@ lookupTable["min-width"]    = parseLength ( "minWidth",  { "px", "%" } )
 lookupTable["min-height"]   = parseLength ( "minHeight", { "px", "%" } ) 
 lookupTable["max-width"]    = parseLength ( "maxWidth",  { "px", "%", "none" } )
 lookupTable["max-height"]   = parseLength ( "maxHeight", { "px", "%", "none" } ) 
-lookupTable["z-index"]      = parseLength ( "zIndex",    { "px" } ) 
+lookupTable["z-index"]      = parseNumber ( "zIndex",    {} ) 
 
 lookupTable["left"]         = parseLength ( "left",     { "px", "%", "auto" } )
 lookupTable["right"]        = parseLength ( "right",    { "px", "%", "auto" } ) 
@@ -218,10 +245,10 @@ lookupTable["padding-bottom"] = parseLength ( "paddingBottom", { "px", "%" } )
 -- lookupTable["border"] = parseBorder () -- TODO 
 lookupTable["border-style"]         = parseOption ( "borderStyle", { "none", "solid", "image" } ) 
 lookupTable["border-image"]         = parseAsset  ( "borderImage" ) 
-lookupTable["border-left"]          = parseLength ( "borderLeft", { "px" } ) 
-lookupTable["border-right"]         = parseLength ( "borderRight", { "px" } ) 
-lookupTable["border-top"]           = parseLength ( "borderTop", { "px" } ) 
-lookupTable["border-bottom"]        = parseLength ( "borderBottom", { "px" } ) 
+lookupTable["border-left"]          = parseNumber ( "borderLeft", { "px" } ) 
+lookupTable["border-right"]         = parseNumber ( "borderRight", { "px" } ) 
+lookupTable["border-top"]           = parseNumber ( "borderTop", { "px" } ) 
+lookupTable["border-bottom"]        = parseNumber ( "borderBottom", { "px" } ) 
 lookupTable["border-left-color"]    = parseColor ( "borderLeftColor" ) 
 lookupTable["border-right-color"]   = parseColor ( "borderRightColor" )
 lookupTable["border-top-color"]     = parseColor ( "borderTopColor" )
@@ -231,8 +258,8 @@ lookupTable["background-color"] = parseColor ( "backgroundColor" )
 lookupTable["background-image"] = parseAsset ( "backgroundImage" )
 
 -- lookupTable["font-family"]      = parseFontFamily ( "fontFamily" ) -- TODO
-lookupTable["word-spacing"]     = parseLength ( "wordSpacing", { "px" } ) 
-lookupTable["letter-spacing"]   = parseLength ( "letterSpacing", { "px" } ) 
+lookupTable["word-spacing"]     = parseNumber ( "wordSpacing", { "px" } ) 
+lookupTable["letter-spacing"]   = parseNumber ( "letterSpacing", { "px" } ) 
 lookupTable["line-height"]      = parseLength ( "lineHeight", { "px", "%", "auto" } ) 
 lookupTable["visible"]          = parseOption ( "visible", { "visible", "hidden", "collapse" } ) 
 lookupTable["text-align"]       = parseOption ( "textAlign", { "left", "right", "center" } ) 

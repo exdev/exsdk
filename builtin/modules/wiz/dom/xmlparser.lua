@@ -67,13 +67,14 @@ wiz.xmlparser = {
             error ( "Parse Error: Can't find the <window>" )
         end
 
-        local w = windowEL.attrs.width or 640
-        local h = windowEL.attrs.height or 480
-        local window = wiz.window( tonumber(w), tonumber(h) )
+        local w = windowEL.attrs.width and tonumber(windowEL.attrs.width) or 640
+        local h = windowEL.attrs.height and tonumber(windowEL.attrs.height) or 480
+        local window = wiz.window(w,h)
 
-        window.document = wiz.document(windowEL)
+        window.document = wiz.document(windowEL,window)
         window.document:applyStyle()
         window.document:generateRenderNodes()
+        window.document:layout()
 
         if os.platform == "macosx" then
             wiz.mount( "/Library/Fonts/", "os.fonts" )

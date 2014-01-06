@@ -13,24 +13,27 @@ wiz.document = class ({
     __typename = "document",
 
     -- constructor & destructor
-    __init = function ( self, el )
+    __init = function ( self, el, window )
         checkarg(el,"elementNode")
 
-        self._root = el
+        self._rootEL = el
+        self.window = window
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
     --
     --/////////////////////////////////////////////////////////////////////////////
 
-    _root = nil,
+    _rootEL = nil,
+    _rootRenderNode = nil,
+    window = nil,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
     repaint = function ( self ) 
-        self._root.renderNode:repaint()
+        self._rootEL.renderNode:repaint()
     end,
 
     -- ------------------------------------------------------------------ 
@@ -38,7 +41,7 @@ wiz.document = class ({
     -- ------------------------------------------------------------------ 
 
     applyStyle = function ( self )
-        self._root:applyStyle()
+        self._rootEL:applyStyle()
     end,
 
     -- ------------------------------------------------------------------ 
@@ -46,7 +49,21 @@ wiz.document = class ({
     -- ------------------------------------------------------------------ 
 
     generateRenderNodes = function ( self )
-        self._root:generateRenderNodes()
-        self._root.renderNode:layout()
+        self._rootEL:generateRenderNodes()
+        self._rootRenderNode = self._rootEL.renderNode
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    layout = function ( self )
+        local state = {
+            offsetX = 0,
+            offsetY = 0,
+            contentW = self.window.width,
+            contentH = self.window.height,
+        }
+        self._rootRenderNode:layout(state)
     end,
 })
