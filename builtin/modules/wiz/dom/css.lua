@@ -13,17 +13,25 @@ local lookupTable = {}
 
 local function parseNumber ( propName, options )
     local hasPX = false
+    local hasInherit = false
 
     for i=1,#options do
         local opt = options[i]
 
         if     opt == "px"      then hasPX      = true 
+        elseif opt == "inherit" then hasInherit = true
         end
     end
 
     return function ( style, text )
         local text = text:trim()
         local len = text:len()
+
+        -- inherit
+        if hasInherit and text == "inherit" then
+            style[propName] = "inherit"
+            return
+        end
 
         -- px
         if hasPX and text:ncmp( "px", len-2, 2 ) then 
@@ -258,15 +266,15 @@ lookupTable["background-color"] = parseColor ( "backgroundColor" )
 lookupTable["background-image"] = parseAsset ( "backgroundImage" )
 
 -- lookupTable["font-family"]      = parseFontFamily ( "fontFamily" ) -- TODO
-lookupTable["word-spacing"]     = parseNumber ( "wordSpacing", { "px" } ) 
-lookupTable["letter-spacing"]   = parseNumber ( "letterSpacing", { "px" } ) 
-lookupTable["line-height"]      = parseLength ( "lineHeight", { "px", "%", "auto" } ) 
-lookupTable["visible"]          = parseOption ( "visible", { "visible", "hidden", "collapse" } ) 
-lookupTable["text-align"]       = parseOption ( "textAlign", { "left", "right", "center" } ) 
-lookupTable["text-transform"]   = parseOption ( "textTransform", { "capitalize", "uppercase", "lowercase", "none" } ) 
-lookupTable["text-decorations"] = parseOption ( "textDecorations", { "none", "underline", "overline", "line-through" } ) 
-lookupTable["text-direction"]   = parseOption ( "textDirection", { "ltr", "rtl" } ) 
-lookupTable["white-space"]      = parseOption ( "whiteSpace", { "normal", "pre", "pre-wrap", "pre-line", "nowrap" } ) 
+lookupTable["word-spacing"]     = parseNumber ( "wordSpacing", { "inherit", "px" } ) 
+lookupTable["letter-spacing"]   = parseNumber ( "letterSpacing", { "inherit", "px" } ) 
+lookupTable["line-height"]      = parseLength ( "lineHeight", { "inherit", "px", "%", "auto" } ) 
+lookupTable["visible"]          = parseOption ( "visible", { "inherit", "visible", "hidden", "collapse" } ) 
+lookupTable["text-align"]       = parseOption ( "textAlign", { "inherit", "left", "right", "center" } ) 
+lookupTable["text-transform"]   = parseOption ( "textTransform", { "inherit", "capitalize", "uppercase", "lowercase", "none" } ) 
+lookupTable["text-decorations"] = parseOption ( "textDecorations", { "inherit", "none", "underline", "overline", "line-through" } ) 
+lookupTable["text-direction"]   = parseOption ( "textDirection", { "inherit", "ltr", "rtl" } ) 
+lookupTable["white-space"]      = parseOption ( "whiteSpace", { "inherit", "normal", "pre", "pre-wrap", "pre-line", "nowrap" } ) 
 
 lookupTable["display"] = parseOption ( "display", { "inline", "block", "inline-block", 
                                                     "flex", "inline-flex", "grid", "inline-grid", 

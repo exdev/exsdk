@@ -89,7 +89,7 @@ wiz.renderNode = class ({
         -- maxWidth
         val = style.maxWidth.value
         if style.maxWidth.type == "percent" then
-            val = val/100 * style.contentW
+            val = val/100 * state.contentW
         elseif style.maxWidth.type == "none" then
             val = 9999
         end
@@ -98,7 +98,7 @@ wiz.renderNode = class ({
         -- maxHeight
         val = style.maxHeight.value
         if style.maxHeight.type == "percent" then
-            val = val/100 * style.contentH
+            val = val/100 * state.contentH
         elseif style.maxHeight.type == "none" then
             val = 9999
         end
@@ -107,56 +107,56 @@ wiz.renderNode = class ({
         -- marginLeft
         val = style.marginLeft.value
         if style.marginLeft.type == "percent" then
-            val = val/100 * style.contentW
+            val = val/100 * state.contentW
         end
         self.marginLeft = val
 
         -- marginRight
         val = style.marginRight.value
         if style.marginRight.type == "percent" then
-            val = val/100 * style.contentW
+            val = val/100 * state.contentW
         end
         self.marginRight = val
 
         -- marginTop
         val = style.marginTop.value
         if style.marginTop.type == "percent" then
-            val = val/100 * style.contentH
+            val = val/100 * state.contentH
         end
         self.marginTop = val
 
         -- marginBottom
         val = style.marginBottom.value
         if style.marginBottom.type == "percent" then
-            val = val/100 * style.contentH
+            val = val/100 * state.contentH
         end
         self.marginBottom = val
 
         -- paddingLeft
         val = style.paddingLeft.value
         if style.paddingLeft.type == "percent" then
-            val = val/100 * style.contentW
+            val = val/100 * state.contentW
         end
         self.paddingLeft = val
 
         -- paddingRight
         val = style.paddingRight.value
         if style.paddingRight.type == "percent" then
-            val = val/100 * style.contentW
+            val = val/100 * state.contentW
         end
         self.paddingRight = val
 
         -- paddingTop
         val = style.paddingTop.value
         if style.paddingTop.type == "percent" then
-            val = val/100 * style.contentH
+            val = val/100 * state.contentH
         end
         self.paddingTop = val
 
         -- paddingBottom
         val = style.paddingBottom.value
         if style.paddingBottom.type == "percent" then
-            val = val/100 * style.contentH
+            val = val/100 * state.contentH
         end
         self.paddingBottom = val
 
@@ -166,17 +166,97 @@ wiz.renderNode = class ({
         self.borderTop = style.borderTop
         self.borderBottom = style.borderBottom
 
-        -- TODO: inherit properties
+        -- TODO: 
         -- font = ex.font.null,
-        -- wordSpacing = 0,
-        -- letterSpacing = 0,
-        -- lineHeight = 0,
-        -- visible = "visible",
-        -- textAlign = "left",
-        -- textTransform = "none",
-        -- textDecorations = "none",
-        -- textDirection = "ltr",
-        -- whiteSpace = "normal",
+
+        -- wordSpacing
+        val = style.wordSpacing
+        if val == "inherit" then
+            val = self.parent and self.parent.wordSpacing or 0
+        end
+        self.wordSpacing = val
+
+        -- letterSpacing
+        val = style.letterSpacing
+        if val == "inherit" then
+            val = self.parent and self.parent.letterSpacing or 0
+        end
+        self.letterSpacing = val
+
+        -- lineHeight
+        val = style.lineHeight.value
+        if style.lineHeight.type == "inherit" then
+            val = self.parent and self.parent.lineHeight or 0
+        elseif style.lineHeight.type == "percent" then
+            val = self.parent and self.parent * val/100 or 0
+        elseif style.lineHeight.type == "auto" then
+            if font ~= nil then
+                local fontType = typename(font)
+
+                if fontType == "bitmapfont" then
+                    val = font.lineHeight 
+                elseif fontType == "font" then
+                    val = font.height
+                end
+            end
+        end
+        self.lineHeight = val
+
+        -- visible
+        val = style.visible
+        if val == "inherit" then
+            val = self.parent and self.parent.visible or "visible"
+        end
+        self.visible = val
+
+        -- textAlign
+        val = style.textAlign
+        if val == "inherit" then
+            val = self.parent and self.parent.textAlign or "left"
+        end
+        self.textAlign = val
+
+        -- textTransform
+        val = style.textTransform
+        if val == "inherit" then
+            val = self.parent and self.parent.textTransform or "none"
+        end
+        self.textTransform = val
+
+        -- textDecorations
+        val = style.textDecorations
+        if val == "inherit" then
+            val = self.parent and self.parent.textDecorations or "none"
+        end
+        self.textDecorations = val
+
+        -- textDirection
+        val = style.textDirection
+        if val == "inherit" then
+            val = self.parent and self.parent.textDirection or "ltr"
+        end
+        self.textDirection = val
+
+        -- whiteSpace
+        val = style.whiteSpace
+        if val == "inherit" then
+            val = self.parent and self.parent.whiteSpace or "normal"
+        end
+        self.whiteSpace = val
+
+        -- width
+        val = style.width.value
+        if style.width.type == "percent" then 
+            val = val/100 * self.contentW
+        end
+        self.width = math.clamp( val, self.minWidth, self.maxWidth )
+
+        -- height
+        val = style.height.value
+        if style.height.type == "percent" then 
+            val = val/100 * self.contentH
+        end
+        self.height = math.clamp( val, self.minHeight, self.maxHeight )
     end,
 
     -- ------------------------------------------------------------------ 
