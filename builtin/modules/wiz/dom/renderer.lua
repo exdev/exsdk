@@ -26,6 +26,8 @@ wiz.renderNode = class ({
     domNode = nil,
 
     -- computed style (style computed during layout phase)
+    width = 0,
+    height = 0,
     minWidth = 0,
     maxWidth = 0,
     minHeight = 0,
@@ -41,10 +43,10 @@ wiz.renderNode = class ({
     paddingTop = 0,
     paddingBottom = 0,
 
-    borderSizeLeft = 0,
-    borderSizeRight = 0,
-    borderSizeTop = 0,
-    borderSizeBottom = 0,
+    borderLeft = 0,
+    borderRight = 0,
+    borderTop = 0,
+    borderBottom = 0,
 
     font = ex.font.null,
     wordSpacing = 0,
