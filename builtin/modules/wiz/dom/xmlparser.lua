@@ -38,6 +38,7 @@ wiz.xmlparser = {
 
     onEndElement = function ( tag ) 
         curElement = curElement.parent
+        lastTextNode = nil
     end,
 
     -- ------------------------------------------------------------------ 

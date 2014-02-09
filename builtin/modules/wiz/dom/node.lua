@@ -83,7 +83,7 @@ wiz.elementNode = wiz.domNode.extend ({
         self.style = self.style or wiz.style()
 
         -- apply display by tag
-        if self.tag == "div" then 
+        if self.tag == "div" or self.tag == "window" then 
             self.style.display = "block"
         end
 

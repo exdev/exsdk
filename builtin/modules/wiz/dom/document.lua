@@ -63,6 +63,9 @@ wiz.document = class ({
             offsetY = 0,
             contentW = self.window.width,
             contentH = self.window.height,
+            newline = false,
+            next = nil,
+            line = { w = 0, h = 0, nodes = {} },
         }
         self._rootRenderNode:layout(state)
     end,

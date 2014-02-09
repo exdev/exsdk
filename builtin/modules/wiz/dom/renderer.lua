@@ -48,7 +48,7 @@ wiz.renderNode = class ({
     borderTop = 0,
     borderBottom = 0,
 
-    font = ex.font.null,
+    font = nil,
     wordSpacing = 0,
     letterSpacing = 0,
     lineHeight = 0,
@@ -59,13 +59,7 @@ wiz.renderNode = class ({
     textDirection = "ltr",
     whiteSpace = "normal",
 
-    --
-    -- lineBox = {
-    --     w = 0, -- max-width of the line-box
-    --     h = 0, -- max-height of the line-box
-    --     nodes = {}, -- render nodes
-    -- }
-    _lines = {}, -- lineBox list
+    display = "inline",
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -73,6 +67,8 @@ wiz.renderNode = class ({
 
     _computeStyle = function ( self, style, state )
         local val = -1
+
+        self.display = style.display
 
         -- minWidth
         val = style.minWidth.value
@@ -192,13 +188,13 @@ wiz.renderNode = class ({
         elseif style.lineHeight.type == "percent" then
             val = self.parent and self.parent * val/100 or 0
         elseif style.lineHeight.type == "auto" then
-            if font ~= nil then
-                local fontType = typename(font)
+            if self.font ~= nil then
+                local fontType = typename(self.font)
 
                 if fontType == "bitmapfont" then
-                    val = font.lineHeight 
+                    val = self.font.lineHeight 
                 elseif fontType == "font" then
-                    val = font.height
+                    val = self.font.height
                 end
             end
         end
@@ -275,10 +271,6 @@ wiz.renderNode = class ({
     -- ------------------------------------------------------------------ 
 
     layout = function ( self, state )
-        local style = self.domNode.style
-        self:_computeStyle( style, state )
-
-        -- TODO:
     end,
 
     -- ------------------------------------------------------------------ 
@@ -286,13 +278,40 @@ wiz.renderNode = class ({
     -- ------------------------------------------------------------------ 
 
     repaint = function ( self )
-        -- recursively repaint the child 
-        for i=1,#self.children do
-            local node = self.children[i]
-            node:repaint()
+        local parent = self.parent
+        local x = self.x
+        local y = self.y
+        while parent ~= nil do
+            x = x + parent.x
+            y = y + parent.y
         end
 
-        self:paint()
+        self:paint(x,y)
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    paint = function ( self, x, y )
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    totalWidth = function ( self )
+        return self.width
+        + self.marginLeft + self.marginRight 
+        + self.borderLeft + self.borderRight 
+        + self.paddingLeft + self.paddingRight
+    end,
+
+    totalHeight = function ( self )
+        return self.height 
+        + self.marginTop + self.marginBottom 
+        + self.borderTop + self.borderBottom 
+        + self.paddingTop + self.paddingBottom
     end,
 })
 
@@ -307,13 +326,143 @@ wiz.renderBlock = wiz.renderNode.extend ({
         self.domNode = domNode
     end,
 
+    -- lineBox = {
+    --     w = 0, -- max-width of the line-box
+    --     h = 0, -- max-height of the line-box
+    --     nodes = {}, -- render nodes
+    -- }
+    _lines = {}, -- lineBox list
+
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    paint = function ( self )
+    layout = function ( self, parentState )
+        local style = self.domNode.style
+        self:_computeStyle( style, parentState )
+        self.x = parentState.offsetX + self.marginLeft + self.borderLeft + self.paddingLeft
+        self.y = parentState.offsetY + self.marginTop + self.borderTop + self.paddingTop
+
+        local contentW = parentState.contentW 
+        - self.marginLeft - self.marginRight 
+        - self.borderLeft - self.borderRight 
+        - self.paddingLeft - self.paddingRight 
+        - parentState.offsetX
+        contentW = contentW > 0 and contentW or 0
+
+        local contentH = parentState.contentH 
+        - self.marginTop - self.marginBottom 
+        - self.borderTop - self.borderBottom 
+        - self.paddingTop - self.paddingBottom,
+        - parentState.offsetY
+        contentH = contentH > 0 and contentH or 0
+
+        -- add to parent's line-box
+        parentState.next = nil
+        if self.display == "block" then
+            if #parentState.line.nodes > 0 then 
+                parentState.newline = true
+                parentState.next = self
+                return
+            else
+                parentState.newline = true -- always new-line
+            end
+
+        elseif self.display == "inline-block" then
+            local totalWidth = self:totalWidth()
+
+            if #parentState.line.nodes > 0 and 
+                parentState.offsetX + totalWidth > parentState.contentW then
+                parentState.newline = true
+                parentState.next = self
+                return
+            else
+                parentState.offsetX = parentState.offsetX + totalWidth
+                parentState.line.w = parentState.offsetX
+            end
+
+        end
+
+        -- layout children
+        local state = {
+            offsetX = 0,
+            offsetY = 0,
+            contentW = contentW,
+            contentH = contentH,
+            newline = false,
+            next = nil,
+            line = { w = 0, h = 0, nodes = {} },
+        }
+
+        -- clear the lines
+        self._lines = {}
+
+        -- recursively layout the child 
+        for i=1,#self.children do
+
+            --
+            local child = self.children[i]
+            child:layout(state)
+
+            --
+            if state.newline then
+                state.newline = false
+                state.offsetX = 0
+                state.offsetY = state.offsetY + state.line.h
+                table.add( self._lines, state.line )
+                state.line = { w = 0, h = 0, nodes = {} }
+            end
+
+            --
+            while state.next ~= nil do
+                state.next:layout(state)
+                if state.newline then
+                    state.newline = false
+                    state.offsetX = 0
+                    state.offsetY = state.offsetY + state.line.h
+                    table.add( self._lines, state.line )
+                    state.line = { w = 0, h = 0, nodes = {} }
+                end
+            end
+        end
+        if #state.line.nodes > 0 then
+            table.add( self._lines, state.line )
+        end
+
+        -- calculate the height
+        if style.height.type == "auto" then 
+            local height = 0 
+            for i=1,#self._lines do
+                height = height + self._lines[i].h
+            end
+            self.height = math.clamp( height, self.minHeight, self.maxHeight )
+        end
+
+        -- add node to parent's line-box
+        local totalHeight = self:totalHeight()
+        if parentState.line.h < totalHeight then
+            parentState.line.h = totalHeight
+        end
+        table.add( parentState.line.nodes, self ) 
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    paint = function ( self, x, y )
+        -- recursively paint the child 
+        for i=1,#self._lines do
+            local line = self._lines[i]
+
+            for j=1,#line.nodes do
+                local node = line.nodes[j]
+                node:paint( x + node.x, y + node.y )
+            end
+        end
+
+        -- TODO: paint self
         -- local style = self.domNode.style
-        -- TODO: 
     end,
 })
 
@@ -332,7 +481,62 @@ wiz.renderInline = wiz.renderNode.extend ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    paint = function ( self )
+    layout = function ( self, parentState )
+        local style = self.domNode.style
+        self:_computeStyle( style, parentState )
+        self.x = parentState.offsetX + self.marginLeft + self.borderLeft + self.paddingLeft
+        self.y = parentState.offsetY
+
+        local contentW = parentState.contentW 
+        - self.marginLeft - self.marginRight 
+        - self.borderLeft - self.borderRight 
+        - self.paddingLeft - self.paddingRight 
+        - parentState.offsetX
+        contentW = contentW > 0 and contentW or 0
+
+        local contentH = parentState.contentH 
+        - self.marginTop - self.marginBottom 
+        - self.borderTop - self.borderBottom 
+        - self.paddingTop - self.paddingBottom,
+        - parentState.offsetY
+        contentH = contentH > 0 and contentH or 0
+
+        -- TODO
+        table.add( parentState.line.nodes, self ) 
+
+        -- layout children
+        local state = {
+            offsetX = 0,
+            offsetY = 0,
+            contentW = contentW,
+            contentH = contentH,
+            newline = false,
+            next = nil,
+            line = { w = 0, h = 0, nodes = {} },
+        }
+
+        -- recursively layout the child 
+        for i=1,#self.children do
+
+            --
+            local child = self.children[i]
+            child:layout(state)
+        end
+
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    paint = function ( self, x, y )
+        -- recursively paint the child 
+        for i=1,#self.children do
+            local node = self.children[i]
+            node:paint( x + node.x, y + node.y )
+        end
+
+        -- TODO: paint self
     end,
 })
 
@@ -354,12 +558,40 @@ wiz.renderText = wiz.renderNode.extend ({
     -- Desc: 
     -- ------------------------------------------------------------------ 
 
-    paint = function ( self )
+    layout = function ( self, parentState )
+        self.x = parentState.offsetX
+        self.y = parentState.offsetY
+        self.width = 20
+        self.height = 10
+        -- self.height = self.parent.lineHeight
+
+        -- TODO
+
+        -- add node to parent's line-box
+        local totalHeight = self:totalHeight()
+        if parentState.line.h < totalHeight then
+            parentState.line.h = totalHeight
+        end
+        table.add( parentState.line.nodes, self ) 
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    paint = function ( self, x, y )
         -- TEMP: self.parent.style
         local ttfFont = wiz.bundles["os.fonts"]:load("Arial.ttf")
 
         ex.painter.color = ex.color4f.black 
-        ex.painter.text( self.text, ttfFont, self.x, self.y )
+        ex.painter.text( self.text, ttfFont, x, y )
+
+        -- DEBUG { 
+        -- if self.parent ~= nil then
+        --     print( string.format( "tag = %s, type = %s, text = %s", self.parent.domNode.tag, typename(self), self.text ) )
+        --     print( debug.traceback() )
+        -- end
+        -- } DEBUG end 
     end,
 })
 
