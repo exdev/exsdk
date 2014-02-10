@@ -512,9 +512,6 @@ wiz.renderInline = wiz.renderNode.extend ({
         - parentState.offsetY
         contentH = contentH > 0 and contentH or 0
 
-        -- TODO
-        table.add( parentState.line.nodes, self ) 
-
         -- layout children
         local state = {
             offsetX = 0,
@@ -533,6 +530,11 @@ wiz.renderInline = wiz.renderNode.extend ({
             local child = self.children[i]
             child:layout(state)
         end
+
+        -- TODO
+        parentState.offsetX = parentState.offsetX + state.line.w
+        parentState.line.w = parentState.offsetX
+        table.add( parentState.line.nodes, self ) 
 
     end,
 
@@ -584,7 +586,7 @@ wiz.renderText = wiz.renderNode.extend ({
 
         local contentW = parentState.contentW - parentState.offsetX 
         local text1, text2, width = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW )
-        print( string.format( "text1 = %s, text2 = %s, width = %d", text1, text2, width ) )
+        print( string.format( "text1 = %s, text2 = %s, width = %d, display = %s", text1, text2, width, parent.display ) )
 
         self.x = parentState.offsetX
         self.y = parentState.offsetY
@@ -596,6 +598,8 @@ wiz.renderText = wiz.renderNode.extend ({
         if parentState.line.h < totalHeight then
             parentState.line.h = totalHeight
         end
+        parentState.offsetX = parentState.offsetX + width
+        parentState.line.w = parentState.offsetX
         table.add( parentState.line.nodes, self ) 
     end,
 
