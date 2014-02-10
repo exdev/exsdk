@@ -65,6 +65,7 @@ extern int ex_font_get_kerning ( ex_font_t *_font, uint _first, uint _second );
 // ------------------------------------------------------------------ 
 
 extern ex_glyph_t *ex_font_get_glyph ( ex_font_t *_font, uint _ft_index );
+extern int ex_font_get_index ( ex_font_t *_font, int _char );
 
 // ------------------------------------------------------------------ 
 // Desc: 

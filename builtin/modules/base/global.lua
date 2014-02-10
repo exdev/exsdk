@@ -26,6 +26,7 @@
 local builtinError = error
 function error ( msg, ... )
     builtinError( msg:format(...) )
+    print( debug.traceback() )
 end
 
 -- ------------------------------------------------------------------ 
@@ -42,7 +43,7 @@ end
 
 function checkarg ( arg, tpname )
     assert ( typename(arg) == tpname, 
-             string.format("Type error: must be %s", tpname ) )
+             string.format("Type error: must be %s, this is %s", tpname, typename(arg) ) )
 end
 
 -- ------------------------------------------------------------------ 

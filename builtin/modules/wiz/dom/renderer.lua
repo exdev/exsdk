@@ -164,8 +164,19 @@ wiz.renderNode = class ({
         self.borderTop = style.borderTop
         self.borderBottom = style.borderBottom
 
-        -- TODO: 
-        -- font = ex.font.null,
+        -- TODO: TEMP 
+        -- fontFamily
+        for i=1,#style.fontFamily do
+            local fontName = style.fontFamily[i] .. ".ttf"
+            local ttfFont = wiz.bundles["os.fonts"]:load(fontName)
+            if ttfFont ~= nil then
+                self.font = ttfFont
+                break
+            end
+        end
+        if self.font == nil then
+            self.font = wiz.bundles["os.fonts"]:load("Arial.ttf")
+        end
 
         -- wordSpacing
         val = style.wordSpacing
@@ -559,13 +570,26 @@ wiz.renderText = wiz.renderNode.extend ({
     -- ------------------------------------------------------------------ 
 
     layout = function ( self, parentState )
+        local parent = self.parent
+        local font = parent.font
+        local whiteSpace = parent.whiteSpace
+        local lineElementCount = #parentState.line.nodes
+
+        if lineElementCount == 0 
+        and whiteSpace ~= "pre"
+        and self.domNode.isWhiteSpace 
+        then
+            return
+        end
+
+        local contentW = parentState.contentW - parentState.offsetX 
+        local text1, text2, width = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW )
+        print( string.format( "text1 = %s, text2 = %s, width = %d", text1, text2, width ) )
+
         self.x = parentState.offsetX
         self.y = parentState.offsetY
-        self.width = 20
-        self.height = 10
-        -- self.height = self.parent.lineHeight
-
-        -- TODO
+        self.width = width
+        self.height = self.parent.lineHeight
 
         -- add node to parent's line-box
         local totalHeight = self:totalHeight()
@@ -580,11 +604,11 @@ wiz.renderText = wiz.renderNode.extend ({
     -- ------------------------------------------------------------------ 
 
     paint = function ( self, x, y )
-        -- TEMP: self.parent.style
-        local ttfFont = wiz.bundles["os.fonts"]:load("Arial.ttf")
+        local parent = self.parent
+        local font = parent.font
 
         ex.painter.color = ex.color4f.black 
-        ex.painter.text( self.text, ttfFont, x, y )
+        ex.painter.text( self.text, font, x, y )
 
         -- DEBUG { 
         -- if self.parent ~= nil then

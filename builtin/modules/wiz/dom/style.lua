@@ -87,7 +87,7 @@ wiz.style = class ({
     backgroundImage = ex.texture.null,
 
     -- inherited (the value can set to "inherit")
-    fontFamily = "VeraMono",
+    fontFamily = { "Arial" }, -- list
     wordSpacing = 0,
     letterSpacing = 0,
     lineHeight = length("auto"),

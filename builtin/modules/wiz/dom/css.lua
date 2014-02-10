@@ -225,6 +225,19 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
+local function parseStringList ( propName  )
+    return function ( style, text )
+        local text = text:trim()
+        local list = text:split(",")
+
+        style[propName] = list
+    end
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
 lookupTable["width"]        = parseLength ( "width",     { "px", "%", "auto" } ) 
 lookupTable["height"]       = parseLength ( "height",    { "px", "%", "auto" } ) 
 lookupTable["min-width"]    = parseLength ( "minWidth",  { "px", "%" } )
@@ -265,7 +278,7 @@ lookupTable["border-bottom-color"]  = parseColor ( "borderBottomColor" )
 lookupTable["background-color"] = parseColor ( "backgroundColor" )
 lookupTable["background-image"] = parseAsset ( "backgroundImage" )
 
--- lookupTable["font-family"]      = parseFontFamily ( "fontFamily" ) -- TODO
+lookupTable["font-family"]      = parseStringList ( "fontFamily" )
 lookupTable["word-spacing"]     = parseNumber ( "wordSpacing", { "inherit", "px" } ) 
 lookupTable["letter-spacing"]   = parseNumber ( "letterSpacing", { "inherit", "px" } ) 
 lookupTable["line-height"]      = parseLength ( "lineHeight", { "inherit", "px", "%", "auto" } ) 
