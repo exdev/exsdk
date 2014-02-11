@@ -314,9 +314,6 @@ wiz.css = {
         local decls = text:split ( ";", true )
 
         for i=1,#decls do
-        end
-
-        for i=1,#decls do
             local decl = decls[i]
 
             if decl:isblank() == false then

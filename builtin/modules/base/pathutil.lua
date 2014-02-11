@@ -33,7 +33,7 @@ function pathutil.isabsolute (p)
     end
 
     -- d:/foo/bar
-    local i = p:find(":/", 0, true )
+    i = p:find(":/", 0, true )
     if i ~= nil then
         return true
     end

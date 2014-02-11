@@ -361,7 +361,7 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function class_index ( t, key, val )
+local function class_index ( t, key )
     -- NOTE: the t is a class table
 
     -- check if the metatable have the key
@@ -423,8 +423,8 @@ function class(...)
         return __childof(typeof(obj),superclass)
     end )
     rawset ( base, "isa", function (obj, cls)
-        local cls = typeof(obj)
-        return cls == cls or __childof(cls,cls)
+        local objcls = typeof(obj)
+        return objcls == cls or __childof(obj,cls)
     end )
     rawset ( base, "extend", function (t)
         return class( t, base )

@@ -364,7 +364,7 @@ wiz.renderBlock = wiz.renderNode.extend ({
         local contentH = parentState.contentH 
         - self.marginTop - self.marginBottom 
         - self.borderTop - self.borderBottom 
-        - self.paddingTop - self.paddingBottom,
+        - self.paddingTop - self.paddingBottom
         - parentState.offsetY
         contentH = contentH > 0 and contentH or 0
 
@@ -508,7 +508,7 @@ wiz.renderInline = wiz.renderNode.extend ({
         local contentH = parentState.contentH 
         - self.marginTop - self.marginBottom 
         - self.borderTop - self.borderBottom 
-        - self.paddingTop - self.paddingBottom,
+        - self.paddingTop - self.paddingBottom
         - parentState.offsetY
         contentH = contentH > 0 and contentH or 0
 
