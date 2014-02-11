@@ -473,7 +473,19 @@ wiz.renderBlock = wiz.renderNode.extend ({
         end
 
         -- TODO: paint self
-        -- local style = self.domNode.style
+        local style = self.domNode.style
+        local x = x - self.paddingLeft - self.borderLeft
+        local y = y - self.paddingTop - self.borderTop
+        local w = self.width + self.paddingLeft + self.paddingRight + self.borderLeft + self.borderRight
+        local h = self.height + self.paddingTop + self.paddingBottom + self.borderTop + self.borderBottom
+        if style.borderStyle == "solid" then
+            ex.painter.color = style.borderLeftColor -- TODO
+            ex.painter.rect4( x, y, w, h,
+                              self.borderTop,
+                              self.borderRight,
+                              self.borderBottom,
+                              self.borderLeft )
+        end
     end,
 })
 

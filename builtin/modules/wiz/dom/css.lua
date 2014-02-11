@@ -225,12 +225,46 @@ end
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-local function parseStringList ( propName  )
+local function parseStringList ( propName )
     return function ( style, text )
         local text = text:trim()
         local list = text:split(",")
 
         style[propName] = list
+    end
+end
+
+-- ------------------------------------------------------------------ 
+-- Desc: 
+-- ------------------------------------------------------------------ 
+
+local function parseBorder ()
+    return function ( style, text )
+        local text = text:trim()
+        local list = text:split(" ")
+
+        local txtBorderStyle = list[1]
+        if txtBorderStyle ~= nil then
+            local parser = lookupTable["border-style"]
+            assert ( parser ~= nil, "can't not find parser for border-style" )
+            parser( style, txtBorderStyle )
+        end
+
+        local txtBorderSize = list[2]
+        if txtBorderSize ~= nil then
+            lookupTable["border-top"] ( style, txtBorderSize )
+            lookupTable["border-right"] ( style, txtBorderSize )
+            lookupTable["border-bottom"] ( style, txtBorderSize )
+            lookupTable["border-left"] ( style, txtBorderSize )
+        end
+
+        local txtBorderColor = list[3]
+        if txtBorderColor ~= nil then
+            lookupTable["border-top-color"] ( style, txtBorderColor )
+            lookupTable["border-right-color"] ( style, txtBorderColor )
+            lookupTable["border-bottom-color"] ( style, txtBorderColor )
+            lookupTable["border-left-color"] ( style, txtBorderColor )
+        end
     end
 end
 
@@ -263,7 +297,7 @@ lookupTable["padding-right"]  = parseLength ( "paddingRight",  { "px", "%" } )
 lookupTable["padding-top"]    = parseLength ( "paddingTop",    { "px", "%" } ) 
 lookupTable["padding-bottom"] = parseLength ( "paddingBottom", { "px", "%" } ) 
 
--- lookupTable["border"] = parseBorder () -- TODO 
+lookupTable["border"] = parseBorder ()
 lookupTable["border-style"]         = parseOption ( "borderStyle", { "none", "solid", "image" } ) 
 lookupTable["border-image"]         = parseAsset  ( "borderImage" ) 
 lookupTable["border-left"]          = parseNumber ( "borderLeft", { "px" } ) 
