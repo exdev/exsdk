@@ -85,13 +85,15 @@ int main ( int _argc, char **_argv ) {
     // ======================================================== 
 
     // init SDL
-    SDL_SetHint ( SDL_HINT_RENDER_DRIVER, "opengl" );
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+    // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     // NOTE: it will also init mouse, keyboard, touch and events
     if ( SDL_VideoInit(0) < 0 ) {
         ex_log ( "[SDL] Error: Could not initialize SDL video driver: %s", SDL_GetError() );
         return 1;
     }
-    SDL_GL_SetAttribute( SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1 );
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+    // SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
     // init exsdk ( including ex_c lua module ) 
     if ( ex_sdk_init() != 0 ) {

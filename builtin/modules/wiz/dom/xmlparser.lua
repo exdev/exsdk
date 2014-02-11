@@ -72,13 +72,6 @@ wiz.xmlparser = {
         local h = windowEL.attrs.height and tonumber(windowEL.attrs.height) or 480
         local window = wiz.window(w,h)
 
-        if os.platform == "macosx" then
-            wiz.mount( "/Library/Fonts/", "os.fonts" )
-            wiz.mount( "/System/Library/Fonts/", "os.fonts" )
-        elseif os.platform == "windows" then
-            wiz.mount( "c:/WINDOWS/Fonts/", "os.fonts" )
-        end
-
         window.document = wiz.document(windowEL,window)
         window.document:applyStyle()
         window.document:generateRenderNodes()
