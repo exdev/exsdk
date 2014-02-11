@@ -13,12 +13,9 @@ wiz.bundle = class ({
     __typename = "bundle",
 
     -- constructor & destructor
-    __init = function ( self, name, path )
+    __init = function ( self, name )
         checkarg(name,"string")
-        checkarg(path,"string")
-
         self.name = name
-        self.path = path
     end,
 
     --/////////////////////////////////////////////////////////////////////////////
@@ -27,7 +24,7 @@ wiz.bundle = class ({
 
     _pathToAsset = {},
     name = "unknown.com", 
-    path = "./",
+    paths = {}, -- the list of realpath, used in wiz.unmount
 
     --/////////////////////////////////////////////////////////////////////////////
     -- private
@@ -39,14 +36,14 @@ wiz.bundle = class ({
 
     _getImporter = function ( self, path )
         if self:exists (path) == false then
-            error ( "Can't find file at " .. path )
+            error ( "Can't find file: " .. path )
         end
 
         if pathutil.is( path, {".bmp", ".jpg", ".png", ".tga"} ) then
             return wiz.textureImporter(self,path)
         elseif pathutil.is( path, {".bft"} ) then
             return wiz.bitmapfontImporter(self,path)
-        elseif pathutil.is( path, {".ttf"} ) then
+        elseif pathutil.is( path, {".ttf", ".dfont"} ) then
             return wiz.fontImporter(self,path)
         end
     end,
@@ -79,6 +76,14 @@ wiz.bundle = class ({
         end
 
         return asset
+    end,
+
+    -- ------------------------------------------------------------------ 
+    -- Desc: 
+    -- ------------------------------------------------------------------ 
+
+    addPath = function ( self, path ) 
+        table.add( self.paths, path )
     end,
 
     -- ------------------------------------------------------------------ 

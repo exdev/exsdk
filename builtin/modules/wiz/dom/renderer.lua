@@ -167,7 +167,7 @@ wiz.renderNode = class ({
         -- TODO: TEMP 
         -- fontFamily
         for i=1,#style.fontFamily do
-            local fontName = style.fontFamily[i] .. ".ttf"
+            local fontName = style.fontFamily[i]
             local ttfFont = wiz.bundles["os.fonts"]:load(fontName)
             if ttfFont ~= nil then
                 self.font = ttfFont

@@ -20,23 +20,39 @@ wiz.bundles = {}
 -- Desc: 
 -- ------------------------------------------------------------------ 
 
-function wiz.mount ( path, name )
+function wiz.mount ( path, name, replace )
+    local replace = (replace ~= nil) and replace or false
     local realPath = path
     if pathutil.isabsolute(path) == false then
         realPath = os.cwd():join( path )
     end
 
-    local bundle = wiz.bundle( name, realPath )
+    local bundle = wiz.bundles[name]
 
     --
-    local old_bundle = wiz.bundles[name]
-    if old_bundle ~= nil then
-        wiz.unmount(old_bundle)
+    if bundle ~= nil then
+        if replace then
+            wiz.unmount(bundle)
+
+            -- do mount
+            ex_c.fsys_mount( realPath, string.format("__wiz__/%s",name) )
+            bundle = wiz.bundle(name)
+            bundle:addPath(realPath)
+            wiz.bundles[name] = bundle
+        else
+            -- do mount
+            ex_c.fsys_mount( realPath, string.format("__wiz__/%s",name) )
+            bundle:addPath(realPath)
+        end
+    else
+        -- do mount
+        ex_c.fsys_mount( realPath, string.format("__wiz__/%s",name) )
+        bundle = wiz.bundle( name )
+        bundle:addPath(realPath)
+        wiz.bundles[name] = bundle
     end
-    wiz.bundles[name] = bundle
 
     --
-    ex_c.fsys_mount( realPath, string.format("__wiz__/%s",name) )
     return bundle
 end
 
@@ -46,8 +62,13 @@ end
 
 function wiz.unmount ( bundle )
     checkarg ( bundle, "bundle" )
+
+    -- unmount all
+    for i=1,#bundle.paths do
+        ex_c.fsys_unmount( bundle.paths[i] )
+    end
+
     wiz.bundles[bundle.name] = nil
-    ex_c.fsys_unmount( bundle.path )
 end
 
 -- TODO: need a bundle table for this { 

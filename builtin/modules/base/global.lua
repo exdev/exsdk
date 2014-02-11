@@ -25,8 +25,8 @@
 
 local builtinError = error
 function error ( msg, ... )
-    builtinError( msg:format(...) )
     print( debug.traceback() )
+    builtinError( msg:format(...) )
 end
 
 -- ------------------------------------------------------------------ 
