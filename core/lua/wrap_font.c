@@ -216,6 +216,11 @@ static int __lua_font_get_style_name ( lua_State *_l ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
+#define NORMAL 0
+#define PRE 1
+#define PRE_WRAP 2
+#define PRE_LINE 3
+#define NO_WRAP 4
 // ------------------------------------------------------------------ 
 
 static int __lua_font_wrap_text ( lua_State *_l ) {
@@ -223,12 +228,13 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     const char *text, *whitespace;
     int maxWidth;
 
-    const char *str;
+    const char *str, *newtext;
     int ch;
     uint ft_index, prev_ft_index;
     int cur_x = 0;
     ex_glyph_t *glyph;
     int advance = 0;
+    int wrapMode = -1;
 
     //
     ex_lua_check_nargs(_l,4);
@@ -241,18 +247,37 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
 
     //
     str = text;
+    newtext = ex_malloc( strlen(text) );
     prev_ft_index = -1;
+
+    if ( !strncmp( whitespace, "normal", 6 ) ) {
+        wrapMode = NORMAL;
+    }
+    else if ( !strncmp( whitespace, "pre", 3 ) ) {
+        wrapMode = PRE;
+    }
+    else if ( !strncmp( whitespace, "pre-wrap", 8 ) ) {
+        wrapMode = PRE_WRAP;
+    }
+    else if ( !strncmp( whitespace, "pre-line", 8 ) ) {
+        wrapMode = PRE_LINE;
+    }
+    else if ( !strncmp( whitespace, "nowrap", 6 ) ) {
+        wrapMode = NO_WRAP;
+    }
+
     while ( *str ) {
         str += utf8proc_iterate ((const uint8_t *)str, -1, &ch);
         advance = 0;
         ft_index = ex_font_get_index ( font, ch );
 
-        // TODO { 
-        // // if this is \n(10) or \r(13), it will turn to ' ' space
-        // if ( ch == 10 || ch == 13 ) {
-        //     ft_index = ex_font_get_index ( font, ' ' );
-        // }
-        // } TODO end 
+        // if this is \n(10) or \r(13), it will turn to ' ' space
+        if ( ch == '\n' || ch == '\r' ) {
+            // ft_index = ex_font_get_index ( font, ' ' );
+        }
+        // if this is space
+        else if ( ch == ' ' || ch == '\t' || ch == '\f' ) {
+        }
 
         glyph = ex_font_get_glyph ( font, ft_index );
         advance += ex_font_get_kerning( font, prev_ft_index, ft_index );
@@ -266,6 +291,10 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     lua_pushstring(_l, text);
     lua_pushnil(_l);
     lua_pushinteger(_l,cur_x);
+
+    //
+    ex_free(newtext);
+
     return 3; // text1, text2(can be nil), width
 }
 

@@ -358,14 +358,14 @@ wiz.renderBlock = wiz.renderNode.extend ({
         - self.marginLeft - self.marginRight 
         - self.borderLeft - self.borderRight 
         - self.paddingLeft - self.paddingRight 
-        - parentState.offsetX
+        -- DISABLE: - parentState.offsetX
         contentW = contentW > 0 and contentW or 0
 
         local contentH = parentState.contentH 
         - self.marginTop - self.marginBottom 
         - self.borderTop - self.borderBottom 
         - self.paddingTop - self.paddingBottom
-        - parentState.offsetY
+        -- DISABLE: - parentState.offsetY
         contentH = contentH > 0 and contentH or 0
 
         -- add to parent's line-box
