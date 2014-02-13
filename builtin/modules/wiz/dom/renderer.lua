@@ -578,6 +578,7 @@ wiz.renderText = wiz.renderNode.extend ({
     end,
 
     text = "",
+    finalText = "",
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -587,8 +588,8 @@ wiz.renderText = wiz.renderNode.extend ({
         local parent = self.parent
         local font = parent.font
         local whiteSpace = parent.whiteSpace
-        local lineElementCount = #parentState.line.nodes
 
+        local lineElementCount = #parentState.line.nodes
         if lineElementCount == 0 
         and whiteSpace ~= "pre"
         and self.domNode.isWhiteSpace 
@@ -598,7 +599,8 @@ wiz.renderText = wiz.renderNode.extend ({
 
         local contentW = parentState.contentW - parentState.offsetX 
         local text1, text2, width = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW )
-        print( string.format( "text1 = %s, text2 = %s, width = %d, display = %s", text1, text2, width, parent.display ) )
+        print( string.format( "text = %s, text1 = %s, text2 = %s, width = %d, display = %s", self.text, text1, text2, width, parent.display ) )
+        self.finalText = text1
 
         self.x = parentState.offsetX
         self.y = parentState.offsetY
@@ -624,7 +626,7 @@ wiz.renderText = wiz.renderNode.extend ({
         local font = parent.font
 
         ex.painter.color = ex.color4f.black 
-        ex.painter.text( self.text, font, x, y )
+        ex.painter.text( self.finalText, font, x, y )
 
         -- DEBUG { 
         -- if self.parent ~= nil then

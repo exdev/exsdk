@@ -216,11 +216,7 @@ static int __lua_font_get_style_name ( lua_State *_l ) {
 
 // ------------------------------------------------------------------ 
 // Desc: 
-#define NORMAL 0
-#define PRE 1
-#define PRE_WRAP 2
-#define PRE_LINE 3
-#define NO_WRAP 4
+// http://www.w3schools.com/cssref/pr_text_white-space.asp
 // ------------------------------------------------------------------ 
 
 static int __lua_font_wrap_text ( lua_State *_l ) {
@@ -228,17 +224,17 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     const char *text, *whitespace;
     int maxWidth;
 
-    const char *str, *newtext;
-    int ch;
+    const char *str, *laststr;
+    char *newtext, *newtext_p;
+    int ch, next_ch, len, newlen;
     uint ft_index, prev_ft_index;
-    int cur_x = 0;
+    int cur_x, advance;
     ex_glyph_t *glyph;
-    int advance = 0;
-    int wrapMode = -1;
+    bool linebreak, firstCollapse; 
+    bool wrapword, collapseSpace, collapseLinebreak;
 
-    //
+    // get lua arguments
     ex_lua_check_nargs(_l,4);
-
     text = luaL_checkstring(_l,1);
     luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
     font = lua_touserdata(_l,2);
@@ -246,56 +242,139 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     maxWidth = luaL_checkint(_l,4);
 
     //
-    str = text;
-    newtext = ex_malloc( strlen(text) );
+    len = strlen(text);
+    laststr = str = text;
+    newtext_p = newtext = ex_malloc( len * sizeof(char) );
     prev_ft_index = -1;
 
+    // get wrapMode
+    wrapword = false;
+    collapseSpace = false;
+    collapseLinebreak = false;
     if ( !strncmp( whitespace, "normal", 6 ) ) {
-        wrapMode = NORMAL;
-    }
-    else if ( !strncmp( whitespace, "pre", 3 ) ) {
-        wrapMode = PRE;
-    }
-    else if ( !strncmp( whitespace, "pre-wrap", 8 ) ) {
-        wrapMode = PRE_WRAP;
-    }
-    else if ( !strncmp( whitespace, "pre-line", 8 ) ) {
-        wrapMode = PRE_LINE;
+        wrapword = true;
+        collapseSpace = true;
+        collapseLinebreak = true;
     }
     else if ( !strncmp( whitespace, "nowrap", 6 ) ) {
-        wrapMode = NO_WRAP;
+        wrapword = false;
+        collapseSpace = true;
+        collapseLinebreak = true;
+    }
+    else if ( !strncmp( whitespace, "pre", 3 ) ) {
+        wrapword = false;
+        collapseSpace = false;
+        collapseLinebreak = false;
+    }
+    else if ( !strncmp( whitespace, "pre-wrap", 8 ) ) {
+        wrapword = true;
+        collapseSpace = true;
+        collapseLinebreak = false;
+    }
+    else if ( !strncmp( whitespace, "pre-line", 8 ) ) {
+        wrapword = true;
+        collapseSpace = true;
+        collapseLinebreak = false;
     }
 
+    // process text
+    cur_x = 0;
+    linebreak = false;
+    firstCollapse = true;
     while ( *str ) {
         str += utf8proc_iterate ((const uint8_t *)str, -1, &ch);
+
         advance = 0;
         ft_index = ex_font_get_index ( font, ch );
 
-        // if this is \n(10) or \r(13), it will turn to ' ' space
+        // if this is line-break
         if ( ch == '\n' || ch == '\r' ) {
-            // ft_index = ex_font_get_index ( font, ' ' );
+            if ( collapseLinebreak ) {
+                utf8proc_iterate ((const uint8_t *)str, -1, &next_ch);
+
+                // if next_ch will be collapse
+                if ( next_ch == '\n' || next_ch == '\r' ) {
+                    laststr = str;
+                    continue;
+                }
+
+                // skip first-time collapse
+                if ( firstCollapse ) {
+                    firstCollapse = false;
+                    laststr = str;
+                    continue;
+                }
+
+                // turn it to space
+                ch = ' ';
+            }
+            else {
+                linebreak = true;
+                break;
+            }
         }
-        // if this is space
+
+        // if this is space 
         else if ( ch == ' ' || ch == '\t' || ch == '\f' ) {
+            if ( collapseSpace ) {
+                utf8proc_iterate ((const uint8_t *)str, -1, &next_ch);
+
+                // if next_ch will be collapse
+                if ( next_ch == ' ' || next_ch == '\t' || next_ch == '\f' ) {
+                    laststr = str;
+                    continue;
+                }
+
+                // skip first-time collapse
+                if ( firstCollapse ) {
+                    firstCollapse = false;
+                    laststr = str;
+                    continue;
+                }
+            }
+        }
+        else {
+            firstCollapse = false;
         }
 
         glyph = ex_font_get_glyph ( font, ft_index );
         advance += ex_font_get_kerning( font, prev_ft_index, ft_index );
         advance += glyph->advance_x;
 
+        // TODO: must have last-word index { 
+        // // check if wrap to new-line
+        // if ( wrapword == false && cur_x + advance > maxWidth ) {
+        //     linebreak = true;
+        //     break;
+        // }
+        // } TODO end 
+
+        // advanced character
         cur_x += advance;
         prev_ft_index = ft_index;
+
+        // copy character to newtext_p
+        strncpy( newtext_p, laststr, str - laststr );
+        newtext_p += (str - laststr);
+        laststr = str;
     }
 
     //
-    lua_pushstring(_l, text);
-    lua_pushnil(_l);
+    newlen = newtext_p-newtext;
+    lua_pushlstring(_l, newtext, newlen);
+
+    if ( linebreak ) {
+        lua_pushlstring(_l, laststr, len - newlen );
+    }
+    else {
+        lua_pushnil(_l);
+    }
     lua_pushinteger(_l,cur_x);
 
     //
     ex_free(newtext);
 
-    return 3; // text1, text2(can be nil), width
+    return 3; // text1, text2(can be nil), width of text1
 }
 
 // ------------------------------------------------------------------ 
