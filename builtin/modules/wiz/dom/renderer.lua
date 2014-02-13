@@ -61,6 +61,13 @@ wiz.renderNode = class ({
 
     display = "inline",
 
+    -- lineBox = {
+    --     w = 0, -- max-width of the line-box
+    --     h = 0, -- max-height of the line-box
+    --     nodes = {}, -- render nodes
+    -- }
+    _lines = {}, -- lineBox list
+
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
@@ -337,13 +344,6 @@ wiz.renderBlock = wiz.renderNode.extend ({
         self.domNode = domNode
     end,
 
-    -- lineBox = {
-    --     w = 0, -- max-width of the line-box
-    --     h = 0, -- max-height of the line-box
-    --     nodes = {}, -- render nodes
-    -- }
-    _lines = {}, -- lineBox list
-
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
@@ -535,12 +535,28 @@ wiz.renderInline = wiz.renderNode.extend ({
             line = { w = 0, h = 0, nodes = {} },
         }
 
+        -- clear the lines
+        self._lines = {}
+
         -- recursively layout the child 
         for i=1,#self.children do
 
             --
             local child = self.children[i]
             child:layout(state)
+
+            -- TODO:
+            -- if state.newline then
+            --     state.newline = false
+            --     state.offsetX = 0
+            --     state.offsetY = state.offsetY + state.line.h
+            --     table.add( self._lines, state.line )
+
+            --     break
+            -- end
+        end
+        if #state.line.nodes > 0 then
+            table.add( self._lines, state.line )
         end
 
         -- TODO
@@ -556,9 +572,13 @@ wiz.renderInline = wiz.renderNode.extend ({
 
     paint = function ( self, x, y )
         -- recursively paint the child 
-        for i=1,#self.children do
-            local node = self.children[i]
-            node:paint( x + node.x, y + node.y )
+        for i=1,#self._lines do
+            local line = self._lines[i]
+
+            for j=1,#line.nodes do
+                local node = line.nodes[j]
+                node:paint( x + node.x, y + node.y )
+            end
         end
 
         -- TODO: paint self
@@ -578,7 +598,7 @@ wiz.renderText = wiz.renderNode.extend ({
     end,
 
     text = "",
-    finalText = "",
+    font = nil,
 
     -- ------------------------------------------------------------------ 
     -- Desc: 
@@ -598,23 +618,34 @@ wiz.renderText = wiz.renderNode.extend ({
         end
 
         local contentW = parentState.contentW - parentState.offsetX 
-        local text1, text2, width = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW )
+        local text1, text2, width, linebreak = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW )
         print( string.format( "text = %s, text1 = %s, text2 = %s, width = %d, display = %s", self.text, text1, text2, width, parent.display ) )
-        self.finalText = text1
 
-        self.x = parentState.offsetX
-        self.y = parentState.offsetY
-        self.width = width
-        self.height = self.parent.lineHeight
+        local renderText1 = wiz.renderText( self.domNode, text1 )
+        renderText1.x = parentState.offsetX
+        renderText1.y = parentState.offsetY
+        renderText1.width = width
+        renderText1.height = self.parent.lineHeight
+        renderText1.font = font
 
         -- add node to parent's line-box
-        local totalHeight = self:totalHeight()
+        local totalHeight = renderText1:totalHeight()
         if parentState.line.h < totalHeight then
             parentState.line.h = totalHeight
         end
         parentState.offsetX = parentState.offsetX + width
         parentState.line.w = parentState.offsetX
-        table.add( parentState.line.nodes, self ) 
+        table.add( parentState.line.nodes, renderText1 ) 
+
+        -- check if break to new-line
+        if linebreak then
+            parentState.newline = true
+            if text2 ~= nil then
+                local renderText2 = wiz.renderText( self.domNode, text2 )
+                renderText2.font = font
+                parentState.next = renderText2
+            end
+        end
     end,
 
     -- ------------------------------------------------------------------ 
@@ -622,18 +653,10 @@ wiz.renderText = wiz.renderNode.extend ({
     -- ------------------------------------------------------------------ 
 
     paint = function ( self, x, y )
-        local parent = self.parent
-        local font = parent.font
+        local font = self.font
 
         ex.painter.color = ex.color4f.black 
-        ex.painter.text( self.finalText, font, x, y )
-
-        -- DEBUG { 
-        -- if self.parent ~= nil then
-        --     print( string.format( "tag = %s, type = %s, text = %s", self.parent.domNode.tag, typename(self), self.text ) )
-        --     print( debug.traceback() )
-        -- end
-        -- } DEBUG end 
+        ex.painter.text( self.text, font, x, y )
     end,
 })
 

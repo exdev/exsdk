@@ -370,11 +370,12 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
         lua_pushnil(_l);
     }
     lua_pushinteger(_l,cur_x);
+    lua_pushboolean(_l,linebreak);
 
     //
     ex_free(newtext);
 
-    return 3; // text1, text2(can be nil), width of text1
+    return 4; // text1, text2(can be nil), width of text1, linebreak
 }
 
 // ------------------------------------------------------------------ 
