@@ -438,13 +438,17 @@ wiz.renderBlock = wiz.renderNode.extend ({
 
         -- calculate the width
         if style.width.type == "auto" then 
-            local width = 0 
-            for i=1,#self._lines do
-                if width < self._lines[i].w then
-                    width = self._lines[i].w
+            if self.display == "block" then
+                self.width = contentW
+            elseif self.display == "inline-block" then
+                local width = 0 
+                for i=1,#self._lines do
+                    if width < self._lines[i].w then
+                        width = self._lines[i].w
+                    end
                 end
+                self.width = math.clamp( width, self.minWidth, self.maxWidth )
             end
-            self.width = math.clamp( width, self.minWidth, self.maxWidth )
         end
 
         -- calculate the height
