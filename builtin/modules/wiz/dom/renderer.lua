@@ -61,13 +61,6 @@ wiz.renderNode = class ({
 
     display = "inline",
 
-    -- lineBox = {
-    --     w = 0, -- max-width of the line-box
-    --     h = 0, -- max-height of the line-box
-    --     nodes = {}, -- render nodes
-    -- }
-    _lines = {}, -- lineBox list
-
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
@@ -344,6 +337,13 @@ wiz.renderBlock = wiz.renderNode.extend ({
         self.domNode = domNode
     end,
 
+    -- lineBox = {
+    --     w = 0, -- max-width of the line-box
+    --     h = 0, -- max-height of the line-box
+    --     nodes = {}, -- render nodes
+    -- }
+    _lines = {}, -- lineBox list
+
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
@@ -401,6 +401,7 @@ wiz.renderBlock = wiz.renderNode.extend ({
             contentW = contentW,
             contentH = contentH,
             newline = false,
+            node = self,
             next = nil,
             line = { w = 0, h = 0, nodes = {} },
         }
@@ -426,7 +427,10 @@ wiz.renderBlock = wiz.renderNode.extend ({
 
             --
             while state.next ~= nil do
-                state.next:layout(state)
+                child = state.next
+                state.next = nil
+
+                child:layout(state)
                 if state.newline then
                     state.newline = false
                     state.offsetX = 0
@@ -438,6 +442,17 @@ wiz.renderBlock = wiz.renderNode.extend ({
         end
         if #state.line.nodes > 0 then
             table.add( self._lines, state.line )
+        end
+
+        -- calculate the width
+        if style.width.type == "auto" then 
+            local width = 0 
+            for i=1,#self._lines do
+                if width < self._lines[i].w then
+                    width = self._lines[i].w
+                end
+            end
+            self.width = math.clamp( width, self.minWidth, self.maxWidth )
         end
 
         -- calculate the height
@@ -500,6 +515,8 @@ wiz.renderInline = wiz.renderNode.extend ({
         self.domNode = domNode
     end,
 
+    _flows = {},
+
     -- ------------------------------------------------------------------ 
     -- Desc: 
     -- ------------------------------------------------------------------ 
@@ -524,42 +541,79 @@ wiz.renderInline = wiz.renderNode.extend ({
         - parentState.offsetY
         contentH = contentH > 0 and contentH or 0
 
-        -- layout children
+        -- layout flows (children)
         local state = {
             offsetX = 0,
             offsetY = 0,
             contentW = contentW,
             contentH = contentH,
             newline = false,
+            node = self,
             next = nil,
             line = { w = 0, h = 0, nodes = {} },
         }
 
-        -- clear the lines
-        self._lines = {}
+        -- if we are layout renderNode create in generateRenderNodes
+        -- NOTE: the renderNode create in generateRenderNodes will have children
+        if #self.children > 0 then
+            self._flows = {}
+            for i=1,#self.children do
+                table.add(self._flows, self.children[i])
+            end
+        end
 
         -- recursively layout the child 
-        for i=1,#self.children do
+        for i=1,#self._flows do
 
             --
-            local child = self.children[i]
+            local child = self._flows[i]
             child:layout(state)
 
-            -- TODO:
-            -- if state.newline then
-            --     state.newline = false
-            --     state.offsetX = 0
-            --     state.offsetY = state.offsetY + state.line.h
-            --     table.add( self._lines, state.line )
+            -- create new node renderInline1 for current line, 
+            -- and store rest of child in the renderInline2
+            if state.newline then
+                state.newline = false
 
-            --     break
-            -- end
+                local renderInline1 = wiz.renderInline(self.domNode)
+                renderInline1.x = self.x
+                renderInline1.y = self.y
+                renderInline1.width = state.line.w -- TODO
+                renderInline1.height = state.line.h -- TODO
+                renderInline1._flows = state.line.nodes
+
+                if parentState.line.h < renderInline1.height then
+                    parentState.line.h = renderInline1.height
+                end
+                table.add( parentState.line.nodes, renderInline1 ) 
+                parentState.newline = true
+
+                --
+                if state.next ~= nil then
+                    local renderInline2 = wiz.renderInline(self.domNode)
+
+                    table.add( renderInline2._flows, state.next )
+                    state.next = nil
+
+                    for j=i+1,#self._flows do
+                        table.add( renderInline2._flows, self._flows[j] )
+                    end
+
+                    parentState.next = renderInline2
+                end
+
+                return
+            end
         end
         if #state.line.nodes > 0 then
-            table.add( self._lines, state.line )
+            self._flows = state.line.nodes
         end
+        self.width = state.line.w -- TODO
+        self.height = state.line.h -- TODO
 
-        -- TODO
+        --
+        if parentState.line.h < self.height then
+            parentState.line.h = self.height
+        end
         parentState.offsetX = parentState.offsetX + state.line.w
         parentState.line.w = parentState.offsetX
         table.add( parentState.line.nodes, self ) 
@@ -572,13 +626,9 @@ wiz.renderInline = wiz.renderNode.extend ({
 
     paint = function ( self, x, y )
         -- recursively paint the child 
-        for i=1,#self._lines do
-            local line = self._lines[i]
-
-            for j=1,#line.nodes do
-                local node = line.nodes[j]
-                node:paint( x + node.x, y + node.y )
-            end
+        for i=1,#self._flows do
+            local node = self._flows[i]
+            node:paint( x + node.x, y + node.y )
         end
 
         -- TODO: paint self
@@ -605,27 +655,35 @@ wiz.renderText = wiz.renderNode.extend ({
     -- ------------------------------------------------------------------ 
 
     layout = function ( self, parentState )
-        local parent = self.parent
-        local font = parent.font
-        local whiteSpace = parent.whiteSpace
+        local parentNode = parentState.node -- NOTE: parentNode may not be self.parent since line-break will create temp new renderNode
+        local font = parentNode.font
+        local whiteSpace = parentNode.whiteSpace
 
-        local lineElementCount = #parentState.line.nodes
-        if lineElementCount == 0 
-        and whiteSpace ~= "pre"
-        and self.domNode.isWhiteSpace 
-        then
-            return
-        end
+        -- TODO DISABLE for bug when artical have "normal" { 
+        -- local lineElementCount = #parentState.line.nodes
+        -- if lineElementCount == 0 
+        -- and whiteSpace ~= "pre"
+        -- and self.domNode.isWhiteSpace 
+        -- then
+        --     return
+        -- end
+        -- } TODO end 
 
         local contentW = parentState.contentW - parentState.offsetX 
         local text1, text2, width, linebreak = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW )
-        print( string.format( "text = %s, text1 = %s, text2 = %s, width = %d, display = %s", self.text, text1, text2, width, parent.display ) )
+        print( string.format( "text = \"%s\"\n - text1 = \"%s\"\n - text2 = \"%s\"\n - width = %d, display = %s, whitespace = %s", 
+                              self.text, 
+                              text1, 
+                              text2, 
+                              width, 
+                              parentNode.display,
+                              whiteSpace ) )
 
         local renderText1 = wiz.renderText( self.domNode, text1 )
         renderText1.x = parentState.offsetX
         renderText1.y = parentState.offsetY
         renderText1.width = width
-        renderText1.height = self.parent.lineHeight
+        renderText1.height = parentNode.lineHeight
         renderText1.font = font
 
         -- add node to parent's line-box

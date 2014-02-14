@@ -251,7 +251,17 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     wrapword = false;
     collapseSpace = false;
     collapseLinebreak = false;
-    if ( !strncmp( whitespace, "normal", 6 ) ) {
+    if ( !strncmp( whitespace, "pre-wrap", 8 ) ) {
+        wrapword = true;
+        collapseSpace = true;
+        collapseLinebreak = false;
+    }
+    else if ( !strncmp( whitespace, "pre-line", 8 ) ) {
+        wrapword = true;
+        collapseSpace = true;
+        collapseLinebreak = false;
+    }
+    else if ( !strncmp( whitespace, "normal", 6 ) ) {
         wrapword = true;
         collapseSpace = true;
         collapseLinebreak = true;
@@ -264,16 +274,6 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     else if ( !strncmp( whitespace, "pre", 3 ) ) {
         wrapword = false;
         collapseSpace = false;
-        collapseLinebreak = false;
-    }
-    else if ( !strncmp( whitespace, "pre-wrap", 8 ) ) {
-        wrapword = true;
-        collapseSpace = true;
-        collapseLinebreak = false;
-    }
-    else if ( !strncmp( whitespace, "pre-line", 8 ) ) {
-        wrapword = true;
-        collapseSpace = true;
         collapseLinebreak = false;
     }
 
@@ -363,8 +363,8 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     newlen = newtext_p-newtext;
     lua_pushlstring(_l, newtext, newlen);
 
-    if ( linebreak ) {
-        lua_pushlstring(_l, laststr, len - newlen );
+    if ( linebreak && *str ) {
+        lua_pushstring(_l, str );
     }
     else {
         lua_pushnil(_l);

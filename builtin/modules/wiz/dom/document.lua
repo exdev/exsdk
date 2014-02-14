@@ -64,6 +64,7 @@ wiz.document = class ({
             contentW = self.window.width,
             contentH = self.window.height,
             newline = false,
+            node = nil,
             next = nil,
             line = { w = 0, h = 0, nodes = {} },
         }
