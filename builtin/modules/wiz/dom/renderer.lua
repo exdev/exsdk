@@ -256,14 +256,18 @@ wiz.renderNode = class ({
         -- width
         val = style.width.value
         if style.width.type == "percent" then 
-            val = val/100 * self.contentW
+            val = val/100 * state.contentW
+        elseif style.width.type == "auto" then
+            val = state.contentW
         end
         self.width = math.clamp( val, self.minWidth, self.maxWidth )
 
         -- height
         val = style.height.value
         if style.height.type == "percent" then 
-            val = val/100 * self.contentH
+            val = val/100 * state.contentH
+        elseif style.height.type == "auto" then
+            val = state.contentH
         end
         self.height = math.clamp( val, self.minHeight, self.maxHeight )
     end,
@@ -354,14 +358,14 @@ wiz.renderBlock = wiz.renderNode.extend ({
         self.x = parentState.offsetX + self.marginLeft + self.borderLeft + self.paddingLeft
         self.y = parentState.offsetY + self.marginTop + self.borderTop + self.paddingTop
 
-        local contentW = parentState.contentW 
+        local contentW = self.width
         - self.marginLeft - self.marginRight 
         - self.borderLeft - self.borderRight 
         - self.paddingLeft - self.paddingRight 
         -- DISABLE: - parentState.offsetX
         contentW = contentW > 0 and contentW or 0
 
-        local contentH = parentState.contentH 
+        local contentH = self.height
         - self.marginTop - self.marginBottom 
         - self.borderTop - self.borderBottom 
         - self.paddingTop - self.paddingBottom
@@ -377,19 +381,6 @@ wiz.renderBlock = wiz.renderNode.extend ({
                 return
             else
                 parentState.newline = true -- always new-line
-            end
-
-        elseif self.display == "inline-block" then
-            local totalWidth = self:totalWidth()
-
-            if #parentState.line.nodes > 0 and 
-                parentState.offsetX + totalWidth > parentState.contentW then
-                parentState.newline = true
-                parentState.next = self
-                return
-            else
-                parentState.offsetX = parentState.offsetX + totalWidth
-                parentState.line.w = parentState.offsetX
             end
 
         end
@@ -442,6 +433,7 @@ wiz.renderBlock = wiz.renderNode.extend ({
         end
         if #state.line.nodes > 0 then
             table.add( self._lines, state.line )
+            state.line = { w = 0, h = 0, nodes = {} }
         end
 
         -- calculate the width
@@ -464,11 +456,24 @@ wiz.renderBlock = wiz.renderNode.extend ({
             self.height = math.clamp( height, self.minHeight, self.maxHeight )
         end
 
+        --
+        local totalWidth = self:totalWidth()
+        if self.display == "inline-block" then
+            if #parentState.line.nodes > 0 and 
+                parentState.offsetX + totalWidth > parentState.contentW then
+                parentState.newline = true
+                parentState.next = self
+                return
+            end
+        end
+
         -- add node to parent's line-box
         local totalHeight = self:totalHeight()
         if parentState.line.h < totalHeight then
             parentState.line.h = totalHeight
         end
+        parentState.offsetX = parentState.offsetX + totalWidth
+        parentState.line.w = parentState.offsetX
         table.add( parentState.line.nodes, self ) 
     end,
 
@@ -480,7 +485,6 @@ wiz.renderBlock = wiz.renderNode.extend ({
         -- recursively paint the child 
         for i=1,#self._lines do
             local line = self._lines[i]
-
             for j=1,#line.nodes do
                 local node = line.nodes[j]
                 node:paint( x + node.x, y + node.y )
@@ -527,14 +531,14 @@ wiz.renderInline = wiz.renderNode.extend ({
         self.x = parentState.offsetX + self.marginLeft + self.borderLeft + self.paddingLeft
         self.y = parentState.offsetY
 
-        local contentW = parentState.contentW 
+        local contentW = self.width
         - self.marginLeft - self.marginRight 
         - self.borderLeft - self.borderRight 
         - self.paddingLeft - self.paddingRight 
         - parentState.offsetX
         contentW = contentW > 0 and contentW or 0
 
-        local contentH = parentState.contentH 
+        local contentH = self.height
         - self.marginTop - self.marginBottom 
         - self.borderTop - self.borderBottom 
         - self.paddingTop - self.paddingBottom
@@ -573,6 +577,7 @@ wiz.renderInline = wiz.renderNode.extend ({
             -- and store rest of child in the renderInline2
             if state.newline then
                 state.newline = false
+                parentState.newline = true
 
                 local renderInline1 = wiz.renderInline(self.domNode)
                 renderInline1.x = self.x
@@ -584,8 +589,9 @@ wiz.renderInline = wiz.renderNode.extend ({
                 if parentState.line.h < renderInline1.height then
                     parentState.line.h = renderInline1.height
                 end
+                parentState.offsetX = parentState.offsetX + renderInline1.width
+                parentState.line.w = parentState.offsetX
                 table.add( parentState.line.nodes, renderInline1 ) 
-                parentState.newline = true
 
                 --
                 if state.next ~= nil then
@@ -614,7 +620,7 @@ wiz.renderInline = wiz.renderNode.extend ({
         if parentState.line.h < self.height then
             parentState.line.h = self.height
         end
-        parentState.offsetX = parentState.offsetX + state.line.w
+        parentState.offsetX = parentState.offsetX + self.width
         parentState.line.w = parentState.offsetX
         table.add( parentState.line.nodes, self ) 
 
@@ -658,26 +664,19 @@ wiz.renderText = wiz.renderNode.extend ({
         local parentNode = parentState.node -- NOTE: parentNode may not be self.parent since line-break will create temp new renderNode
         local font = parentNode.font
         local whiteSpace = parentNode.whiteSpace
-
-        -- TODO DISABLE for bug when artical have "normal" { 
-        -- local lineElementCount = #parentState.line.nodes
-        -- if lineElementCount == 0 
-        -- and whiteSpace ~= "pre"
-        -- and self.domNode.isWhiteSpace 
-        -- then
-        --     return
-        -- end
-        -- } TODO end 
+        local trimWhitespace = #parentState.line.nodes == 0 and 1 or 0
 
         local contentW = parentState.contentW - parentState.offsetX 
-        local text1, text2, width, linebreak = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW )
-        print( string.format( "text = \"%s\"\n - text1 = \"%s\"\n - text2 = \"%s\"\n - width = %d, display = %s, whitespace = %s", 
-                              self.text, 
-                              text1, 
-                              text2, 
-                              width, 
-                              parentNode.display,
-                              whiteSpace ) )
+        local text1, text2, width, linebreak = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW, trimWhitespace )
+        -- DEBUG { 
+        -- print( string.format( "text = \"%s\"\n - text1 = \"%s\"\n - text2 = \"%s\"\n - width = %d, display = %s, whitespace = %s", 
+        --                       self.text, 
+        --                       text1, 
+        --                       text2, 
+        --                       width, 
+        --                       parentNode.display,
+        --                       whiteSpace ) )
+        -- } DEBUG
 
         local renderText1 = wiz.renderText( self.domNode, text1 )
         renderText1.x = parentState.offsetX
@@ -691,7 +690,7 @@ wiz.renderText = wiz.renderNode.extend ({
         if parentState.line.h < totalHeight then
             parentState.line.h = totalHeight
         end
-        parentState.offsetX = parentState.offsetX + width
+        parentState.offsetX = parentState.offsetX + renderText1.width
         parentState.line.w = parentState.offsetX
         table.add( parentState.line.nodes, renderText1 ) 
 

@@ -230,16 +230,17 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     uint ft_index, prev_ft_index;
     int cur_x, advance;
     ex_glyph_t *glyph;
-    bool linebreak, firstCollapse; 
+    bool linebreak, trimWhitespace; 
     bool wrapword, collapseSpace, collapseLinebreak;
 
     // get lua arguments
-    ex_lua_check_nargs(_l,4);
+    ex_lua_check_nargs(_l,5);
     text = luaL_checkstring(_l,1);
     luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
     font = lua_touserdata(_l,2);
     whitespace = luaL_checkstring(_l,3);
     maxWidth = luaL_checkint(_l,4);
+    trimWhitespace = (luaL_checkint(_l,5) == 1);
 
     //
     len = strlen(text);
@@ -280,7 +281,6 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     // process text
     cur_x = 0;
     linebreak = false;
-    firstCollapse = true;
     while ( *str ) {
         str += utf8proc_iterate ((const uint8_t *)str, -1, &ch);
 
@@ -290,21 +290,6 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
         // if this is line-break
         if ( ch == '\n' || ch == '\r' ) {
             if ( collapseLinebreak ) {
-                utf8proc_iterate ((const uint8_t *)str, -1, &next_ch);
-
-                // if next_ch will be collapse
-                if ( next_ch == '\n' || next_ch == '\r' ) {
-                    laststr = str;
-                    continue;
-                }
-
-                // skip first-time collapse
-                if ( firstCollapse ) {
-                    firstCollapse = false;
-                    laststr = str;
-                    continue;
-                }
-
                 // turn it to space
                 ch = ' ';
             }
@@ -315,7 +300,7 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
         }
 
         // if this is space 
-        else if ( ch == ' ' || ch == '\t' || ch == '\f' ) {
+        if ( ch == ' ' || ch == '\t' || ch == '\f' ) {
             if ( collapseSpace ) {
                 utf8proc_iterate ((const uint8_t *)str, -1, &next_ch);
 
@@ -326,17 +311,15 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
                 }
 
                 // skip first-time collapse
-                if ( firstCollapse ) {
-                    firstCollapse = false;
+                if ( trimWhitespace ) {
+                    trimWhitespace = false;
                     laststr = str;
                     continue;
                 }
             }
         }
-        else {
-            firstCollapse = false;
-        }
 
+        trimWhitespace = false;
         glyph = ex_font_get_glyph ( font, ft_index );
         advance += ex_font_get_kerning( font, prev_ft_index, ft_index );
         advance += glyph->advance_x;
