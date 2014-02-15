@@ -28,7 +28,7 @@
         </div>
 
         <div style="width: auto; border: solid 3px #00f; padding: 10px;">
-            <div style="white-space: pre; border: solid 3px #f00;">
+            <div style="white-space: pre-line; border: solid 3px #f00;">
                 I am a newcomer to the world of WebKit. Before starting here at Adobe
                 I had never even looked at the source code, so I had quite a bit of learning
                 to do once I started. I’ve done a few things in WebKit since then,
