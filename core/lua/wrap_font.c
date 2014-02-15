@@ -295,6 +295,10 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
             }
             else {
                 linebreak = true;
+
+                strncpy( newtext_p, laststr, str - laststr );
+                newtext_p += (str - laststr);
+                laststr = str;
                 break;
             }
         }
@@ -342,23 +346,29 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
         laststr = str;
     }
 
-    //
+    // text1
     newlen = newtext_p-newtext;
-    lua_pushlstring(_l, newtext, newlen);
+    if ( newlen > 0 ) {
+        lua_pushlstring(_l, newtext, newlen);
+    }
+    else {
+        lua_pushnil(_l);
+    }
 
+    // text2
     if ( linebreak && *str ) {
         lua_pushstring(_l, str );
     }
     else {
         lua_pushnil(_l);
     }
-    lua_pushinteger(_l,cur_x);
-    lua_pushboolean(_l,linebreak);
+    lua_pushinteger(_l,cur_x); // width
+    lua_pushboolean(_l,linebreak); // line-break
 
     //
     ex_free(newtext);
 
-    return 4; // text1, text2(can be nil), width of text1, linebreak
+    return 4; // text1(can be nil), text2(can be nil), width of text1, linebreak
 }
 
 // ------------------------------------------------------------------ 

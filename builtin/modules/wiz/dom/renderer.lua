@@ -682,21 +682,24 @@ wiz.renderText = wiz.renderNode.extend ({
         --                       whiteSpace ) )
         -- } DEBUG
 
-        local renderText1 = wiz.renderText( self.domNode, text1 )
-        renderText1.x = parentState.offsetX
-        renderText1.y = parentState.offsetY
-        renderText1.width = width
-        renderText1.height = parentNode.lineHeight
-        renderText1.font = font
+        -- process text split
+        if text1 ~= nil then
+            local renderText1 = wiz.renderText( self.domNode, text1 )
+            renderText1.x = parentState.offsetX
+            renderText1.y = parentState.offsetY
+            renderText1.width = width
+            renderText1.height = parentNode.lineHeight
+            renderText1.font = font
 
-        -- add node to parent's line-box
-        local totalHeight = renderText1:totalHeight()
-        if parentState.line.h < totalHeight then
-            parentState.line.h = totalHeight
+            -- add node to parent's line-box
+            local totalHeight = renderText1:totalHeight()
+            if parentState.line.h < totalHeight then
+                parentState.line.h = totalHeight
+            end
+            parentState.offsetX = parentState.offsetX + renderText1.width
+            parentState.line.w = parentState.offsetX
+            table.add( parentState.line.nodes, renderText1 ) 
         end
-        parentState.offsetX = parentState.offsetX + renderText1.width
-        parentState.line.w = parentState.offsetX
-        table.add( parentState.line.nodes, renderText1 ) 
 
         -- check if break to new-line
         if linebreak then
