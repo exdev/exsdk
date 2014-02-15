@@ -224,7 +224,7 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     const char *text, *whitespace;
     int maxWidth;
 
-    const char *str, *laststr, *lastword;
+    const char *str, *laststr, *pword;
     char *newtext, *newtext_p;
     int ch, next_ch, len, newlen;
     uint ft_index, prev_ft_index;
@@ -244,7 +244,7 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
 
     //
     len = strlen(text);
-    str = laststr = lastword = text;
+    str = laststr = pword = text;
     newtext_p = newtext = ex_malloc( len * sizeof(char) );
     prev_ft_index = -1;
 
@@ -305,7 +305,6 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
 
         // if this is space 
         if ( ch == ' ' || ch == '\t' || ch == '\f' ) {
-            last_word_x = cur_x;
             if ( collapseSpace ) {
                 utf8proc_iterate ((const uint8_t *)str, -1, &next_ch);
 
@@ -324,7 +323,13 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
             }
         }
 
-        lastword = laststr;
+        // TODO: if this is a word
+        // process last word
+        if ( ch == ' ' || ch == '\t' || ch == '\f' ) {
+            last_word_x = cur_x;
+        }
+
+        pword = laststr;
         trimWhitespace = false;
         glyph = ex_font_get_glyph ( font, ft_index );
         advance += ex_font_get_kerning( font, prev_ft_index, ft_index );
@@ -335,7 +340,7 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
         // if ( wrapword == false && cur_x + advance > maxWidth ) {
         //     linebreak = true;
 
-        //     str = lastword;
+        //     str = pword;
         //     cur_x = last_word_x;
         //     break;
         // }
