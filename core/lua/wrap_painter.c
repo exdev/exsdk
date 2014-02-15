@@ -132,7 +132,7 @@ static int __lua_painter_draw_sliced_texture ( lua_State *_l ) {
 static int __lua_painter_draw_text ( lua_State *_l ) {
     ex_font_t *font;
 
-    ex_lua_check_nargs(_l,6);
+    ex_lua_check_nargs(_l,4);
 
     luaL_checktype( _l, 2, LUA_TLIGHTUSERDATA );
     font = lua_touserdata(_l,2);

@@ -125,9 +125,7 @@ ex.painter = class ({
             dw = dw or -1
             dh = dh or -1
 
-            ex_c.painter_draw_text( txt, fnt._cptr, 
-                                    dx, dy, dw, dh -- pos
-                                  )
+            ex_c.painter_draw_text( txt, fnt._cptr, dx, dy )
             ex_c.painter_flush()
         end,
 
@@ -135,7 +133,7 @@ ex.painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        outlineText = function ( txt, fnt, color, outlineColor, outlineThickness, dx, dy, dw, dh ) 
+        strokeText = function ( txt, fnt, color, outlineColor, outlineThickness, dx, dy ) 
             fnt.outlineType = 1
             fnt.outlineThickness = outlineThickness
 
@@ -144,6 +142,18 @@ ex.painter = class ({
 
             fnt.outlineType = 0
             fnt.outlineThickness = 0.0
+
+            ex.painter.color = color
+            ex.painter.text( txt, fnt, dx, dy ) 
+        end,
+
+        -- ------------------------------------------------------------------ 
+        -- Desc: 
+        -- ------------------------------------------------------------------ 
+
+        outlineText = function ( txt, fnt, color, outlineThickness, dx, dy ) 
+            fnt.outlineType = 1
+            fnt.outlineThickness = outlineThickness
 
             ex.painter.color = color
             ex.painter.text( txt, fnt, dx, dy ) 
@@ -167,14 +177,11 @@ ex.painter = class ({
         -- Desc: 
         -- ------------------------------------------------------------------ 
 
-        bitmapText = function ( txt, fnt, dx, dy, dw, dh ) 
+        bitmapText = function ( txt, fnt, dx, dy ) 
             checkarg(txt,"string")
             checkarg(fnt,"bitmapfont")
             checkarg(dx,"number")
             checkarg(dy,"number")
-            -- TODO: auto calc size
-            -- checkarg(dw,"number")
-            -- checkarg(dh,"number")
 
             local cur_x, cur_y = dx, dy
 
