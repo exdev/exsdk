@@ -43,7 +43,7 @@ wiz.bundle = class ({
             return wiz.textureImporter(self,path)
         elseif pathutil.is( path, {".bft"} ) then
             return wiz.bitmapfontImporter(self,path)
-        elseif pathutil.is( path, {".ttf", ".dfont"} ) then
+        elseif pathutil.is( path, {".ttf", ".dfont", ".ttc", ".otf"} ) then
             return wiz.fontImporter(self,path)
         end
     end,

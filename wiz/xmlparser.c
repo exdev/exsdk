@@ -145,6 +145,7 @@ int __wiz_load_xml ( lua_State *_l, const char *_filepath ) {
 
         // create xml parser 
         parser = XML_ParserCreate(NULL);
+        XML_SetEncoding(parser, "utf-8");
         XML_SetUserData(parser, &userData);
         XML_SetElementHandler ( parser, __start_element, __end_element );
         XML_SetCharacterDataHandler ( parser, __process_character_data );

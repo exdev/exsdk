@@ -259,6 +259,9 @@ wiz.renderNode = class ({
             val = val/100 * state.contentW
         elseif style.width.type == "auto" then
             val = state.contentW
+                - self.marginLeft - self.marginRight 
+                - self.borderLeft - self.borderRight 
+                - self.paddingLeft - self.paddingRight 
         end
         self.width = math.clamp( val, self.minWidth, self.maxWidth )
 
@@ -268,6 +271,9 @@ wiz.renderNode = class ({
             val = val/100 * state.contentH
         elseif style.height.type == "auto" then
             val = state.contentH
+                - self.marginTop - self.marginBottom 
+                - self.borderTop - self.borderBottom 
+                - self.paddingTop - self.paddingBottom
         end
         self.height = math.clamp( val, self.minHeight, self.maxHeight )
     end,
@@ -359,17 +365,9 @@ wiz.renderBlock = wiz.renderNode.extend ({
         self.y = parentState.offsetY + self.marginTop + self.borderTop + self.paddingTop
 
         local contentW = self.width
-        - self.marginLeft - self.marginRight 
-        - self.borderLeft - self.borderRight 
-        - self.paddingLeft - self.paddingRight 
-        -- DISABLE: - parentState.offsetX
         contentW = contentW > 0 and contentW or 0
 
         local contentH = self.height
-        - self.marginTop - self.marginBottom 
-        - self.borderTop - self.borderBottom 
-        - self.paddingTop - self.paddingBottom
-        -- DISABLE: - parentState.offsetY
         contentH = contentH > 0 and contentH or 0
 
         -- add to parent's line-box
@@ -486,6 +484,21 @@ wiz.renderBlock = wiz.renderNode.extend ({
     -- ------------------------------------------------------------------ 
 
     paint = function ( self, x, y )
+        -- TODO: paint self
+        local style = self.domNode.style
+        local border_x = x - self.paddingLeft - self.borderLeft
+        local border_y = y - self.paddingTop - self.borderTop
+        local border_w = self.width + self.paddingLeft + self.paddingRight + self.borderLeft + self.borderRight
+        local border_h = self.height + self.paddingTop + self.paddingBottom + self.borderTop + self.borderBottom
+        if style.borderStyle == "solid" then
+            ex.painter.color = style.borderLeftColor -- TODO
+            ex.painter.rect4( border_x, border_y, border_w, border_h,
+                              self.borderTop,
+                              self.borderRight,
+                              self.borderBottom,
+                              self.borderLeft )
+        end
+
         -- recursively paint the child 
         for i=1,#self._lines do
             local line = self._lines[i]
@@ -493,21 +506,6 @@ wiz.renderBlock = wiz.renderNode.extend ({
                 local node = line.nodes[j]
                 node:paint( x + node.x, y + node.y )
             end
-        end
-
-        -- TODO: paint self
-        local style = self.domNode.style
-        local x = x - self.paddingLeft - self.borderLeft
-        local y = y - self.paddingTop - self.borderTop
-        local w = self.width + self.paddingLeft + self.paddingRight + self.borderLeft + self.borderRight
-        local h = self.height + self.paddingTop + self.paddingBottom + self.borderTop + self.borderBottom
-        if style.borderStyle == "solid" then
-            ex.painter.color = style.borderLeftColor -- TODO
-            ex.painter.rect4( x, y, w, h,
-                              self.borderTop,
-                              self.borderRight,
-                              self.borderBottom,
-                              self.borderLeft )
         end
     end,
 })
@@ -535,18 +533,10 @@ wiz.renderInline = wiz.renderNode.extend ({
         self.x = parentState.offsetX + self.marginLeft + self.borderLeft + self.paddingLeft
         self.y = parentState.offsetY
 
-        local contentW = self.width
-        - self.marginLeft - self.marginRight 
-        - self.borderLeft - self.borderRight 
-        - self.paddingLeft - self.paddingRight 
-        - parentState.offsetX
+        local contentW = self.width - parentState.offsetX
         contentW = contentW > 0 and contentW or 0
 
-        local contentH = self.height
-        - self.marginTop - self.marginBottom 
-        - self.borderTop - self.borderBottom 
-        - self.paddingTop - self.paddingBottom
-        - parentState.offsetY
+        local contentH = self.height - parentState.offsetY
         contentH = contentH > 0 and contentH or 0
 
         -- layout flows (children)
@@ -635,13 +625,13 @@ wiz.renderInline = wiz.renderNode.extend ({
     -- ------------------------------------------------------------------ 
 
     paint = function ( self, x, y )
+        -- TODO: paint self
+
         -- recursively paint the child 
         for i=1,#self._flows do
             local node = self._flows[i]
             node:paint( x + node.x, y + node.y )
         end
-
-        -- TODO: paint self
     end,
 })
 
@@ -668,10 +658,10 @@ wiz.renderText = wiz.renderNode.extend ({
         local parentNode = parentState.node -- NOTE: parentNode may not be self.parent since line-break will create temp new renderNode
         local font = parentNode.font
         local whiteSpace = parentNode.whiteSpace
-        local trimWhitespace = #parentState.line.nodes == 0 and 1 or 0
+        local beginningOfLine = #parentState.line.nodes == 0 and 1 or 0
 
         local contentW = parentState.contentW - parentState.offsetX 
-        local text1, text2, width, linebreak = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW, trimWhitespace )
+        local text1, text2, width, linebreak = ex_c.font_wrap_text ( self.text, font._cptr, whiteSpace, contentW, beginningOfLine )
         -- DEBUG { 
         -- print( string.format( "text = \"%s\"\n - text1 = \"%s\"\n - text2 = \"%s\"\n - width = %d, display = %s, whitespace = %s", 
         --                       self.text, 

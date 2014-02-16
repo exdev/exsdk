@@ -1,0 +1,32 @@
+<!-- ======================================================================================-->
+<!-- File         : test_longword.xml-->
+<!-- Author       : Wu Jie -->
+<!-- Last Change  : 02/16/2014 | 14:31:52 PM | Sunday,February-->
+<!-- Description  : -->
+<!-- ======================================================================================-->
+
+<xml>
+    <bundle name="bundle.test" path="./" />
+    <window title="Test" position="10,10" width="800" height="1000">
+
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: normal;">
+            _normal_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        </div>
+
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre-line;">
+            _preline_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        </div>
+
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre;">
+            _pre_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        </div>
+
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre-wrap;">
+            _prewrap_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        </div>
+
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: nowrap;">
+            _nowrap_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        </div>
+    </window>
+</xml>

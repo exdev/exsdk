@@ -8,47 +8,64 @@
 <xml>
     <bundle name="bundle.test" path="./" />
     <window title="Test" position="10,10" width="800" height="1000">
+        <!-- <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: normal;">   -->
+        <!--     _normal_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa                           -->
+        <!-- </div>                                                                                   -->
 
-        <div style="width: 100px; height: 100px; border: solid 3px #f00; margin: 10px; padding: 5px;">Test</div>
-        <div>Foo            Bar</div>
-        <label>Hello World</label>
-        Hello World 2
+        <!-- <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre-line;"> -->
+        <!--     _preline_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa                           -->
+        <!-- </div>                                                                                   -->
 
-        <div id="block" style="width: 400px; height: 100px; border: solid 3px #f00; margin: 10px; padding: 5px;">
-            <div id="foobar 01" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
-            <div id="foobar 02" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
-            <div id="foobar 03" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
-            <div id="foobar 04" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
-            <div id="foobar 05" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
-            <div id="foobar 06" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
-            <div id="foobar 07" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
-            <div id="foobar 08" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
-            <div id="foobar 09" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
-            <div id="foobar 10" style="display: inline-block; border: solid 2px #000;">Foo Bar</div>
+        <!-- <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre;">      -->
+        <!--     _pre_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa                           -->
+        <!-- </div>                                                                                   -->
+
+        <!-- <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre-wrap;"> -->
+        <!--     _prewrap_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa                           -->
+        <!-- </div>                                                                                   -->
+
+        <!-- <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: nowrap;">   -->
+        <!--     _nowrap_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa                           -->
+        <!-- </div>                                                                                   -->
+
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: normal;">
+            9.1.1 The viewport
+
+            User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).
+
+            When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document).
         </div>
 
-        <div style="width: auto; border: solid 3px #00f; padding: 10px;">
-            <div style="white-space: pre-line; border: solid 3px #f00;">
-                I am a newcomer to the world of WebKit. Before starting here at Adobe
-                I had never even looked at the source code, so I had quite a bit of learning
-                to do once I started. I’ve done a few things in WebKit since then,
-                but I’m definitely still in the early stages – it is a large, complex project!
-                WebKit has a lot of documentation, but due to the rapid pace of change
-                in the code base, much of it is very high level or outdated. As a beginner,
-                I found this to be rather challenging when trying to learn the ins and
-                outs of the layout system.
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre-line;">
+            9.1.1 The viewport
 
-                Out of this challenge grew the desire to do make it less challenging for others,
-                and help my learning process at the same time. I’ve found that the best way to
-                learn something is to explain it to someone else, so I am beginning a series
-                of posts about learning WebKit and WebKit layout. This first post will focus
-                on the basics and pointers to documentation that has helped me along the way.
-                Note that I assume that you have a working knowledge of HTML, CSS, and
-                JavaScript. I also assume that you have a knowledge of C languages, as WebKit
-                itself is written in C++. You shouldn’t need any great knowledge of C++ to
-                follow along, but you will definitely need to learn C++ if you want to contribute
-                to the code.
-            </div>
+            User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).
+
+            When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document).
+        </div>
+
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre;">
+            9.1.1 The viewport
+
+            User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).
+
+            When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document).
+        </div>
+
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre-wrap;">
+            9.1.1 The viewport
+
+            User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).
+
+            When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document).
+        </div>
+
+        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: nowrap;">
+            9.1.1 The viewport
+
+            User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).
+
+            When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document).
         </div>
     </window>
 </xml>

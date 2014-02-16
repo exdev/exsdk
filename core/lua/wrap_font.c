@@ -217,6 +217,24 @@ static int __lua_font_get_style_name ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 // Desc: 
 // http://www.w3schools.com/cssref/pr_text_white-space.asp
+// http://baike.baidu.com/view/40801.htm
+// http://www.ipmtea.net/javascript/201009/23_294.html
+// static bool IsChineseCharacter(char ch) {
+//     return  '\u2E80' <= ch && 
+//         (
+//          ('\u4E00' <= ch && ch <= '\u9FBF') ||
+//          ('\u2E80' <= ch && ch <= '\u2EFF') ||
+//          ('\u2F00' <= ch && ch <= '\u2FDF') ||
+//          //('\u3000' <= ch && ch <= '\u303F') || CJK 符号和标点 
+//          ('\u31C0' <= ch && ch <= '\u31EF') ||
+//          ('\u3200' <= ch && ch <= '\u32FF') ||
+//          ('\u3300' <= ch && ch <= '\u33FF') ||
+//          ('\u3400' <= ch && ch <= '\u4DBF') ||
+//          ('\u4DC0' <= ch && ch <= '\u4DFF') ||
+//          ('\u4E00' <= ch && ch <= '\u9FBF') ||
+//          ('\uF900' <= ch && ch <= '\uFAFF') 
+//         )
+// // }
 // ------------------------------------------------------------------ 
 
 static int __lua_font_wrap_text ( lua_State *_l ) {
@@ -224,14 +242,14 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     const char *text, *whitespace;
     int maxWidth;
 
-    const char *str, *laststr, *lastword;
+    const char *str, *laststr, *pword;
     char *newtext, *newtext_p, *last_newtext;
     int ch, next_ch, len, newlen;
     uint ft_index, prev_ft_index;
-    int cur_x, last_word_x, advance;
+    int cur_x, last_x, word_x, advance;
     ex_glyph_t *glyph;
-    bool linebreak, trimWhitespace; 
-    bool wrapword, collapseSpace, collapseLinebreak;
+    bool linebreak, beginningOfLine, trimWhitespace; 
+    bool wrapword, collapseSpace, collapseLinebreak, needwrap;
 
     // get lua arguments
     ex_lua_check_nargs(_l,5);
@@ -240,18 +258,17 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     font = lua_touserdata(_l,2);
     whitespace = luaL_checkstring(_l,3);
     maxWidth = luaL_checkint(_l,4);
-    trimWhitespace = (luaL_checkint(_l,5) == 1);
+    trimWhitespace = beginningOfLine = (luaL_checkint(_l,5) == 1);
 
     //
     len = strlen(text);
-    str = laststr = lastword = text;
+    str = laststr = pword = text;
     newtext_p = newtext = last_newtext = ex_malloc( len * sizeof(char) );
     prev_ft_index = -1;
 
     // get wrapMode
-    wrapword = false;
-    collapseSpace = false;
-    collapseLinebreak = false;
+    needwrap = wrapword = false;
+    collapseSpace = collapseLinebreak = false;
     if ( !strncmp( whitespace, "pre-wrap", 8 ) ) {
         wrapword = true;
         collapseSpace = false;
@@ -279,7 +296,7 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     }
 
     // process text
-    cur_x = last_word_x = 0;
+    cur_x = word_x = 0;
     linebreak = false;
     while ( *str ) {
         str += utf8proc_iterate ((const uint8_t *)str, -1, &ch);
@@ -292,11 +309,6 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
             }
             else {
                 linebreak = true;
-
-                strncpy( newtext_p, laststr, str - laststr );
-                newtext_p += (str - laststr);
-                laststr = str;
-                break;
             }
         }
 
@@ -331,13 +343,28 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
 
         // TODO: if this is a word
         // process last word
-        if ( ch == ' ' || ch == '\t' || ch == '\f' ) {
-            last_word_x = cur_x;
-            lastword = laststr;
+        if ( ch == ' ' || ch == '\t' || ch == '\f' || ch == '\n' || ch == '\r' ) {
+            beginningOfLine = false;
+
+            // ERROR TODO!!! { 
+            // NOTE: this flag will control to skip current white-space and add it to text2 when word-wrap already happens, 
+            // if ( needwrap ) {
+            //     word_x = last_x;
+            //     pword = laststr;
+            //     last_newtext = newtext_p;
+            // }
+            // else {
+            //     word_x = cur_x;
+            //     pword = str;
+            //     last_newtext = newtext_p + (str-laststr);
+            // }
+            // } TODO end 
+            word_x = last_x;
+            pword = laststr;
             last_newtext = newtext_p;
         }
-
         trimWhitespace = false;
+
         ft_index = ex_font_get_index ( font, ch );
         glyph = ex_font_get_glyph ( font, ft_index );
         advance += ex_font_get_kerning( font, prev_ft_index, ft_index );
@@ -345,15 +372,19 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
 
         // check if wrap to new-line
         if ( wrapword && cur_x + advance > maxWidth ) {
-            linebreak = true;
+            needwrap = true;
+            if ( !beginningOfLine ) {
+                linebreak = true;
 
-            str = lastword;
-            cur_x = last_word_x;
-            newtext_p = last_newtext;
-            break;
+                str = pword;
+                cur_x = word_x;
+                newtext_p = last_newtext;
+                break;
+            }
         }
 
         // advanced character
+        last_x = cur_x;
         cur_x += advance;
         prev_ft_index = ft_index;
 
@@ -361,6 +392,11 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
         strncpy( newtext_p, laststr, str - laststr );
         newtext_p += (str - laststr);
         laststr = str;
+
+        if ( linebreak ) {
+            needwrap = false;
+            break;
+        }
     }
 
     // text1

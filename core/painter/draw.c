@@ -385,8 +385,6 @@ void ex_painter_draw_text ( const char *_text, ex_font_t *_font, int _dx, int _d
     int advance = 0;
 
     FT_Face face;
-    FT_Size_Metrics metrics;
-    int height, line_gap;
 
     str = _text;
     prev_ft_index = -1;
@@ -394,9 +392,14 @@ void ex_painter_draw_text ( const char *_text, ex_font_t *_font, int _dx, int _d
     cur_y = _dy;
 
     face = _font->face;
-    metrics = face->size->metrics;
-    height = metrics.height >> 6;
-    line_gap = (metrics.ascender >> 6) - (metrics.descender >> 6) - height;
+
+    // DISABLE: new line calculation, should do this in layout system { 
+    // FT_Size_Metrics metrics;
+    // int height, line_gap;
+    // metrics = face->size->metrics;
+    // height = metrics.height >> 6;
+    // line_gap = (metrics.ascender >> 6) - (metrics.descender >> 6) - height;
+    // } DISABLE end 
 
     while ( *str ) {
         str += utf8proc_iterate ((const uint8_t *)str, -1, &ch);
