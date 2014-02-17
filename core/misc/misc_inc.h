@@ -20,6 +20,7 @@
 #include "dtime.h"
 #include "uid.h"
 #include "str_op.h"
+#include "textutil.h"
 
 // #################################################################################
 #endif // END MISC_INC_H_1277863963

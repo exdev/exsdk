@@ -28,44 +28,10 @@
         <!--     _nowrap_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa                           -->
         <!-- </div>                                                                                   -->
 
-        <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: normal;">
-            9.1.1 The viewport
+        <div style="border: solid 3px #f00; margin: 10px; white-space: pre-wrap; line-height: 20px; font-family: STHeiti Light.ttc">
+            1991年前后，两个项目的参与者都认识到，世界不需要两个不兼容的字符集。于是，它们开始合并双方的工作成果，并为创立一个单一编码表而协同工作。从Unicode 2.0开始，Unicode采用了与ISO 10646-1相同的字库和字码；ISO也承诺，ISO 10646将不会替超出U+10FFFF的UCS-4编码赋值，以使得两者保持一致。两个项目仍都存在，并独立地公布各自的标准。但统一码联盟和ISO/IEC JTC1/SC2都同意保持两者标准的码表兼容，并紧密地共同调整任何未来的扩展。在发布的时候，Unicode一般都会采用有关字码最常见的字型，但ISO 10646一般都尽可能采用Century字型。
 
-            User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).
-
-            When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document).
+            UCS-4根据最高位为0的最高字节分成27=128个group。每个group再根据次高字节分为256个平面（plane）。每个平面根据第3个字节分为256行 （row），每行有256个码位（cell）。group 0的平面0被称作BMP（Basic Multilingual Plane）。如果UCS-4的前两个字节为全零，那么将UCS-4的BMP去掉前面的两个零字节就得到了UCS-2。每个平面有216=65536个码位。Unicode计划使用了17个平面，一共有17×65536=1114112个码位。在Unicode 5.0.0版本中，已定义的码位只有238605个，分布在平面0、平面1、平面2、平面14、平面15、平面16。其中平面15和平面16上只是定义了两个各占65534个码位的专用区（Private Use Area），分别是0xF0000-0xFFFFD和0x100000-0x10FFFD。所谓专用区，就是保留给大家放自定义字符的区域，可以简写为PUA。
         </div>
-
-        <!-- <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre-line;">                                                                                                                                                                                                              -->
-        <!--     9.1.1 The viewport                                                                                                                                                                                                                                                                                -->
-
-        <!--     User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).                            -->
-
-        <!--     When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document). -->
-        <!-- </div>                                                                                                                                                                                                                                                                                                -->
-
-        <!-- <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre;">                                                                                                                                                                                                                   -->
-        <!--     9.1.1 The viewport                                                                                                                                                                                                                                                                                -->
-
-        <!--     User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).                            -->
-
-        <!--     When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document). -->
-        <!-- </div>                                                                                                                                                                                                                                                                                                -->
-
-        <!-- <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: pre-wrap;">                                                                                                                                                                                                              -->
-        <!--     9.1.1 The viewport                                                                                                                                                                                                                                                                                -->
-
-        <!--     User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).                            -->
-
-        <!--     When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document). -->
-        <!-- </div>                                                                                                                                                                                                                                                                                                -->
-
-        <!-- <div style="width: 300px; border: solid 3px #f00; margin: 10px; white-space: nowrap;">                                                                                                                                                                                                                -->
-        <!--     9.1.1 The viewport                                                                                                                                                                                                                                                                                -->
-
-        <!--     User agents for continuous media generally offer users a viewport (a window or other viewing area on the screen) through which users consult a document. User agents may change the document's layout when the viewport is resized (see the initial containing block).                            -->
-
-        <!--     When the viewport is smaller than the area of the canvas on which the document is rendered, the user agent should offer a scrolling mechanism. There is at most one viewport per canvas, but user agents may render to more than one canvas (i.e., provide different views of the same document). -->
-        <!-- </div>                                                                                                                                                                                                                                                                                                -->
     </window>
 </xml>

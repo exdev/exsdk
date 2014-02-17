@@ -710,7 +710,8 @@ wiz.renderText = wiz.renderNode.extend ({
         local font = self.font
 
         ex.painter.color = ex.color4f.black 
-        ex.painter.text( self.text, font, x, y )
+        -- ex.painter.text( self.text, font, x, y )
+        ex.painter.strokeText( self.text, font, ex.color4f.white, ex.color4f.black, 2, x, y )
     end,
 })
 

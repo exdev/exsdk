@@ -217,24 +217,11 @@ static int __lua_font_get_style_name ( lua_State *_l ) {
 // ------------------------------------------------------------------ 
 // Desc: 
 // http://www.w3schools.com/cssref/pr_text_white-space.asp
-// http://baike.baidu.com/view/40801.htm
-// http://www.ipmtea.net/javascript/201009/23_294.html
-// static bool IsChineseCharacter(char ch) {
-//     return  '\u2E80' <= ch && 
-//         (
-//          ('\u4E00' <= ch && ch <= '\u9FBF') ||
-//          ('\u2E80' <= ch && ch <= '\u2EFF') ||
-//          ('\u2F00' <= ch && ch <= '\u2FDF') ||
-//          //('\u3000' <= ch && ch <= '\u303F') || CJK 符号和标点 
-//          ('\u31C0' <= ch && ch <= '\u31EF') ||
-//          ('\u3200' <= ch && ch <= '\u32FF') ||
-//          ('\u3300' <= ch && ch <= '\u33FF') ||
-//          ('\u3400' <= ch && ch <= '\u4DBF') ||
-//          ('\u4DC0' <= ch && ch <= '\u4DFF') ||
-//          ('\u4E00' <= ch && ch <= '\u9FBF') ||
-//          ('\uF900' <= ch && ch <= '\uFAFF') 
-//         )
-// // }
+static inline bool __can_word_break ( int _ch ) {
+    return (_ch == ' ' || _ch == '\t' || _ch == '\f' || _ch == '\n' || _ch == '\r')
+        || ex_is_chinese (_ch)
+        || ex_is_japanese (_ch);
+}
 // ------------------------------------------------------------------ 
 
 static int __lua_font_wrap_text ( lua_State *_l ) {
@@ -242,13 +229,13 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     const char *text, *whitespace;
     int maxWidth;
 
-    const char *str, *laststr, *nextstr, *pword;
+    const char *str, *nextstr, *word_start;
     char *newtext, *newtext_p, *last_newtext;
-    int ch, next_ch, len, newlen;
+    int ch, next_ch, len, newlen, cpylen;
     uint ft_index, prev_ft_index;
-    int cur_x, last_x, word_x, advance;
+    int cur_x, word_start_x;
     ex_glyph_t *glyph;
-    bool linebreak, beginningOfLine, trimWhitespace; 
+    bool linebreak, beginningOfLine, trimWhitespace, skipcpy; 
     bool wrapword, collapseSpace, collapseLinebreak;
 
     // get lua arguments
@@ -262,7 +249,7 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
 
     //
     len = strlen(text);
-    str = laststr = nextstr = pword = text;
+    str = nextstr = word_start = text;
     newtext_p = newtext = last_newtext = ex_malloc( len * sizeof(char) );
     prev_ft_index = -1;
 
@@ -296,9 +283,10 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
     }
 
     // process text
-    cur_x = word_x = 0;
+    cur_x = word_start_x = 0;
     linebreak = false;
     while ( *str ) {
+        skipcpy = false;
         nextstr += utf8proc_iterate ((const uint8_t *)str, -1, &ch);
 
         // if this is line-break
@@ -354,95 +342,96 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
 
         // process word-break, word-wrap
         if ( wrapword ) {
-            pword = str;
-            word_x = cur_x;
+            word_start = str;
+            word_start_x = cur_x;
 
-            next_ch = ch;
-            const char * nextnextstr = nextstr;
-            while (1) {
-                bool canbreak = false;
-
-                // if this character can break
-                if ( next_ch == ' ' || next_ch == '\t' || next_ch == '\f' || next_ch == '\n' || next_ch == '\r' ) {
-                    pword = nextstr;
-                    word_x = cur_x;
-
-                    beginningOfLine = false;
-                    canbreak = true;
-                }
+            // if this character can break
+            if ( nextstr == NULL || __can_word_break (ch) ) {
+                beginningOfLine = false;
 
                 // advanced character
-                advance = 0;
-                ft_index = ex_font_get_index ( font, next_ch );
+                ft_index = ex_font_get_index ( font, ch );
                 glyph = ex_font_get_glyph ( font, ft_index );
-                advance += ex_font_get_kerning( font, prev_ft_index, ft_index );
-                advance += glyph->advance_x;
-                cur_x += advance;
+                cur_x += ex_font_get_kerning( font, prev_ft_index, ft_index );
+                cur_x += glyph->advance_x;
                 prev_ft_index = ft_index;
 
-                //
-                if ( canbreak ) {
+                // check if the word exceed content width
+                if ( cur_x > maxWidth ) {
+                    if ( !beginningOfLine ) {
+                        linebreak = true;
+
+                        // skip copy the white-space if it is at the end of the wrap
+                        if ( ch == ' ' || ch == '\t' || ch == '\f' ) {
+                            skipcpy = true;
+                        }
+                        else {
+                            nextstr = word_start;
+                            cur_x = word_start_x;
+                        }
+                    }
+                }
+            }
+            else {
+                // advanced current character
+                ft_index = ex_font_get_index ( font, ch );
+                glyph = ex_font_get_glyph ( font, ft_index );
+                cur_x += ex_font_get_kerning( font, prev_ft_index, ft_index );
+                cur_x += glyph->advance_x;
+                prev_ft_index = ft_index;
+
+                const char * nextnextstr = nextstr;
+                while ( *nextstr ) {
+                    nextstr = nextnextstr;
+                    nextnextstr += utf8proc_iterate ((const uint8_t *)nextstr, -1, &next_ch);
+
+                    // if this character can break
+                    if ( nextnextstr == NULL || __can_word_break (next_ch) ) {
+                        break;
+                    }
+
+                    // advanced character
+                    ft_index = ex_font_get_index ( font, next_ch );
+                    glyph = ex_font_get_glyph ( font, ft_index );
+                    cur_x += ex_font_get_kerning( font, prev_ft_index, ft_index );
+                    cur_x += glyph->advance_x;
+                    prev_ft_index = ft_index;
+
+                    // TODO: process word-break
+                    // check if the word exceed content width
                     if ( cur_x > maxWidth ) {
                         if ( !beginningOfLine ) {
                             linebreak = true;
 
-                            nextstr = pword;
-                            cur_x = word_x;
+                            nextstr = word_start;
+                            cur_x = word_start_x;
+                            skipcpy = true;
+                            break;
                         }
                     }
-                    break;
                 }
-
-                //
-                nextstr = nextnextstr;
-                nextnextstr += utf8proc_iterate ((const uint8_t *)nextstr, -1, &next_ch);
-
-                //
-                if ( *nextnextstr == NULL )
-                    break;
             }
         }
         else {
             // advanced character
-            advance = 0;
             ft_index = ex_font_get_index ( font, ch );
             glyph = ex_font_get_glyph ( font, ft_index );
-            advance += ex_font_get_kerning( font, prev_ft_index, ft_index );
-            advance += glyph->advance_x;
-            cur_x += advance;
+            cur_x += ex_font_get_kerning( font, prev_ft_index, ft_index );
+            cur_x += glyph->advance_x;
             prev_ft_index = ft_index;
         } 
 
-        // DELME { 
-        // TODO: word step, like above, we should step word here. 
-        // process last word
-        // if ( ch == ' ' || ch == '\t' || ch == '\f' || ch == '\n' || ch == '\r' ) {
-        //     beginningOfLine = false;
-
-        //     // ERROR TODO!!! { 
-        //     // NOTE: this flag will control to skip current white-space and add it to text2 when word-wrap already happens, 
-        //     // if ( needwrap ) {
-        //     //     word_x = last_x;
-        //     //     pword = laststr;
-        //     //     last_newtext = newtext_p;
-        //     // }
-        //     // else {
-        //     //     word_x = cur_x;
-        //     //     pword = str;
-        //     //     last_newtext = newtext_p + (str-laststr);
-        //     // }
-        //     // } TODO end 
-        //     word_x = last_x;
-        //     pword = nextstr;
-        //     last_newtext = newtext_p;
-        // }
-        // } DELME end 
-
         // copy character to newtext_p
-        strncpy( newtext_p, str, nextstr - str );
-        newtext_p += (nextstr - str);
-        str = nextstr;
+        if ( !skipcpy ) {
+            cpylen = nextstr - str;
+            if ( cpylen > 0 ) {
+                strncpy( newtext_p, str, cpylen);
+                newtext_p += cpylen;
+            }
+        }
 
+        // step
+        str = nextstr;
         if ( linebreak ) {
             break;
         }
