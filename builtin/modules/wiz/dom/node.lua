@@ -94,6 +94,12 @@ wiz.elementNode = wiz.domNode.extend ({
             self.style.display = "block"
         end
 
+        if self.tag == "a" then 
+            self.style.display = "inline"
+        elseif self.tag == "p" then 
+            self.style.display = "block"
+        end
+
         -- apply style
         local styleAttr = self.attrs.style
         if styleAttr ~= nil then

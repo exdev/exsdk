@@ -609,12 +609,13 @@ wiz.renderInline = wiz.renderNode.extend ({
         end
         self.width = state.line.w -- TODO
         self.height = state.line.h -- TODO
+        local totalWidth = self:totalWidth()
 
         --
         if parentState.line.h < self.height then
             parentState.line.h = self.height
         end
-        parentState.offsetX = parentState.offsetX + self.width
+        parentState.offsetX = parentState.offsetX + totalWidth
         parentState.line.w = parentState.offsetX
         table.add( parentState.line.nodes, self ) 
 
@@ -626,6 +627,19 @@ wiz.renderInline = wiz.renderNode.extend ({
 
     paint = function ( self, x, y )
         -- TODO: paint self
+        local style = self.domNode.style
+        local border_x = x - self.paddingLeft - self.borderLeft
+        local border_y = y - self.paddingTop - self.borderTop
+        local border_w = self.width + self.paddingLeft + self.paddingRight + self.borderLeft + self.borderRight
+        local border_h = self.height + self.paddingTop + self.paddingBottom + self.borderTop + self.borderBottom
+        if style.borderStyle == "solid" then
+            ex.painter.color = style.borderLeftColor -- TODO
+            ex.painter.rect4( border_x, border_y, border_w, border_h,
+                              self.borderTop,
+                              self.borderRight,
+                              self.borderBottom,
+                              self.borderLeft )
+        end
 
         -- recursively paint the child 
         for i=1,#self._flows do
@@ -710,8 +724,7 @@ wiz.renderText = wiz.renderNode.extend ({
         local font = self.font
 
         ex.painter.color = ex.color4f.black 
-        -- ex.painter.text( self.text, font, x, y )
-        ex.painter.strokeText( self.text, font, ex.color4f.white, ex.color4f.black, 2, x, y )
+        ex.painter.text( self.text, font, x, y )
     end,
 })
 
