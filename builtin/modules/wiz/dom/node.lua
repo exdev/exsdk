@@ -98,12 +98,14 @@ wiz.elementNode = wiz.domNode.extend ({
             self.style.display = "inline"
         elseif self.tag == "p" then 
             self.style.display = "block"
+            self.style.marginTop = { type="legnth", value=16 }
+            self.style.marginBottom = { type="legnth", value=16 }
         end
 
         -- apply style
         local styleAttr = self.attrs.style
         if styleAttr ~= nil then
-            self.style:css(styleAttr)
+            self.style:parse(styleAttr)
         end
 
         for i=1,#self.children do
@@ -177,6 +179,5 @@ wiz.textNode = wiz.domNode.extend ({
     -- ------------------------------------------------------------------ 
 
     applyStyle = function ( self )
-        self.style = self.parent.style
     end,
 })

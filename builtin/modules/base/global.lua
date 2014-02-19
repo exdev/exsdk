@@ -14,10 +14,11 @@
 -- -- ------------------------------------------------------------------ 
 
 -- DISABLE: if use this, the callback stack will show only here
--- local builtinAssert = assert
--- function assert ( exp, msg, ... )
---     builtinAssert ( exp,  msg:format(...)  )
--- end
+local builtinAssert = assert
+function assert ( exp, msg, ... )
+    if exp == false then print( debug.traceback() ) end
+    builtinAssert ( exp, msg:format(...)  )
+end
 
 -- ------------------------------------------------------------------ 
 -- Desc: 

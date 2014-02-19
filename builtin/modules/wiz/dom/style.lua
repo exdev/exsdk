@@ -111,7 +111,7 @@ wiz.style = class ({
     -- functions
     --/////////////////////////////////////////////////////////////////////////////
 
-    css = function ( self, text )
+    parse = function ( self, text )
         wiz.css.parse( self, text )
     end,
 })
