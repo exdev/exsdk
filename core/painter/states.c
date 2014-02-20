@@ -37,8 +37,10 @@ static ex_painter_state_t __painter_state;
 int ex_painter_init () {
     ex_assert ( __painter_state.initialized == false );
 
-    if ( __painter_state.initialized )
+    if ( __painter_state.initialized ) {
+        ex_set_error ( "[painter] Error: Already initialized." );
         return -1;
+    }
 
     // ======================================================== 
     // init ui 

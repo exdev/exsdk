@@ -9,6 +9,7 @@
 // includes
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "SDL.h"
 #include "exsdk.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -149,3 +150,36 @@ void __assert_failed ( const char *_file_name,
              _expr, _file_name, (int)_line_nr, short_name );
 }
 
+// ------------------------------------------------------------------ 
+// Desc: 
+#ifndef ERR_MAX_STRLEN
+#define ERR_MAX_STRLEN  128
+#endif
+// ------------------------------------------------------------------ 
+
+int ex_set_error ( const char *_fmt, ... ) {
+    int result = -1;
+    char buffer[ERR_MAX_STRLEN];
+
+    EX_GET_VA_STRING_WITH_RESULT( buffer, ERR_MAX_STRLEN-1, _fmt, &result );
+    buffer[ERR_MAX_STRLEN-1] = '\0';
+    result = SDL_SetError(buffer);
+
+    return result;
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+const char *ex_get_error () {
+    return SDL_GetError();
+}
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
+void ex_clear_error () {
+    SDL_ClearError();
+}

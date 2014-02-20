@@ -80,33 +80,36 @@ wiz.elementNode = wiz.domNode.extend ({
 
     applyStyle = function ( self )
         -- create default style
-        self.style = self.style or wiz.style()
+        local style = self.style or wiz.style()
 
-        -- apply display by tag
-        if self.tag == "div" or self.tag == "window" then 
-            self.style.display = "block"
+        -- process self
+        local tag = self.tag
+        if tag == "div" or tag == "window" then 
+            style.display = "block"
+        elseif tag == "a" then 
+            style.display = "inline"
+        elseif tag == "p" then 
+            style.display = "block"
+            style.marginTop = { type="legnth", value=16 }
+            style.marginBottom = { type="legnth", value=16 }
         end
 
+        -- process parent-tag
         local parentTag = self.parent.tag
         if parentTag == "hbox" then
-            self.style.display = "inline-block"
+            style.display = "block"
+            style.whiteSpace = "nowrap"
         elseif parentTag == "vbox" then 
-            self.style.display = "block"
-        end
-
-        if self.tag == "a" then 
-            self.style.display = "inline"
-        elseif self.tag == "p" then 
-            self.style.display = "block"
-            self.style.marginTop = { type="legnth", value=16 }
-            self.style.marginBottom = { type="legnth", value=16 }
+            style.display = "block"
+            style.whiteSpace = "normal"
         end
 
         -- apply style
         local styleAttr = self.attrs.style
         if styleAttr ~= nil then
-            self.style:parse(styleAttr)
+            style:parse(styleAttr)
         end
+        self.style = style
 
         for i=1,#self.children do
             local node = self.children[i]

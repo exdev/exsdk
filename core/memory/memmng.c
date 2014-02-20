@@ -328,8 +328,10 @@ static void __dump () {
 int ex_mem_init () {
     ex_assert ( __initialized == false );
 
-    if ( __initialized )
+    if ( __initialized ) {
+        ex_set_error ( "[memmng] Error: Already initialized!" );
         return -1;
+    }
 
     //
     __access_mutex = SDL_CreateMutex();

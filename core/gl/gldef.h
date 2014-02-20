@@ -21,7 +21,7 @@ extern "C" {
         do { \
             GLenum __error__ = glGetError(); \
             if (__error__) { \
-                ex_log( "OpenGL error 0x%04X in %s %s %d\n", __error__, __FILE__, __FUNCTION__, __LINE__ ); \
+                ex_set_error( "[OpenGL] Error 0x%04X in %s %s %d\n", __error__, __FILE__, __FUNCTION__, __LINE__ ); \
             } \
         } while (false)
 #else

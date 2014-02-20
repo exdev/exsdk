@@ -231,28 +231,28 @@ int ex_sdk_init () {
     // init memory
     ex_log ( "[exsdk] Initializing memory..." );
     if ( ex_mem_init () != 0 ) {
-        ex_log ( "[exsdk] Error: Could not init memory!" );
+        ex_log ( "Faield to init memmng: %s", ex_get_error() );
         return -1;
     }
 
     // init fsys
     ex_log ( "[exsdk] Initializing fsys..." );
     if ( ex_fsys_init () != 0 ) {
-        ex_log ( "[exsdk] Error: Could not init fsys!" );
+        ex_log ( "Faield to init fsys: %s", ex_get_error() );
         return -1;
     }
 
     // init font
     ex_log ( "[exsdk] Initializing font..." );
     if ( ex_font_init () != 0 ) {
-        ex_log ( "[exsdk] Error: Could not init font!" );
+        ex_log ( "Faield to init font: %s", ex_get_error() );
         return -1;
     }
 
     // init painter
     ex_log ( "[exsdk] Initializing painter..." );
     if ( ex_painter_init () != 0 ) {
-        ex_log ( "[exsdk] Error: Could not init ui!" );
+        ex_log ( "Faield to init painter: %s", ex_get_error() );
         return -1;
     }
 

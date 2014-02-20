@@ -19,7 +19,7 @@
 
 #define __PHYSFS_CHECK(_expr) \
     if ( (_expr) == 0 ) { \
-        ex_log ( "[fsys] Error: %s", PHYSFS_getLastError() ); \
+        ex_set_error ( "[fsys] Error: %s", PHYSFS_getLastError() ); \
         return -1; \
     }
 
@@ -141,7 +141,7 @@ int ex_fsys_rmdir ( const char *_dir, bool _force ) {
         return 0;
     }
 
-    ex_log ( "[fsys] Error: %s is not a directory", _dir );
+    ex_set_error ( "[fsys] Error: %s is not a directory", _dir );
     return -1;
 }
 
@@ -155,7 +155,7 @@ int ex_fsys_rm ( const char *_filename ) {
         return 0;
     }
 
-    ex_log ( "[fsys] Error: %s is not a file", _filename );
+    ex_set_error ( "[fsys] Error: %s is not a file", _filename );
     return -1;
 }
 

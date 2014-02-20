@@ -226,6 +226,14 @@ extern void ex_log ( const char *_fmt, ... );
 // Desc: 
 // ------------------------------------------------------------------ 
 
+extern int ex_set_error ( const char *_fmt, ... );
+extern const char *ex_get_error ();
+extern void ex_clear_error ();
+
+// ------------------------------------------------------------------ 
+// Desc: 
+// ------------------------------------------------------------------ 
+
 extern void __assert_failed ( const char *_file_name, 
                               const char *_function_name, 
                               size_t _line_nr, 

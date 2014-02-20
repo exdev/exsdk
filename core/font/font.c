@@ -51,18 +51,18 @@ typedef struct __glyph_set_t {
 
 #define FT_CHECK_ERROR_RETURN(error,ret) \
     if ( error ) { \
-        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s", \
-                 FT_Errors[error].code,  \
-                 FT_Errors[error].message ); \
+        ex_set_error ( "[FreeType] Error Code: 0x%02x, Message: %s", \
+                       FT_Errors[error].code,  \
+                       FT_Errors[error].message ); \
         ex_assert (0); \
         return ret; \
     }
 
 #define FT_CHECK_ERROR_RETURN_VOID(error) \
     if ( error ) { \
-        ex_log ( "[FreeType] Error Code: 0x%02x, Message: %s", \
-                 FT_Errors[error].code,  \
-                 FT_Errors[error].message ); \
+        ex_set_error ( "[FreeType] Error Code: 0x%02x, Message: %s", \
+                       FT_Errors[error].code,  \
+                       FT_Errors[error].message ); \
         ex_assert (0); \
     }
 
@@ -115,7 +115,7 @@ static SDL_Texture *__new_texture () {
                                      256, 256 );
 
     if ( SDL_LockTexture(sdl_texture, NULL, &pixels, &pitch) < 0 ) {
-        ex_log ( "Couldn't lock texture: %s\n", SDL_GetError() );
+        ex_set_error ( "[FreeType] Error: Failed to lock texture, %s", SDL_GetError() );
         return NULL;
     }
     for ( y = 0; y < 256; ++y ) {
@@ -390,7 +390,7 @@ ex_font_t *ex_font_load ( const char *_filepath, int _size ) {
     // open the file
     file = ex_os_fopen( _filepath, "rb" );
     if ( file == NULL ) {
-        ex_log ( "[FreeType] Can't find the file %s", _filepath );
+        ex_set_error ( "[FreeType] Error: Can't find the file %s", _filepath );
         return NULL;
     }
 

@@ -29,7 +29,7 @@ static GLuint __compile_shader ( GLenum _type, const char *_buf ) {
     // Create the shader object
     shader = glCreateShader(_type);
     if ( shader == 0 ) {
-        ex_log ( "[shader] Error: failed to create shader" );
+        ex_set_error ( "[shader] Error: failed to create shader" );
         return 0;
     }
     
@@ -49,7 +49,7 @@ static GLuint __compile_shader ( GLenum _type, const char *_buf ) {
         if ( infoLen > 1 ) {
             char *infoLog = ex_malloc(sizeof(char) * infoLen);
             glGetShaderInfoLog (shader, infoLen, NULL, infoLog);
-            ex_log( "[shader] Compile error: %s", infoLog  );            
+            ex_set_error( "[shader] Compile error: %s", infoLog  );            
             ex_free(infoLog);
         }
         
@@ -102,7 +102,7 @@ uint ex_shader_load ( const char *_vbuf, const char *_fbuf ) {
         if ( infoLen > 1 ) {
             char * infoLog = ex_malloc(sizeof(char) * infoLen);
             glGetProgramInfoLog(programHandle, infoLen, NULL, infoLog);
-            ex_log( "[shader] Link error: %s", infoLog  );            
+            ex_set_error( "[shader] Link error: %s", infoLog  );            
             ex_free(infoLog);
         }
         
