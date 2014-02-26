@@ -303,9 +303,9 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
         if ( ch == ' ' || ch == '\t' || ch == '\f' ) {
             if ( collapseSpace ) {
                 const char * nextnextstr = nextstr;
-                while ( *nextstr ) {
+                while ( *nextnextstr ) {
                     nextstr = nextnextstr;
-                    nextnextstr += utf8proc_iterate ((const uint8_t *)nextstr, -1, &next_ch);
+                    nextnextstr += utf8proc_iterate ((const uint8_t *)nextnextstr, -1, &next_ch);
 
                     // if next_ch is white-space, then collapse this char
                     if ( next_ch == ' ' || next_ch == '\t' || next_ch == '\f' ) {
@@ -381,12 +381,12 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
                 prev_ft_index = ft_index;
 
                 const char * nextnextstr = nextstr;
-                while ( *nextstr ) {
+                while ( *nextnextstr ) {
                     nextstr = nextnextstr;
-                    nextnextstr += utf8proc_iterate ((const uint8_t *)nextstr, -1, &next_ch);
+                    nextnextstr += utf8proc_iterate ((const uint8_t *)nextnextstr, -1, &next_ch);
 
                     // if this character can break
-                    if ( nextnextstr == NULL || __can_word_break (next_ch) ) {
+                    if ( __can_word_break (next_ch) ) {
                         break;
                     }
 
