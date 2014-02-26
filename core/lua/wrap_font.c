@@ -347,8 +347,6 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
 
             // if this character can break
             if ( nextstr == NULL || __can_word_break (ch) ) {
-                beginningOfLine = false;
-
                 // advanced character
                 ft_index = ex_font_get_index ( font, ch );
                 glyph = ex_font_get_glyph ( font, ft_index );
@@ -371,6 +369,8 @@ static int __lua_font_wrap_text ( lua_State *_l ) {
                         }
                     }
                 }
+
+                beginningOfLine = false;
             }
             else {
                 // advanced current character
